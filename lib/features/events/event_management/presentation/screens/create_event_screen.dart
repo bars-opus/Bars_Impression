@@ -90,13 +90,13 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
     _priceController.addListener(_onAskTextChanged);
     _cancellationRasonController.addListener(_onAskTextChanged);
-
     SchedulerBinding.instance.addPostFrameCallback((_) {
       var _provider = Provider.of<UserData>(context, listen: false);
       _provider.setIsStartDateSelected(false);
       _provider.setIsEndDateSelected(false);
       _provider.setIsStartTimeSelected(false);
       _provider.setIsEndTimeSelected(false);
+      _provider.setCurrency('');
       _provider.setInt1(
         _pageController.initialPage,
       );
@@ -109,7 +109,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     final prompt =
         'Summarize the following event details:\n\nTitle: ${event.title}\nOverview: ${event.overview}\nTheme: ${event.theme}\nCity: ${event.city}\nDate: ${event.startDate.toDate().toString()}\n\nSummary:';
     final response = await _googleGenerativeAIService.generateResponse(prompt);
-    print(response);
+    // print(response);
     return response!.trim();
   }
 
@@ -157,7 +157,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
     final response = await _googleGenerativeAIService.generateResponse(prompt);
 
     final _insighText = response!.trim();
-    print(_insighText);
+    // print(_insighText);
 
     return _insighText;
   }
@@ -412,7 +412,9 @@ Please deliver detailed and actionable insights to assist organizers in marketin
 
         PaletteGenerator _paletteGenerator =
             await PaletteGenerator.fromImageProvider(
-          CachedNetworkImageProvider(event.imageUrl),
+          CachedNetworkImageProvider(event.imageUrl, errorListener: (_) {
+            return;
+          }),
           size: Size(1110, 150),
           maximumColorCount: 20,
         );
@@ -589,7 +591,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       city: _provider.city,
       country: _provider.country,
       virtualVenue: _provider.isVirtual ? _provider.venue : '',
-      ticketSite: '',
+      ticketSite: _provider.ticketSite,
       isVirtual: _provider.isVirtual,
       isPrivate: _provider.isPrivate,
       id: widget.event!.id,
@@ -1000,7 +1002,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       showCurrencyName: true,
       showCurrencyCode: true,
       onSelect: (Currency currency) {
-        print(currency.code.toString());
+        // print(currency.code.toString());
         _provider.setCurrency('${currency.name} | ${currency.code}');
         !_provider.isFree && currency.code != 'GHS' && !_provider.isCashPayment
             ? showDialog(
@@ -1516,9 +1518,9 @@ Please deliver detailed and actionable insights to assist organizers in marketin
                                           _provider.setAddress(_provider
                                               .addressSearchResults![index]
                                               .description);
-                                          print(_provider
-                                              .addressSearchResults![index]
-                                              .description);
+                                          // print(_provider
+                                          //     .addressSearchResults![index]
+                                          //     .description);
 
                                           reverseGeocoding(
                                               _provider,
@@ -1930,6 +1932,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
 
     // Check for the country being Ghana or the currency code being GHS
     bool isGhanaOrCurrencyGHS = _userLocation!.country == 'Ghana' &&
+        currencyPartition.length > 0 &&
         currencyPartition[1].trim() == 'GHS';
 
     // Check if the subaccount and transfer recipient IDs are empty
@@ -2075,11 +2078,17 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       title: _provider.ticket.length < 1
           ? 'Create Ticket'
           : 'Create another Ticket',
-      onPressed: () {
-        _provider.isExternalTicketPayment || !isGhanaOrCurrencyGHS
-            ? _showBottomTicketSite()
-            : _buildTicketDialog();
-      },
+      onPressed: widget.isEditting
+          ? () {
+              !isGhanaOrCurrencyGHS || widget.event!.ticketSite.isNotEmpty
+                  ? _showBottomTicketSite()
+                  : _buildTicketDialog();
+            }
+          : () {
+              _provider.isExternalTicketPayment || !isGhanaOrCurrencyGHS
+                  ? _showBottomTicketSite()
+                  : _buildTicketDialog();
+            },
       dropDown: false,
     );
   }
@@ -3757,10 +3766,10 @@ Please deliver detailed and actionable insights to assist organizers in marketin
             : _provider.eventImage == null && !widget.isEditting
                 ? CreateSelectImageWidget(
                     onPressed: () {
-                      _createEventDoc(context);
+                      // _createEventDoc(context);
                     },
                     isEditting: widget.isEditting,
-                    feature: 'Punch',
+                    feature: '',
                     selectImageInfo:
                         '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
                     featureInfo: '',
@@ -3769,7 +3778,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
                 : SafeArea(
                     child: PageView(
                         controller: _pageController,
-                        physics: const AlwaysScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         onPageChanged: (int index) {
                           _provider.setInt1(index);
                         },

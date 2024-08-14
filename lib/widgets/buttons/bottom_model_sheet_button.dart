@@ -25,6 +25,7 @@ class BottomModalSheetButton extends StatelessWidget {
         vertical: ResponsiveHelper.responsiveHeight(context, 1.0),
       ),
       child: Container(
+        // color: Colors.blue,
         width: isMinor
             ? 177
             : isMini
@@ -45,7 +46,7 @@ class BottomModalSheetButton extends StatelessWidget {
             color: Colors.transparent,
             child: Padding(
               padding: EdgeInsets.all(
-                ResponsiveHelper.responsiveHeight(context, 12.0),
+                5,
               ),
               child: child,
             ),

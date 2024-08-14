@@ -59,7 +59,9 @@ class AffiliateBarcode extends StatelessWidget {
                     color: Colors.blue,
                     image: DecorationImage(
                       image:
-                          CachedNetworkImageProvider(affiliate.eventImageUrl),
+                          CachedNetworkImageProvider(affiliate.eventImageUrl,  errorListener: (_) {
+                                  return;
+                                }),
                       fit: BoxFit.cover,
                     ),
                   ),

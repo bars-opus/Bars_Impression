@@ -41,12 +41,17 @@ class GeminiOnboardingPage extends StatelessWidget {
       child: AnimatedContainer(
         curve: Curves.easeInOut,
         duration: Duration(seconds: 1),
-        height: textController.text.trim().isNotEmpty ? 40 : 0,
+        height: ResponsiveHelper.responsiveHeight(
+          context,
+          textController.text.trim().isNotEmpty ? 40 : 0,
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: MiniCircularProgressButton(
-            color: provider.int1 == 26 ? Colors.blue : Colors.white,
-            text: provider.int1 == 26 ? 'Save' : 'Next',
+            color: provider.int1 == 5 ? Colors.blue : Colors.white,
+            // provider.int1 == 26 ? Colors.blue : Colors.white,
+            text: provider.int1 == 5 ? 'Save' : 'Next',
+            // provider.int1 == 26 ? 'Save' : 'Next',
             onPressed: onPressed,
           ),
         ),
@@ -88,7 +93,7 @@ class GeminiOnboardingPage extends StatelessWidget {
     return DirectionWidget(
       sizedBox: 0,
       text: description,
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+      fontSize: ResponsiveHelper.responsiveHeight(context, 14.0),
     );
   }
 
@@ -165,4 +170,3 @@ class GeminiOnboardingPage extends StatelessWidget {
     );
   }
 }
-

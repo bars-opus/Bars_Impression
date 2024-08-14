@@ -32,7 +32,9 @@ class ContentWarning extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: CachedNetworkImageProvider(imageUrl),
+            image: CachedNetworkImageProvider(imageUrl, errorListener: (_) {
+              return;
+            }),
             fit: BoxFit.cover,
           ),
         ),
@@ -92,7 +94,8 @@ class ContentWarning extends StatelessWidget {
                   ),
                   SizedBox(
                     width: 100,
-                    child: Divider( thickness: .2,
+                    child: Divider(
+                      thickness: .2,
                       color: Colors.white,
                     ),
                   ),

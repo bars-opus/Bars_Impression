@@ -19,7 +19,9 @@ class _ViewSentContentState extends State<ViewSentContent> {
   Future<PaletteGenerator> _generatePalette(String imageUrl) async {
     PaletteGenerator _paletteGenerator =
         await PaletteGenerator.fromImageProvider(
-      CachedNetworkImageProvider(imageUrl),
+      CachedNetworkImageProvider(imageUrl, errorListener: (_) {
+        return;
+      }),
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
@@ -238,7 +240,6 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                 ]),
                                 builder: (BuildContext context,
                                     AsyncSnapshot<List<dynamic>> snapshot) {
-                                 
                                   if (!snapshot.hasData ||
                                       snapshot.data![0] == null ||
                                       snapshot.data![1] == null) {

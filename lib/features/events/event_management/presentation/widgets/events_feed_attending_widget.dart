@@ -336,7 +336,9 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     if (event != null) {
                       PaletteGenerator _paletteGenerator =
                           await PaletteGenerator.fromImageProvider(
-                        CachedNetworkImageProvider(event.imageUrl),
+                        CachedNetworkImageProvider(event.imageUrl,  errorListener: (_) {
+              return;
+            }),
                         size: Size(1110, 150),
                         maximumColorCount: 20,
                       );

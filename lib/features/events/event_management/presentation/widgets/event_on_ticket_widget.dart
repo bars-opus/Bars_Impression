@@ -66,7 +66,9 @@ class EventOnTicketWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.transparent,
               image: DecorationImage(
-                image: CachedNetworkImageProvider(event.imageUrl),
+                image: CachedNetworkImageProvider(event.imageUrl,  errorListener: (_) {
+              return;
+            }),
                 fit: BoxFit.cover,
               ),
             ),

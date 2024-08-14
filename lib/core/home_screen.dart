@@ -19,9 +19,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 26 : 26;
+  final int _updateAppVersion = Platform.isIOS ? 27 : 27;
   String notificationMsg = '';
-  bool _isFecthing = true;
+  // bool _isFecthing = true;
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class HomeScreenState extends State<HomeScreen> {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
-      _setBrandTarget();
+      // _setBrandTarget();
       // _new();
       // _updateFields();
     });
@@ -2264,35 +2264,35 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _setBrandTarget() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.setFlorenceActive(false);
+  // Future<void> _setBrandTarget() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   _provider.setFlorenceActive(false);
 
-    // Fetch the user data using whatever method you need
-    var userSnapshot =
-        await new_userBrandIfoRef.doc(_provider.currentUserId).get();
+  //   // Fetch the user data using whatever method you need
+  //   var userSnapshot =
+  //       await new_userBrandIfoRef.doc(_provider.currentUserId).get();
 
-    // Check if the snapshot contains data and if the user has a private account
-    if (userSnapshot.exists) {
-      CreativeBrandTargetModel user =
-          CreativeBrandTargetModel.fromDoc(userSnapshot);
+  //   // Check if the snapshot contains data and if the user has a private account
+  //   if (userSnapshot.exists) {
+  //     CreativeBrandTargetModel user =
+  //         CreativeBrandTargetModel.fromDoc(userSnapshot);
 
-      // Set state with the new user data to update the UI
-      if (mounted) {
-        setState(() {
-          _provider.setBrandTarget(user);
-          _isFecthing = false;
-        });
-      }
-    } else {
-      // Handle the case where the user data does not exist
-      if (mounted) {
-        setState(() {
-          _isFecthing = false;
-        });
-      }
-    }
-  }
+  //     // Set state with the new user data to update the UI
+  //     if (mounted) {
+  //       setState(() {
+  //         _provider.setBrandTarget(user);
+  //         _isFecthing = false;
+  //       });
+  //     }
+  //   } else {
+  //     // Handle the case where the user data does not exist
+  //     if (mounted) {
+  //       setState(() {
+  //         _isFecthing = false;
+  //       });
+  //     }
+  //   }
+  // }
 
   _setUpactivityCount() {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -2975,7 +2975,6 @@ class _HomeMobileState extends State<HomeMobile>
                               currentUserId: currentUserId,
                               userId: '',
                             ),
-
                             DiscoverEventScreen(
                               currentUserId: currentUserId,
                               userLocationSettings: userLocationSettings,
@@ -3000,7 +2999,6 @@ class _HomeMobileState extends State<HomeMobile>
                               currentUserId: currentUserId,
                               userId: '',
                             ),
-                           
                             ProfileScreen(
                               currentUserId: currentUserId,
                               userId: currentUserId,
@@ -3011,7 +3009,6 @@ class _HomeMobileState extends State<HomeMobile>
                             setState(() {
                               _currentTab = index;
                             });
-
                           },
                         ),
                       ),
@@ -3044,76 +3041,70 @@ class _HomeMobileState extends State<HomeMobile>
                     ],
                   ),
                 ),
-                bottomNavigationBar:
-                   
-                    _currentTab == 0
-                        ? const SizedBox.shrink()
-                        : Wrap(
-                            children: [
-                              BottomNavigationBar(
-                                type: BottomNavigationBarType.fixed,
-                                backgroundColor:
-                                    Theme.of(context).primaryColorLight,
-                                currentIndex: _currentTab - 1,
-                                onTap: (int index) {
-                                  setState(() {
-                                    _currentTab = index + 1;
-                                  });
+                bottomNavigationBar: _currentTab == 0
+                    ? const SizedBox.shrink()
+                    : Wrap(
+                        children: [
+                          BottomNavigationBar(
+                            type: BottomNavigationBarType.fixed,
+                            backgroundColor:
+                                Theme.of(context).primaryColorLight,
+                            currentIndex: _currentTab - 1,
+                            onTap: (int index) {
+                              setState(() {
+                                _currentTab = index + 1;
+                              });
 
-                                  _pageController.animateToPage(
-                                    index + 1,
-                                    duration: const Duration(milliseconds: 10),
-                                    curve: Curves.easeIn,
-                                  );
-                                },
-                                showUnselectedLabels: true,
-                                selectedLabelStyle: TextStyle(
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 10.0),
-                                ), // font size of selected item
-                                unselectedLabelStyle: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 10.0),
-                                ),
-                                unselectedItemColor: Colors.grey,
+                              _pageController.animateToPage(
+                                index + 1,
+                                duration: const Duration(milliseconds: 10),
+                                curve: Curves.easeIn,
+                              );
+                            },
+                            showUnselectedLabels: true,
+                            selectedLabelStyle: TextStyle(
+                              color: Theme.of(context).secondaryHeaderColor,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 10.0),
+                            ), // font size of selected item
+                            unselectedLabelStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 10.0),
+                            ),
+                            unselectedItemColor: Colors.grey,
 
-                                selectedItemColor:
-                                    Theme.of(context).secondaryHeaderColor,
+                            selectedItemColor:
+                                Theme.of(context).secondaryHeaderColor,
 
-                                items: [
-                                  BottomNavigationBarItem(
-                                    icon:
-                                        _tabColumn(Icons.event, _currentTab, 1),
-                                    label: 'Event',
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: _tabColumn(
-                                        Icons.search, _currentTab, 2),
-                                    label: 'Book',
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: _tabColumn(
-                                        MdiIcons.ticketOutline, _currentTab, 3),
-                                    label: 'Tickets',
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: _tabColumn(
-                                        Icons.send_outlined, _currentTab, 4),
-                                    label: 'Chats',
-                                  ),
-                                  BottomNavigationBarItem(
-                                    icon: _tabColumn(
-                                        Icons.account_circle_outlined,
-                                        _currentTab,
-                                        5),
-                                    label: 'Profile',
-                                  ),
-                                ],
+                            items: [
+                              BottomNavigationBarItem(
+                                icon: _tabColumn(Icons.event, _currentTab, 1),
+                                label: 'Event',
+                              ),
+                              BottomNavigationBarItem(
+                                icon: _tabColumn(Icons.search, _currentTab, 2),
+                                label: 'Book',
+                              ),
+                              BottomNavigationBarItem(
+                                icon: _tabColumn(
+                                    MdiIcons.ticketOutline, _currentTab, 3),
+                                label: 'Tickets',
+                              ),
+                              BottomNavigationBarItem(
+                                icon: _tabColumn(
+                                    Icons.send_outlined, _currentTab, 4),
+                                label: 'Chats',
+                              ),
+                              BottomNavigationBarItem(
+                                icon: _tabColumn(Icons.account_circle_outlined,
+                                    _currentTab, 5),
+                                label: 'Profile',
                               ),
                             ],
                           ),
+                        ],
+                      ),
               ),
               dontShowInvite
                   ? const SizedBox.shrink()
@@ -3287,7 +3278,13 @@ class _HomeMobileState extends State<HomeMobile>
                     updateApp: widget.updateApp,
                     showUpdate: widget.updateAppVersion < _version),
               Positioned(
-                bottom: 1,
+                bottom: ResponsiveHelper.responsiveHeight(
+                    context,
+                    _provider.int2 == 3
+                        ? 50
+                        : _inviteList.length < 1
+                            ? 100
+                            : 70),
                 child: GestureDetector(
                   onTap: () async {
                     HapticFeedback.mediumImpact();
@@ -3295,15 +3292,10 @@ class _HomeMobileState extends State<HomeMobile>
                         _provider.florenceActive ? false : true);
                     _provider.setInt2(0);
                   },
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        bottom: ResponsiveHelper.responsiveHeight(
-                            context,
-                            _provider.int2 == 3
-                                ? 50
-                                : _inviteList.length < 1
-                                    ? 100
-                                    : 70)),
+                  child: Container(
+                    height: ResponsiveHelper.responsiveFontSize(context, 45),
+                    width: ResponsiveHelper.responsiveFontSize(context, 60),
+                    color: Colors.transparent,
                     child: AnimatedContainer(
                       curve: Curves.easeInOut,
                       duration: Duration(milliseconds: 800),
@@ -3325,26 +3317,24 @@ class _HomeMobileState extends State<HomeMobile>
                                 : Theme.of(context).primaryColor,
                       ),
                       child: Center(
-                        child: Hero(
-                            tag: 'florence',
-                            child: _provider.florenceActive
-                                ? Icon(
-                                    Icons.close,
-                                    color: _provider.int2 == 3
-                                        ? Theme.of(context)
-                                            .primaryColorLight
-                                            .withOpacity(.6)
-                                        : _provider.florenceActive
-                                            ? Colors.white
-                                            : Colors.black,
-                                    size: _provider.florenceActive ? 30 : 20,
-                                  )
-                                : AnimatedCircle(
-                                    size: 25,
-                                    stroke: 2,
-                                    animateSize: false,
-                                    animateShape: false,
-                                  )),
+                        child: _provider.florenceActive
+                            ? Icon(
+                                Icons.close,
+                                color: _provider.int2 == 3
+                                    ? Theme.of(context)
+                                        .primaryColorLight
+                                        .withOpacity(.6)
+                                    : _provider.florenceActive
+                                        ? Colors.white
+                                        : Colors.black,
+                                size: _provider.florenceActive ? 30 : 20,
+                              )
+                            : AnimatedCircle(
+                                size: 25,
+                                stroke: 2,
+                                animateSize: false,
+                                animateShape: false,
+                              ),
                       ),
                     ),
                   ),

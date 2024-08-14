@@ -174,7 +174,9 @@ class _EventExpectedAttendeesScreenState
                         radius: 18.0,
                         backgroundColor: Colors.blue,
                         backgroundImage:
-                            CachedNetworkImageProvider(user.profileImageUrl!),
+                            CachedNetworkImageProvider(user.profileImageUrl!,errorListener: (_) {
+                            return;
+                          }),
                       ),
                 title: RichText(
                     textScaler: MediaQuery.of(context).textScaler,

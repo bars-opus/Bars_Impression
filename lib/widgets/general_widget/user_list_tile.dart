@@ -22,8 +22,10 @@ class UserListTile extends StatelessWidget {
               : CircleAvatar(
                   radius: ResponsiveHelper.responsiveHeight(context, 25.0),
                   backgroundColor: Theme.of(context).primaryColor,
-                  backgroundImage:
-                      CachedNetworkImageProvider(user.profileImageUrl!),
+                  backgroundImage: CachedNetworkImageProvider(
+                      user.profileImageUrl!, errorListener: (_) {
+                    return;
+                  }),
                 ),
           title: Align(
             alignment: Alignment.topLeft,

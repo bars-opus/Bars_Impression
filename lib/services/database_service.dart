@@ -1182,7 +1182,7 @@ class DatabaseService {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
           activitiesBatch.set(userActivityRef, {
-            'helperFieldId': event.authorId,
+            'helperFielId': event.authorId,
             'authorId': event.authorId,
             'postId': event.id,
             'seen': false,
@@ -1239,7 +1239,7 @@ class DatabaseService {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
           activitiesBatch.set(userActivityRef, {
-            'helperFieldId': event.authorId,
+            'helperFielId': event.authorId,
             'authorId': event.authorId,
             'postId': event.id,
             'seen': false,
@@ -2298,6 +2298,22 @@ class DatabaseService {
     }
   }
 
+  static Future<BrandMatchingModel?> getUserBrandInfoWithId(
+      String userId) async {
+    // try {
+    DocumentSnapshot userDocSnapshot =
+        await newBrandMatchingRef.doc(userId).get();
+    // new_userBrandIfoRef.doc(userId).get();
+    if (userDocSnapshot.exists) {
+      return BrandMatchingModel.fromDoc(userDocSnapshot);
+    } else {
+      return null;
+    }
+    // } catch (e) {
+    //   return null;
+    // }
+  }
+
   static Future<WorkRequestOrOfferModel?> getUserWorkRequestlWithId(
       String userId) async {
     try {
@@ -3158,37 +3174,23 @@ class DatabaseService {
   }
 
   static createBrandInfo(
-    CreativeBrandTargetModel brand,
-    AccountHolderAuthor currentUser,
+    BrandMatchingModel brandMatching,
   ) async {
-    Map<String, dynamic> brandData = brand.toJson();
+    Map<String, dynamic> brandData = brandMatching.toJson();
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     // References to the affiliate documents
-    final new_userBrandIfoDocRef = new_userBrandIfoRef.doc(brand.userId);
-    final newBrandMatchingDocRef = newBrandMatchingRef.doc(brand.userId);
+    // final new_userBrandIfoDocRef = new_userBrandIfoRef.doc(brand.userId);
+    final newBrandMatchingDocRef =
+        newBrandMatchingRef.doc(brandMatching.userId);
 
     final brandMatchingDocRef = newBrandMatchingDocRef;
 
-    final brandDocRef = new_userBrandIfoDocRef;
+    // final brandDocRef = new_userBrandIfoDocRef;
 
-    batch.set(brandDocRef, brandData);
-    batch.set(
-        brandMatchingDocRef,
-        ({
-          'userName': currentUser.userName!,
-          'profileImageUrl': currentUser.profileImageUrl!,
-          'profileHandle': currentUser.profileHandle!,
-          'verified': currentUser.verified!,
-          'matchReason': '',
-          'userId': brand.userId,
-          'skills': brand.skills,
-          'shortTermGoals': brand.shortTermGoals,
-          'longTermGoals': brand.longTermGoals,
-          'creativeSyle': brand.creativeStyle,
-          'inspirations': brand.inspiration,
-        }));
+    // batch.set(brandDocRef, brandData);
+    batch.set(brandMatchingDocRef, brandData);
     await batch.commit();
   }
 
@@ -3651,22 +3653,16 @@ class DatabaseService {
   static Future<void> addEventAttendeeBrandMatching({
     required String userId,
     required String eventId,
-    final CreativeBrandTargetModel? brand,
+    required BrandMatchingModel? brand,
   }) async {
     // Check if the document already exists
     if (brand == null) return;
+    Map<String, dynamic> brandData = brand.toJson();
     await newEventBrandMatchingRef
         .doc(eventId)
         .collection('brandMatching')
         .doc(userId)
-        .set({
-      'userId': userId,
-      'skills': brand.skills,
-      'shortTermGoals': brand.shortTermGoals,
-      'longTermGoals': brand.longTermGoals,
-      'creativeSyle': brand.creativeStyle,
-      'inspirations': brand.inspiration,
-    });
+        .set(brandData);
   }
 
 // The purchaseTicketTransaction function is responsible for handling the entire ticket purchase process,

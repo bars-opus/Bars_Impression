@@ -1,7 +1,5 @@
 // import 'package:bars/utilities/dimensions.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/widgets/animation/shake_transition.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -1336,7 +1334,9 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           });
     PaletteGenerator _paletteGenerator =
         await PaletteGenerator.fromImageProvider(
-      CachedNetworkImageProvider(widget.event.imageUrl),
+      CachedNetworkImageProvider(widget.event.imageUrl, errorListener: (_) {
+        return;
+      }),
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
@@ -2636,7 +2636,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   image: DecorationImage(
-                    image: CachedNetworkImageProvider(widget.event.imageUrl),
+                    image: CachedNetworkImageProvider(widget.event.imageUrl,
+                        errorListener: (_) {
+                      return;
+                    }),
                     fit: BoxFit.cover,
                   ),
                 ),

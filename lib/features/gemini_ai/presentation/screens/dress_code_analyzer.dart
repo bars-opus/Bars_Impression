@@ -59,26 +59,28 @@ Hi ${_provider.user!.userName}, let's select the perfect dress for ${widget.even
 
   // Builds the options for image selection
   Widget _buildImageOptions() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildImageOptionButton(
-            icon: Icons.dashboard_outlined,
-            onPressed: _pickImage,
-            text: 'Upload from Gallery',
-          ),
-          _buildDivider(),
-          _buildImageOptionButton(
-            icon: MdiIcons.thoughtBubbleOutline,
-            onPressed: _takePicture,
-            text: 'Take a Picture',
-          ),
-        ],
+    return ShakeTransition(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildImageOptionButton(
+              icon: Icons.dashboard_outlined,
+              onPressed: _pickImage,
+              text: 'Upload from Gallery',
+            ),
+            _buildDivider(),
+            _buildImageOptionButton(
+              icon: MdiIcons.thoughtBubbleOutline,
+              onPressed: _takePicture,
+              text: 'Take a Picture',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -280,7 +282,7 @@ Conclude with either "true" or "false" as the last word indicating suitability.'
 
     var _sizedBox = const SizedBox(height: 20);
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.black,
       appBar: _buildAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -301,14 +303,3 @@ Conclude with either "true" or "false" as the last word indicating suitability.'
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-

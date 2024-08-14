@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/animation/shake_transition.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -61,6 +62,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     FocusScope.of(context).unfocus();
 
     await Future.delayed(Duration(seconds: 2));
+    Provider.of<UserData>(context, listen: false).setInt3(8);
 
     if (mounted) {}
 
@@ -652,13 +654,23 @@ class _SetUpBrandState extends State<SetUpBrand> {
                 ),
               ),
             const SizedBox(height: 50),
+            ShakeTransition(
+              child: Text(
+                'Welcome to Bars Impression.',
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             if (_provider.int2 == 0)
               AnimatedTextKit(
                   repeatForever: false,
                   totalRepeatCount: 1,
                   animatedTexts: [
                     _animatedText(
-                      "I'm Hope, your personal creative assistant. I'm here to help you build your brand, improve your skills, and connect with other creatives and organizers.\n\nI would be your personal help thoughoutt this journey with time i would explain what i would assist you with but for now lets start with setting up your brand",
+                      "I'm Hope, your personal creative assistant. I'm here to help you build your brand, improve your skills, and connect with other creatives and organizers.\n\nI would be your personal help thoughout this journey, with time, i would explain what i would assist you with but for now lets start with setting up your brand.",
                     ),
                   ]),
             const SizedBox(height: 50),
@@ -938,7 +950,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                       false,
                       _provider.int2 == 3,
                     ),
-
                     if (_provider.int2 == 3)
                       ShakeTransition(
                         axis: Axis.vertical,
@@ -988,7 +999,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                               backgroundImage:
                                                   _displayProfileImage()),
                                     ),
-                           
                               ShakeTransition(
                                 curve: Curves.easeOutBack,
                                 child: Center(
@@ -1013,7 +1023,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                   ),
                                 ),
                               ),
-
                               if (_provider.int2 == 3)
                                 ShakeTransition(
                                   offset: -140,
@@ -1034,7 +1043,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                   ),
                                 ),
                               const SizedBox(height: 30),
-                             
                             ],
                           ),
                         ),
@@ -1138,7 +1146,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                         child: PageView(
                           controller: _pageController,
                           physics: const NeverScrollableScrollPhysics(),
-                         
                           children: [
                             _setUserName(),
                             _selectAccountType(),

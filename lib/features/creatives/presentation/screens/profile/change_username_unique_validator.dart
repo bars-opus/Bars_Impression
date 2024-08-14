@@ -2,10 +2,10 @@ import 'package:bars/utilities/exports.dart';
 import 'package:hive/hive.dart';
 
 class UsernameService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   Future<void> changeUsername(BuildContext context, String oldUsername,
       String newUsername, bool isSetUp, PageController? pageController) async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
     var _provider = Provider.of<UserData>(context, listen: false);
 
     try {
@@ -29,9 +29,9 @@ class UsernameService {
         }
 
         String dynamicLink = await DatabaseService.myDynamicLink(
-          _provider.user!.profileImageUrl!,
+          isSetUp ? '' : _provider.user?.profileImageUrl ?? '',
           newUsername.toUpperCase(),
-          _provider.user!.bio!,
+          isSetUp ? '' : _provider.user?.bio ?? '',
           'https://www.barsopus.com/user_${_provider.currentUserId}',
         );
 
@@ -151,13 +151,17 @@ class UsernameService {
 
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: _provider.name,
-      bio: _provider.user!.bio,
+      // name: _provider.name,
+      // bio: _provider.user!.bio,
       disabledAccount: false,
+      name: _provider.name,
+      bio: _provider.user?.bio ?? '',
       dynamicLink: dynamicLink,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
       profileHandle: _provider.profrilehandle,
-      profileImageUrl: _provider.user!.profileImageUrl,
+      profileImageUrl: _provider.user?.profileImageUrl ?? '',
+      // profileHandle: _provider.profrilehandle,
+      // profileImageUrl: _provider.user!.profileImageUrl,
       reportConfirmed: false,
       userId: _provider.currentUserId,
       userName: userName,

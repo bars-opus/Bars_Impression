@@ -717,7 +717,9 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                                                   .primaryColor,
                                               backgroundImage:
                                                   CachedNetworkImageProvider(
-                                                      user.profileImageUrl!),
+                                                      user.profileImageUrl!,   errorListener: (_) {
+                                  return;
+                                }),
                                             ),
                                       const SizedBox(
                                         width: 10,

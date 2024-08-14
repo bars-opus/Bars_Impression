@@ -54,7 +54,9 @@ class UserData extends ChangeNotifier {
   late AccountHolderAuthor? _user;
   late UserSettingsLoadingPreferenceModel? _userLocationPreference;
   late UserSettingsGeneralModel? _userGeneraSentence;
-  late CreativeBrandTargetModel? _brandTarget;
+  // late CreativeBrandTargetModel? _brandTarget;
+  late BrandMatchingModel? _brandMatching;
+
   late String _bio;
   late String _name;
   late String _password;
@@ -195,7 +197,8 @@ class UserData extends ChangeNotifier {
     _user = null;
     _userGeneraSentence = null;
     _userLocationPreference = null;
-    _brandTarget = null;
+    // _brandTarget = null;
+    _brandMatching = null;
     _messageCount = 0;
     _showEventTab = true;
     _showUsersTab = true;
@@ -370,7 +373,11 @@ class UserData extends ChangeNotifier {
   UserSettingsGeneralModel? get userGeneraSentenceser => _userGeneraSentence;
   UserSettingsLoadingPreferenceModel? get userLocationPreference =>
       _userLocationPreference;
-  CreativeBrandTargetModel? get brandTarget => _brandTarget;
+  // CreativeBrandTargetModel? get brandTarget => _brandTarget;
+  BrandMatchingModel? get brandMatching => _brandMatching;
+
+
+  
   int get messageCount => _messageCount;
   List? get message => _message;
   List<Schedule> get schedule => _schedule;
@@ -724,10 +731,18 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setBrandTarget(CreativeBrandTargetModel? brandTarget) {
-    _brandTarget = brandTarget;
+  // void setBrandTarget(CreativeBrandTargetModel? brandTarget) {
+  //   _brandTarget = brandTarget;
+  //   notifyListeners();
+  // }
+
+
+    void setBrandMatching(BrandMatchingModel? brandMatching) {
+    _brandMatching = brandMatching;
     notifyListeners();
   }
+
+
 
   void setPostImage(File? postImage) {
     _postImage = postImage;
@@ -1038,7 +1053,6 @@ class UserData extends ChangeNotifier {
     _florenceActive = florenceActive;
     notifyListeners();
   }
-
 
   void setchatMessage(List message) async {
     _message = message;

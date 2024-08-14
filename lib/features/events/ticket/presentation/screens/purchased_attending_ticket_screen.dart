@@ -60,9 +60,23 @@ class _PurchasedAttendingTicketScreenState
       if (!widget.event.isPrivate)
         await DatabaseService.addOrganizerToAttendeeMarketing(
             userId: widget.currentUserId, eventAuthorId: widget.event.authorId);
-      if (_provider.brandTarget != null)
+
+      if (_provider.brandMatching == null) {
+        BrandMatchingModel? brandMatching =
+            await DatabaseService.getUserBrandInfoWithId(
+          _provider.currentUserId!,
+        );
+        if (brandMatching != null)
+          await DatabaseService.addEventAttendeeBrandMatching(
+              userId: widget.currentUserId,
+              eventId: widget.event.id,
+              brand: brandMatching);
+      } else {
         await DatabaseService.addEventAttendeeBrandMatching(
-            userId: widget.currentUserId, eventId: widget.event.id);
+            userId: widget.currentUserId,
+            eventId: widget.event.id,
+            brand: _provider.brandMatching);
+      }
     } catch (e) {}
   }
 
@@ -850,7 +864,6 @@ class _PurchasedAttendingTicketScreenState
     return EventBottomButton(
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
       onPressed: () {
-       
         _launchMap();
       },
     );
@@ -969,7 +982,10 @@ class _PurchasedAttendingTicketScreenState
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
           image: DecorationImage(
-            image: CachedNetworkImageProvider(widget.event.imageUrl),
+            image: CachedNetworkImageProvider(widget.event.imageUrl,
+                errorListener: (_) {
+              return;
+            }),
             fit: BoxFit.cover,
           )),
       child: Container(
@@ -1289,7 +1305,7 @@ class _PurchasedAttendingTicketScreenState
                 ticketOrder: widget.ticketOrder,
               ),
         SizedBox(
-          height: isAuthor ? 10 : 50,
+          height: 10,
         ),
         _eventInfoDisplay(),
         const SizedBox(

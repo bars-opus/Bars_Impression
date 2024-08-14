@@ -19,6 +19,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String _bio = '';
   bool _isLoading = false;
   bool _isLoadingBooking = false;
+  bool _isLoadingBrandInfo = false;
 
   @override
   void initState() {
@@ -76,7 +77,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'assets/images/user_placeholder2.png',
         );
       } else {
-        return CachedNetworkImageProvider(widget.user.profileImageUrl!);
+        return CachedNetworkImageProvider(widget.user.profileImageUrl!,   errorListener: (_) {
+                                  return;
+                                });
       }
     } else {
       return FileImage(_profileImage!);
@@ -455,16 +458,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: Icons.arrow_forward_ios_outlined,
               ),
         _divider,
-        _loadingPortfolio(
-          false,
-          () {
-            _navigateToPage(
-                context,
-                HopeIntroductionScreen(
-                  isIntro: false,
-                ));
-          },
-        ),
+        _isLoadingBrandInfo
+            ? _loadingPortfolio(true, () {})
+            : _loadingPortfolio(
+                false,
+                _provider.brandMatching != null
+                    ? () {
+                        _navigateToPage(
+                            context,
+                            HopeIntroductionScreen(
+                              isIntro: false,
+                            ));
+                      }
+                    : () async {
+                        if (_isLoadingBrandInfo) return;
+                        _isLoadingBrandInfo = true;
+
+                        try {
+                          BrandMatchingModel? brandMatching =
+                              await DatabaseService.getUserBrandInfoWithId(
+                            _provider.currentUserId!,
+                          );
+
+                          if (brandMatching != null) {
+                            _provider.setBrandMatching(brandMatching);
+                            _navigateToPage(
+                                context,
+                                HopeIntroductionScreen(
+                                  isIntro: true,
+                                ));
+                          } else {
+                            _navigateToPage(
+                                context,
+                                HopeIntroductionScreen(
+                                  isIntro: false,
+                                ));
+                          }
+                        } catch (e) {
+                          _showBottomSheetErrorMessage(
+                              'Failed to fetch brand data.');
+                        } finally {
+                          _isLoadingBrandInfo = false;
+                        }
+                      },
+              ),
         _divider,
         IntroInfo(
           leadingIcon: Icons.settings_outlined,

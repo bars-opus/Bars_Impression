@@ -472,25 +472,25 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   thickness: .2,
                   color: Colors.grey,
                 ),
-                IntroInfo(
-                  leadingIcon: Icons.calendar_month_outlined,
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Booking',
-                  onPressed: () {
-                    _navigateToPage(
-                      context,
-                      UserBooking(
-                        currentUserId: widget.user.userId!,
-                      ),
-                    );
-                  },
-                  subTitle: "Your booking information.",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
-                Divider(
-                  thickness: .2,
-                  color: Colors.grey,
-                ),
+                // IntroInfo(
+                //   leadingIcon: Icons.calendar_month_outlined,
+                //   titleColor: Theme.of(context).secondaryHeaderColor,
+                //   title: 'Booking',
+                //   onPressed: () {
+                //     _navigateToPage(
+                //       context,
+                //       UserBooking(
+                //         currentUserId: widget.user.userId!,
+                //       ),
+                //     );
+                //   },
+                //   subTitle: "Your booking information.",
+                //   icon: Icons.arrow_forward_ios_outlined,
+                // ),
+                // Divider(
+                //   thickness: .2,
+                //   color: Colors.grey,
+                // ),
                 IntroInfo(
                   leadingIcon: MdiIcons.transfer,
                   titleColor: Theme.of(context).secondaryHeaderColor,
@@ -552,44 +552,44 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   thickness: .2,
                   color: Colors.grey,
                 ),
-                IntroInfo(
-                  leadingIcon: MdiIcons.giftOutline,
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Donations',
-                  onPressed: () {
-                    _navigateToPage(
-                      context,
-                      UserDonations(
-                        currentUserId: widget.user.userId!,
-                      ),
-                    );
-                  },
-                  subTitle: "Donations received and donations made.",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
-                Divider(
-                  thickness: .2,
-                  color: Colors.grey,
-                ),
-                IntroInfo(
-                  leadingIcon: Icons.star_border_outlined,
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Reviews',
-                  onPressed: () {
-                    _navigateToPage(
-                      context,
-                      UserReviews(
-                        currentUserId: widget.user.userId!,
-                      ),
-                    );
-                  },
-                  subTitle: "Reviews received and reviews made.",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
-                Divider(
-                  thickness: .2,
-                  color: Colors.grey,
-                ),
+                // IntroInfo(
+                //   leadingIcon: MdiIcons.giftOutline,
+                //   titleColor: Theme.of(context).secondaryHeaderColor,
+                //   title: 'Donations',
+                //   onPressed: () {
+                //     _navigateToPage(
+                //       context,
+                //       UserDonations(
+                //         currentUserId: widget.user.userId!,
+                //       ),
+                //     );
+                //   },
+                //   subTitle: "Donations received and donations made.",
+                //   icon: Icons.arrow_forward_ios_outlined,
+                // ),
+                // Divider(
+                //   thickness: .2,
+                //   color: Colors.grey,
+                // ),
+                // IntroInfo(
+                //   leadingIcon: Icons.star_border_outlined,
+                //   titleColor: Theme.of(context).secondaryHeaderColor,
+                //   title: 'Reviews',
+                //   onPressed: () {
+                //     _navigateToPage(
+                //       context,
+                //       UserReviews(
+                //         currentUserId: widget.user.userId!,
+                //       ),
+                //     );
+                //   },
+                //   subTitle: "Reviews received and reviews made.",
+                //   icon: Icons.arrow_forward_ios_outlined,
+                // ),
+                // Divider(
+                //   thickness: .2,
+                //   color: Colors.grey,
+                // ),
                 IntroInfo(
                   leadingIcon: Icons.block,
                   titleColor: Theme.of(context).secondaryHeaderColor,

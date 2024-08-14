@@ -653,7 +653,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           ),
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: CachedNetworkImageProvider(imageUrl),
+              image: CachedNetworkImageProvider(imageUrl,  errorListener: (_) {
+                return;
+              }),
               fit: BoxFit.cover,
             ),
           ),

@@ -962,7 +962,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ? AssetImage(
                                 'assets/images/user_placeholder.png',
                               ) as ImageProvider
-                            : CachedNetworkImageProvider(user.profileImageUrl!),
+                            : CachedNetworkImageProvider(user.profileImageUrl!,   errorListener: (_) {
+                                  return;
+                                }),
                       ),
                     ),
                     _isAuthor
@@ -1519,7 +1521,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             color: Theme.of(context).primaryColor,
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(
-                                  user.profileImageUrl!),
+                                  user.profileImageUrl!,   errorListener: (_) {
+                                  return;
+                                }),
                               fit: BoxFit.cover,
                             ),
                           ),

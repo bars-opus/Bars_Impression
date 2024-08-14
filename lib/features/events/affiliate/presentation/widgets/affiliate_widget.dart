@@ -238,7 +238,9 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
 
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
-            CachedNetworkImageProvider(_event.imageUrl),
+            CachedNetworkImageProvider(_event.imageUrl,
+            ),
+            
             size: Size(1110, 150),
             maximumColorCount: 20,
           );
@@ -672,7 +674,9 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                               color: Colors.blue,
                               image: DecorationImage(
                                 image: CachedNetworkImageProvider(
-                                    widget.affiliate.eventImageUrl),
+                                    widget.affiliate.eventImageUrl,   errorListener: (_) {
+                                  return;
+                                }),
                                 fit: BoxFit.cover,
                               ),
                             ),

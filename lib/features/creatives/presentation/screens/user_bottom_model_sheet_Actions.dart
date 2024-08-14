@@ -129,7 +129,7 @@ class _UserBottomModalSheetActionsState
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 600.0),
+      height: ResponsiveHelper.responsiveHeight(context, 520.0),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),

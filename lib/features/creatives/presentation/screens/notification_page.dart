@@ -276,7 +276,7 @@ class _NotificationPageState extends State<NotificationPage>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 700.0),
+            height: ResponsiveHelper.responsiveHeight(context, 600.0),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -315,33 +315,33 @@ class _NotificationPageState extends State<NotificationPage>
                     Icons.attach_money,
                     'Affiliates',
                   ),
-                  _sortByWidget(
-                    () async {
-                      HapticFeedback.mediumImpact();
-                      await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.bookingMade);
-                    },
-                    Icons.calendar_month_outlined,
-                    'Bookings made',
-                  ),
-                  _sortByWidget(
-                    () async {
-                      HapticFeedback.mediumImpact();
-                      await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.bookingReceived);
-                    },
-                    Icons.calendar_month_outlined,
-                    'Bookings received',
-                  ),
-                  _sortByWidget(
-                    () async {
-                      HapticFeedback.mediumImpact();
-                      await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.donation);
-                    },
-                    MdiIcons.giftOutline,
-                    'Donations',
-                  ),
+                  // _sortByWidget(
+                  //   () async {
+                  //     HapticFeedback.mediumImpact();
+                  //     await Future.delayed(Duration(milliseconds: 300));
+                  //     _sort(NotificationActivityType.bookingMade);
+                  //   },
+                  //   Icons.calendar_month_outlined,
+                  //   'Bookings made',
+                  // ),
+                  // _sortByWidget(
+                  //   () async {
+                  //     HapticFeedback.mediumImpact();
+                  //     await Future.delayed(Duration(milliseconds: 300));
+                  //     _sort(NotificationActivityType.bookingReceived);
+                  //   },
+                  //   Icons.calendar_month_outlined,
+                  //   'Bookings received',
+                  // ),
+                  // _sortByWidget(
+                  //   () async {
+                  //     HapticFeedback.mediumImpact();
+                  //     await Future.delayed(Duration(milliseconds: 300));
+                  //     _sort(NotificationActivityType.donation);
+                  //   },
+                  //   MdiIcons.giftOutline,
+                  //   'Donations',
+                  // ),
                   _sortByWidget(
                     () async {
                       HapticFeedback.mediumImpact();

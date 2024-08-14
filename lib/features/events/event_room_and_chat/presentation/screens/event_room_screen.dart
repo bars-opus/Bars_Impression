@@ -446,8 +446,11 @@ class _EventRoomScreenState extends State<EventRoomScreen>
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         image: DecorationImage(
-                          image: CachedNetworkImageProvider(_provider
-                              .replyEventRoomMessage!.attachments[0].mediaUrl),
+                          image: CachedNetworkImageProvider(
+                              _provider.replyEventRoomMessage!.attachments[0]
+                                  .mediaUrl, errorListener: (_) {
+                            return;
+                          }),
                           fit: BoxFit.cover,
                         ))),
         trailing: IconButton(
