@@ -5,20 +5,20 @@ class BrandMatchingModel {
   final String userId;
   final String shortTermGoals;
   final String longTermGoals;
-  final String creativeSyle;
+  final String creativeStyle;
   final String userName;
   final String profileImageUrl;
   final String profileHandle;
   final bool verified;
-  final String inspirations;
+  final String inspiration;
   String matchReason;
 
   BrandMatchingModel({
     required this.skills,
     required this.userId,
-    required this.creativeSyle,
+    required this.creativeStyle,
     required this.shortTermGoals,
-    required this.inspirations,
+    required this.inspiration,
     required this.matchReason,
     required this.longTermGoals,
     required this.userName,
@@ -31,9 +31,9 @@ class BrandMatchingModel {
     return BrandMatchingModel(
       skills: doc['skills'] ?? '',
       userId: doc['userId'] ?? '',
-      creativeSyle: doc['creativeSyle'] ?? '',
+      creativeStyle: doc['creativeStyle'] ?? '',
       shortTermGoals: doc['shortTermGoals'] ?? '',
-      inspirations: doc['inspirations'] ?? '',
+      inspiration: doc['inspiration'] ?? '',
       matchReason: doc['matchReason'] ?? '',
       userName: doc['userName'] ?? '',
       profileImageUrl: doc['profileImageUrl'],
@@ -48,12 +48,12 @@ class BrandMatchingModel {
       skills: json['skills'],
       userName: json['userName'] ?? '',
       profileImageUrl: json['profileImageUrl'],
-      creativeSyle: json['creativeSyle'],
+      creativeStyle: json['creativeStyle'],
       userId: json['userId'],
       profileHandle: json['profileHandle'] ?? 'Fan',
       verified: json['verified'] ?? false,
       shortTermGoals: json['shortTermGoals'],
-      inspirations: json['inspirations'],
+      inspiration: json['inspiration'],
       matchReason: json['matchReason'],
       longTermGoals: json['longTermGoals'],
     );
@@ -63,9 +63,9 @@ class BrandMatchingModel {
     return {
       'skills': skills,
       'userId': userId,
-      'creativeSyle': creativeSyle,
+      'creativeStyle': creativeStyle,
       'shortTermGoals': shortTermGoals,
-      'inspirations': inspirations,
+      'inspiration': inspiration,
       'matchReason': matchReason,
       'longTermGoals': longTermGoals,
       'userName': userName,

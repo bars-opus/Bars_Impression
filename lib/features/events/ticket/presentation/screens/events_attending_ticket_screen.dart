@@ -298,19 +298,37 @@ class _EventsAttendingTicketScreenState
               // ),
               BottomModelSheetListTileActionWidget(
                 colorCode: '',
-                icon: Icons.person_outline,
-                onPressed: () {
-                  _navigateToPage(
-                    context,
-                    _provider.brandTarget == null
-                        ? HopeIntroductionScreen(
-                            isIntro: true,
-                          )
-                        : UserBrandMatching(
+                 icon: Icons.person_outline,
+                dontPop: true,
+                onPressed: _provider.brandMatching == null
+                    ? () async {
+                        BrandMatchingModel? _brandMatching =
+                            await DatabaseService.getUserBrandInfoWithId(
+                          _provider.currentUserId!,
+                        );
+                        if (_brandMatching != null)
+                          _provider.setBrandMatching(_brandMatching);
+                        _brandMatching == null
+                            ? _navigateToPage(
+                                context,
+                                HopeIntroductionScreen(
+                                  isIntro: true,
+                                ))
+                            : _navigateToPage(
+                                context,
+                                UserBrandMatching(
+                                  eventId: widget.event.id,
+                                ),
+                              );
+                      }
+                    : () {
+                        _navigateToPage(
+                          context,
+                          UserBrandMatching(
                             eventId: widget.event.id,
                           ),
-                  );
-                },
+                        );
+                      },
                 text: 'Brand matching',
               ),
               BottomModelSheetListTileActionWidget(
@@ -492,7 +510,10 @@ class _EventsAttendingTicketScreenState
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
           image: DecorationImage(
-            image: CachedNetworkImageProvider(widget.event.imageUrl),
+            image: CachedNetworkImageProvider(widget.event.imageUrl,
+                errorListener: (_) {
+              return;
+            }),
             fit: BoxFit.cover,
           )),
       child: Container(

@@ -34,7 +34,9 @@ class SearchUserTile extends StatelessWidget {
             : CircleAvatar(
                 radius: ResponsiveHelper.responsiveHeight(context, 25.0),
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
-                backgroundImage: CachedNetworkImageProvider(profileImageUrl),
+                backgroundImage: CachedNetworkImageProvider(profileImageUrl,   errorListener: (_) {
+                                  return;
+                                }),
               ),
         title: NameText(
           fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),

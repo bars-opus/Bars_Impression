@@ -109,7 +109,9 @@ class Authorview extends StatelessWidget {
                         : ResponsiveHelper.responsiveHeight(context, 18.0),
                     backgroundColor: Colors.blue,
                     backgroundImage:
-                        CachedNetworkImageProvider(profileImageUrl),
+                        CachedNetworkImageProvider(profileImageUrl,   errorListener: (_) {
+                                  return;
+                                }),
                   ),
             title: Column(
               mainAxisAlignment: MainAxisAlignment.start,

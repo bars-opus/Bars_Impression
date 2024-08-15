@@ -109,14 +109,14 @@ class _HopeActionsState extends State<HopeActions> {
   }
 
   _florenceButton(
-    VoidCallback onPressed1,
-    IconData icon1,
-    String buttonText1,
-    VoidCallback onPressed2,
-    IconData icon2,
-    String buttonText2,
-    int duration,
-  ) {
+      VoidCallback onPressed1,
+      IconData icon1,
+      String buttonText1,
+      VoidCallback onPressed2,
+      IconData icon2,
+      String buttonText2,
+      int duration,
+      bool isOne) {
     var _provider = Provider.of<UserData>(context);
     double _progress =
         _pageController2.hasClients ? _pageController2.page ?? 0 : 1;
@@ -143,20 +143,23 @@ class _HopeActionsState extends State<HopeActions> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               HopeActionButton(
+                  isOne: isOne,
                   ready: _provider.int2 == 1 ? true : false,
                   onPressed: onPressed1,
                   icon: icon1,
                   title: buttonText1),
-              Container(
-                color: Colors.grey,
-                height: 60,
-                width: 1,
-              ),
-              HopeActionButton(
-                  ready: _provider.int2 == 1 ? true : false,
-                  onPressed: onPressed2,
-                  icon: icon2,
-                  title: buttonText2),
+              if (!isOne)
+                Container(
+                  color: Colors.grey,
+                  height: 60,
+                  width: 1,
+                ),
+              if (!isOne)
+                HopeActionButton(
+                    ready: _provider.int2 == 1 ? true : false,
+                    onPressed: onPressed2,
+                    icon: icon2,
+                    title: buttonText2),
             ],
           ),
         ),
@@ -320,52 +323,46 @@ class _HopeActionsState extends State<HopeActions> {
                     ),
                     Duration(seconds: 2),
                     null),
+                _florenceButton(() {
+                  _provider.setFlorenceActionChoice('SearchEvent');
+                  animateToPage(1);
+                },
+                    Icons.search,
+                    'Look for event',
+                    _userLocation != null
+                        ? () {
+                            _provider.setFlorenceActive(
+                                _provider.florenceActive ? false : true);
+
+                            _userLocation.city!.isEmpty
+                                ? _showBottomEditLocation(context)
+                                : _navigateToPage(
+                                    context,
+                                    CreateEventScreen(
+                                      isEditting: false,
+                                      event: null,
+                                      isCompleted: false,
+                                    ));
+                          }
+                        : () {},
+                    Icons.add,
+                    'Create event',
+                    800,
+                    false),
                 _florenceButton(
                   () {
-                    _provider.setFlorenceActionChoice('SearchEvent');
-                    animateToPage(1);
+                    animateToPage(2);
                   },
-                  Icons.search,
-                  'Look for event',
-                  _userLocation != null
-                      ? () {
-                          _provider.setFlorenceActive(
-                              _provider.florenceActive ? false : true);
-
-                          _userLocation.city!.isEmpty
-                              ? _showBottomEditLocation(context)
-                              : _navigateToPage(
-                                  context,
-                                  CreateEventScreen(
-                                    isEditting: false,
-                                    event: null,
-                                    isCompleted: false,
-                                  ));
-                        }
-                      : () {},
-                  Icons.add,
-                  'Create event',
-                  800,
-                ),
-                _florenceButton(
+                  Icons.people_outline_outlined,
+                  'Brand matching',
                   () {
                     _provider.setFlorenceActionChoice('bookCreative');
                     animateToPage(1);
                   },
                   Icons.call,
-                  'book creative',
-                  () {
-                    _provider.brandTarget == null
-                        ? _navigateToPage(
-                            context,
-                            HopeIntroductionScreen(
-                              isIntro: true,
-                            ))
-                        : animateToPage(2);
-                  },
-                  Icons.people_outline_outlined,
-                  'Brand matching',
+                  'Book a creative',
                   1400,
+                  true,
                 ),
               ]),
         ),
@@ -412,6 +409,7 @@ class _HopeActionsState extends State<HopeActions> {
                   Icons.payment_outlined,
                   'Tickets',
                   1200,
+                  false,
                 ),
                 _florenceButton(
                   () {
@@ -427,6 +425,7 @@ class _HopeActionsState extends State<HopeActions> {
                   FontAwesomeIcons.idBadge,
                   'Invites',
                   1200,
+                  false,
                 ),
               ]),
         ),

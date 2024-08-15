@@ -316,7 +316,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Bars.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.32;
+				CURRENT_PROJECT_VERSION = 1.1.33;
 				DEVELOPMENT_TEAM = A8RJ357U9Y;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -333,7 +333,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 2.1.7;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.barsImpression";
 				PRODUCT_NAME = Bars;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -460,7 +460,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Bars.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.32;
+				CURRENT_PROJECT_VERSION = 1.1.33;
 				DEVELOPMENT_TEAM = A8RJ357U9Y;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -477,7 +477,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 2.1.7;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.barsImpression";
 				PRODUCT_NAME = Bars;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -498,7 +498,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Bars.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.32;
+				CURRENT_PROJECT_VERSION = 1.1.33;
 				DEVELOPMENT_TEAM = A8RJ357U9Y;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -515,7 +515,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = 2.1.7;
+				MARKETING_VERSION = 2.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.barsImpression";
 				PRODUCT_NAME = Bars;
 				PROVISIONING_PROFILE_SPECIFIER = "";

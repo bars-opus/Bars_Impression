@@ -355,10 +355,7 @@ class _ChatsState extends State<Chats>
       if (snapshot.exists) {
         Chat updatedChat = Chat.fromDoc(snapshot);
         _updateHiveChat(chatsBox, updatedChat);
-
-      }
-
-      else {
+      } else {
         // Chat document has been deleted, remove it from Hive
         chatsBox.delete(chatId);
       }
@@ -535,7 +532,6 @@ class _ChatsState extends State<Chats>
     );
   }
 
-
   Future<void> deleteConversation(String chatId) async {
     try {
       // Attempt to delete all messages in the conversation from Firestore.
@@ -597,8 +593,7 @@ class _ChatsState extends State<Chats>
         .delete(chat.id); // use the chat ID as the key to delete the chat
     // Provide feedback to the user
     mySnackBar(context, 'Chat deleted successfully');
-    setState(() {
-    });
+    setState(() {});
   }
 
   void _showBottomSheetDeledDeletedChatUser(
@@ -955,7 +950,6 @@ class GetAuthor extends StatefulWidget {
 
 class _GetAuthorState extends State<GetAuthor>
     with AutomaticKeepAliveClientMixin {
-
   bool get wantKeepAlive => true;
 
   @override
@@ -1208,13 +1202,11 @@ class _DisplayState extends State<Display> {
                           onPressed: () async {
                             _isLoading = true;
                             try {
-                             
                               _navigateToPage(ProfileScreen(
                                 currentUserId: _provider.currentUserId!,
                                 userId: widget.room!.eventAuthorId,
                                 user: null,
                               ));
-                            
                             } catch (e) {
                               _showBottomSheetErrorMessage();
                             } finally {
@@ -1247,7 +1239,7 @@ class _DisplayState extends State<Display> {
                           icon: FontAwesomeIcons.m,
                           onPressed: () {
                             _navigateToPage(
-                              _provider.brandTarget == null
+                              _provider.brandMatching == null
                                   ? HopeIntroductionScreen(
                                       isIntro: true,
                                     )

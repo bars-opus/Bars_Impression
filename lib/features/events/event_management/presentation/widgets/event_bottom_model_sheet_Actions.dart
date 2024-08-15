@@ -96,7 +96,9 @@ class _EventBottomModalSheetActionsState
     if (_ticket != null) {
       PaletteGenerator _paletteGenerator =
           await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(widget.event.imageUrl),
+        CachedNetworkImageProvider(widget.event.imageUrl, errorListener: (_) {
+          return;
+        }),
         size: Size(1110, 150),
         maximumColorCount: 20,
       );
@@ -251,139 +253,6 @@ class _EventBottomModalSheetActionsState
     );
   }
 
-  // void _showBottomSheetTermsAndConditions() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //           builder: (BuildContext context, StateSetter setState) {
-  //         return Container(
-  //           height: MediaQuery.of(context).size.height.toDouble() / 1.2,
-  //           decoration: BoxDecoration(
-  //               color: Theme.of(context).cardColor,
-  //               borderRadius: BorderRadius.circular(30)),
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(20.0),
-  //             child: ListView(
-  //               children: [
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     TicketPurchasingIcon(
-  //                       title: '',
-  //                     ),
-  //                     _checkingTicketAvailability
-  //                         ? SizedBox(
-  //                             height: ResponsiveHelper.responsiveHeight(
-  //                                 context, 10.0),
-  //                             width: ResponsiveHelper.responsiveHeight(
-  //                                 context, 10.0),
-  //                             child: CircularProgressIndicator(
-  //                               strokeWidth: 3,
-  //                               color: Colors.blue,
-  //                             ),
-  //                           )
-  //                         : MiniCircularProgressButton(
-  //                             color: Colors.blue,
-  //                             text: 'Continue',
-  //                             onPressed: widget.event.ticketSite.isNotEmpty
-  //                                 ? () {
-  //                                     Navigator.pop(context);
-  //                                     _showBottomSheetExternalLink();
-  //                                   }
-  //                                 : () async {
-  //                                     if (mounted) {
-  //                                       setState(() {
-  //                                         _checkingTicketAvailability = true;
-  //                                       });
-  //                                     }
-  //                                     await _attendMethod(context);
-  //                                     if (mounted) {
-  //                                       setState(() {
-  //                                         _checkingTicketAvailability = false;
-  //                                       });
-  //                                     }
-  //                                   })
-  //                   ],
-  //                 ),
-  //                 const SizedBox(height: 20),
-  //                 RichText(
-  //                   textScaler: MediaQuery.of(context).textScaler,
-  //                   text: TextSpan(
-  //                     children: [
-  //                       TextSpan(
-  //                         text: 'Terms and Conditions',
-  //                         style: Theme.of(context).textTheme.titleMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "\n\n${widget.event.termsAndConditions}",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  //     },
-  //   );
-  // }
-
-  // void _showBottomSheetErrorMessage(String title, String subTitle) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return DisplayErrorHandler(
-  //         buttonText: 'Ok',
-  //         onPressed: () async {
-  //           Navigator.pop(context);
-  //         },
-  //         title: title,
-  //         subTitle: subTitle,
-  //       );
-  //     },
-  //   );
-  // }
-
-  // _validateAttempt() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   var _usercountry = _provider.userLocationPreference!.country;
-
-  //   bool isGhanaian = _usercountry == 'Ghana' ||
-  //       _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
-  //   return !isGhanaian
-  //       ? () {
-  //           _showBottomSheetErrorMessage(
-  //               'This event is currently unavailable in $_usercountry.', '');
-  //         }
-  //       : widget.event.termsAndConditions.isNotEmpty
-  //           ? () {
-  //               _showBottomSheetTermsAndConditions();
-  //             }
-  //           : () async {
-  //               if (widget.event.ticketSite.isNotEmpty) {
-  //                 _showBottomSheetExternalLink();
-  //               } else {
-  //                 var connectivityResult =
-  //                     await Connectivity().checkConnectivity();
-  //                 if (connectivityResult == ConnectivityResult.none) {
-  //                   // No internet connection
-  //                   _showBottomSheetErrorMessage('No Internet',
-  //                       'No internet connection available. Please connect to the internet and try again.');
-  //                   return;
-  //                 } else {
-  //                   _attendMethod(context);
-  //                 }
-  //               }
-  //             };
-  // }
-
   void _showBottomSheetExternalLink() {
     showModalBottomSheet(
       context: context,
@@ -526,7 +395,7 @@ class _EventBottomModalSheetActionsState
     var _usercountry = _provider.userLocationPreference!.country;
 
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 650.0),
+      height: ResponsiveHelper.responsiveHeight(context, _isAuthor ? 600 : 550),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),
@@ -596,7 +465,10 @@ class _EventBottomModalSheetActionsState
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   image: DecorationImage(
-                    image: CachedNetworkImageProvider(widget.event.imageUrl),
+                    image: CachedNetworkImageProvider(widget.event.imageUrl,
+                        errorListener: (_) {
+                      return;
+                    }),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -690,30 +562,7 @@ class _EventBottomModalSheetActionsState
             const SizedBox(
               height: 10,
             ),
-            // BottomModelSheetListTileActionWidget(
-            //   colorCode: '',
-            //   icon: Icons.location_on_outlined,
-            //   onPressed: () {
-            //     _launchMap();
-            //   },
-            //   text: 'Location',
-            // ),
-            // _isAuthor
-            //     ? SizedBox.shrink()
-            //     : BottomModelSheetListTileActionWidget(
-            //         colorCode: '',
-            //         icon: Icons.account_circle_outlined,
-            //         onPressed: () {
-            // _navigateToPage(
-            //     context,
-            //     ProfileScreen(
-            //       user: null,
-            //       currentUserId: widget.currentUserId,
-            //       userId: widget.event.authorId,
-            //     ));
-            //         },
-            //         text: 'See publisher',
-            //       ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -733,9 +582,9 @@ class _EventBottomModalSheetActionsState
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

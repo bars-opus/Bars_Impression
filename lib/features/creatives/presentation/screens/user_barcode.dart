@@ -76,7 +76,9 @@ class UserBarcode extends StatelessWidget {
                               ResponsiveHelper.responsiveHeight(context, 18.0),
                           backgroundColor: Colors.blue,
                           backgroundImage:
-                              CachedNetworkImageProvider(profileImageUrl),
+                              CachedNetworkImageProvider(profileImageUrl,   errorListener: (_) {
+                                  return;
+                                }),
                         ),
                   title: Text(
                     userName,

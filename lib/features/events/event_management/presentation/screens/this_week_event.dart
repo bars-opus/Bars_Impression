@@ -155,7 +155,9 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
     if (_ticket != null) {
       PaletteGenerator _paletteGenerator =
           await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(widget.event.imageUrl),
+        CachedNetworkImageProvider(widget.event.imageUrl, errorListener: (_) {
+          return;
+        }),
         size: Size(1110, 150),
         maximumColorCount: 20,
       );
@@ -429,8 +431,10 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                         color: Colors.blue,
                         image: DecorationImage(
                           alignment: Alignment.topCenter,
-                          image:
-                              CachedNetworkImageProvider(widget.event.imageUrl),
+                          image: CachedNetworkImageProvider(
+                              widget.event.imageUrl, errorListener: (_) {
+                            return;
+                          }),
                           fit: BoxFit.cover,
                         ),
                       ),

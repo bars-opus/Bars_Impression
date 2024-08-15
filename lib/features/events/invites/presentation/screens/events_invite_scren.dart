@@ -179,7 +179,12 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
 
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
-            CachedNetworkImageProvider(widget.event.imageUrl),
+            CachedNetworkImageProvider(
+              widget.event.imageUrl,
+              errorListener: (_) {
+                return;
+              },
+            ),
             size: Size(1110, 150),
             maximumColorCount: 20,
           );
@@ -458,7 +463,10 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                 onTap: () async {
                   PaletteGenerator _paletteGenerator =
                       await PaletteGenerator.fromImageProvider(
-                    CachedNetworkImageProvider(widget.event.imageUrl),
+                    CachedNetworkImageProvider(widget.event.imageUrl,
+                        errorListener: (_) {
+                      return;
+                    }),
                     size: Size(1110, 150),
                     maximumColorCount: 20,
                   );
@@ -586,7 +594,10 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
           image: DecorationImage(
-            image: CachedNetworkImageProvider(widget.event.imageUrl),
+            image: CachedNetworkImageProvider(widget.event.imageUrl,
+                errorListener: (_) {
+              return;
+            }),
             fit: BoxFit.cover,
           )),
       child: Container(
@@ -653,7 +664,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                         ),
                         TextSpan(
                           text:
-                              '\nI have generated some marketing ideas and insights you should consider',
+                              '\nThese are some guides and analysis I have generated for this event for you.',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(
@@ -918,7 +929,10 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                         onPressed: () async {
                           PaletteGenerator _paletteGenerator =
                               await PaletteGenerator.fromImageProvider(
-                            CachedNetworkImageProvider(widget.event.imageUrl),
+                            CachedNetworkImageProvider(widget.event.imageUrl,
+                                errorListener: (_) {
+                              return;
+                            }),
                             size: Size(1110, 150),
                             maximumColorCount: 20,
                           );

@@ -35,7 +35,7 @@ class BottomModelSheetIconActionWidget extends StatelessWidget {
                 Navigator.pop(context);
                 onPressed();
               },
-        width: ResponsiveHelper.responsiveWidth(context, mini ? 120 : 177),
+        width: ResponsiveHelper.responsiveHeight(context, mini ? 120 : 177),
 
         // mini ? 120 : 185,
         child: BottomModelSheetIconsWidget(

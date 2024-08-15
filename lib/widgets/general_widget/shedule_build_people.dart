@@ -111,8 +111,10 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
                 : CircleAvatar(
                     radius: ResponsiveHelper.responsiveHeight(context, 18.0),
                     backgroundColor: Colors.blue,
-                    backgroundImage:
-                        CachedNetworkImageProvider(profileImageUrl),
+                    backgroundImage: CachedNetworkImageProvider(profileImageUrl,
+                        errorListener: (_) {
+                      return;
+                    }),
                   ),
             SizedBox(
               width: 10,

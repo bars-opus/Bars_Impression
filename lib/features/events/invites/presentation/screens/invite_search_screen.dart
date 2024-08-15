@@ -160,6 +160,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
       builder: (BuildContext context) {
         return Container(
           height: 300,
+          width: double.infinity,
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColorLight,
               borderRadius: BorderRadius.circular(30)),
@@ -332,19 +333,19 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                     Text(
                       'Confirm Invite to\n${selectedUsersList.length.toString()} people',
                       style: TextStyle(
                         fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 25.0),
+                            ResponsiveHelper.responsiveFontSize(context, 20.0),
                         color: Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                     Center(
                       child: Container(
@@ -431,7 +432,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                       style: TextStyle(
                         color: Colors.white,
                         fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                            ResponsiveHelper.responsiveFontSize(context, 12.0),
                       ),
                       textAlign: TextAlign.start,
                     ),
@@ -462,6 +463,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                           ),
                           onPressed: () {
                             Navigator.pop(context);
+
                             _sendInvite();
                           },
                         ),
@@ -740,7 +742,10 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                                                   .primaryColor,
                                               backgroundImage:
                                                   CachedNetworkImageProvider(
-                                                      user.profileImageUrl!),
+                                                      user.profileImageUrl!,
+                                                      errorListener: (_) {
+                                                return;
+                                              }),
                                             ),
                                       const SizedBox(
                                         width: 10,

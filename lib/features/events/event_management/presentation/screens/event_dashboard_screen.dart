@@ -53,7 +53,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     sumFunction();
     _countDown();
     if (widget.event.fundsDistributed) _getFundsPayout();
-    if (widget.event.isAffiliateEnabled) _setUpAffiliateCount();
+    // if (widget.event.isAffiliateEnabled)
+    _setUpAffiliateCount();
   }
 
   void _validateEvent() {
@@ -66,9 +67,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     });
   }
 
-  _setUpAffiliateCount() {
-    _setAffiliateCount('Invited');
-    _setAffiliateCount('Requested');
+  _setUpAffiliateCount() async {
+    await _setAffiliateCount('Invited');
+    await _setAffiliateCount('Requested');
   }
 
   _getFundsPayout() async {

@@ -92,7 +92,7 @@ class _UserBrandMatchingState extends State<UserBrandMatching>
                     Text('skills', style: style),
                     Text('shortTermGoals', style: style),
                     Text('longTermGoals', style: style),
-                    Text('creativeSyle', style: style),
+                    Text('creativeStyle', style: style),
                     Text('inspirations', style: style),
                   ],
                 ),
@@ -117,38 +117,39 @@ class _UserBrandMatchingState extends State<UserBrandMatching>
 
   // Builds the content for each tab based on its index
   Widget _buildTabViewContent(int index, UserData provider) {
-    String tab, tabValue;
+    String tab;
+    //  tabValue;
 
     switch (index) {
       case 0:
         tab = 'skills';
-        tabValue = provider.brandTarget!.skills.trim();
+        // tabValue = provider.brandTarget!.skills.trim();
         break;
       case 1:
         tab = 'shortTermGoals';
-        tabValue = provider.brandTarget!.shortTermGoals.trim();
+        // tabValue = provider.brandTarget!.shortTermGoals.trim();
         break;
       case 2:
         tab = 'longTermGoals';
-        tabValue = provider.brandTarget!.longTermGoals.trim();
+        // tabValue = provider.brandTarget!.longTermGoals.trim();
         break;
       case 3:
-        tab = 'creativeSyle';
-        tabValue = provider.brandTarget!.creativeStyle.trim();
+        tab = 'creativeStyle';
+        // tabValue = provider.brandTarget!.creativeStyle.trim();
         break;
       case 4:
-        tab = 'inspirations';
-        tabValue = provider.brandTarget!.inspiration.trim();
+        tab = 'inspiration';
+        // tabValue = provider.brandTarget!.inspiration.trim();
         break;
       default:
         tab = '';
-        tabValue = '';
+      // tabValue = '';
     }
 
     return UserMatchings(
       eventId: widget.eventId,
       tab: tab,
-      tabValue: tabValue,
+      // tabValue: tabValue,
     );
   }
 }

@@ -92,7 +92,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               radius: ResponsiveHelper.responsiveHeight(context, 20.0),
               backgroundColor: Theme.of(context).primaryColorLight,
               backgroundImage:
-                  CachedNetworkImageProvider(activity.authorProfileImageUrl),
+                  CachedNetworkImageProvider(activity.authorProfileImageUrl,  errorListener: (_) {
+                                  return;
+                                }),
             ),
     );
   }
@@ -118,7 +120,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     if (_event != null) {
       PaletteGenerator _paletteGenerator =
           await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(_event.imageUrl),
+        CachedNetworkImageProvider(_event.imageUrl,  errorListener: (_) {
+                                  return;
+                                }),
         size: Size(1110, 150),
         maximumColorCount: 20,
       );
@@ -247,7 +251,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       if (_event != null) {
         PaletteGenerator _paletteGenerator =
             await PaletteGenerator.fromImageProvider(
-          CachedNetworkImageProvider(_event.imageUrl),
+          CachedNetworkImageProvider(_event.imageUrl,   errorListener: (_) {
+                                  return;
+                                }),
           size: Size(1110, 150),
           maximumColorCount: 20,
         );

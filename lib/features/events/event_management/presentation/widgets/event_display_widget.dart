@@ -208,8 +208,10 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       image: DecorationImage(
-                        image:
-                            CachedNetworkImageProvider(widget.event.imageUrl),
+                        image: CachedNetworkImageProvider(widget.event.imageUrl,
+                            errorListener: (_) {
+                          return;
+                        }),
                         fit: BoxFit.cover,
                       ),
                     ),

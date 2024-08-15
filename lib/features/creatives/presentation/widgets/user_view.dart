@@ -159,7 +159,10 @@ class _UserViewState extends State<UserView> {
                         radius: 25.0,
                         backgroundColor: Colors.blue,
                         backgroundImage: CachedNetworkImageProvider(
-                            widget.userProfessional.profileImageUrl),
+                            widget.userProfessional.profileImageUrl,
+                            errorListener: (_) {
+                          return;
+                        }),
                       ),
                 SizedBox(
                   width: ResponsiveHelper.responsiveWidth(context, 10.0),
@@ -301,10 +304,12 @@ class _UserViewState extends State<UserView> {
                         GestureDetector(
                           onTap: () {
                             HapticFeedback.mediumImpact();
-                            _showBottomSheetBookingCalendar();
+                            _showBottomSheetBookMe(context);
+                            // _showBottomSheetBookingCalendar();
                           },
                           child: Icon(
-                            Icons.calendar_month,
+                            Icons.call_outlined,
+                            // Icons.calendar_month,
                             size:
                                 ResponsiveHelper.responsiveHeight(context, 25),
                             color: Colors.blue,

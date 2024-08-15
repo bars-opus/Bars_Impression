@@ -7,14 +7,14 @@ class BrandMatchingWidget extends StatefulWidget {
   final BrandMatchingModel brandMatching;
   final String currentUserId;
   final String tab;
-  final String tabValue;
+  // final String tabValue;
 
   const BrandMatchingWidget({
     super.key,
     required this.brandMatching,
     required this.currentUserId,
     required this.tab,
-    required this.tabValue,
+    // required this.tabValue,
   });
 
   @override
@@ -24,25 +24,12 @@ class BrandMatchingWidget extends StatefulWidget {
 class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
   bool _loadingMatching = false;
 
-  final _googleGenerativeAIService = GoogleGenerativeAIService();
-
   // Navigates to a new page
   void _navigateToPage(Widget page) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => page),
     );
-  }
-
-  // Gets similarity score using Gemini API
-  Future<String> getSimilarityScore(String matchingValue) async {
-    final prompt =
-        'Compare the following ${widget.tab} and give a detailed analysis of what they have in common and why two people with this ${widget.tab} would be able to collaborate or work:\n\ntype 1: ${widget.tabValue}\n\ntype 2: $matchingValue\n\nScore:';
-    final response = await _googleGenerativeAIService.generateResponse(prompt);
-
-    final _insightText = response!.trim();
-
-    return _insightText;
   }
 
   // Creates a text widget with title and body
@@ -183,11 +170,11 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
       case 'longTermGoals':
         insightType = widget.brandMatching.longTermGoals;
         break;
-      case 'creativeSyle':
-        insightType = widget.brandMatching.creativeSyle;
+      case 'creativeStyle':
+        insightType = widget.brandMatching.creativeStyle;
         break;
-      case 'inspirations':
-        insightType = widget.brandMatching.inspirations;
+      case 'inspiration':
+        insightType = widget.brandMatching.inspiration;
         break;
     }
     return GestureDetector(
@@ -384,13 +371,13 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
         tabValue = widget.brandMatching.longTermGoals;
         tab = 'Long Term Goals';
         break;
-      case 'creativeSyle':
-        tabValue = widget.brandMatching.creativeSyle;
+      case 'creativeStyle':
+        tabValue = widget.brandMatching.creativeStyle;
         tab = 'Creative Style';
         break;
       case 'inspirations':
-        tabValue = widget.brandMatching.inspirations;
-        tab = 'Inspirations';
+        tabValue = widget.brandMatching.inspiration;
+        tab = 'Inspiration';
         break;
     }
     return Column(children: [
@@ -697,8 +684,8 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
 //         insightType = widget.brandMatching.longTermGoals;
 
 //         break;
-//       case 'creativeSyle':
-//         insightType = widget.brandMatching.creativeSyle;
+//       case 'creativeStyle':
+//         insightType = widget.brandMatching.creativeStyle;
 
 //         break;
 //       case 'inspirations':
@@ -907,8 +894,8 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
 //         tab = 'Long Term Goals';
 
 //         break;
-//       case 'creativeSyle':
-//         tabValue = widget.brandMatching.creativeSyle;
+//       case 'creativeStyle':
+//         tabValue = widget.brandMatching.creativeStyle;
 //         tab = 'Creative syle';
 
 //         break;
@@ -932,7 +919,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
 //           // widget.brandMatching.longTermGoals,
 //           ),
 //       _mathingWidget('Creative syle', widget.brandMatching.skills, true
-//           // widget.brandMatching.creativeSyle,
+//           // widget.brandMatching.creativeStyle,
 //           ),
 //       _mathingWidget('Inspirations', widget.brandMatching.skills, true
 //           // widget.brandMatching.inspirations,

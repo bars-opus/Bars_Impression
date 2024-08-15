@@ -158,7 +158,7 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                     _showBottomDeletedEvent();
                   }
                 : () async {
-                    if (_isLoading) return;
+                    if (mounted) if (_isLoading) return;
                     _isLoading = true;
                     try {
                       Event? event = await DatabaseService.getUserEventWithId(
@@ -171,7 +171,10 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                       if (event != null) {
                         PaletteGenerator _paletteGenerator =
                             await PaletteGenerator.fromImageProvider(
-                          CachedNetworkImageProvider(event.imageUrl),
+                          CachedNetworkImageProvider(event.imageUrl,
+                              errorListener: (_) {
+                            return;
+                          }),
                           size: Size(1110, 150),
                           maximumColorCount: 20,
                         );

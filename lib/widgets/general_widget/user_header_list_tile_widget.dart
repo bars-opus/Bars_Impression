@@ -29,7 +29,9 @@ class UserHeaderListTileWidget extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Theme.of(context).primaryColor,
                 image: DecorationImage(
-                  image: CachedNetworkImageProvider(user.profileImageUrl!),
+                  image: CachedNetworkImageProvider(user.profileImageUrl!,errorListener: (_) {
+                            return;
+                          }),
                   fit: BoxFit.cover,
                 ),
               ),
