@@ -91,10 +91,10 @@ class _ActivityWidgetState extends State<ActivityWidget> {
           : CircleAvatar(
               radius: ResponsiveHelper.responsiveHeight(context, 20.0),
               backgroundColor: Theme.of(context).primaryColorLight,
-              backgroundImage:
-                  CachedNetworkImageProvider(activity.authorProfileImageUrl,  errorListener: (_) {
-                                  return;
-                                }),
+              backgroundImage: CachedNetworkImageProvider(
+                  activity.authorProfileImageUrl, errorListener: (_) {
+                return;
+              }),
             ),
     );
   }
@@ -117,12 +117,12 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     Event? _event = await DatabaseService.getUserEventWithId(
         ticketOrder.eventId, ticketOrder.eventAuthorId);
 
-    if (_event != null) {
+    if (_event != null && _event.imageUrl.isNotEmpty) {
       PaletteGenerator _paletteGenerator =
           await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(_event.imageUrl,  errorListener: (_) {
-                                  return;
-                                }),
+        CachedNetworkImageProvider(_event.imageUrl, errorListener: (_) {
+          return;
+        }),
         size: Size(1110, 150),
         maximumColorCount: 20,
       );
@@ -213,6 +213,14 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         await _getActivityFollower(activity);
         break;
 
+      case NotificationActivityType.tag:
+        await _getTage(activity);
+        break;
+
+      case NotificationActivityType.tagConfirmed:
+        await _getActivityFollower(activity);
+        break;
+
       default:
         break;
     }
@@ -251,9 +259,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       if (_event != null) {
         PaletteGenerator _paletteGenerator =
             await PaletteGenerator.fromImageProvider(
-          CachedNetworkImageProvider(_event.imageUrl,   errorListener: (_) {
-                                  return;
-                                }),
+          CachedNetworkImageProvider(_event.imageUrl, errorListener: (_) {
+            return;
+          }),
           size: Size(1110, 150),
           maximumColorCount: 20,
         );
@@ -377,6 +385,29 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         isUser: true,
         affiliate: affiliate,
         fromActivity: true,
+      ),
+    );
+  }
+
+  Future<void> _getTage(Activity activity) async {
+    var authorId = activity.authorId;
+    if (authorId == null) {
+      // handle null authorId appropriately
+      return;
+    }
+
+    TaggedNotificationModel? tag = await DatabaseService.getUserTag(
+        widget.currentUserId, activity.postId!);
+
+    if (tag == null)
+      return _showBottomSheetErrorMessage(
+          'Tag not found.', 'This tag might have been deleted');
+
+    _navigateToPage(
+      context,
+      TagPage(
+        currentUserId: widget.currentUserId,
+        currentTag: tag,
       ),
     );
   }
@@ -509,7 +540,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               ? Icons.mail_outline_rounded
               : activity.type == NotificationActivityType.donation
                   ? Icons.payment
-                  : Icons.event_outlined,
+                  : activity.type == NotificationActivityType.tag
+                      ? Icons.link
+                      : Icons.event_outlined,
           color: Theme.of(context).primaryColorLight,
         ),
       ),
@@ -800,7 +833,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                             widget.activity.type ==
                                 NotificationActivityType.donation ||
                             widget.activity.type ==
-                                NotificationActivityType.eventUpdate
+                                NotificationActivityType.eventUpdate ||
+                            widget.activity.type == NotificationActivityType.tag
                         ? _iconContiner(widget.activity)
                         : _activityProfile(widget.activity),
                     SizedBox(

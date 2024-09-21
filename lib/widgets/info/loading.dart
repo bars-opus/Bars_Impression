@@ -51,14 +51,15 @@ class Loading extends StatelessWidget {
             textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(children: [
               if (shakeReapeat)
-                TextSpan(
-                  text: 'Please wait',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                    color: color,
+                if (title.isNotEmpty)
+                  TextSpan(
+                    text: 'Please wait',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: color,
+                    ),
                   ),
-                ),
               // TextSpan(
               //   text: 'wait\n',
               //   style: TextStyle(

@@ -117,85 +117,100 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _setupIsFollowing() async {
-    bool isFollowingUser = await DatabaseService.isFollowingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
+    try {
+      bool isFollowingUser = await DatabaseService.isFollowingUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
 
-    if (mounted) {
-      setState(() {
-        _isFollowing = isFollowingUser;
-        _isFecthing = false;
-      });
-    }
+      if (mounted) {
+        setState(() {
+          _isFollowing = isFollowingUser;
+          _isFecthing = false;
+        });
+      }
+    } catch (e) {}
   }
 
   _setupIsFollowRequest() async {
-    bool isFollowingRequest = await DatabaseService.isFollowingRequested(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
+    try {
+      bool isFollowingRequest = await DatabaseService.isFollowingRequested(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
 
-    if (mounted) {
-      setState(() {
-        _isFollowerResquested = isFollowingRequest;
-        _isFecthing = false;
-      });
-    }
+      if (mounted) {
+        setState(() {
+          _isFollowerResquested = isFollowingRequest;
+          _isFecthing = false;
+        });
+      }
+    } catch (e) {}
   }
 
   _setupIsAFollowerUser() async {
-    bool isAFollower = await DatabaseService.isAFollowerUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isAFollower = isAFollower;
-      });
-    }
+    try {
+      bool isAFollower = await DatabaseService.isAFollowerUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isAFollower = isAFollower;
+        });
+      }
+    } catch (e) {}
   }
 
   _setupIsBlockedUser() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
+    try {
+      bool isBlockedUser = await DatabaseService.isBlockedUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockedUser = isBlockedUser;
+        });
+      }
+    } catch (e) {}
   }
 
   _setupIsBlocking() async {
-    bool isBlockingUser = await DatabaseService.isBlokingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = isBlockingUser;
-      });
-    }
+    try {
+      bool isBlockingUser = await DatabaseService.isBlokingUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockingUser = isBlockingUser;
+        });
+      }
+    } catch (e) {}
   }
 
   _setUpFollowers() async {
-    int userFollowerCount = await DatabaseService.numFollowers(widget.userId);
-    if (mounted) {
-      setState(() {
-        _followerCount = userFollowerCount;
-      });
-    }
+    try {
+      int userFollowerCount = await DatabaseService.numFollowers(widget.userId);
+      if (mounted) {
+        setState(() {
+          _followerCount = userFollowerCount;
+        });
+      }
+    } catch (e) {}
   }
 
   _setUpFollowing() async {
-    int userFollowingCount = await DatabaseService.numFollowing(widget.userId);
-    if (mounted) {
-      setState(() {
-        _followingCount = userFollowingCount;
-      });
-    }
+    try {
+      int userFollowingCount =
+          await DatabaseService.numFollowing(widget.userId);
+      if (mounted) {
+        setState(() {
+          _followingCount = userFollowingCount;
+        });
+      }
+    } catch (e) {}
   }
 
   Stream<List<Event>> getUserEventsStream(String userId) {
@@ -379,48 +394,52 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   _cancelFollowRequest(AccountHolderAuthor user) {
     HapticFeedback.heavyImpact();
-    DatabaseService.cancelFollowRequest(
-      currentUserId: user.userId!,
-      requesterUserId: widget.currentUserId,
-    );
-    if (mounted) {
-      setState(() {
-        _isFollowerResquested = false;
-      });
-    }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        'follow request cancelled ',
-        overflow: TextOverflow.ellipsis,
-      ),
-    ));
+    try {
+      DatabaseService.cancelFollowRequest(
+        currentUserId: user.userId!,
+        requesterUserId: widget.currentUserId,
+      );
+      if (mounted) {
+        setState(() {
+          _isFollowerResquested = false;
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'follow request cancelled ',
+          overflow: TextOverflow.ellipsis,
+        ),
+      ));
+    } catch (e) {}
   }
 
   _blockser(AccountHolderAuthor user) async {
     HapticFeedback.heavyImpact();
-    AccountHolderAuthor? fromUser =
-        await DatabaseService.getUserWithId(widget.currentUserId);
-    if (fromUser != null) {
-      DatabaseService.blockUser(
-        currentUserId: widget.currentUserId,
-        userId: widget.userId,
-        user: fromUser,
-      );
-    } else {
-      mySnackBar(context, 'Could not bloack this person');
-    }
+    try {
+      AccountHolderAuthor? fromUser =
+          await DatabaseService.getUserWithId(widget.currentUserId);
+      if (fromUser != null) {
+        DatabaseService.blockUser(
+          currentUserId: widget.currentUserId,
+          userId: widget.userId,
+          user: fromUser,
+        );
+      } else {
+        mySnackBar(context, 'Could not bloack this person');
+      }
 
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = true;
-      });
-    }
-    if (_isAFollower) {
-      DatabaseService.unfollowUser(
-        currentUserId: widget.userId,
-        userId: widget.currentUserId,
-      );
-    }
+      if (mounted) {
+        setState(() {
+          _isBlockingUser = true;
+        });
+      }
+      if (_isAFollower) {
+        DatabaseService.unfollowUser(
+          currentUserId: widget.userId,
+          userId: widget.currentUserId,
+        );
+      }
+    } catch (e) {}
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Colors.blue,
       content: Text(
@@ -431,16 +450,18 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _unfollowUser(AccountHolderAuthor user) {
-    DatabaseService.unfollowUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isFollowing = false;
-        _followerCount--;
-      });
-    }
+    try {
+      DatabaseService.unfollowUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isFollowing = false;
+          _followerCount--;
+        });
+      }
+    } catch (e) {}
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'Unfollowed ' + user.userName!,
@@ -962,9 +983,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ? AssetImage(
                                 'assets/images/user_placeholder.png',
                               ) as ImageProvider
-                            : CachedNetworkImageProvider(user.profileImageUrl!,   errorListener: (_) {
-                                  return;
-                                }),
+                            : CachedNetworkImageProvider(user.profileImageUrl!,
+                                errorListener: (_) {
+                                return;
+                              }),
                       ),
                     ),
                     _isAuthor
@@ -1463,6 +1485,22 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  _sortByWidget(
+    VoidCallback onPressed,
+    IconData icon,
+    String title,
+    Color? color,
+    notFullLength,
+  ) {
+    return NewModalActionButton(
+      onPressed: onPressed,
+      icon: icon,
+      color: color,
+      title: title,
+      fromModalSheet: notFullLength,
+    );
+  }
+
   void _showBottomSheet(BuildContext context, AccountHolderAuthor user) {
     bool _isAuthor = user.userId == widget.currentUserId;
     showModalBottomSheet(
@@ -1471,7 +1509,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 550),
+          height: ResponsiveHelper.responsiveHeight(context, 500),
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColorLight,
               borderRadius: BorderRadius.circular(30)),
@@ -1521,9 +1559,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             color: Theme.of(context).primaryColor,
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(
-                                  user.profileImageUrl!,   errorListener: (_) {
-                                  return;
-                                }),
+                                  user.profileImageUrl!, errorListener: (_) {
+                                return;
+                              }),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -1550,105 +1588,193 @@ class _ProfileScreenState extends State<ProfileScreen>
                 const SizedBox(
                   height: 20,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    BottomModelSheetIconActionWidget(
-                      onPressed: () {
-                        _isAuthor
-                            ? _showModalBottomSheetAdd(
-                                context,
-                              )
-                            : navigateToPage(
-                                context,
-                                SendToChats(
-                                  sendContentId: widget.userId,
-                                  currentUserId: Provider.of<UserData>(context,
-                                          listen: false)
+                _sortByWidget(
+                  () {
+                    _isAuthor
+                        ? _showModalBottomSheetAdd(
+                            context,
+                          )
+                        : navigateToPage(
+                            context,
+                            SendToChats(
+                              sendContentId: widget.userId,
+                              currentUserId:
+                                  Provider.of<UserData>(context, listen: false)
                                       .currentUserId!,
-                                  sendContentType: 'User',
-                                  sendImageUrl: user.profileImageUrl!,
-                                  sendTitle: user.userName!,
-                                ));
+                              sendContentType: 'User',
+                              sendImageUrl: user.profileImageUrl!,
+                              sendTitle: user.userName!,
+                            ));
+                  },
+                  _isAuthor ? Icons.add : Icons.send_outlined,
+                  _isAuthor ? 'Create' : 'Send',
+                  null,
+                  true,
+                ),
+                // const SizedBox(
+                //   height: 10,
+                // ),
+
+                _sortByWidget(
+                  _isAuthor
+                      ? () async {
+                          Share.share(user.dynamicLink!);
+                        }
+                      : () {
+                          _blockOrUnBlock(user);
+                        },
+                  _isAuthor ? Icons.mail_outline_rounded : Icons.block_outlined,
+                  _isAuthor ? 'Invite a friend' : 'Block',
+                  null,
+                  true,
+                ),
+                // BottomModelSheetListTileActionWidget(
+                //     colorCode: '',
+                //     icon: _isAuthor
+                //         ? Icons.mail_outline_rounded
+                //         : Icons.block_outlined,
+                //     onPressed: _isAuthor
+                //         ? () async {
+                //             Share.share(user.dynamicLink!);
+                //           }
+                //         : () {
+                //             _blockOrUnBlock(user);
+                //           },
+                // //     text: _isAuthor ? 'Invite a friend' : 'Block'),
+                // _sortByWidget(
+                //   () {
+                //     navigateToPage(
+                //         context,
+                //         UserBarcode(
+                //           userDynamicLink: user.dynamicLink!,
+                //           bio: user.bio!,
+                //           userName: user.userName!,
+                //           userId: user.userId!,
+                //           profileImageUrl: user.profileImageUrl!,
+                //         ));
+                //   },
+                //   Icons.qr_code,
+                //   'Bar code',
+                //   null,
+                //   true,
+                // ),
+                // // BottomModelSheetListTileActionWidget(
+                //   colorCode: '',
+                //   icon: Icons.qr_code,
+                //   onPressed: () {
+                //     navigateToPage(
+                //         context,
+                //         UserBarcode(
+                //           userDynamicLink: user.dynamicLink!,
+                //           bio: user.bio!,
+                //           userName: user.userName!,
+                //           userId: user.userId!,
+                //           profileImageUrl: user.profileImageUrl!,
+                //         ));
+                //   },
+                //   text: 'Bar code',
+                // ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _sortByWidget(
+                      () {
+                        navigateToPage(
+                            context,
+                            UserBarcode(
+                              userDynamicLink: user.dynamicLink!,
+                              bio: user.bio!,
+                              userName: user.userName!,
+                              userId: user.userId!,
+                              profileImageUrl: user.profileImageUrl!,
+                            ));
                       },
-                      icon: _isAuthor ? Icons.add : Icons.send_outlined,
-                      text: _isAuthor ? 'Create' : 'Send',
+                      Icons.qr_code,
+                      'Barcode',
+                      null,
+                      false,
                     ),
-                    BottomModelSheetIconActionWidget(
-                      onPressed: () async {
+                    _sortByWidget(
+                      () async {
                         Share.share(user.dynamicLink!);
                       },
-                      icon: Icons.share_outlined,
-                      text: 'Share',
+                      Icons.share_outlined,
+                      'Share',
+                      null,
+                      false,
                     ),
                   ],
                 ),
-                BottomModelSheetListTileActionWidget(
-                    colorCode: '',
-                    icon: _isAuthor
-                        ? Icons.mail_outline_rounded
-                        : Icons.block_outlined,
-                    onPressed: _isAuthor
-                        ? () async {
-                            Share.share(user.dynamicLink!);
-                          }
-                        : () {
-                            _blockOrUnBlock(user);
-                          },
-                    text: _isAuthor ? 'Invite a friend' : 'Block'),
-                BottomModelSheetListTileActionWidget(
-                  colorCode: '',
-                  icon: Icons.qr_code,
-                  onPressed: () {
-                    navigateToPage(
-                        context,
-                        UserBarcode(
-                          userDynamicLink: user.dynamicLink!,
-                          bio: user.bio!,
-                          userName: user.userName!,
-                          userId: user.userId!,
-                          profileImageUrl: user.profileImageUrl!,
-                        ));
-                  },
-                  text: 'Bar code',
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                BottomModelSheetListTileActionWidget(
-                    colorCode: '',
-                    icon: _isAuthor
-                        ? Icons.settings_outlined
-                        : Icons.flag_outlined,
-                    onPressed: _isAuthor
-                        ? () async {
-                            navigateToPage(
-                              context,
-                              ProfileSettings(
-                                user: user,
-                              ),
-                            );
-                          }
-                        : () {
-                            navigateToPage(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _sortByWidget(
+                      () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => SuggestionBox()));
+                      },
+                      Icons.feedback_outlined,
+                      'Suggestion',
+                      null,
+                      false,
+                    ),
+                    _sortByWidget(
+                      _isAuthor
+                          ? () async {
+                              navigateToPage(
                                 context,
-                                ReportContentPage(
-                                  contentId: user.userId!,
-                                  contentType: user.userName!,
-                                  parentContentId: user.userId!,
-                                  repotedAuthorId: user.userId!,
-                                ));
-                          },
-                    text: _isAuthor ? 'Settings' : 'Report'),
-                BottomModelSheetListTileActionWidget(
-                  colorCode: '',
-                  icon: Icons.feedback_outlined,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => SuggestionBox()));
-                  },
-                  text: 'Suggestion',
+                                ProfileSettings(
+                                  user: user,
+                                ),
+                              );
+                            }
+                          : () {
+                              navigateToPage(
+                                  context,
+                                  ReportContentPage(
+                                    contentId: user.userId!,
+                                    contentType: user.userName!,
+                                    parentContentId: user.userId!,
+                                    repotedAuthorId: user.userId!,
+                                  ));
+                            },
+                      _isAuthor ? Icons.settings_outlined : Icons.flag_outlined,
+                      _isAuthor ? 'Settings' : 'Report',
+                      _isAuthor ? null : Colors.red,
+                      false,
+                    ),
+                  ],
                 ),
+                // const SizedBox(
+                //   height: 10,
+                // ),
+                // BottomModelSheetListTileActionWidget(
+                //     colorCode: '',
+                //     icon: _isAuthor
+                //         ? Icons.settings_outlined
+                //         : Icons.flag_outlined,
+                //     onPressed: _isAuthor
+                //         ? () async {
+                //             navigateToPage(
+                //               context,
+                //               ProfileSettings(
+                //                 user: user,
+                //               ),
+                //             );
+                //           }
+                //         : () {
+                //             navigateToPage(
+                //                 context,
+                //                 ReportContentPage(
+                //                   contentId: user.userId!,
+                //                   contentType: user.userName!,
+                //                   parentContentId: user.userId!,
+                //                   repotedAuthorId: user.userId!,
+                //                 ));
+                //           },
+                //     text: _isAuthor ? 'Settings' : 'Report'),
+
                 Padding(
                   padding:
                       const EdgeInsets.only(left: 30.0, right: 30, top: 20),

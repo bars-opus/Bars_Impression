@@ -3202,62 +3202,6 @@ class _HomeMobileState extends State<HomeMobile>
                   ),
                 ),
               ),
-              Positioned(
-                bottom: 1,
-                child: GestureDetector(
-                  onTap: () {
-                    _navigateToPage(
-                        NotificationPage(currentUserId: currentUserId));
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        bottom: ResponsiveHelper.responsiveHeight(
-                            context, _inviteList.length < 1 ? 100 : 70)),
-                    child: AnimatedContainer(
-                      curve: Curves.easeInOut,
-                      duration: Duration(milliseconds: 800),
-                      height: dontShowActivityCount ? 0.0 : 40,
-                      width: dontShowActivityCount ? 1 : 150,
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.notifications_active_outlined,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  NumberFormat.compact()
-                                      .format(_provider.activityCount),
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: dontShowActivityCount
-                                          ? 0
-                                          : ResponsiveHelper.responsiveFontSize(
-                                              context, 16.0),
-                                      fontWeight: FontWeight.bold),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               _provider.shortcutBool
                   ? Positioned(
                       bottom: 0.0,
@@ -3279,12 +3223,13 @@ class _HomeMobileState extends State<HomeMobile>
                     showUpdate: widget.updateAppVersion < _version),
               Positioned(
                 bottom: ResponsiveHelper.responsiveHeight(
-                    context,
-                    _provider.int2 == 3
-                        ? 50
-                        : _inviteList.length < 1
-                            ? 100
-                            : 70),
+                    context, _provider.int2 == 3 ? 50 : 100
+
+                    //  _inviteList.length < 1
+                    //     ? 100
+                    //     : 70
+
+                    ),
                 child: GestureDetector(
                   onTap: () async {
                     HapticFeedback.mediumImpact();
@@ -3293,10 +3238,13 @@ class _HomeMobileState extends State<HomeMobile>
                     _provider.setInt2(0);
                   },
                   child: Container(
-                    height: ResponsiveHelper.responsiveFontSize(context, 45),
+                    height: ResponsiveHelper.responsiveFontSize(
+                        context, dontShowActivityCount ? 40 : 100),
                     width: ResponsiveHelper.responsiveFontSize(context, 60),
                     color: Colors.transparent,
                     child: AnimatedContainer(
+                      margin: EdgeInsets.only(
+                          bottom: dontShowActivityCount ? 0 : 50),
                       curve: Curves.easeInOut,
                       duration: Duration(milliseconds: 800),
                       height: _provider.showEventTab && _provider.showUsersTab
@@ -3335,6 +3283,57 @@ class _HomeMobileState extends State<HomeMobile>
                                 animateSize: false,
                                 animateShape: false,
                               ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: _inviteList.length < 1 ? 108 : 30,
+                child: GestureDetector(
+                  onTap: () {
+                    _navigateToPage(
+                        NotificationPage(currentUserId: currentUserId));
+                  },
+                  child: AnimatedContainer(
+                    curve: Curves.easeInOut,
+                    duration: Duration(milliseconds: 800),
+                    height: dontShowActivityCount ? 0.0 : 40,
+                    width: dontShowActivityCount ? 1 : 150,
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.notifications_active_outlined,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                NumberFormat.compact()
+                                    .format(_provider.activityCount),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: dontShowActivityCount
+                                        ? 0
+                                        : ResponsiveHelper.responsiveFontSize(
+                                            context, 16.0),
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

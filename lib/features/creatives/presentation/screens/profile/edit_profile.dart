@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   File? _profileImage;
+  String _newProfileImageUrl = '';
+
   String _name = '';
   String _userName = '';
   String _bio = '';
@@ -45,12 +48,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             'Harmful content detected. Please choose a different image. Please review');
         _provider.setIsLoading(false);
       } else {
-        if (mounted) {
-          setState(() {
-            _provider.setIsLoading(false);
-            _profileImage = file;
-          });
-        }
+        _submitProfileImage(file);
+        // if (mounted) {
+        //   setState(() {
+        // // _provider.setIsLoading(false);
+        // _profileImage = file;
+        //   });
+        // }
       }
     } catch (e) {
       setState(() {
@@ -77,9 +81,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'assets/images/user_placeholder2.png',
         );
       } else {
-        return CachedNetworkImageProvider(widget.user.profileImageUrl!,   errorListener: (_) {
-                                  return;
-                                });
+        return CachedNetworkImageProvider(widget.user.profileImageUrl!,
+            errorListener: (_) {
+          return;
+        });
       }
     } else {
       return FileImage(_profileImage!);
@@ -100,16 +105,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _isLoading = true;
       });
 
-      String _profileImageUrl = '';
+      String _profileImageUrl = _newProfileImageUrl.isEmpty
+          ? widget.user.profileImageUrl!
+          : _newProfileImageUrl;
 
-      if (_profileImage == null) {
-        _profileImageUrl = widget.user.profileImageUrl!;
-      } else {
-        _profileImageUrl = await StorageService.uploadUserProfileImage(
-          widget.user.profileImageUrl!,
-          _profileImage!,
-        );
-      }
+      // if (_profileImage == null) {
+      //   _profileImageUrl = widget.user.profileImageUrl!;
+      // } else {
+      //   _profileImageUrl = await StorageService.uploadUserProfileImage(
+      //     widget.user.profileImageUrl!,
+      //     _profileImage!,
+      //   );
+      // }
 
       String name = _name.trim().replaceAll('\n', ' ');
       String bio = _bio.trim().replaceAll('\n', ' ');
@@ -126,7 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           usersAuthorRef.doc(widget.user.userId),
           {
             'name': name,
-            'profileImageUrl': _profileImageUrl,
+            // 'profileImageUrl': _profileImageUrl,
             'bio': bio,
             'dynamicLink': dynamicLink,
           },
@@ -135,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         batch.update(
           userProfessionalRef.doc(widget.user.userId),
           {
-            'profileImageUrl': _profileImageUrl,
+            // 'profileImageUrl': _profileImageUrl,
             'dynamicLink': dynamicLink,
           },
         );
@@ -161,6 +168,78 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
       setState(() {
         _isLoading = false;
+      });
+    }
+  }
+
+  _submitProfileImage(File? profileImage) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    if (!_isLoading) {
+      // setState(() {
+      //   _isLoading = true;
+      // });
+
+      String _profileImageUrl = '';
+
+      if (profileImage == null) {
+        _profileImageUrl = widget.user.profileImageUrl!;
+      } else {
+        _profileImageUrl = await StorageService.uploadUserProfileImage(
+          //  widget.user.profileImageUrl!,
+          widget.user.userId!,
+          profileImage,
+        );
+      }
+
+      // String name = widget.user.name!.trim().replaceAll('\n', ' ');
+      // String bio = widget.user.bio!.trim().replaceAll('\n', ' ');
+      String dynamicLink = await DatabaseService.myDynamicLink(
+        _profileImageUrl,
+        widget.user.userName!,
+        widget.user.bio!,
+        'https://www.barsopus.com/user_${_provider.currentUserId}',
+      );
+
+      try {
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+        batch.update(
+          usersAuthorRef.doc(widget.user.userId),
+          {
+            // 'name': name,
+            'profileImageUrl': _profileImageUrl,
+            // 'bio': bio,
+            // 'dynamicLink': dynamicLink,
+          },
+        );
+
+        batch.update(
+          userProfessionalRef.doc(widget.user.userId),
+          {
+            'profileImageUrl': _profileImageUrl,
+            'dynamicLink': dynamicLink,
+          },
+        );
+
+        try {
+          batch.commit();
+        } catch (error) {}
+
+        _updateAuthorHive(
+            widget.user.name!, widget.user.bio!, _profileImageUrl, dynamicLink);
+      } catch (e) {
+        _showBottomSheetErrorMessage('Failed change profile picture');
+
+        // _flushBar(
+        //   'Error',
+        //   "result.toString()",
+        // );
+      }
+      setState(() {
+        _newProfileImageUrl = _profileImageUrl;
+
+        _profileImage = profileImage;
+        _provider.setIsLoading(false);
       });
     }
   }
@@ -651,11 +730,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return EditProfileScaffold(
       title: 'Edit Profile',
+      action: _name == widget.user.name && _bio == widget.user.bio
+          ? null
+          : _isLoading
+              ? Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20.0,
+                  ),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
+                      ),
+                      strokeWidth:
+                          ResponsiveHelper.responsiveFontSize(context, 2.0),
+                    ),
+                  ),
+                )
+              : Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0, bottom: 20),
+                    child: MiniCircularProgressButton(
+                        dontShowShadow: true,
+                        color: Colors.blue,
+                        text: 'Save',
+                        onPressed: () {}),
+                  ),
+                ),
       widget: Form(
         key: _formKey,
         child: Column(
           children: [
-            _isLoading ? LinearProgress() : const SizedBox.shrink(),
+            // _isLoading ? LinearProgress() : const SizedBox.shrink(),
             Padding(
                 padding: const EdgeInsets.all(30.0),
                 child: Column(
@@ -667,8 +777,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(
                       height: 30.0,
                     ),
-                    // _userNameInfo(),
-                    // const SizedBox(height: 20),
+
                     Divider(
                       thickness: .2,
                       color: Colors.grey,
@@ -679,29 +788,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _stageNameAndBioFields(),
                       ],
                     ),
-
                     const SizedBox(
                       height: 40,
                     ),
                     if (_user != null) _editPageOptionWidget(),
-                    _isLoading || _provider.isLoading
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 30.0),
-                            child: CircularProgress(
-                              isMini: true,
-                              indicatorColor: Colors.blue,
-                            ))
-                        : Padding(
-                            padding: const EdgeInsets.only(top: 50.0),
-                            child: AlwaysWhiteButton(
-                              buttonText: 'Save',
-                              onPressed: () {
-                                _validateTextToxicity();
-                                // _submit();
-                              },
-                              buttonColor: Colors.blue,
-                            ),
-                          ),
+                    // _isLoading || _provider.isLoading
+                    //     ? Padding(
+                    //         padding: const EdgeInsets.only(top: 30.0),
+                    //         child: CircularProgress(
+                    //           isMini: true,
+                    //           indicatorColor: Colors.blue,
+                    //         ))
+                    //     : Padding(
+                    //         padding: const EdgeInsets.only(top: 50.0),
+                    //         child: AlwaysWhiteButton(
+                    //           buttonText: 'Save',
+                    //           onPressed: () {
+                    //             _validateTextToxicity();
+                    //             // _submit();
+                    //           },
+                    //           buttonColor: Colors.blue,
+                    //         ),
+                    //       ),
                     const SizedBox(height: 40),
                     GestureDetector(
                       onTap: () {
@@ -735,7 +843,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 )),
             _suggestionWidget(),
             const SizedBox(
-              height: 20.0,
+              height: 10.0,
             ),
             GestureDetector(
               onTap: () {
@@ -758,7 +866,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 textAlign: TextAlign.start,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
           ],
         ),
       ),

@@ -1114,7 +1114,7 @@ class _DisplayState extends State<Display> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveFontSize(context, 550),
+            height: ResponsiveHelper.responsiveFontSize(context, 460),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -1140,13 +1140,27 @@ class _DisplayState extends State<Display> {
                   ),
                 ),
                 Container(
-                  height: ResponsiveHelper.responsiveFontSize(context, 450),
+                  // color: Colors.blue,
+                  height: ResponsiveHelper.responsiveFontSize(context, 360),
                   child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 2),
+                          horizontal: 30.0, vertical: 10),
                       child: MyBottomModelSheetAction(actions: [
-                        const SizedBox(
-                          height: 30,
+                        BottomModelSheetListTileActionWidget(
+                          colorCode: '',
+                          icon: Icons.event_available_outlined,
+                          onPressed: () async {
+                            _navigateToPage(
+                              _provider.brandMatching == null
+                                  ? HopeIntroductionScreen(
+                                      isIntro: true,
+                                    )
+                                  : UserBrandMatching(
+                                      eventId: widget.room!.id,
+                                    ),
+                            );
+                          },
+                          text: 'Brand matching',
                         ),
                         BottomModelSheetListTileActionWidget(
                           colorCode: muteEvent ? 'Blue' : '',
@@ -1196,6 +1210,10 @@ class _DisplayState extends State<Display> {
                           },
                           text: 'View event',
                         ),
+
+                        const SizedBox(
+                          height: 10,
+                        ),
                         BottomModelSheetListTileActionWidget(
                           colorCode: '',
                           icon: Icons.person_outline,
@@ -1219,7 +1237,7 @@ class _DisplayState extends State<Display> {
                           height: 10,
                         ),
                         BottomModelSheetListTileActionWidget(
-                          colorCode: '',
+                          colorCode: 'Red',
                           icon: Icons.flag_outlined,
                           onPressed: () {
                             _navigateToPage(ReportContentPage(
@@ -1234,22 +1252,26 @@ class _DisplayState extends State<Display> {
                         const SizedBox(
                           height: 20,
                         ),
-                        NotificationSortButton(
-                          isMini: true,
-                          icon: FontAwesomeIcons.m,
-                          onPressed: () {
-                            _navigateToPage(
-                              _provider.brandMatching == null
-                                  ? HopeIntroductionScreen(
-                                      isIntro: true,
-                                    )
-                                  : UserBrandMatching(
-                                      eventId: widget.room!.id,
-                                    ),
-                            );
-                          },
-                          title: 'See brand style matching',
-                        ),
+                        // const SizedBox(
+                        //   height: 20,
+                        // ),
+                        // NotificationSortButton(
+                        //   fromModalSheet: true,
+                        //   isMini: true,
+                        //   icon: FontAwesomeIcons.m,
+                        //   onPressed: () {
+                        //     _navigateToPage(
+                        //       _provider.brandMatching == null
+                        //           ? HopeIntroductionScreen(
+                        //               isIntro: true,
+                        //             )
+                        //           : UserBrandMatching(
+                        //               eventId: widget.room!.id,
+                        //             ),
+                        //     );
+                        //   },
+                        //   title: 'See brand style matching',
+                        // ),
                       ])),
                 ),
               ],

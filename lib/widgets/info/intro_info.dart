@@ -8,6 +8,7 @@ class IntroInfo extends StatelessWidget {
   final Color subTitleColor;
   final VoidCallback? onPressed;
   final IconData? leadingIcon;
+  final bool isLoading;
 
   IntroInfo({
     required this.subTitle,
@@ -16,6 +17,7 @@ class IntroInfo extends StatelessWidget {
     this.titleColor = Colors.blue,
     this.subTitleColor = Colors.grey,
     this.leadingIcon,
+    this.isLoading = false,
     required this.onPressed,
   });
 
@@ -28,16 +30,32 @@ class IntroInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (leadingIcon != null)
-            Container(
-              // color: Colors.red,
-              height: ResponsiveHelper.responsiveHeight(context, 45),
-              width: ResponsiveHelper.responsiveHeight(context, 45),
-              child: Icon(
-                size: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                leadingIcon,
-                color: Colors.blue,
-              ),
-            ),
+            isLoading
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 20.0, left: 10),
+                    child: SizedBox(
+                      height: ResponsiveHelper.responsiveHeight(context, 15),
+                      width: ResponsiveHelper.responsiveHeight(context, 15),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.blue,
+                        ),
+                        strokeWidth:
+                            ResponsiveHelper.responsiveFontSize(context, 2.0),
+                      ),
+                    ),
+                  )
+                : Container(
+                    // color: Colors.red,
+                    height: ResponsiveHelper.responsiveHeight(context, 45),
+                    width: ResponsiveHelper.responsiveHeight(context, 45),
+                    child: Icon(
+                      size: ResponsiveHelper.responsiveFontSize(context, 20.0),
+                      leadingIcon,
+                      color: Colors.blue,
+                    ),
+                  ),
           Expanded(
             child: RichText(
               textScaler: MediaQuery.of(context).textScaler,

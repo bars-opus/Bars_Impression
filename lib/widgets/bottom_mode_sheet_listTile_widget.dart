@@ -4,11 +4,13 @@ class BottomModelSheetListTileWidget extends StatelessWidget {
   final IconData icon;
   final String text;
   final String colorCode;
+  final bool isLoading;
 
   BottomModelSheetListTileWidget({
     required this.icon,
     required this.text,
     this.colorCode = '',
+    this.isLoading = false,
   });
 
   @override
@@ -23,11 +25,27 @@ class BottomModelSheetListTileWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: newColor,
-          size: ResponsiveHelper.responsiveHeight(context, 25),
-        ),
+        isLoading
+            ? Padding(
+                padding: const EdgeInsets.only(right: 20.0, left: 10),
+                child: SizedBox(
+                  height: ResponsiveHelper.responsiveHeight(context, 15),
+                  width: ResponsiveHelper.responsiveHeight(context, 15),
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.transparent,
+                    valueColor: new AlwaysStoppedAnimation<Color>(
+                      Colors.blue,
+                    ),
+                    strokeWidth:
+                        ResponsiveHelper.responsiveFontSize(context, 2.0),
+                  ),
+                ),
+              )
+            : Icon(
+                icon,
+                color: newColor,
+                size: ResponsiveHelper.responsiveHeight(context, 25),
+              ),
         const SizedBox(
           width: 20,
         ),

@@ -405,6 +405,17 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     );
   }
 
+  void _showBottomDraft(BuildContext context, List<Event> eventsList) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return EventDrafts(eventsList: eventsList);
+      },
+    );
+  }
+
   // final _googleGenerativeAIService = GoogleGenerativeAIService();
   // String _generatedResponse = '';
 
@@ -418,6 +429,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
+    var provider = Provider.of<UserData>(
+      context,
+    );
+
     var _userLocation = _provider.userLocationPreference;
 
     return EditProfileScaffold(
@@ -434,6 +449,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IntroInfo(
+                  isLoading: _isLoadingGeneralSettins,
                   leadingIcon: Icons.notifications_active_outlined,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Notification settings',
@@ -492,6 +508,33 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 //   color: Colors.grey,
                 // ),
                 IntroInfo(
+                  isLoading: provider.isLoading,
+                  leadingIcon: Icons.event_outlined,
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Event drafts',
+                  onPressed: () async {
+                    _provider.setIsLoading(true);
+                    Query eventQuery = await eventsDraftRef
+                        .doc(widget.user.userId)
+                        .collection('events')
+                        .orderBy('timestamp', descending: true);
+                    QuerySnapshot postFeedSnapShot = await eventQuery.get();
+
+                    List<Event> events = await postFeedSnapShot.docs
+                        .map((doc) => Event.fromDoc(doc))
+                        .toList();
+                    _provider.setIsLoading(false);
+
+                    _showBottomDraft(context, events);
+                  },
+                  subTitle: "unpublished events.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  thickness: .2,
+                  color: Colors.grey,
+                ),
+                IntroInfo(
                   leadingIcon: MdiIcons.transfer,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Payouts',
@@ -546,6 +589,30 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     );
                   },
                   subTitle: "Your affiliate marketing.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  thickness: .2,
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  leadingIcon: Icons.link,
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Tags',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserTags(
+                        currentUserId: widget.user.userId!,
+                        eventId: '',
+                        marketingType: '',
+                        isUser: true,
+                        fromActivity: false,
+                      ),
+                    );
+                  },
+                  subTitle:
+                      "Events and collaborations you have been tagged in.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(

@@ -118,8 +118,7 @@ class _TicketScannerValidatorScreenState
                 (eventDate.year == tomorrow.year &&
                     eventDate.month == tomorrow.month &&
                     eventDate.day == tomorrow.day);
-
-            if (!isValidDate) {
+            if (!widget.event.hasDateBeenPostponed) if (!isValidDate) {
               throw Exception('Ticket is not valid for validation today.');
             }
 

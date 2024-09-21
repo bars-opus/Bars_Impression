@@ -384,6 +384,22 @@ class _EventBottomModalSheetActionsState
         });
   }
 
+  _sortByWidget(
+    VoidCallback onPressed,
+    IconData icon,
+    String title,
+    Color? color,
+    notFullLength,
+  ) {
+    return NewModalActionButton(
+      onPressed: onPressed,
+      icon: icon,
+      color: color,
+      title: title,
+      fromModalSheet: notFullLength,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(
@@ -395,7 +411,7 @@ class _EventBottomModalSheetActionsState
     var _usercountry = _provider.userLocationPreference!.country;
 
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, _isAuthor ? 600 : 550),
+      height: ResponsiveHelper.responsiveHeight(context, _isAuthor ? 650 : 600),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),
@@ -424,7 +440,7 @@ class _EventBottomModalSheetActionsState
                                     EditEventScreen(
                                       currentUserId: widget.currentUserId,
                                       event: widget.event,
-                                      isCompleted: widget.eventHasEnded,
+                                      isCompleted: widget.eventHasEnded,    isDraft: false,
                                     ),
                                   );
                                 }
@@ -485,20 +501,29 @@ class _EventBottomModalSheetActionsState
             ),
             !_isAuthor
                 ? const SizedBox.shrink()
-                : BottomModelSheetListTileActionWidget(
-                    colorCode: 'Blue',
-                    icon: Icons.mail_outline,
-                    onPressed: () {
+                : _sortByWidget(
+                    () async {
                       Share.share(widget.event.dynamicLink);
                     },
-                    text: 'Invite people',
+                    Icons.mail_outline,
+                    'Invite people',
+                    Colors.blue,
+                    true,
                   ),
+
+            //  BottomModelSheetListTileActionWidget(
+            //     colorCode: 'Blue',
+            //     icon: Icons.mail_outline,
+            //     onPressed: () {
+            //       Share.share(widget.event.dynamicLink);
+            //     },
+            //     text: 'Invite people',
+            //   ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.send_outlined,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
                     !widget.event.isPrivate
                         ? _navigateToPage(
                             context,
@@ -524,11 +549,13 @@ class _EventBottomModalSheetActionsState
                             : _showBottomSheetPrivateEventMessage(context,
                                 'To maintain this event\'s privacy, the event can only be shared by the organizer.');
                   },
-                  text: 'Send',
+                  Icons.send_outlined,
+                  'Send',
+                  null,
+                  false,
                 ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.share_outlined,
-                  onPressed: () async {
+                _sortByWidget(
+                  () async {
                     !widget.event.isPrivate
                         ? Share.share(widget.event.dynamicLink)
                         : widget.event.isPrivate && _isAuthor
@@ -536,68 +563,79 @@ class _EventBottomModalSheetActionsState
                             : _showBottomSheetPrivateEventMessage(context,
                                 'To maintain this event\'s privacy, the event can only be shared by the organizer.');
                   },
-                  text: 'Share',
+                  Icons.share_outlined,
+                  'Share',
+                  null,
+                  false,
                 ),
               ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.people_outline,
-                  onPressed: () {
-                    _showBottomSheetTaggedPeople(context, false);
-                  },
-                  text: 'People',
-                ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.handshake_outlined,
-                  onPressed: () {
-                    _showBottomSheetTaggedPeople(context, true);
-                  },
-                  text: 'Sponsors',
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
             ),
 
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.location_on_outlined,
-                  onPressed: () {
-                    _launchMap();
+                _sortByWidget(
+                  () async {
+                    _showBottomSheetTaggedPeople(context, false);
                   },
-                  text: 'Location',
+                  Icons.people_outline,
+                  'People',
+                  null,
+                  false,
                 ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.circle_outlined,
-                  onPressed: () {
-                    _showBottomSheetBrandInsight(context);
+                _sortByWidget(
+                  () async {
+                    _showBottomSheetTaggedPeople(context, true);
                   },
-                  text: 'Analysis & guide',
+                  Icons.handshake_outlined,
+                  'Sponsors',
+                  null,
+                  false,
                 ),
               ],
             ),
-            // const SizedBox(
-            //   height: 10,
-            // ),
+
+            const SizedBox(
+              height: 10,
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.call_outlined,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
+                    _launchMap();
+                  },
+                  Icons.location_on_outlined,
+                  'Location',
+                  null,
+                  false,
+                ),
+                _sortByWidget(
+                  () async {
+                    _showBottomSheetBrandInsight(context);
+                  },
+                  Icons.circle_outlined,
+                  'Analysis & guide',
+                  null,
+                  false,
+                ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _sortByWidget(
+                  () async {
                     _showBottomSheetContactOrganizer(context);
                   },
-                  text: 'Call organizer',
+                  Icons.call_outlined,
+                  'Call organizer',
+                  null,
+                  false,
                 ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.handshake_outlined,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
                     _navigateToPage(
                         context,
                         ProfileScreen(
@@ -606,28 +644,32 @@ class _EventBottomModalSheetActionsState
                           userId: widget.event.authorId,
                         ));
                   },
-                  text: 'See publisher',
+                  Icons.person_outline_outlined,
+                  'See publisher',
+                  null,
+                  false,
                 ),
               ],
             ),
-            // BottomModelSheetListTileActionWidget(
-            //   colorCode: '',
-            //   icon: Icons.call_outlined,
-            //   onPressed: () {
-            //     _showBottomSheetContactOrganizer(context);
-            //   },
-            //   text: 'Call organizer',
-            // ),
+
             const SizedBox(
               height: 10,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  textcolor: Colors.red,
-                  icon: Icons.flag_outlined,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SuggestionBox()));
+                  },
+                  Icons.feedback_outlined,
+                  'Suggestion',
+                  null,
+                  false,
+                ),
+                _sortByWidget(
+                  () async {
                     _navigateToPage(
                         context,
                         ReportContentPage(
@@ -637,18 +679,170 @@ class _EventBottomModalSheetActionsState
                           contentType: 'event',
                         ));
                   },
-                  text: 'Report',
-                ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.feedback_outlined,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => SuggestionBox()));
-                  },
-                  text: 'Suggestion',
+                  Icons.flag_outlined,
+                  'Report',
+                  Colors.red,
+                  false,
                 ),
               ],
             ),
+
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.send_outlined,
+            //       onPressed: () {
+            // !widget.event.isPrivate
+            //     ? _navigateToPage(
+            //         context,
+            //         SendToChats(
+            //           currentUserId: widget.currentUserId,
+            //           sendContentType: 'Event',
+            //           sendContentId: widget.event.id,
+            //           sendImageUrl: widget.event.imageUrl,
+            //           sendTitle: widget.event.title,
+            //         ),
+            //       )
+            //     : widget.event.isPrivate && _isAuthor
+            //         ? _navigateToPage(
+            //             context,
+            //             SendToChats(
+            //               currentUserId: widget.currentUserId,
+            //               sendContentType: 'Event',
+            //               sendContentId: widget.event.id,
+            //               sendImageUrl: widget.event.imageUrl,
+            //               sendTitle: widget.event.title,
+            //             ),
+            //           )
+            //         : _showBottomSheetPrivateEventMessage(context,
+            //             'To maintain this event\'s privacy, the event can only be shared by the organizer.');
+            //       },
+            //       text: 'Send',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.share_outlined,
+            //       onPressed: () async {
+            // !widget.event.isPrivate
+            //     ? Share.share(widget.event.dynamicLink)
+            //     : widget.event.isPrivate && _isAuthor
+            //         ? Share.share(widget.event.dynamicLink)
+            //         : _showBottomSheetPrivateEventMessage(context,
+            //             'To maintain this event\'s privacy, the event can only be shared by the organizer.');
+            //       },
+            //       text: 'Share',
+            //     ),
+            //   ],
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.people_outline,
+            //       onPressed: () {
+            //         _showBottomSheetTaggedPeople(context, false);
+            //       },
+            //       text: 'People',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.handshake_outlined,
+            //       onPressed: () {
+            //         _showBottomSheetTaggedPeople(context, true);
+            //       },
+            //       text: 'Sponsors',
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
+
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.location_on_outlined,
+            //       onPressed: () {
+            //         _launchMap();
+            //       },
+            //       text: 'Location',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.circle_outlined,
+            //       onPressed: () {
+            //         _showBottomSheetBrandInsight(context);
+            //       },
+            //       text: 'Analysis & guide',
+            //     ),
+            //   ],
+            // ),
+            // // const SizedBox(
+            // //   height: 10,
+            // // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.call_outlined,
+            //       onPressed: () {
+            //         _showBottomSheetContactOrganizer(context);
+            //       },
+            //       text: 'Call organizer',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.handshake_outlined,
+            //       onPressed: () {
+            //         _navigateToPage(
+            //             context,
+            //             ProfileScreen(
+            //               user: null,
+            //               currentUserId: widget.currentUserId,
+            //               userId: widget.event.authorId,
+            //             ));
+            //       },
+            //       text: 'See publisher',
+            //     ),
+            //   ],
+            // ),
+            // // BottomModelSheetListTileActionWidget(
+            // //   colorCode: '',
+            // //   icon: Icons.call_outlined,
+            // //   onPressed: () {
+            // //     _showBottomSheetContactOrganizer(context);
+            // //   },
+            // //   text: 'Call organizer',
+            // // ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       textcolor: Colors.red,
+            //       icon: Icons.flag_outlined,
+            //       onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     ReportContentPage(
+            //       contentId: widget.event.id,
+            //       parentContentId: widget.event.id,
+            //       repotedAuthorId: widget.event.authorId,
+            //       contentType: 'event',
+            //     ));
+            //       },
+            //       text: 'Report',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.feedback_outlined,
+            //       onPressed: () {
+            // Navigator.push(context,
+            //     MaterialPageRoute(builder: (_) => SuggestionBox()));
+            //       },
+            //       text: 'Suggestion',
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

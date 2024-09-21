@@ -695,7 +695,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     children: [
                       TextSpan(
                         text:
-                            '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
+                            '${currencyPartition.isEmpty ? '' : currencyPartition.length > 1 ? currencyPartition[1] : ''}\n',
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 14.0),

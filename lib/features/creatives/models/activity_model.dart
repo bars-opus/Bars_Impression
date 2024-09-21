@@ -18,6 +18,8 @@ enum NotificationActivityType {
   donation,
   bookingMade,
   bookingReceived,
+  tag,
+  tagConfirmed,
 }
 
 class Activity {
@@ -107,8 +109,17 @@ class Activity {
       case 'bookingReceived':
         return NotificationActivityType.bookingReceived;
 
+      case 'tag':
+        return NotificationActivityType.tag;
+        case 'tagConfirmed':
+        return NotificationActivityType.tagConfirmed;
+
+
+        
+
       default:
         return NotificationActivityType.eventUpdate;
+
     }
   }
 }

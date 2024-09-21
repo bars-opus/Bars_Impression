@@ -5,17 +5,19 @@ import 'package:uuid/uuid.dart';
 
 class StorageService {
   static Future<String> uploadUserProfileImage(
-      String url, File imageFile) async {
-    String? photoId = Uuid().v4();
-    File? image = await compressImage(photoId, imageFile);
+      // String url,
+      String userId,
+      File imageFile) async {
+    // String? photoId = Uuid().v4();
+    File? image = await compressImage(userId, imageFile);
 
-    if (url.isNotEmpty) {
-      RegExp exp = RegExp(r'userProfile_(.*).jpg');
-      photoId = exp.firstMatch(url)![1];
-    }
+    // if (url.isNotEmpty) {
+    //   RegExp exp = RegExp(r'userProfile_(.*).jpg');
+    //   photoId = exp.firstMatch(url)![1];
+    // }
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/users/$currentUserId/userProfile_$photoId.jpg')
+        .child('images/users/$currentUserId/userProfile_$userId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -98,9 +100,13 @@ class StorageService {
     return downloadUrl;
   }
 
-  static Future<String> uploadEvent(File imageFile) async {
-    String eventId = Uuid().v4();
+  static Future<String> uploadEvent(File imageFile, String eventId) async {
+    // String? eventId = Uuid().v4();
     File? image = await compressImage(eventId, imageFile);
+    // if (url.isNotEmpty) {
+    //   RegExp exp = RegExp(r'userProfile_(.*).jpg');
+    //   eventId = exp.firstMatch(url)![1];
+    // }
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
         .child('images/new_events/$currentUserId/event_$eventId.jpg')
@@ -133,7 +139,6 @@ class StorageService {
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }
-
 
   static Future<String> gvIdImageUrl(File imageFile) async {
     String gvId = Uuid().v4();
@@ -175,6 +180,4 @@ class StorageService {
       return null;
     }
   }
-
-
 }

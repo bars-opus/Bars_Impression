@@ -549,7 +549,7 @@ class _EventsAttendingTicketScreenState
           hasEnded: _eventHasEnded,
           currency: widget.event.isFree || widget.event.rate.isEmpty
               ? ''
-              : currencyPartition.length > 0
+              : currencyPartition.length > 1
                   ? currencyPartition[1].trim()
                   : '',
           event: widget.event,

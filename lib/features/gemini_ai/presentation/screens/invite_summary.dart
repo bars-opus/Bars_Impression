@@ -95,7 +95,7 @@ The date I received invite: ${MyDateFormat.toDate(invite.timestamp!.toDate())}
       setState(() {
         _isLoading = false;
       });
-      mySnackBar(context, 'An error occured');
+      // mySnackBar(context, 'An error occured');
     }
   }
 

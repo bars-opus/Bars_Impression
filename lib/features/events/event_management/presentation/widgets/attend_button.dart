@@ -7,6 +7,8 @@ class AttendButton extends StatefulWidget {
   final bool fromFlyier;
   final String marketedAffiliateId;
   final bool fromThisWeek;
+    final bool isPreview;
+
 
   const AttendButton({
     super.key,
@@ -15,6 +17,7 @@ class AttendButton extends StatefulWidget {
     required this.marketedAffiliateId,
     required this.fromFlyier,
     this.fromThisWeek = false,
+     this.isPreview = false,
   });
 
   @override
@@ -52,6 +55,7 @@ class _AttendButtonState extends State<AttendButton> {
                   event: widget.event,
                   inviteReply: '',
                   onInvite: false,
+                   isPreview: widget.isPreview,
                   // marketedAffiliateId: widget.marketedAffiliateId,
                 ),
               ],

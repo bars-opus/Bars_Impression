@@ -40,6 +40,8 @@ class Event {
   final bool showToFollowers;
   final bool showOnExplorePage;
   final bool fundsDistributed;
+  final bool hasDateBeenPostponed;
+
   final String dynamicLink;
 
   final String subaccountId;
@@ -50,8 +52,7 @@ class Event {
 
   final String latLng;
   final String aiAnalysis;
-    final String aiMarketingAdvice;
-
+  final String aiMarketingAdvice;
 
   Event({
     required this.id,
@@ -72,6 +73,7 @@ class Event {
     required this.venue,
     required this.dressCode,
     required this.time,
+    required this.hasDateBeenPostponed,
     required this.authorId,
     required this.report,
     required this.reportConfirmed,
@@ -101,16 +103,14 @@ class Event {
     required this.totalAffiliateAmount,
     required this.latLng,
     required this.aiAnalysis,
-    required this.aiMarketingAdvice
-,
+    required this.aiMarketingAdvice,
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
     return Event(
       id: doc.id,
-      
       title: doc['title'] ?? '',
-       overview: doc['overview'] ?? '',
+      overview: doc['overview'] ?? '',
       theme: doc['theme'] ?? '',
       dynamicLink: doc['dynamicLink'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
@@ -152,6 +152,7 @@ class Event {
       isVirtual: doc['isVirtual'] ?? false,
       isPrivate: doc['isPrivate'] ?? false,
       isFree: doc['isFree'] ?? false,
+      hasDateBeenPostponed: doc['hasDateBeenPostponed'] ?? false,
       isCashPayment: doc['isCashPayment'] ?? false,
       showToFollowers: doc['showToFollowers'] ?? false,
       showOnExplorePage: doc['showOnExplorePage'] ?? true,
@@ -167,9 +168,7 @@ class Event {
       totalAffiliateAmount: doc['totalAffiliateAmount'].toDouble(),
       latLng: doc['latLng'] ?? '',
       aiAnalysis: doc['aiAnalysis'] ?? '',
-
- aiMarketingAdvice: doc['aiMarketingAdvice'] ?? '',
-      
+      aiMarketingAdvice: doc['aiMarketingAdvice'] ?? '',
     );
   }
 
@@ -177,8 +176,7 @@ class Event {
     return Event(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
- overview: map['overview'] ?? '',
-      
+      overview: map['overview'] ?? '',
       subaccountId: map['subaccountId'] ?? '',
       theme: map['theme'] ?? '',
       dynamicLink: map['dynamicLink'] ?? '',
@@ -228,6 +226,7 @@ class Event {
       isVirtual: map['isVirtual'] ?? false,
       isPrivate: map['isPrivate'] ?? false,
       isFree: map['isFree'] ?? false,
+      hasDateBeenPostponed: map['hasDateBeenPostponed'] ?? false,
       isCashPayment: map['isCashPayment'] ?? false,
       showToFollowers: map['showToFollowers'] ?? false,
       showOnExplorePage: map['showOnExplorePage'] ?? true,
@@ -241,8 +240,7 @@ class Event {
       totalAffiliateAmount: (map['totalAffiliateAmount'] as num).toDouble(),
       latLng: map['latLng'] ?? '',
       aiAnalysis: map['aiAnalysis'] ?? '',
-aiMarketingAdvice: map['aiMarketingAdvice'] ?? '',
-      
+      aiMarketingAdvice: map['aiMarketingAdvice'] ?? '',
     );
   }
 
@@ -289,6 +287,7 @@ aiMarketingAdvice: map['aiMarketingAdvice'] ?? '',
       'showToFollowers': showToFollowers,
       'showOnExplorePage': true,
       'fundsDistributed': false,
+      'hasDateBeenPostponed': hasDateBeenPostponed,
       'isAffiliateExclusive': isAffiliateExclusive,
       'isAffiliateEnabled': isAffiliateEnabled,
       'clossingDay': clossingDay,
@@ -296,7 +295,7 @@ aiMarketingAdvice: map['aiMarketingAdvice'] ?? '',
       'totalAffiliateAmount': totalAffiliateAmount,
       'latLng': latLng,
       'aiAnalysis': aiAnalysis,
-      'aiMarketingAdvice':aiMarketingAdvice,
+      'aiMarketingAdvice': aiMarketingAdvice,
     };
   }
 }

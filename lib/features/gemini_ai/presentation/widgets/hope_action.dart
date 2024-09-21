@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../screens/_activity_summary.dart';
@@ -260,6 +261,33 @@ class _HopeActionsState extends State<HopeActions> {
     );
   }
 
+  void _showBottomSheetErrorMessage(String e) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: e,
+          subTitle: 'Check your internet connection and try again.',
+        );
+      },
+    );
+  }
+
+  _noInternet() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection
+      _showBottomSheetErrorMessage('No internet connection available. ');
+      return;
+    } else {}
+  }
+
   _options() {
     var _provider = Provider.of<UserData>(context);
 
@@ -342,6 +370,7 @@ class _HopeActionsState extends State<HopeActions> {
                                       isEditting: false,
                                       event: null,
                                       isCompleted: false,
+                                      isDraft: false,
                                     ));
                           }
                         : () {},
@@ -396,13 +425,15 @@ class _HopeActionsState extends State<HopeActions> {
                     Duration(seconds: 2),
                     null),
                 _florenceButton(
-                  () {
+                  () async {
+                    await _noInternet();
                     _provider.setFlorenceActionChoice('notification');
                     animateToPage(1);
                   },
                   Icons.notifications_active_outlined,
                   'Notifications',
-                  () {
+                  () async {
+                    await _noInternet();
                     animateToPage(1);
                     _provider.setFlorenceActionChoice('myTickets');
                   },
@@ -412,13 +443,15 @@ class _HopeActionsState extends State<HopeActions> {
                   false,
                 ),
                 _florenceButton(
-                  () {
+                  () async {
+                    await _noInternet();
                     animateToPage(1);
                     _provider.setFlorenceActionChoice('eventsCreated');
                   },
                   Icons.event,
                   'Events created',
-                  () {
+                  () async {
+                    await _noInternet();
                     animateToPage(1);
                     _provider.setFlorenceActionChoice('invites');
                   },

@@ -117,7 +117,7 @@ The date I received the notification: ${MyDateFormat.toDate(activity.timestamp!.
       setState(() {
         _isLoading = false;
       });
-      mySnackBar(context, 'An error occured');
+      // mySnackBar(context, 'An error occured');
     }
   }
 

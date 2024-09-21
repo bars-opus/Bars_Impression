@@ -97,27 +97,31 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   }
 
   Future<void> _setupIsBlocking() async {
-    bool isBlockingUser = await DatabaseService.isBlokingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = isBlockingUser;
-      });
-    }
+    try {
+      bool isBlockingUser = await DatabaseService.isBlokingUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockingUser = isBlockingUser;
+        });
+      }
+    } catch (e) {}
   }
 
   Future<void> _setupIsBlocked() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
+    try {
+      bool isBlockedUser = await DatabaseService.isBlockedUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockedUser = isBlockedUser;
+        });
+      }
+    } catch (e) {}
   }
 
   void _onAskTextChanged() {
@@ -937,6 +941,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
 // The build function is the main rendering function.
 //  It sets up a Scaffold with an AppBar (if widget.userAuthor is not null),
 //   a list of messages, and a comment field.
+
   @override
   Widget build(BuildContext context) {
     bool _restricitedChat =

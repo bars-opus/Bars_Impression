@@ -254,6 +254,7 @@ class _NotificationPageState extends State<NotificationPage>
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: NotificationSortButton(
+              fromModalSheet: true,
               icon: icon,
               onPressed: onPressed,
               title: title,
@@ -276,7 +277,7 @@ class _NotificationPageState extends State<NotificationPage>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 600.0),
+            height: ResponsiveHelper.responsiveHeight(context, 630.0),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -404,6 +405,15 @@ class _NotificationPageState extends State<NotificationPage>
                     },
                     Icons.request_quote_outlined,
                     'Refund requests',
+                  ),
+                  _sortByWidget(
+                    () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.tag);
+                    },
+                    Icons.link,
+                    'Tags',
                   ),
                   _sortByWidget(
                     () async {

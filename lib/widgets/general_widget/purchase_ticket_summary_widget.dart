@@ -219,7 +219,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                         lable: 'Total',
                         value: event.isFree
                             ? 'Free'
-                            : currencyPartition.length > 0
+                            : currencyPartition.length > 1
                                 ? "${currencyPartition[1].trim()} ${finalPurchasintgTicket.price.toString()}"
                                 : finalPurchasintgTicket.price.toString(),
                       ),

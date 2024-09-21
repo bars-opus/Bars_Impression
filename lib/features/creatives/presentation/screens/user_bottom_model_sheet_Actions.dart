@@ -125,11 +125,28 @@ class _UserBottomModalSheetActionsState
     );
   }
 
+  _sortByWidget(
+    VoidCallback onPressed,
+    IconData icon,
+    String title,
+    Color? color,
+    bool popOnPressed,
+  ) {
+    return NewModalActionButton(
+      onPressed: onPressed,
+      icon: icon,
+      color: color,
+      title: title,
+      fromModalSheet: false,
+      popOnPressed: popOnPressed,
+    );
+  }
+
   // _goToChurch(BuildContext context) async {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 520.0),
+      height: ResponsiveHelper.responsiveHeight(context, 550.0),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),
@@ -145,6 +162,7 @@ class _UserBottomModalSheetActionsState
             const SizedBox(
               height: 30,
             ),
+
             UserHeaderListTileWidget(
               onPressed: () {
                 _navigateToPage(
@@ -172,12 +190,12 @@ class _UserBottomModalSheetActionsState
             const SizedBox(
               height: 10,
             ),
+
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.send_outlined,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
                     _navigateToPage(
                         context,
                         SendToChats(
@@ -190,95 +208,119 @@ class _UserBottomModalSheetActionsState
                           sendTitle: widget.user.userName,
                         ));
                   },
-                  text: 'Send',
+                  Icons.send_outlined,
+                  'Send',
+                  null,
+                  true,
                 ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.share_outlined,
-                  onPressed: () async {
+                _sortByWidget(
+                  () async {
                     Share.share(widget.user.dynamicLink);
                   },
-                  text: 'Share',
+                  Icons.share_outlined,
+                  'Share',
+                  null,
+                  true,
                 ),
               ],
             ),
+
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  icon: MdiIcons.thoughtBubbleOutline,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
                     _showBottomSheetAdvice(context);
                   },
-                  text: 'Advice',
+                  MdiIcons.thoughtBubbleOutline,
+                  'Advice',
+                  null,
+                  true,
                 ),
-                BottomModelSheetIconActionWidget(
-                  dontPop: true,
-                  icon: Icons.message_outlined,
-                  onPressed: widget.currentUserId == widget.user.userId
+                _sortByWidget(
+                  widget.currentUserId == widget.user.userId
                       ? () {
                           _showBottomSheetCantMessage();
                         }
                       : () async {
-                          try {
-                            Chat? _chat =
-                                await DatabaseService.getUserChatWithId(
-                              widget.currentUserId,
-                              widget.user.userId,
-                            );
+                          // try {
+                          Chat? _chat = await DatabaseService.getUserChatWithId(
+                            widget.currentUserId,
+                            widget.user.userId,
+                          );
 
-                            _bottomModalSheetMessage(
-                              context,
-                              _chat,
-                            );
-                          } catch (e) {}
+                          _bottomModalSheetMessage(
+                            context,
+                            _chat,
+                          );
+                          // } catch (e) {}
                         },
-                  text: 'Message',
+                  Icons.message_outlined,
+                  'Message',
+                  null,
+                  false,
                 ),
               ],
             ),
             const SizedBox(
               height: 10,
             ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: '',
-              icon: Icons.person_outline,
-              onPressed: () {
-                _navigateToPage(
-                    context,
-                    ProfileScreen(
-                      currentUserId: widget.currentUserId,
-                      userId: widget.user.userId,
-                      user: null,
-                    ));
-              },
-              text: 'Go to profile',
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _sortByWidget(
+                  () async {
+                    _navigateToPage(
+                        context,
+                        ProfileScreen(
+                          currentUserId: widget.currentUserId,
+                          userId: widget.user.userId,
+                          user: null,
+                        ));
+                  },
+                  Icons.person_2_outlined,
+                  'Profile',
+                  null,
+                  true,
+                ),
+                _sortByWidget(
+                  () async {
+                    _navigateToPage(
+                        context,
+                        UserBarcode(
+                          userDynamicLink: widget.user.dynamicLink,
+                          bio: widget.user.overview,
+                          userName: widget.user.userName,
+                          userId: widget.user.userId,
+                          profileImageUrl: widget.user.profileImageUrl,
+                        ));
+                  },
+                  Icons.qr_code,
+                  'Barcode',
+                  null,
+                  true,
+                ),
+              ],
             ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: '',
-              icon: Icons.qr_code,
-              onPressed: () {
-                _navigateToPage(
-                    context,
-                    UserBarcode(
-                      userDynamicLink: widget.user.dynamicLink,
-                      bio: widget.user.overview,
-                      userName: widget.user.userName,
-                      userId: widget.user.userId,
-                      profileImageUrl: widget.user.profileImageUrl,
-                    ));
-              },
-              text: 'Bar code',
-            ),
+
             const SizedBox(
               height: 10,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                BottomModelSheetIconActionWidget(
-                  textcolor: Colors.red,
-                  icon: Icons.flag_outlined,
-                  onPressed: () {
+                _sortByWidget(
+                  () async {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SuggestionBox()));
+                  },
+                  Icons.feedback_outlined,
+                  'Suggestion',
+                  null,
+                  true,
+                ),
+                _sortByWidget(
+                  () async {
                     _navigateToPage(
                         context,
                         ReportContentPage(
@@ -288,18 +330,141 @@ class _UserBottomModalSheetActionsState
                           repotedAuthorId: widget.user.userId,
                         ));
                   },
-                  text: 'Report',
-                ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.feedback_outlined,
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => SuggestionBox()));
-                  },
-                  text: 'Suggestion',
+                  Icons.flag_outlined,
+                  'Report',
+                  Colors.red,
+                  true,
                 ),
               ],
             ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.send_outlined,
+            //       onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     SendToChats(
+            //       sendContentId: widget.user.userId,
+            //       currentUserId:
+            //           Provider.of<UserData>(context, listen: false)
+            //               .currentUserId!,
+            //       sendContentType: 'User',
+            //       sendImageUrl: widget.user.profileImageUrl,
+            //       sendTitle: widget.user.userName,
+            //     ));
+            //       },
+            //       text: 'Send',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.share_outlined,
+            //       onPressed: () async {
+            //         Share.share(widget.user.dynamicLink);
+            //       },
+            //       text: 'Share',
+            //     ),
+            //   ],
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: MdiIcons.thoughtBubbleOutline,
+            //       onPressed: () {
+            //         _showBottomSheetAdvice(context);
+            //       },
+            //       text: 'Advice',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       dontPop: true,
+            //       icon: Icons.message_outlined,
+            // onPressed: widget.currentUserId == widget.user.userId
+            //     ? () {
+            //         _showBottomSheetCantMessage();
+            //       }
+            //     : () async {
+            //         try {
+            //           Chat? _chat =
+            //               await DatabaseService.getUserChatWithId(
+            //             widget.currentUserId,
+            //             widget.user.userId,
+            //           );
+
+            //           _bottomModalSheetMessage(
+            //             context,
+            //             _chat,
+            //           );
+            //         } catch (e) {}
+            //       },
+            //       text: 'Message',
+            //     ),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: '',
+            //   icon: Icons.person_outline,
+            //   onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     ProfileScreen(
+            //       currentUserId: widget.currentUserId,
+            //       userId: widget.user.userId,
+            //       user: null,
+            //     ));
+            //   },
+            //   text: 'Go to profile',
+            // ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: '',
+            //   icon: Icons.qr_code,
+            //   onPressed: () {
+            //     _navigateToPage(
+            //         context,
+            //         UserBarcode(
+            //           userDynamicLink: widget.user.dynamicLink,
+            //           bio: widget.user.overview,
+            //           userName: widget.user.userName,
+            //           userId: widget.user.userId,
+            //           profileImageUrl: widget.user.profileImageUrl,
+            //         ));
+            //   },
+            //   text: 'Bar code',
+            // ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       textcolor: Colors.red,
+            //       icon: Icons.flag_outlined,
+            //       onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     ReportContentPage(
+            //       contentId: widget.user.userId,
+            //       contentType: widget.user.userName,
+            //       parentContentId: widget.user.userId,
+            //       repotedAuthorId: widget.user.userId,
+            //     ));
+            //       },
+            //       text: 'Report',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.feedback_outlined,
+            //       onPressed: () {
+            // Navigator.push(context,
+            //     MaterialPageRoute(builder: (_) => SuggestionBox()));
+            //       },
+            //       text: 'Suggestion',
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

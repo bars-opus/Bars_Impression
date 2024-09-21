@@ -123,7 +123,7 @@ Provide a brief reason for the potential match.
 
   /// Fetches and sets up all potential user matchings for the specified event.
   Future<void> _setUpAllMatchings() async {
-    // try {
+    try {
     QuerySnapshot ticketOrderSnapShot = widget.eventId.isNotEmpty
         ? await newEventBrandMatchingRef
             .doc(widget.eventId)
@@ -159,12 +159,12 @@ Provide a brief reason for the potential match.
         _matcheList = matches;
       });
     }
-    // } catch (e) {
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    //   mySnackBar(context, 'An error occured');
-    // }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      mySnackBar(context, 'An error occured');
+    }
   }
 
   void _navigateToPage(BuildContext context, Widget page) {

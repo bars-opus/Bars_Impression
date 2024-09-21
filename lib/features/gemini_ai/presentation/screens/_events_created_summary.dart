@@ -97,7 +97,7 @@ the closing date of the event: ${MyDateFormat.toDate(event.clossingDay.toDate())
       }
     } catch (e) {
       _isLoading = false;
-      mySnackBar(context, 'An error occured');
+      // mySnackBar(context, 'An error occured');
     }
   }
 
@@ -343,4 +343,3 @@ $preparedData
     );
   }
 }
-

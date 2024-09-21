@@ -17,6 +17,8 @@ final postsRef = _firestore.collection('posts');
 final allPostsRef = _firestore.collection('allPosts');
 final testingRef = _firestore.collection('testing');
 final eventsRef = _firestore.collection('new_events');
+final eventsDraftRef = _firestore.collection('new_events_draft');
+
 final userIssueComplaintRef = _firestore.collection('userIssueComplaint');
 final deletdEventsRef = _firestore.collection('all_deleted_events');
 final allRefundRequestsRef = _firestore.collection('allRefundRequests');
@@ -65,6 +67,8 @@ final newReviewReceivedRef = _firestore.collection('new_userReviewReceived');
 final newReviewMadeRef = _firestore.collection('new_userReviewMade');
 final newEventTicketOrderRef = _firestore.collection('new_eventTicketOrder');
 final sentEventIviteRef = _firestore.collection('new_sentEventInvite');
+final userTagRef = _firestore.collection('new_userTags');
+
 final userRefundRequestsRef = _firestore.collection('userRefundRequests');
 final userPayoutRequestRef = _firestore.collection('userPayoutRequests');
 final eventAffiliateRef = _firestore.collection('new_eventAffiliate');

@@ -59,42 +59,46 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   }
 
   Future<void> _setupIsBlocking() async {
-    bool isBlockingUser = await DatabaseService.isBlokingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = isBlockingUser;
-      });
-    }
+    try {
+      bool isBlockingUser = await DatabaseService.isBlokingUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockingUser = isBlockingUser;
+        });
+      }
+    } catch (e) {}
   }
 
   Future<void> _setupIsBlocked() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
+    try {
+      bool isBlockedUser = await DatabaseService.isBlockedUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockedUser = isBlockedUser;
+        });
+      }
+    } catch (e) {}
   }
 
   _setupIsBlockedUser() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
+    try {
+      bool isBlockedUser = await DatabaseService.isBlockedUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockedUser = isBlockedUser;
+        });
+      }
+    } catch (e) {}
   }
-
-
 
   _buildAskTF() {
     final currentUserId = Provider.of<UserData>(context).currentUserId;
@@ -123,7 +127,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
     );
   }
 
-
   // void _showBottomSheetEditAdvice(
   //   UserAdvice userAdvice,
   // ) {
@@ -150,7 +153,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
       advice: userAdvice,
       userId: widget.userId,
     );
-
   }
 
   Widget _buildStreamBuilder(BuildContext context) {
@@ -173,7 +175,10 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   }
 
   Widget _buildLoadingContainer(BuildContext context) {
-    return const Center(child: CircularProgressIndicator( color:Colors.blue,));
+    return const Center(
+        child: CircularProgressIndicator(
+      color: Colors.blue,
+    ));
   }
 
   Widget _buildNoContentContainer(BuildContext context) {

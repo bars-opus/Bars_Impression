@@ -77,7 +77,7 @@ class _DatePickerState extends State<DatePicker> {
   _stateDateSelector() {
     var _provider = Provider.of<UserData>(context, listen: false);
     return _selector(
-      'Start Date',
+      'Start date',
       _provider.startDateString.isNotEmpty
           ? "    ${MyDateFormat.toDate(DateTime.parse(_provider.startDateString))}"
           : '',
@@ -90,7 +90,7 @@ class _DatePickerState extends State<DatePicker> {
   _endDateSelector() {
     var _provider = Provider.of<UserData>(context, listen: false);
     return _selector(
-      'End Date',
+      'End date',
       _provider.clossingDayString.isNotEmpty
           ? "    ${MyDateFormat.toDate(DateTime.parse(_provider.clossingDayString))}"
           : '',

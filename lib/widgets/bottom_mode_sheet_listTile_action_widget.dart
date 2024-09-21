@@ -6,11 +6,14 @@ class BottomModelSheetListTileActionWidget extends StatelessWidget {
   final IconData icon;
   final String colorCode;
   final bool dontPop;
+    final bool isLoading;
+
 
   BottomModelSheetListTileActionWidget(
       {required this.onPressed,
       required this.text,
       this.dontPop = false,
+        this.isLoading = false,
       required this.icon,
       required this.colorCode});
 
@@ -29,6 +32,7 @@ class BottomModelSheetListTileActionWidget extends StatelessWidget {
        
         width: width.toDouble(),
         child: BottomModelSheetListTileWidget(
+          isLoading: isLoading,
           icon: icon,
           colorCode: colorCode,
           text: text,

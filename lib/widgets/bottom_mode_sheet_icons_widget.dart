@@ -33,12 +33,9 @@ class BottomModelSheetIconsWidget extends StatelessWidget {
                 children: [
                   Icon(
                     icon,
-                    color: Colors.white,
+                    color: textcolor,
                     size: ResponsiveHelper.responsiveHeight(context, 16.0),
                   ),
-                  // const SizedBox(
-                  //   width: 10,
-                  // ),
                   Text(
                     text,
                     style: textcolor == null
@@ -60,16 +57,21 @@ class BottomModelSheetIconsWidget extends StatelessWidget {
                         : textcolor,
                     size: ResponsiveHelper.responsiveHeight(context, 25.0),
                   ),
-                  Text(
-                    text,
-                    style: textcolor == null
-                        ? Theme.of(context).textTheme.bodySmall
-                        : TextStyle(
-                            color: textcolor,
-                            fontSize: ResponsiveHelper.responsiveHeight(
-                                context, 12.0),
-                          ),
-                  ),
+                  if (text.isNotEmpty)
+                    const SizedBox(
+                      height: 5,
+                    ),
+                  if (text.isNotEmpty)
+                    Text(
+                      text,
+                      style: textcolor == null
+                          ? Theme.of(context).textTheme.bodySmall
+                          : TextStyle(
+                              color: textcolor,
+                              fontSize: ResponsiveHelper.responsiveHeight(
+                                  context, 10.0),
+                            ),
+                    ),
                 ],
               );
   }

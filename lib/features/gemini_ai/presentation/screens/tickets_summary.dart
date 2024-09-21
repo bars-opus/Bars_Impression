@@ -92,7 +92,7 @@ The time I purchased the ticket: ${MyDateFormat.toDate(ticket.timestamp!.toDate(
       setState(() {
         _isLoading = false;
       });
-      mySnackBar(context, 'An error occured');
+      // mySnackBar(context, 'An error occured');
     }
   }
 

@@ -19,10 +19,12 @@ class ScheduleGroup extends StatelessWidget {
       required this.eventOrganiserId})
       : super(key: key);
 
-  void _removeShedule(Schedule removingShedule) {
+  void _removeShedule(BuildContext context, Schedule removingShedule) {
+    var _provider = Provider.of<UserData>(context, listen: false);
     schedules.removeWhere((schedule) =>
         schedule.title == removingShedule.title &&
         schedule.startTime == removingShedule.startTime);
+    _provider.setInt2(1);
   }
 
   void _navigateToPage(BuildContext context, Widget page) {
@@ -174,12 +176,26 @@ class ScheduleGroup extends StatelessWidget {
                               Positioned(
                                 right: 10,
                                 top: 10,
-                                child: IconButton(
-                                  onPressed: () => _removeShedule(schedule),
-                                  icon: Icon(
-                                    Icons.remove,
-                                    color: Colors.red,
-                                  ),
+                                child: Row(
+                                  children: [
+                                    // IconButton(
+                                    //   onPressed: () =>
+                                    //       _showBottomSheetAddSchedule(
+                                    //           context, schedule),
+                                    //   icon: Icon(
+                                    //     Icons.edit,
+                                    //     color: Colors.blue,
+                                    //   ),
+                                    // ),
+                                    IconButton(
+                                      onPressed: () =>
+                                          _removeShedule(context, schedule),
+                                      icon: Icon(
+                                        Icons.remove,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                           ],

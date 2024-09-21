@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -1061,7 +1062,1121 @@ class DatabaseService {
 
 //Event
 
-  static Future<void> createEvent(Event event, String summary) async {
+//submit draft
+  static Future<void> createEventDraft(
+    Event event,
+    UserData provider,
+  ) async {
+    // Create a toJson method inside Event class to serialize the object into a map
+    Map<String, dynamic> eventData = event.toJson();
+    // Prepare the batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // Add the event to 'eventsRef'
+    DocumentReference eventRef =
+        eventsDraftRef.doc(event.authorId).collection('events').doc(event.id);
+    batch.set(eventRef, eventData);
+    // Commit the batch
+    await batch.commit();
+    provider.setEventId(event.id);
+
+    provider.setIsLoading(false);
+  }
+
+  static Future<void> deleEventDraft(
+    Event event,
+  ) async {
+    // Create a toJson method inside Event class to serialize the object into a map
+    // Prepare the batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // Add the event to 'eventsRef'
+    DocumentReference eventRef =
+        eventsDraftRef.doc(event.authorId).collection('events').doc(event.id);
+    batch.delete(eventRef);
+    // Commit the batch
+    await batch.commit();
+    // Commit the batch
+  }
+
+// Edit draft
+  // static Future<void> editEventDraft({
+  //   required String imageUrl,
+  //   required String venue,
+  //   required bool isVirtual,
+  //   required bool isPrivate,
+  //   required bool showToFollowers,
+  //   required bool isFree,
+  //   required UserData provider,
+  //   required bool isCashPayment,
+  //   required bool showOnExplorePage,
+  //   required Event? event,
+  // }) async {
+  //   // Create a Map to hold the fields to update
+  //   Map<String, dynamic> eventData = {};
+
+  //   // Compare each field with the existing values in the event model
+  //   if (event!.imageUrl != imageUrl) {
+  //     if (provider.imageUrlDraft != imageUrl) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['imageUrl'] = imageUrl;
+  //       provider.setImageUrlDraft(
+  //           imageUrl); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.virtualVenue != venue) {
+  //     if (provider.virtualVenueDraft != venue) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['virtualVenue'] = venue;
+  //       provider.setEventVirtualVenueDraft(
+  //           venue); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.isVirtual != isVirtual) {
+  //     if (provider.isVirtualDraft != isVirtual) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['isVirtual'] = isVirtual;
+  //       provider.setIsVirtualDraft(
+  //           isVirtual); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.isPrivate != isPrivate) {
+  //     if (provider.isPrivateDraft != isPrivate) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['isPrivate'] = isPrivate;
+  //       provider.setIsPrivateDraft(
+  //           isPrivate); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.showToFollowers != showToFollowers) {
+  //     if (provider.showToFollowersDraft != showToFollowers) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['showToFollowers'] = showToFollowers;
+  //       provider.setShowToFollowersDraft(
+  //           showToFollowers); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.isFree != isFree) {
+  //     if (provider.isFreeDraft != isFree) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['isFree'] = isFree;
+  //       provider
+  //           .setIsFreeDraft(isFree); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.isCashPayment != isCashPayment) {
+  //     if (provider.isCashPaymentDraft != isCashPayment) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['isCashPayment'] = isCashPayment;
+  //       provider.setIsCashPaymentDraft(
+  //           isCashPayment); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   if (event.showOnExplorePage != showOnExplorePage) {
+  //     if (provider.showOnExplorePageDraft != showOnExplorePage) {
+  //       // Assuming you have a corresponding draft variable
+  //       eventData['showOnExplorePage'] = showOnExplorePage;
+  //       provider.setShowOnExplorePageDraft(
+  //           showOnExplorePage); // Assuming you have a corresponding setter
+  //     }
+  //   }
+
+  //   // Check if there are any fields to update
+  //   if (eventData.isNotEmpty) {
+  //     // Prepare the batch
+  //     WriteBatch batch = FirebaseFirestore.instance.batch();
+
+  //     // Add the event to 'eventsRef'
+  //     DocumentReference eventRef =
+  //         eventsDraftRef.doc(event.authorId).collection('events').doc(event.id);
+  //     batch.update(eventRef, eventData);
+
+  //     // Commit the batch
+  //     await batch.commit();
+  //   }
+  // }
+
+  //
+  //
+//
+  static Future<void> editEventDraft({
+    required String imageUrl,
+    required String venue,
+    required bool isVirtual,
+    required bool isPrivate,
+    required bool showToFollowers,
+    required bool isFree,
+    required UserData provider,
+    required bool isCashPayment,
+    required bool showOnExplorePage,
+    required Event? event,
+    required bool isDraft,
+  }) async {
+    // Create a Map to hold the fields to update
+    Map<String, dynamic> eventData = {};
+
+    // Update imageUrl
+    if (provider.imageUrlDraft != imageUrl) {
+      eventData['imageUrl'] = imageUrl;
+      provider.setImageUrlDraft(imageUrl);
+    }
+
+    // Update isVirtual
+    if (provider.isVirtualDraft != isVirtual) {
+      eventData['isVirtual'] = isVirtual;
+      provider.setIsVirtualDraft(isVirtual);
+    }
+
+    // Update isPrivate
+    if (provider.isPrivateDraft != isPrivate) {
+      eventData['isPrivate'] = isPrivate; // Update eventData with the new value
+      provider.setIsPrivateDraft(isPrivate); // Update the draft
+    }
+
+    // Update showToFollowers
+    if (provider.showToFollowersDraft != showToFollowers) {
+      eventData['showToFollowers'] = showToFollowers;
+      provider.setShowToFollowersDraft(showToFollowers);
+    }
+
+    // Update isFree
+    if (provider.isFreeDraft != isFree) {
+      eventData['isFree'] = isFree;
+      provider.setIsFreeDraft(isFree);
+    }
+
+    // Update isCashPayment
+    if (provider.isCashPaymentDraft != isCashPayment) {
+      eventData['isCashPayment'] = isCashPayment;
+      provider.setIsCashPaymentDraft(isCashPayment);
+    }
+
+    // Check if there are any fields to update
+    if (eventData.isNotEmpty) {
+      // Prepare the batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the event to 'eventsRef'
+      DocumentReference eventRef = isDraft
+          ? await eventsDraftRef
+              .doc(event!.authorId)
+              .collection('events')
+              .doc(event.id)
+          : await eventsDraftRef
+              .doc(provider.currentUserId)
+              .collection('events')
+              .doc(provider.eventId);
+      batch.update(eventRef, eventData);
+      // DocumentReference eventRef = eventsDraftRef
+      //     .doc(event!.authorId)
+      //     .collection('events')
+      //     .doc(event.id);
+      // batch.update(eventRef, eventData);
+
+      // Commit the batch
+      await batch.commit();
+    }
+  }
+
+// Update imageUrl method
+  // static void updateImageUrl(
+  //     String imageUrl, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.imageUrlDraft != imageUrl) {
+  //     eventData['imageUrl'] = imageUrl;
+  //     provider.setImageUrlDraft(imageUrl);
+  //   }
+  // }
+
+// Update virtualVenue method
+  // static void updateVirtualVenue(
+  //     String venue, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.virtualVenueDraft != venue) {
+  //     eventData['virtualVenue'] = venue;
+  //     provider.setEventVirtualVenueDraft(venue);
+  //   }
+  // }
+
+// Update isVirtual method
+  // static void updateIsVirtual(
+  //     bool isVirtual, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.isVirtualDraft != isVirtual) {
+  //     eventData['isVirtual'] = isVirtual;
+  //     provider.setIsVirtualDraft(isVirtual);
+  //   }
+  // }
+
+// Update isPrivate method
+  // static void updateIsPrivate(
+  //     bool isPrivate, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.isPrivateDraft != isPrivate) {
+  //     eventData['isPrivate'] = isPrivate;
+  //     provider.setIsPrivateDraft(isPrivate);
+  //   }
+  // }
+
+// Update showToFollowers method
+  // static void updateShowToFollowers(
+  //     bool showToFollowers, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.showToFollowersDraft != showToFollowers) {
+  //     eventData['showToFollowers'] = showToFollowers;
+  //     provider.setShowToFollowersDraft(showToFollowers);
+  //   }
+  // }
+
+// Update isFree method
+  // static void updateIsFree(
+  //     bool isFree, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.isFreeDraft != isFree) {
+  //     eventData['isFree'] = isFree;
+  //     provider.setIsFreeDraft(isFree);
+  //   }
+  // }
+
+// Update isCashPayment method
+  // static void updateIsCashPayment(
+  //     bool isCashPayment, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.isCashPaymentDraft != isCashPayment) {
+  //     eventData['isCashPayment'] = isCashPayment;
+  //     provider.setIsCashPaymentDraft(isCashPayment);
+  //   }
+  // }
+
+// Update showOnExplorePage method
+  // static void updateShowOnExplorePage(bool showOnExplorePage, UserData provider,
+  //     Map<String, dynamic> eventData) {
+  //   if (provider.showOnExplorePageDraft != showOnExplorePage) {
+  //     eventData['showOnExplorePage'] = showOnExplorePage;
+  //     provider.setShowOnExplorePageDraft(showOnExplorePage);
+  //   }
+  // }
+
+//
+//
+//
+  // Edit draft
+  static Future<void> editEventTitleAndThemeDraft({
+    required String title,
+    required String theme,
+    required String overView,
+    required String dressCode,
+    required String city,
+    required String country,
+    required String aiMarketingAdvice,
+    required UserData provider,
+    required Event? event,
+    required bool isDraft,
+  }) async {
+    // Create a Map to hold the fields to update
+    Map<String, dynamic> eventData = {};
+
+    // Update title
+    if (provider.titleDraft != title) {
+      eventData['title'] = title;
+      provider.setTitleDraft(title);
+    }
+    // if (isDraft) {
+    //   if (event!.title != title) {
+    //     if (provider.titleDraft != title) {
+    //       eventData['title'] = title;
+    //       provider.setTitleDraft(title);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.titleDraft != title) {
+    //     eventData['title'] = title;
+    //     provider.setTitleDraft(title);
+    //   }
+    // }
+
+    // Update theme
+    if (provider.themeDraft != theme) {
+      eventData['theme'] = theme;
+      provider.setThemeDraft(theme);
+    }
+
+    if (provider.aiMarketingDraft != aiMarketingAdvice) {
+      eventData['aiMarketingAdvice'] = aiMarketingAdvice;
+      provider.setAiMarketingDraft(aiMarketingAdvice);
+    }
+    // if (isDraft) {
+    //   if (event!.theme != theme) {
+    //     if (provider.themeDraft != theme) {
+    //       eventData['theme'] = theme;
+    //       provider.setThemeDraft(theme);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.themeDraft != theme) {
+    //     eventData['theme'] = theme;
+    //     provider.setThemeDraft(theme);
+    //   }
+    // }
+
+    // Update overview
+    if (provider.overviewDraft != overView) {
+      eventData['overview'] = overView;
+      provider.setOverviewDraft(overView);
+    }
+    // if (isDraft) {
+    //   if (event!.overview != overView) {
+    //     if (provider.overviewDraft != overView) {
+    //       eventData['overview'] = overView;
+    //       provider.setOverviewDraft(overView);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.overviewDraft != overView) {
+    //     eventData['overview'] = overView;
+    //     provider.setOverviewDraft(overView);
+    //   }
+    // }
+
+    // Update dressCode
+    if (provider.dressingCodeDraft != dressCode) {
+      eventData['dressCode'] = dressCode;
+      provider.setDressingCodeDraft(dressCode);
+    }
+    // if (isDraft) {
+    //   if (event!.dressCode != dressCode) {
+    //     if (provider.dressingCodeDraft != dressCode) {
+    //       eventData['dressCode'] = dressCode;
+    //       provider.setDressingCodeDraft(dressCode);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.dressingCodeDraft != dressCode) {
+    //     eventData['dressCode'] = dressCode;
+    //     provider.setDressingCodeDraft(dressCode);
+    //   }
+    // }
+
+    // Update city
+    if (provider.cityDraft != city) {
+      eventData['city'] = city;
+      provider.setCityDraft(city);
+    }
+    // if (isDraft) {
+    //   if (event!.city != city) {
+    //     if (provider.cityDraft != city) {
+    //       eventData['city'] = city;
+    //       provider.setCityDraft(city);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.cityDraft != city) {
+    //     eventData['city'] = city;
+    //     provider.setCityDraft(city);
+    //   }
+    // }
+
+    // Update country
+    if (provider.countryDraft != country) {
+      eventData['country'] = country;
+      provider.setCountryDraft(country);
+    }
+    // if (isDraft) {
+    //   if (event!.country != country) {
+    //     if (provider.countryDraft != country) {
+    //       eventData['country'] = country;
+    //       provider.setCountryDraft(country);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.countryDraft != country) {
+    //     eventData['country'] = country;
+    //     provider.setCountryDraft(country);
+    //   }
+    // }
+
+    // Check if there are any fields to update
+    if (eventData.isNotEmpty) {
+      // Prepare the batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the event to 'eventsRef'
+      DocumentReference eventRef = isDraft
+          ? await eventsDraftRef
+              .doc(event!.authorId)
+              .collection('events')
+              .doc(event.id)
+          : await eventsDraftRef
+              .doc(provider.currentUserId)
+              .collection('events')
+              .doc(provider.eventId);
+      batch.update(eventRef, eventData);
+
+      // Commit the batch
+      await batch.commit();
+    }
+  }
+
+// Update title method
+  // static void updateTitle(
+  //     String title, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.titleDraft != title) {
+  //     eventData['title'] = title;
+  //     provider.setTitleDraft(title);
+  //   }
+  // }
+
+// Update theme method
+  // static void updateTheme(
+  //     String theme, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.themeDraft != theme) {
+  //     eventData['theme'] = theme;
+  //     provider.setThemeDraft(theme);
+  //   }
+  // }
+
+// Update overview method
+  // static void updateOverview(
+  //     String overView, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.overviewDraft != overView) {
+  //     eventData['overview'] = overView;
+  //     provider.setOverviewDraft(overView);
+  //   }
+  // }
+
+// Update dressCode method
+  // static void updateDressCode(
+  //     String dressCode, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.dressingCodeDraft != dressCode) {
+  //     eventData['dressCode'] = dressCode;
+  //     provider.setDressingCodeDraft(dressCode);
+  //   }
+  // }
+
+// Update city method
+  // static void updateCity(
+  //     String city, UserData provider, Map<String, dynamic> eventData) {
+  // if (provider.cityDraft != city) {
+  //   eventData['city'] = city;
+  //   provider.setCityDraft(city);
+  // }
+  // }
+
+// Update country method
+  // static void updateCountry(
+  //     String country, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.countryDraft != country) {
+  //     eventData['country'] = country;
+  //     provider.setCountryDraft(country);
+  //   }
+  // }
+
+//
+//
+// Edit draft
+//edit type, category, startdate, and closing date
+  static Future<void> editEventDraftTypeAndDates({
+    required String type,
+    required String category,
+    required Timestamp startDate,
+    required Timestamp closingDay,
+    required Event? event,
+    required UserData provider,
+    required bool isDraft,
+  }) async {
+    // Create a Map to hold the fields to update
+    Map<String, dynamic> eventData = {};
+
+    // Update type
+    if (provider.typeDraft != type) {
+      eventData['type'] = type;
+      provider.setTypeDraft(type);
+    }
+    // if (isDraft) {
+    //   if (event!.type != type) {
+    //     if (provider.typeDraft != type) {
+    //       eventData['type'] = type;
+    //       provider.setTypeDraft(type);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.typeDraft != type) {
+    //     eventData['type'] = type;
+    //     provider.setTypeDraft(type);
+    //   }
+    // }
+
+    // Update category
+    if (provider.categoryDraft != category) {
+      eventData['category'] = category;
+      provider.setCategoryDraft(category);
+    }
+    // if (isDraft) {
+    //   if (event!.category != category) {
+    //     if (provider.categoryDraft != category) {
+    //       eventData['category'] = category;
+    //       provider.setCategoryDraft(category);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.categoryDraft != category) {
+    //     eventData['category'] = category;
+    //     provider.setCategoryDraft(category);
+    //   }
+    // }
+
+    // Update startDate
+    if (provider.startDateDraft != startDate) {
+      eventData['startDate'] = startDate;
+      provider.setStartDateDraft(startDate);
+    }
+    // if (isDraft) {
+    //   if (event!.startDate != startDate) {
+    //     if (provider.startDateDraft != startDate) {
+    //       eventData['startDate'] = startDate;
+    //       provider.setStartDateDraft(startDate);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.startDateDraft != startDate) {
+    //     eventData['startDate'] = startDate;
+    //     provider.setStartDateDraft(startDate);
+    //   }
+    // }
+
+    // Update closingDay
+    if (provider.closingDayDraft != closingDay) {
+      eventData['clossingDay'] = closingDay;
+      provider.setClosingDayDraft(closingDay);
+    }
+    // if (isDraft) {
+    //   if (event!.clossingDay != closingDay) {
+    //     if (provider.closingDayDraft != closingDay) {
+    //       eventData['closingDay'] = closingDay;
+    //       provider.setClosingDayDraft(closingDay);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.closingDayDraft != closingDay) {
+    //     eventData['closingDay'] = closingDay;
+    //     provider.setClosingDayDraft(closingDay);
+    //   }
+    // }
+
+    // Check if there are any fields to update
+    if (eventData.isNotEmpty) {
+      // Prepare the batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the event to 'eventsRef'
+      DocumentReference eventRef = isDraft
+          ? await eventsDraftRef
+              .doc(event!.authorId)
+              .collection('events')
+              .doc(event.id)
+          : await eventsDraftRef
+              .doc(provider.currentUserId)
+              .collection('events')
+              .doc(provider.eventId);
+      batch.update(eventRef, eventData);
+
+      // Commit the batch
+      await batch.commit();
+    }
+  }
+
+// Update type method
+  // static void updateEventType(
+  //     String type, UserData provider, Map<String, dynamic> eventData) {
+  // if (provider.typeDraft != type) {
+  //   eventData['type'] = type;
+  //   provider.setTypeDraft(type);
+  // }
+  // }
+
+// Update category method
+  // static void updateCategory(
+  //     String category, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.categoryDraft != category) {
+  //     eventData['category'] = category;
+  //     provider.setCategoryDraft(category);
+  //   }
+  // }
+
+// Update startDate method
+  // static void updateStartDate(
+  //     Timestamp startDate, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.startDateDraft != startDate) {
+  //     eventData['startDate'] = startDate;
+  //     provider.setStartDateDraft(startDate);
+  //   }
+  // }
+
+// Update closingDay method
+  // static void updateClosingDay(
+  //     Timestamp closingDay, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.closingDayDraft != closingDay) {
+  //     eventData['closingDay'] = closingDay;
+  //     provider.setClosingDayDraft(closingDay);
+  //   }
+  // }
+
+//
+//
+//
+// Edit draft
+//Edit contacts, previous events, marketing advive and terms and conditons
+  static Future<void> editEventDraftContactAndTerms({
+    required UserData provider,
+    required List<String> contacts,
+    required String previousEvent,
+    required String termsAndConditions,
+    required Event? event,
+    required bool isDraft,
+  }) async {
+    // Create a Map to hold the fields to update
+    Map<String, dynamic> eventData = {};
+
+    // Update contacts
+    if (!listEquals(provider.eventOrganizerContactsDraft, contacts)) {
+      eventData['contacts'] = contacts;
+      provider.setEventOrganizerContactsDraft(contacts);
+    }
+    // if (isDraft) {
+    //   if (!listEquals(event!.contacts, contacts)) {
+    //     if (!listEquals(provider.eventOrganizerContactsDraft, contacts)) {
+    //       eventData['contacts'] = contacts;
+    //       provider.setEventOrganizerContactsDraft(contacts);
+    //     }
+    //   }
+    // } else {
+    //   if (!listEquals(provider.eventOrganizerContactsDraft, contacts)) {
+    //     eventData['contacts'] = contacts;
+    //     provider.setEventOrganizerContactsDraft(contacts);
+    //   }
+    // }
+
+    // Update previousEvent
+    if (provider.previousEventDraft != previousEvent) {
+      eventData['previousEvent'] = previousEvent;
+      provider.setPreviousEventDraftDraft(previousEvent);
+    }
+    // if (isDraft) {
+    //   if (event!.previousEvent != previousEvent) {
+    //     if (provider.previousEventDraft != previousEvent) {
+    //       eventData['previousEvent'] = previousEvent;
+    //       provider.setPreviousEventDraftDraft(previousEvent);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.previousEventDraft != previousEvent) {
+    //     eventData['previousEvent'] = previousEvent;
+    //     provider.setPreviousEventDraftDraft(previousEvent);
+    //   }
+    // }
+
+    // Update aiMarketingAdvice
+
+    // if (isDraft) {
+    //   if (event!.aiMarketingAdvice != aiMarketingAdvice) {
+    //     if (provider.aiMarketingDraft != aiMarketingAdvice) {
+    //       eventData['aiMarketingAdvice'] = aiMarketingAdvice;
+    //       provider.setAiMarketingDraft(aiMarketingAdvice);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.aiMarketingDraft != aiMarketingAdvice) {
+    //     eventData['aiMarketingAdvice'] = aiMarketingAdvice;
+    //     provider.setAiMarketingDraft(aiMarketingAdvice);
+    //   }
+    // }
+
+    // Update termsAndConditions
+    if (provider.eventTermsAndConditionsDraft != termsAndConditions) {
+      eventData['termsAndConditions'] = termsAndConditions;
+      provider.setEventTermsAndConditionsDraft(termsAndConditions);
+    }
+    // if (isDraft) {
+    //   if (event!.termsAndConditions != termsAndConditions) {
+    //     if (provider.eventTermsAndConditionsDraft != termsAndConditions) {
+    //       eventData['termsAndConditions'] = termsAndConditions;
+    //       provider.setEventTermsAndConditionsDraft(termsAndConditions);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.eventTermsAndConditionsDraft != termsAndConditions) {
+    //     eventData['termsAndConditions'] = termsAndConditions;
+    //     provider.setEventTermsAndConditionsDraft(termsAndConditions);
+    //   }
+    // }
+
+    // Check if there are any fields to update
+    if (eventData.isNotEmpty) {
+      // Prepare the batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the event to 'eventsRef'
+      DocumentReference eventRef = await isDraft
+          ? eventsDraftRef
+              .doc(event!.authorId)
+              .collection('events')
+              .doc(event.id)
+          : await eventsDraftRef
+              .doc(provider.currentUserId)
+              .collection('events')
+              .doc(provider.eventId);
+      batch.update(eventRef, eventData);
+
+      // Commit the batch
+      await batch.commit();
+    }
+  }
+
+// Update contacts method
+  // static void updateContacts(List<String> contacts, UserData provider,
+  //     Map<String, dynamic> eventData) {
+  //   if (provider.eventOrganizerContactsDraft != contacts) {
+  //     eventData['contacts'] = contacts;
+  //     provider.setEventOrganizerContactsDraft(contacts);
+  //   }
+  // }
+
+// Update previousEvent method
+  // static void updatePreviousEvent(
+  //     String previousEvent, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.previousEventDraft != previousEvent) {
+  //     eventData['previousEvent'] = previousEvent;
+  //     provider.setPreviousEventDraftDraft(previousEvent);
+  //   }
+  // }
+
+// Update aiMarketingAdvice method
+  // static void updateAiMarketingAdvice(String aiMarketingAdvice,
+  //     UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.aiMarketingDraft != aiMarketingAdvice) {
+  //     eventData['aiMarketingAdvice'] = aiMarketingAdvice;
+  //     provider.setAiMarketingDraft(aiMarketingAdvice);
+  //   }
+  // }
+
+// Update termsAndConditions method
+  // static void updateTermsAndConditions(String termsAndConditions,
+  //     UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.eventTermsAndConditionsDraft != termsAndConditions) {
+  //     eventData['termsAndConditions'] = termsAndConditions;
+  //     provider.setEventTermsAndConditionsDraft(termsAndConditions);
+  //   }
+  // }
+
+//
+//
+//
+  // Edit draft
+  //edit schedules, tickets, currency, city and country
+  static Future<void> editEventDraftScheduleAndTicket({
+    required UserData provider,
+    required List<Schedule> schedule,
+    required List<TicketModel> ticket,
+    required String currency,
+    required Event? event,
+    required bool isDraft,
+  }) async {
+    // Create a Map to hold the fields to update
+    Map<String, dynamic> eventData = {};
+
+    // print(
+    //   provider.ticketListDraft
+    //           .map((ticket) => ticket.toJson())
+    //           .toList()
+    //           .toString() +
+    //       'nn',
+    // );
+    // print(
+    //   ticket.map((ticket) => ticket.toJson()).toList().toString() + 'oo',
+    // );
+    // Update schedule
+    if (provider.int2 == 1) {
+      if (!listEquals(provider.scheduleDraft.map((s) => s.toJson()).toList(),
+          schedule.map((s) => s.toJson()).toList())) {
+        eventData['schedule'] = schedule.map((s) => s.toJson()).toList();
+        provider.setScheduleDraft(schedule);
+      }
+      provider.setInt2(0);
+    }
+
+    // if (isDraft) {
+    //   if (!listEquals(provider.scheduleDraft.map((s) => s.toJson()).toList(),
+    //       schedule.map((s) => s.toJson()).toList())) {
+    //     eventData['schedule'] = schedule.map((s) => s.toJson()).toList();
+    //     provider.setScheduleDraft(schedule);
+    //   }
+    // } else {
+    //   // Compare the JSON representations of the lists
+    //   if (!listEquals(provider.scheduleDraft.map((s) => s.toJson()).toList(),
+    //       schedule.map((s) => s.toJson()).toList())) {
+    //     eventData['schedule'] = schedule.map((s) => s.toJson()).toList();
+    //     provider.setScheduleDraft(schedule);
+    //   }
+    // }
+
+    // Update ticket
+    if (provider.int2 == 2) {
+      if (!listEquals(provider.ticketListDraft.map((t) => t.toJson()).toList(),
+          ticket.map((t) => t.toJson()).toList())) {
+        eventData['ticket'] = ticket.map((t) => t.toJson()).toList();
+        provider.setTicketListDraft(ticket);
+      }
+      provider.setInt2(0);
+    }
+    // // Update currency
+    // if (provider.currencyDraft != currency) {
+    //   eventData['currency'] = currency;
+    //   provider.setCurrencyDraft(currency);
+    // }
+
+    // if (isDraft) {
+    //   if (event!.rate != currency) {
+    //     if (provider.currencyDraft != currency) {
+    //       eventData['currency'] = currency;
+    //       // provider.setCurrencyDraft(currency);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.currencyDraft != currency) {
+    //     eventData['currency'] = currency;
+    //     // provider.setCurrencyDraft(currency);
+    //   }
+    // }
+
+    // Check if there are any fields to update
+    if (eventData.isNotEmpty) {
+      // Prepare the batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the event to 'eventsRef'
+      DocumentReference eventRef = isDraft
+          ? eventsDraftRef
+              .doc(event!.authorId)
+              .collection('events')
+              .doc(event.id)
+          : eventsDraftRef
+              .doc(provider.currentUserId)
+              .collection('events')
+              .doc(provider.eventId);
+      batch.update(eventRef, eventData);
+
+      // Commit the batch
+      await batch.commit();
+    }
+  }
+
+// // Update schedule method
+//   static void updateSchedule(List<Schedule> schedule, UserData provider,
+//       Map<String, dynamic> eventData) {
+//     if (provider.scheduleDraft != schedule) {
+//       eventData['schedule'] = schedule.map((s) => s.toJson()).toList();
+//       provider.setScheduleDraft(schedule);
+//     }
+//   }
+
+// Update ticket method
+  // static void updateTicket(List<TicketModel> ticket, UserData provider,
+  //     Map<String, dynamic> eventData) {
+  //   if (provider.ticketListDraft != ticket) {
+  //     eventData['ticket'] = ticket.map((t) => t.toJson()).toList();
+  //     provider.setTicketListDraft(ticket);
+  //   }
+  // }
+
+// Update currency method
+  // static void updateCurrency(
+  //     String currency, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.currencyDraft != currency) {
+  //     eventData['currency'] = currency;
+  //     provider.setCurrencyDraft(currency);
+  //   }
+  // }
+
+//
+//
+//
+  // Edit draft
+  static Future<void> editEventDraftAddressAndPeople({
+    required UserData provider,
+    required List<TaggedEventPeopleModel> taggedPeople,
+    required String venue,
+    required String address,
+    required Event? event,
+    required bool isDraft,
+    required String city,
+    required String country,
+  }) async {
+    // Create a Map to hold the fields to update
+    Map<String, dynamic> eventData = {};
+
+    // Update taggedPeople
+    if (provider.int2 == 3) {
+      if (!listEquals(
+          provider.taggedEventPeopleDraft.map((p) => p.toJson()).toList(),
+          taggedPeople.map((p) => p.toJson()).toList())) {
+        eventData['taggedPeople'] =
+            taggedPeople.map((taggedPerson) => taggedPerson.toJson()).toList();
+        provider.setTaggedEventPeopleDraft(taggedPeople);
+        provider.setInt2(0);
+      }
+    }
+    // if (isDraft) {
+    //   if (!listEquals(event!.taggedPeople.map((p) => p.toJson()).toList(),
+    //       taggedPeople.map((p) => p.toJson()).toList())) {
+    //     if (!listEquals(
+    //         provider.taggedEventPeopleDraft.map((p) => p.toJson()).toList(),
+    //         taggedPeople.map((p) => p.toJson()).toList())) {
+    //       eventData['taggedPeople'] = taggedPeople
+    //           .map((taggedPerson) => taggedPerson.toJson())
+    //           .toList();
+    //       provider.setTaggedEventPeopleDraft(taggedPeople);
+    //     }
+    //   }
+    // } else {
+    //   if (!listEquals(
+    //       provider.taggedEventPeopleDraft.map((p) => p.toJson()).toList(),
+    //       taggedPeople.map((p) => p.toJson()).toList())) {
+    //     eventData['taggedPeople'] =
+    //         taggedPeople.map((taggedPerson) => taggedPerson.toJson()).toList();
+    //     provider.setTaggedEventPeopleDraft(taggedPeople);
+    //   }
+    // }
+
+    // Update venue
+    if (provider.venueDraft != venue) {
+      eventData['venue'] = venue;
+      provider.setVenueDraft(venue);
+    }
+    // if (isDraft) {
+    //   if (event!.venue != venue) {
+    //     if (provider.venueDraft != venue) {
+    //       eventData['venue'] = venue;
+    //       provider.setVenueDraft(venue);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.venueDraft != venue) {
+    //     eventData['venue'] = venue;
+    //     provider.setVenueDraft(venue);
+    //   }
+    // }
+
+    // Update address
+    if (provider.addressDraft != address) {
+      eventData['address'] = address;
+      provider.setAddressDraft(address);
+    }
+    // if (isDraft) {
+    //   if (event!.address != address) {
+    //     if (provider.addressDraft != address) {
+    //       eventData['address'] = address;
+    //       provider.setAddressDraft(address);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.addressDraft != address) {
+    //     eventData['address'] = address;
+    //     provider.setAddressDraft(address);
+    //   }
+    // }
+
+    // Update city
+    if (provider.cityDraft != city) {
+      eventData['city'] = city;
+      provider.setCityDraft(city);
+    }
+    // if (isDraft) {
+    //   if (event!.city != city) {
+    //     if (provider.cityDraft != city) {
+    //       eventData['city'] = city;
+    //       provider.setCityDraft(city);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.cityDraft != city) {
+    //     eventData['city'] = city;
+    //     provider.setCityDraft(city);
+    //   }
+    // }
+
+    // Update country
+    if (provider.countryDraft != country) {
+      eventData['country'] = country;
+      provider.setCountryDraft(country);
+    }
+    // if (isDraft) {
+    //   if (event!.country != country) {
+    //     if (provider.countryDraft != country) {
+    //       eventData['country'] = country;
+    //       provider.setCountryDraft(country);
+    //     }
+    //   }
+    // } else {
+    //   if (provider.countryDraft != country) {
+    //     eventData['country'] = country;
+    //     provider.setCountryDraft(country);
+    //   }
+    // }
+
+    // Check if there are any fields to update
+    if (eventData.isNotEmpty) {
+      // Prepare the batch
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      // Add the event to 'eventsRef'
+      DocumentReference eventRef = isDraft
+          ? await eventsDraftRef
+              .doc(event!.authorId)
+              .collection('events')
+              .doc(event.id)
+          : await eventsDraftRef
+              .doc(provider.currentUserId)
+              .collection('events')
+              .doc(provider.eventId);
+      batch.update(eventRef, eventData);
+
+      // Commit the batch
+      await batch.commit();
+    }
+  }
+
+// Update taggedPeople method
+  // static void updateTaggedPeople(List<TaggedEventPeopleModel> taggedPeople,
+  //     UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.taggedEventPeopleDraft != taggedPeople) {
+  //     eventData['taggedPeople'] =
+  //         taggedPeople.map((person) => person.toJson()).toList();
+  //     provider.setTaggedEventPeopleDraft(taggedPeople);
+  //   }
+  // }
+
+// Update venue method
+  // static void updateVenue(
+  //     String venue, UserData provider, Map<String, dynamic> eventData) {
+  //   if (provider.venueDraft != venue) {
+  //     eventData['venue'] = venue;
+  //     provider.setVenueDraft(venue);
+  //   }
+  // }
+
+// Update address method
+//   static void updateAddress(
+//       String address, UserData provider, Map<String, dynamic> eventData) {
+//     if (provider.addressDraft != address) {
+//       eventData['address'] = address;
+//       provider.setAddressDraft(address);
+//     }
+//   }
+
+//
+//
+//create event
+  static Future<void> createEvent(Event event, AccountHolderAuthor author,
+      List<TaggedNotificationModel> taggedsers, String summary) async {
+    print(taggedsers.length);
     // Create a toJson method inside Event class to serialize the object into a map
     Map<String, dynamic> eventData = event.toJson();
 
@@ -1148,14 +2263,65 @@ class DatabaseService {
         .doc(event.id);
 
     // Add addUserTicketIdRef to the transaction
+    await sendTaggedNotificaton(
+      batch: batch,
+      taggedUsers: taggedsers,
+      authorProfileHandle: author.profileHandle,
+      authorVerification: author.verified,
+    );
 
     batch.set(eventInviteDocRef, ticketOrderData);
     batch.set(userInviteDocRef, ticketOrderData);
 
+    final eventDraftRef = await eventsDraftRef
+        .doc(event.authorId)
+        .collection('events')
+        .doc(event.id);
+    batch.delete(eventDraftRef);
     // Commit the batch
     await batch.commit();
 
     // Commit the batch
+  }
+
+  static Future<void> sendTaggedNotificaton({
+    required WriteBatch batch,
+    required List<TaggedNotificationModel> taggedUsers,
+    required authorProfileHandle,
+    required authorVerification,
+  }) async {
+    for (var taggedUser in taggedUsers) {
+      Map<String, dynamic> taggedUserData = taggedUser.toJson();
+
+      print(taggedUserData);
+
+      DocumentReference tagRef = await userTagRef
+          .doc(taggedUser.personId)
+          .collection('tags')
+          .doc(taggedUser.id);
+      batch.set(tagRef, taggedUserData);
+
+      // This should also be included in the batch operation
+      DocumentReference userActivityRef = await activitiesRef
+          .doc(taggedUser.personId)
+          .collection('userActivities')
+          .doc(); // Create a new document with a generated ID
+      batch.set(userActivityRef, {
+        'helperFielId': taggedUser.taggedParentAuthorId,
+        'authorId': taggedUser.taggedParentAuthorId,
+        'postId': taggedUser.taggedParentId,
+        'seen': false,
+        'type': 'tag',
+        'postImageUrl': taggedUser.taggedParentImageUrl,
+        'comment':
+            'You have been tagged as ${taggedUser.role} in ${taggedUser.taggedParentTitle}',
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+        'authorProfileImageUrl': '',
+        'authorName': 'Tagged in Event',
+        'authorProfileHandle': authorProfileHandle,
+        'authorVerification': authorVerification,
+      });
+    }
   }
 
   static Future<void> createEventsNearBy({
@@ -1317,14 +2483,15 @@ class DatabaseService {
       DocumentReference allEventRef = allEventsRef.doc(event.id);
       batch.update(allEventRef, eventData);
 
-      DocumentReference allEventsSummarydocRef =
-          allEventsSummaryRef.doc(event.id);
-      batch.update(
-          allEventsSummarydocRef,
-          ({
-            'summary': summary,
-            // 'eventId': event.id,
-          }));
+      if (summary.isNotEmpty) {
+        DocumentReference allEventsSummarydocRef =
+            allEventsSummaryRef.doc(event.id);
+        batch.update(
+            allEventsSummarydocRef,
+            ({
+              'summary': summary,
+            }));
+      }
     }
 
     // Update the event in 'eventsChatRoomsRef'
@@ -1359,29 +2526,51 @@ class DatabaseService {
       for (var doc in querySnapshot.docs) {
         String userId = doc.id;
 
-        // Update the user's invites
-        DocumentReference userInvitesRef = newUserTicketOrderRef
+        // Define references
+        DocumentReference userTicketOrderRef = newUserTicketOrderRef
             .doc(userId)
             .collection('ticketOrders')
             .doc(event.id);
-        batch.update(userInvitesRef, {
-          'eventTimestamp': event.startDate,
-          'eventTitle': event.title,
-        });
 
-        // Update the event invites
         DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
             .doc(event.id)
             .collection('ticketOrders')
             .doc(userId);
+
+        // Fetch user ticket data
+        // DocumentSnapshot userSnapshot = await userTicketOrderRef.get();
+        // if (userSnapshot.exists) {
+        //   Map<String, dynamic> userData =
+        //       userSnapshot.data() as Map<String, dynamic>;
+        //   List<dynamic> tickets = userData['tickets'];
+
+        //   // Update tickets
+        //   for (var ticket in tickets) {
+        //     for (var eventTicket in eventTickets) {
+        //       if (ticket['id'] == eventTicket.id) {
+        //         ticket['eventTicketDate'] = eventTicket.eventTicketDate;
+        //       }
+        //     }
+        //   }
+
+        // Update batch
+        // batch.update(userTicketOrderRef, {'tickets': tickets});
+        // batch.update(newEventsTicketOrderRef, {'tickets': tickets});
+        // }
+
+        // Update event details
+        batch.update(userTicketOrderRef, {
+          'eventTimestamp': event.startDate,
+          'eventTitle': event.title,
+        });
         batch.update(newEventsTicketOrderRef, {
           'eventTimestamp': event.startDate,
           'eventTitle': event.title,
         });
 
-        operationCount += 2; // Two operations for each invite
+        operationCount += 4;
 
-        // Check if user is the author and add user activity
+        // Add user activity if necessary
         if (userId != event.authorId) {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
@@ -1410,6 +2599,80 @@ class DatabaseService {
           operationCount = 0;
         }
       }
+
+      // for (var doc in querySnapshot.docs) {
+      //   String userId = doc.id;
+
+      //   // Update the user's invites
+      //   DocumentReference userTicketOrderRef = newUserTicketOrderRef
+      //       .doc(userId)
+      //       .collection('ticketOrders')
+      //       .doc(event.id);
+      //   batch.update(userTicketOrderRef, {
+      //     'eventTimestamp': event.startDate,
+      //     'eventTitle': event.title,
+      //   });
+
+      //   // Update the event invites
+      //   DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
+      //       .doc(event.id)
+      //       .collection('ticketOrders')
+      //       .doc(userId);
+      //   batch.update(newEventsTicketOrderRef, {
+      //     'eventTimestamp': event.startDate,
+      //     'eventTitle': event.title,
+      //   });
+
+      //   DocumentSnapshot userSnapshot = await userTicketOrderRef.get();
+      //   if (userSnapshot.exists) {
+      //     Map<String, dynamic> userData =
+      //         userSnapshot.data() as Map<String, dynamic>;
+      //     List<dynamic> tickets = userData['tickets'];
+
+      //     for (var ticket in tickets) {
+      //       for (var eventTicket in eventTickets) {
+      //         if (ticket['price'] == eventTicket.price &&
+      //             ticket['type'] == eventTicket.type &&
+      //             ticket['group'] == eventTicket.group) {
+      //           ticket['eventTicketDate'] = event.startDate;
+      //         }
+      //       }
+      //     }
+
+      //     batch.update(userTicketOrderRef, {'tickets': tickets});
+      //     batch.update(newEventsTicketOrderRef, {'tickets': tickets});
+      //   }
+      //   operationCount += 4; // Two operations for each invite
+
+      //   // Check if user is the author and add user activity
+      // if (userId != event.authorId) {
+      //   DocumentReference userActivityRef =
+      //       activitiesRef.doc(userId).collection('userActivities').doc();
+      //   batch.set(userActivityRef, {
+      //     'helperFielId': event.authorId,
+      //     'authorId': event.authorId,
+      //     'postId': event.id,
+      //     'seen': false,
+      //     'type': 'eventUpdate',
+      //     'postImageUrl': event.imageUrl,
+      //     'comment':
+      //         'Certain information about this event have been modified',
+      //     'timestamp': Timestamp.fromDate(DateTime.now()),
+      //     'authorProfileImageUrl': '',
+      //     'authorName': 'Event informaiton updated',
+      //     'authorProfileHandle': event.authorId,
+      //     'authorVerification': false
+      //   });
+      //   operationCount++; // One operation for the user activity
+      // }
+
+      //   // Commit batch if limit is reached and start a new batch
+      //   if (operationCount >= batchSize) {
+      //     await batch.commit();
+      //     batch = FirebaseFirestore.instance.batch();
+      //     operationCount = 0;
+      //   }
+      // }
 
       // Remember the last document processed
       lastDoc = querySnapshot.docs.last;
@@ -1812,6 +3075,116 @@ class DatabaseService {
         .collection('refundRequests')
         .doc(refund.eventId)
         .delete();
+  }
+
+  static deleteUserTagData(
+    TaggedNotificationModel tag,
+  ) {
+    // Add the complaint request to the appropriate collection
+
+    userTagRef.doc(tag.personId).collection('tags').doc(tag.id).delete();
+  }
+
+  static Future<void> confirmUserTag(
+    TaggedNotificationModel tag,
+    authorProfileHandle,
+    authorVerification,
+    authorUserName,
+  ) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Update the user's tag verification status
+    DocumentReference userTagDocRef =
+        userTagRef.doc(tag.personId).collection('tags').doc(tag.taggedParentId);
+
+    batch.update(userTagDocRef, {'verifiedTag': true});
+
+    // // Update the event's tag verification status
+    await editEventTags(tag, batch);
+
+    // This should also be included in the batch operation
+    DocumentReference userActivityRef = await activitiesRef
+        .doc(tag.taggedParentAuthorId)
+        .collection('userActivities')
+        .doc(); // Create a new document with a generated ID
+    batch.set(userActivityRef, {
+      'helperFielId': tag.taggedParentAuthorId,
+      'authorId': tag.personId,
+      'postId': tag.taggedParentId,
+      'seen': false,
+      'type': 'tagConfirmed',
+      'postImageUrl': tag.taggedParentImageUrl,
+      'comment':
+          'Tag confirmed by ${authorUserName} as ${tag.role} in ${tag.taggedParentTitle}',
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+      'authorProfileImageUrl': '',
+      'authorName': 'Tag confirmed',
+      'authorProfileHandle': authorProfileHandle,
+      'authorVerification': authorVerification,
+    });
+
+    // Commit the batch
+    await batch.commit();
+  }
+
+  static Future<void> editEventTags(
+      TaggedNotificationModel tag, WriteBatch batch) async {
+    Event? event = await getUserEventWithId(
+        tag.taggedParentId!, tag.taggedParentAuthorId!);
+
+    if (event != null) {
+      List<TaggedEventPeopleModel> taggedPeople = event.taggedPeople;
+
+      // Find the tag to update
+      for (int i = 0; i < taggedPeople.length; i++) {
+        var taggedPerson = taggedPeople[i];
+        print("taggedPerson.id  " + taggedPerson.id.toString());
+        print("tag.id  " + tag.id.toString());
+        print("taggedPerson.internalProfileLink  " +
+            taggedPerson.internalProfileLink.toString());
+        print("tag.personId  " + tag.personId.toString());
+
+        if (taggedPerson.id == tag.id &&
+            taggedPerson.internalProfileLink == tag.personId) {
+          // Update the verifiedTag status
+          taggedPeople[i] = TaggedEventPeopleModel(
+            id: taggedPerson.id,
+            name: taggedPerson.name,
+            role: taggedPerson.role,
+            taggedType: taggedPerson.taggedType,
+            verifiedTag: true, // Update verification status
+            internalProfileLink: taggedPerson.internalProfileLink,
+            externalProfileLink: taggedPerson.externalProfileLink,
+            profileImageUrl: taggedPerson.profileImageUrl,
+          );
+          print("\n\n\ntag    data  " + taggedPeople[i].toString());
+
+          // Update the event in the database
+          DocumentReference eventDocRef = eventsRef
+              .doc(event.authorId)
+              .collection('userEvents')
+              .doc(event.id);
+
+          // Update the event in 'allEventsRef'
+          if (!event.isPrivate) {
+            DocumentReference allEventRef = allEventsRef.doc(event.id);
+            batch.update(allEventRef, {
+              'taggedPeople': taggedPeople
+                  .map((e) => e.toJson())
+                  .toList(), // Ensure TaggedEventPeopleModel has a toJson method
+            });
+          }
+
+          batch.update(eventDocRef, {
+            'taggedPeople': taggedPeople
+                .map((e) => e.toJson())
+                .toList(), // Ensure TaggedEventPeopleModel has a toJson method
+          });
+
+          break; // Exit loop once the tag is updated
+        }
+      }
+    }
   }
 
   static deleteAffiliateUsertData(AffiliateModel affiliate) {
@@ -3546,6 +4919,23 @@ class DatabaseService {
 
       if (userDocSnapshot.exists) {
         return AffiliateModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<TaggedNotificationModel?> getUserTag(
+      String userId, String tagId) async {
+    try {
+      DocumentSnapshot userDocSnapshot =
+          await userTagRef.doc(userId).collection('tags').doc(tagId).get();
+
+      if (userDocSnapshot.exists) {
+        return TaggedNotificationModel.fromDoc(userDocSnapshot);
       } else {
         return null; // return null if document does not exist
       }

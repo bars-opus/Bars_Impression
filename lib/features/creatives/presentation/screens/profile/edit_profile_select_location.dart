@@ -390,7 +390,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
         children: [
           Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -442,33 +442,41 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                   _addressValue('Continent',
                       _continent.isEmpty ? widget.user.continent! : _continent),
                   const SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'City',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 8.8,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'City',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 8.8,
                         ),
-                        const SizedBox(height: 3),
-                        DummyTextField(
+                      ),
+                      const SizedBox(height: 3),
+                      Container(
+                        padding:
+                            const EdgeInsets.only(left: 10, top: 3, bottom: 3),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor.withOpacity(.6),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: DummyTextField(
+                          icon: Icons.location_on_outlined,
                           onPressed: () {
                             _showBottomSheetCountry(context, 'userName');
                           },
                           text: _provider.city.isEmpty
                               ? widget.user.city!.isEmpty
-                                  ? 'Enter name of your city here...'
+                                  ? 'Enter  your city here...'
                                   : widget.user.city!
                               : _provider.city,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
                   ),
                   buildContinentPicker(),
                 ],

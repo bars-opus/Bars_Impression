@@ -322,7 +322,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
         _profileImageUrl = '';
       } else {
         _profileImageUrl = await StorageService.uploadUserProfileImage(
-          '',
+          _provider.currentUserId!,
           _profileImage!,
         );
       }
@@ -645,6 +645,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
               ),
             ),
             if (_provider.int2 != 4)
+           
               Center(
                 child: Container(
                   margin: const EdgeInsets.only(top: 30),
@@ -653,25 +654,47 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   width: 10,
                 ),
               ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 10),
             ShakeTransition(
-              child: Text(
-                'Welcome to Bars Impression.',
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                  color: Theme.of(context).secondaryHeaderColor,
-                  fontWeight: FontWeight.bold,
+              child: Center(
+                child: RichText(
+                  textScaler: MediaQuery.of(context).textScaler,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: "Welcome\n ",
+                          style: Theme.of(context).textTheme.titleLarge),
+                      TextSpan(
+                        text: 'To Bars Impression.',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      )
+                    ],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
               ),
+
+              // Text(
+              //   'Welcome to Bars Impression.',
+              //   style: TextStyle(
+              //     fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
+              //     color: Theme.of(context).secondaryHeaderColor,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
             ),
+            const SizedBox(height: 20),
             if (_provider.int2 == 0)
               AnimatedTextKit(
                   repeatForever: false,
                   totalRepeatCount: 1,
                   animatedTexts: [
-                    _animatedText(
-                      "I'm Hope, your personal creative assistant. I'm here to help you build your brand, improve your skills, and connect with other creatives and organizers.\n\nI would be your personal help thoughout this journey, with time, i would explain what i would assist you with but for now lets start with setting up your brand.",
-                    ),
+                    _animatedText("""
+Hello! I'm Hope, your dedicated creative assistant. My goal is to help you elevate your brand, enhance your skills, and connect you with fellow creatives and organizers.
+
+As we embark on this journey together, I will be here to guide you at every step. I’ll provide more details about how I can assist you as we progress. For now, let’s focus on setting up your profile
+"""),
                   ]),
             const SizedBox(height: 50),
             if (_provider.int2 == 0)

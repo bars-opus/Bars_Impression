@@ -142,71 +142,79 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
 
   Future<void> _fetchRating() async {
     // Fetch the user data using whatever method you need
-    var userSnapshot =
-        await usersRatingRef.doc(widget.userPortfolio.userId).get();
+    try {
+      var userSnapshot =
+          await usersRatingRef.doc(widget.userPortfolio.userId).get();
 
-    // Check if the snapshot contains data and if the user has a private account
-    if (userSnapshot.exists) {
-      RatingModel userRatings = RatingModel.fromDoc(userSnapshot);
+      // Check if the snapshot contains data and if the user has a private account
+      if (userSnapshot.exists) {
+        RatingModel userRatings = RatingModel.fromDoc(userSnapshot);
 
-      // Set state with the new user data to update the UI
-      if (mounted) {
-        setState(() {
-          _userRatings = userRatings;
-          _isFecthingRatings = false;
-        });
+        // Set state with the new user data to update the UI
+        if (mounted) {
+          setState(() {
+            _userRatings = userRatings;
+            _isFecthingRatings = false;
+          });
+        }
+      } else {
+        // Handle the case where the user data does not exist
+        if (mounted) {
+          setState(() {
+            _userRatings = null;
+            _isFecthingRatings = false;
+          });
+        }
       }
-    } else {
-      // Handle the case where the user data does not exist
-      if (mounted) {
-        setState(() {
-          _userRatings = null;
-          _isFecthingRatings = false;
-        });
-      }
-    }
+    } catch (e) {}
   }
 
   _setupIsBlockedUser() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userPortfolio.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
+    try {
+      bool isBlockedUser = await DatabaseService.isBlockedUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userPortfolio.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockedUser = isBlockedUser;
+        });
+      }
+    } catch (e) {}
   }
 
   _setupIsBlocking() async {
-    bool isBlockingUser = await DatabaseService.isBlokingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userPortfolio.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = isBlockingUser;
-      });
-    }
+    try {
+      bool isBlockingUser = await DatabaseService.isBlokingUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.userPortfolio.userId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockingUser = isBlockingUser;
+        });
+      }
+    } catch (e) {}
   }
 
   _setCurrency(UserData _provider) {
-    UserSettingsLoadingPreferenceModel currentUserPayoutInfo =
-        _provider.userLocationPreference!;
+    try {
+      UserSettingsLoadingPreferenceModel currentUserPayoutInfo =
+          _provider.userLocationPreference!;
 
-    bool _isPayOutSetUp = widget.userPortfolio.transferRecepientId.isNotEmpty;
+      bool _isPayOutSetUp = widget.userPortfolio.transferRecepientId.isNotEmpty;
 
-    bool _creativeIsGhanaOrCurrencyGHS = IsGhanain.isGhanaOrCurrencyGHS(
-        widget.userPortfolio.country, widget.userPortfolio.currency);
+      bool _creativeIsGhanaOrCurrencyGHS = IsGhanain.isGhanaOrCurrencyGHS(
+          widget.userPortfolio.country, widget.userPortfolio.currency);
 
-    bool _currentUserGhanaOrCurrencyGHS = IsGhanain.isGhanaOrCurrencyGHS(
-        currentUserPayoutInfo.country!, currentUserPayoutInfo.currency!);
-    setState(() {
-      isPayOutSetUp = _isPayOutSetUp;
-      creativeIsGhanaOrCurrencyGHS = _creativeIsGhanaOrCurrencyGHS;
-      currentUserGhanaOrCurrencyGHS = _currentUserGhanaOrCurrencyGHS;
-    });
+      bool _currentUserGhanaOrCurrencyGHS = IsGhanain.isGhanaOrCurrencyGHS(
+          currentUserPayoutInfo.country!, currentUserPayoutInfo.currency!);
+      setState(() {
+        isPayOutSetUp = _isPayOutSetUp;
+        creativeIsGhanaOrCurrencyGHS = _creativeIsGhanaOrCurrencyGHS;
+        currentUserGhanaOrCurrencyGHS = _currentUserGhanaOrCurrencyGHS;
+      });
+    } catch (e) {}
   }
 
   _addLists(UserData provider) {

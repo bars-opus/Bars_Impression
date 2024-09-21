@@ -18,6 +18,8 @@ class TicketGroup extends StatefulWidget {
   final String inviteReply;
   final bool onInvite;
   final bool onCalendatSchedule;
+  final bool isPreview;
+
   // final String marketedAffiliateId;
 
   TicketGroup({
@@ -25,6 +27,8 @@ class TicketGroup extends StatefulWidget {
     required this.event,
     required this.currentUserId,
     required this.inviteReply,
+    this.isPreview = false,
+
     // required this.marketedAffiliateId ,
     this.onInvite = false,
     this.onCalendatSchedule = false,
@@ -160,8 +164,6 @@ class _TicketGroupState extends State<TicketGroup> {
                 isPaymentVerified,
                 paymentProvider,
               );
-
-         
 
           TicketOrderModel order =
               await retry(() => createTicketOrder(), retries: 3);
@@ -375,7 +377,6 @@ class _TicketGroupState extends State<TicketGroup> {
     });
   }
 
-
   static int getWeekOfMonth(DateTime dateTime) {
     int daysInWeek = 7;
     int daysPassed = dateTime.day + dateTime.weekday - 1;
@@ -587,7 +588,6 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-
   _eventOnTicketAndPurchaseButton() {
     return Column(
       children: [
@@ -675,7 +675,7 @@ class _TicketGroupState extends State<TicketGroup> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: currencyPartition.length > 0
+                                text: currencyPartition.length > 1
                                     ? " ${currencyPartition[1]}\n"
                                     : '',
                                 style:
@@ -714,7 +714,7 @@ class _TicketGroupState extends State<TicketGroup> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(
-                          text: currencyPartition.length > 0
+                          text: currencyPartition.length > 1
                               ? " ${currencyPartition[0]}\n"
                               : '',
                           style: Theme.of(context).textTheme.bodyLarge,
@@ -883,7 +883,6 @@ class _TicketGroupState extends State<TicketGroup> {
               padding: const EdgeInsets.all(20.0),
               child: ListView(
                 children: [
-           
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -940,7 +939,6 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-
   void _showBottomEditLocation(
     BuildContext context,
   ) {
@@ -987,11 +985,8 @@ class _TicketGroupState extends State<TicketGroup> {
                 widget.event == null || !widget.event!.isFree
                     ? widget.groupTickets.length * 500
                     : widget.groupTickets.length * 300),
-          
             width: width,
-            child:
-             
-                AnimatedPadding(
+            child: AnimatedPadding(
               curve: Curves.easeOutBack,
               duration: const Duration(milliseconds: 500),
               padding: EdgeInsets.only(
@@ -1003,7 +998,9 @@ class _TicketGroupState extends State<TicketGroup> {
                 isEditing: widget.event == null ? true : false,
                 currency: widget.event == null
                     ? _provider.currency
-                    : widget.event!.rate,
+                    : widget.event!.rate.isEmpty
+                        ? _provider.currency
+                        : widget.event!.rate,
                 isFree: widget.event == null ? false : widget.event!.isFree,
                 eventId: widget.event == null ? '' : widget.event!.id,
                 eventAuthorId: widget.event == null
@@ -1019,14 +1016,20 @@ class _TicketGroupState extends State<TicketGroup> {
                   ? _ticketLoadingIndicator()
                   : MiniCircularProgressButton(
                       text: 'Continue',
-                      onPressed: _usercountry!.isEmpty
+                      onPressed: widget.isPreview
                           ? () {
-                              widget.event!.isFree
-                                  ? _attendMethod()
-                                  : _showBottomEditLocation(context);
+                              _showBottomSheetErrorMessage(
+                                context,
+                                'Not available in preview mode',
+                              );
                             }
-                          : _validateAttempt,
-
+                          : _usercountry!.isEmpty
+                              ? () {
+                                  widget.event!.isFree
+                                      ? _attendMethod()
+                                      : _showBottomEditLocation(context);
+                                }
+                              : _validateAttempt,
                       color: Colors.blue,
                     ))
       ],

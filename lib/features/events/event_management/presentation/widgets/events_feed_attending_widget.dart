@@ -57,7 +57,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          height: 300,
+          height: 350,
           buttonText: 'Delete tickets',
           onPressed: () async {
             Navigator.pop(context);
@@ -76,8 +76,10 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
             mySnackBar(context, "Ticket deleted successfully");
           },
           title: 'Are you sure you want to delete this ticket? ',
-          subTitle:
-              'Deleting this ticket will result in the loss of access to this event and it\'s room. Deleted tickets would be refunded."',
+          subTitle: widget.ticketOrder.total != 0 &&
+                  widget.ticketOrder.refundRequestStatus != 'processed'
+              ? 'Deleting this ticket will result in the loss of access to this event and it\'s room. Deleted tickets would be refunded."'
+              : 'Deleting this ticket will result in the loss of access to this event and it\'s room."',
         );
       },
     );
@@ -141,7 +143,8 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                                           _navigateToPage(EventEnlargedScreen(
                                             currentUserId: widget.currentUserId,
                                             event: event,
-                                            type: event.type, showPrivateEvent: true,
+                                            type: event.type,
+                                            showPrivateEvent: true,
                                           ));
                                         } else {
                                           _showBottomSheetErrorMessage(
@@ -336,9 +339,10 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     if (event != null) {
                       PaletteGenerator _paletteGenerator =
                           await PaletteGenerator.fromImageProvider(
-                        CachedNetworkImageProvider(event.imageUrl,  errorListener: (_) {
-              return;
-            }),
+                        CachedNetworkImageProvider(event.imageUrl,
+                            errorListener: (_) {
+                          return;
+                        }),
                         size: Size(1110, 150),
                         maximumColorCount: 20,
                       );

@@ -211,7 +211,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                     Text(
                                       widget.isFree
                                           ? 'Free'
-                                          : '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${ticket.price}',
+                                          : '${currencyPartition.isEmpty ? '' : currencyPartition.length > 1 ? currencyPartition[1] : ''} ${ticket.price}',
                                       style: TextStyle(
                                           fontSize: ResponsiveHelper
                                               .responsiveFontSize(

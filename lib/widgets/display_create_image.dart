@@ -8,16 +8,23 @@ class DisplayCreateImage extends StatelessWidget {
   });
 
   _display(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
+    var _provider = Provider.of<UserData>(
+      context,
+    );
     File? _imgeFile = isEvent ? _provider.eventImage : _provider.postImage;
     if (_provider.imageUrl.isNotEmpty) {
       return Container(
           height: double.infinity,
           decoration: BoxDecoration(
-              image: DecorationImage(
-            image: CachedNetworkImageProvider(_provider.imageUrl),
-            fit: BoxFit.cover,
-          )),
+              image: _imgeFile == null
+                  ? DecorationImage(
+                      image: CachedNetworkImageProvider(_provider.imageUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : DecorationImage(
+                      image: FileImage(File(_imgeFile.path)),
+                      fit: BoxFit.cover,
+                    )),
           child: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(begin: Alignment.bottomRight, colors: [

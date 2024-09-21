@@ -13,11 +13,14 @@ class EventEnlargedScreen extends StatefulWidget {
   final PaletteGenerator? palette;
   final String marketedAffiliateId;
 
+  final bool isPreview;
+
   EventEnlargedScreen({
     required this.currentUserId,
     required this.event,
     required this.type,
     this.justCreated = false,
+    this.isPreview = false,
     required this.showPrivateEvent,
     this.marketedAffiliateId = '',
     this.palette,
@@ -133,15 +136,17 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   }
 
   _setupIsBlockedUser() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.event.authorId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
+    try {
+      bool isBlockedUser = await DatabaseService.isBlockedUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.event.authorId,
+      );
+      if (mounted) {
+        setState(() {
+          _isBlockedUser = isBlockedUser;
+        });
+      }
+    } catch (e) {}
   }
 
   _setImage() async {
@@ -521,7 +526,9 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   _eventDetails(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    bool _isAuthor = widget.currentUserId == widget.event.authorId;
+    bool _isAuthor = widget.isPreview
+        ? false
+        : widget.currentUserId == widget.event.authorId;
     // bool _showAffiliate = widget.event.isAffiliateEnabled &&
     //     !widget.event.isAffiliateExclusive &&
     //     !_isAuthor;
@@ -858,7 +865,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 dontPop: true,
                 icon: Icons.question_mark_rounded,
                 onPressed: () {
-                  _showBottomSheetAskMore(context);
+                  widget.isPreview
+                      ? _showBottomSheetErrorMessage(
+                          'Not available in preview mode', '')
+                      : _showBottomSheetAskMore(context);
                 },
                 text: 'Ask questions',
               ),
@@ -867,12 +877,15 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 dontPop: true,
                 icon: Icons.qr_code_2_sharp,
                 onPressed: () {
-                  _navigateToPage(
-                    context,
-                    ExpandEventBarcodeScreen(
-                      event: widget.event,
-                    ),
-                  );
+                  widget.isPreview
+                      ? _showBottomSheetErrorMessage(
+                          'Not available in preview mode', '')
+                      : _navigateToPage(
+                          context,
+                          ExpandEventBarcodeScreen(
+                            event: widget.event,
+                          ),
+                        );
                 },
                 text: 'Share Qr code',
               ),
@@ -945,6 +958,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           event: widget.event,
                           inviteReply: '',
                           onInvite: false,
+                          isPreview: widget.isPreview,
                         ),
                       ),
               ],
@@ -1563,7 +1577,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                         //     _provider.userLocationPreference!,
                         isLiveLocation: true,
                         liveCity: widget.event.city,
-                        liveCountry: widget.event.city,
+                        liveCountry: widget.event.country,
                         liveLocationIntialPage: 0, isWelcome: false,
                         // sortNumberOfDays: 0,
                       ),
@@ -2075,7 +2089,9 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   }
 
   _contentWidget(BuildContext context) {
-    bool _isAuthor = widget.currentUserId == widget.event.authorId;
+    bool _isAuthor = widget.isPreview
+        ? false
+        : widget.currentUserId == widget.event.authorId;
     final List<String> datePartition = widget.event.startDate == null
         ? MyDateFormat.toDate(DateTime.now()).split(" ")
         : MyDateFormat.toDate(widget.event.startDate.toDate()).split(" ");
@@ -2111,115 +2127,121 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (_isAuthor)
-              Padding(
-                padding: EdgeInsets.only(
-                    bottom: widget.justCreated ? 100.0 : 30, top: 30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          BottomModelSheetIconActionWidget(
-                            minor: true,
-                            dontPop: true,
-                            textcolor: _isLoadingDashboard ? Colors.blue : null,
-                            icon: Icons.dashboard_outlined,
-                            onPressed: () {
-                              widget.palette == null
-                                  ? _generatePalette(true)
-                                  : _navigateToPage(
-                                      context,
-                                      EventDashboardScreen(
-                                        currentUserId: widget.currentUserId,
-                                        event: widget.event,
-                                        palette: widget.palette!,
-                                      ));
-                            },
-                            text:
-                                _isLoadingDashboard ? 'Loading...' : 'Dashbord',
-                          ),
-                          Container(
-                            width: 1,
-                            height: 50,
-                            color: Colors.grey,
-                          ),
-                          BottomModelSheetIconActionWidget(
-                            minor: true,
-                            dontPop: true,
-                            textcolor: _isLoading ? Colors.blue : null,
-                            icon: MdiIcons.thoughtBubbleOutline,
-                            onPressed: () async {
-                              widget.palette == null
-                                  ? _generatePalette(false)
-                                  : _goToRoom(widget.palette!);
-                            },
-                            text: _isLoading ? 'Loading...' : 'Room',
-                          ),
-                        ],
+            if (!widget.isPreview)
+              if (_isAuthor)
+                Padding(
+                  padding: EdgeInsets.only(
+                      bottom: widget.justCreated ? 100.0 : 30, top: 30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            BottomModelSheetIconActionWidget(
+                              minor: true,
+                              dontPop: true,
+                              textcolor:
+                                  _isLoadingDashboard ? Colors.blue : null,
+                              icon: Icons.dashboard_outlined,
+                              onPressed: () {
+                                if (!_isLoading)
+                                  widget.palette == null
+                                      ? _generatePalette(true)
+                                      : _navigateToPage(
+                                          context,
+                                          EventDashboardScreen(
+                                            currentUserId: widget.currentUserId,
+                                            event: widget.event,
+                                            palette: widget.palette!,
+                                          ));
+                              },
+                              text: _isLoadingDashboard
+                                  ? 'Loading...'
+                                  : 'Dashbord',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 50,
+                              color: Colors.grey,
+                            ),
+                            BottomModelSheetIconActionWidget(
+                              minor: true,
+                              dontPop: true,
+                              textcolor: _isLoading ? Colors.blue : null,
+                              icon: MdiIcons.thoughtBubbleOutline,
+                              onPressed: () async {
+                                if (!_isLoading)
+                                  widget.palette == null
+                                      ? _generatePalette(false)
+                                      : _goToRoom(widget.palette!);
+                              },
+                              text: _isLoading ? 'Loading...' : 'Room',
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          BottomModelSheetIconActionWidget(
-                            minor: true,
-                            dontPop: true,
-                            icon: Icons.edit_outlined,
-                            onPressed: () {
-                              _navigateToPage(
-                                context,
-                                EditEventScreen(
-                                  currentUserId: widget.currentUserId,
-                                  event: widget.event,
-                                  isCompleted: _eventHasEnded,
-                                ),
-                              );
-                            },
-                            text: 'Edit',
-                          ),
-                          Container(
-                            width: 1,
-                            height: 50,
-                            color: Colors.grey,
-                          ),
-                          BottomModelSheetIconActionWidget(
-                            minor: true,
-                            dontPop: true,
-                            icon: Icons.call_outlined,
-                            onPressed: () async {
-                              _navigateToPage(
-                                context,
-                                DiscoverUser(
-                                  currentUserId: widget.currentUserId,
-                                  isLiveLocation: true,
-                                  liveCity: widget.event.city,
-                                  liveCountry: widget.event.country,
-                                  liveLocationIntialPage: 0,
-                                  isWelcome: false,
-                                ),
-                              );
-                            },
-                            text: 'Book creative',
-                          ),
-                        ],
+                      const SizedBox(
+                        height: 5,
                       ),
-                    ),
-                  ],
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            BottomModelSheetIconActionWidget(
+                              minor: true,
+                              dontPop: true,
+                              icon: Icons.edit_outlined,
+                              onPressed: () {
+                                _navigateToPage(
+                                  context,
+                                  EditEventScreen(
+                                    currentUserId: widget.currentUserId,
+                                    event: widget.event,
+                                    isCompleted: _eventHasEnded,
+                                    isDraft: false,
+                                  ),
+                                );
+                              },
+                              text: 'Edit',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 50,
+                              color: Colors.grey,
+                            ),
+                            BottomModelSheetIconActionWidget(
+                              minor: true,
+                              dontPop: true,
+                              icon: Icons.call_outlined,
+                              onPressed: () async {
+                                _navigateToPage(
+                                  context,
+                                  DiscoverUser(
+                                    currentUserId: widget.currentUserId,
+                                    isLiveLocation: true,
+                                    liveCity: widget.event.city,
+                                    liveCountry: widget.event.country,
+                                    liveLocationIntialPage: 0,
+                                    isWelcome: false,
+                                  ),
+                                );
+                              },
+                              text: 'Book creative',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             GestureDetector(
               onTap: () {
                 _showDetails(context);
@@ -2379,6 +2401,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     fromFlyier: true,
                     currentUserId: widget.currentUserId,
                     event: widget.event,
+                    isPreview: widget.isPreview,
                   )
                 : SizedBox.shrink()
             : !_eventHasEnded && !_isAuthor
@@ -2387,6 +2410,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     fromFlyier: true,
                     currentUserId: widget.currentUserId,
                     event: widget.event,
+                    isPreview: widget.isPreview,
                   )
                 : SizedBox.shrink(),
         SizedBox(
@@ -2418,7 +2442,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                   ),
                 ),
                 onPressed: () {
-                  _showBottomSheetAskMore(context);
+                  widget.isPreview
+                      ? _showBottomSheetErrorMessage(
+                          'Not available in preview mode', '')
+                      : _showBottomSheetAskMore(context);
                 },
               ),
             )),
@@ -2596,18 +2623,19 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           ),
         ),
         actions: [
-          _displayImage || _displayReportWarning
-              ? SizedBox.shrink()
-              : IconButton(
-                  onPressed: () {
-                    _showBottomSheet(context);
-                  },
-                  icon: Icon(
-                    Icons.more_vert,
-                    color: Colors.white,
-                    size: ResponsiveHelper.responsiveHeight(context, 30.0),
+          if (!widget.isPreview)
+            _displayImage || _displayReportWarning
+                ? SizedBox.shrink()
+                : IconButton(
+                    onPressed: () {
+                      _showBottomSheet(context);
+                    },
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: Colors.white,
+                      size: ResponsiveHelper.responsiveHeight(context, 30.0),
+                    ),
                   ),
-                ),
         ],
       ),
       body: Stack(

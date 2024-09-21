@@ -43,7 +43,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
     startListeningForValidationIfInDateRange();
   }
 
-  // void listenForTicketValidation() async {
+  // void listenForTicketValidation() {
   //   DocumentReference orderDocRef = newEventTicketOrderRef
   //       .doc(widget.event.id)
   //       .collection('ticketOrders')
@@ -53,40 +53,37 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
   //     if (snapshot.exists) {
   //       TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
 
-  //       // Find the specific ticket that has been updated
+  //       // Find the specific ticket that has been updated.
   //       TicketPurchasedModel? updatedTicket = order.tickets.firstWhere(
   //         (ticket) => ticket.entranceId == widget.ticket.entranceId,
-  //         // orElse: () =>  null,
-  //         // This is acceptable because updatedTicket is nullable
+  //         // orElse: () => null, // This is acceptable because updatedTicket is nullable.
   //       );
 
-  //       if (updatedTicket != null) {
-  //         // If the ticket's lastScannedTime is recent, we can assume a scan is in progress.
-  //         DateTime now = DateTime.now();
-  //         Duration timeSinceLastScan =
-  //             now.difference(updatedTicket.lastTimeScanned.toDate());
-  //         if (timeSinceLastScan < Duration(seconds: 10)) {
-  //           // for example, if less than 10 seconds ago
-  //           setState(() {
-  //             _isScanning = true;
-  //           });
-  //         }
-  //       }
-
-  //       if (updatedTicket != null && updatedTicket.validated) {
-  //         // Check if the specific field 'validated' has changed to true
-  //         if (updatedTicket.validated) {
-  //           // The ticket has been validated, call the function to handle this event
-  //           if (!init) onTicketValidated(updatedTicket.validated);
-  //         }
+  //       // If the ticket's lastScannedTime is recent, we can assume a scan is in progress.
+  //       DateTime now = DateTime.now();
+  //       Duration timeSinceLastScan =
+  //           now.difference(updatedTicket.lastTimeScanned.toDate());
+  //       if (timeSinceLastScan < Duration(seconds: 10)) {
+  //         // If less than 10 seconds ago, assume scanning is in progress.
+  //         setState(() {
+  //           _isScanning = true;
+  //         });
+  //         // Use a delay to give time for the scanning indicator to show.
+  //         Future.delayed(Duration(seconds: 2), () {
+  //           // After a delay, check the validation state and update UI accordingly.
+  //           checkAndUpdateValidationState(updatedTicket.validated);
+  //         });
+  //       } else {
+  //         // If the last scanned time is not recent, just update the validation state.
+  //         checkAndUpdateValidationState(updatedTicket.validated);
   //       }
   //     } else {
-  //       // // Handle the case where the order document does not exist
+  //       // Handle the case where the order document does not exist.
   //       // onOrderNotFound();
   //     }
   //   }, onError: (error) {
-  //     // Handle any errors that occur with the listener
-  //     print("Error listening to ticket validation: $error");
+  //     // Handle any errors that occur with the listener.
+  //     // print("Error listening to ticket validation: $error");
   //   });
   // }
 
@@ -100,39 +97,36 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
       if (snapshot.exists) {
         TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
 
-        // Find the specific ticket that has been updated.
         TicketPurchasedModel? updatedTicket = order.tickets.firstWhere(
           (ticket) => ticket.entranceId == widget.ticket.entranceId,
-          // orElse: () => null, // This is acceptable because updatedTicket is nullable.
         );
 
-        // If the ticket's lastScannedTime is recent, we can assume a scan is in progress.
         DateTime now = DateTime.now();
         Duration timeSinceLastScan =
             now.difference(updatedTicket.lastTimeScanned.toDate());
+
+        setState(() {
+          _isScanning = true; // Always show loading indicator
+        });
+
         if (timeSinceLastScan < Duration(seconds: 10)) {
-          // If less than 10 seconds ago, assume scanning is in progress.
-          setState(() {
-            _isScanning = true;
-          });
-          // Use a delay to give time for the scanning indicator to show.
+          // Assume scanning is in progress.
           Future.delayed(Duration(seconds: 2), () {
-            // After a delay, check the validation state and update UI accordingly.
             checkAndUpdateValidationState(updatedTicket.validated);
           });
         } else {
-          // If the last scanned time is not recent, just update the validation state.
+          // Check the validation state and update UI accordingly.
           checkAndUpdateValidationState(updatedTicket.validated);
         }
       } else {
         // Handle the case where the order document does not exist.
-        // onOrderNotFound();
       }
     }, onError: (error) {
       // Handle any errors that occur with the listener.
-      // print("Error listening to ticket validation: $error");
     });
   }
+
+
 
   void checkAndUpdateValidationState(bool isValidated) {
     if (mounted) {
@@ -181,7 +175,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
             _isValidated = true;
           });
         }
-        HapticFeedback.lightImpact();
+        HapticFeedback.mediumImpact();
       });
     }
   }

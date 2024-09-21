@@ -350,6 +350,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                   currentUserId: _provider.currentUserId,
                   event: widget.event,
                   isCompleted: _eventHasEnded,
+                      isDraft: false,
                 ),
               )
             : _navigateToPage(
@@ -498,7 +499,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                               : Text(
                                   widget.event.isFree
                                       ? 'Free'
-                                      : currencyPartition.length > 0 ||
+                                      : currencyPartition.length > 1 ||
                                               widget.event.rate.isNotEmpty
                                           ? "${currencyPartition[1]}${_fristTickePrice.toString()}"
                                           : _fristTickePrice.toString(),

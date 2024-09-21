@@ -11,5 +11,16 @@ class MyDateFormat {
     final time = DateFormat('hh:mm a').format(dateTime);
     return '$time';
   }
+
+
+   static List<DateTime> getDatesInRange(DateTime startDate, DateTime endDate) {
+    List<DateTime> dates = [];
+    for (int i = 0; i <= endDate.difference(startDate).inDays; i++) {
+      dates.add(startDate.add(Duration(days: i)));
+    }
+    return dates;
+  }
 }
  
+
+

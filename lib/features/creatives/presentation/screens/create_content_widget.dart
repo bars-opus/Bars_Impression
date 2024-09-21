@@ -42,14 +42,32 @@ class CreateContent extends StatelessWidget {
     );
   }
 
+  void _showBottomDraft(BuildContext context, List<Event> eventsList) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return EventDrafts(eventsList: eventsList);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var _user = Provider.of<UserData>(context, listen: false).user;
-    var _userLocation =
-        Provider.of<UserData>(context, listen: false).userLocationPreference;
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _provide2 = Provider.of<UserData>(
+      context,
+    );
+    var _user = _provider.user;
+    var _userLocation = _provider.userLocationPreference;
     return Container(
         height: ResponsiveHelper.responsiveHeight(
-            context, _user!.profileHandle!.startsWith('Fans') ? 170 : 230),
+            context,
+
+            //  _user!.profileHandle!.startsWith('Fans') ? 170 :
+
+            230),
         decoration: BoxDecoration(
             color: Theme.of(context).primaryColorLight,
             borderRadius: BorderRadius.circular(30)),
@@ -61,7 +79,7 @@ class CreateContent extends StatelessWidget {
               ),
               BottomModelSheetListTileActionWidget(
                 colorCode: '',
-                icon: Icons.event,
+                icon: Icons.add,
                 onPressed: _userLocation != null
                     ? () {
                         HapticFeedback.mediumImpact();
@@ -73,26 +91,42 @@ class CreateContent extends StatelessWidget {
                                   isEditting: false,
                                   event: null,
                                   isCompleted: false,
+                                  isDraft: false,
                                 ));
                       }
                     : () {},
-                text: 'Create event',
+                text: 'Create new event',
               ),
-              if (!_user.profileHandle!.startsWith('Fans'))
-                BottomModelSheetListTileActionWidget(
-                  colorCode: '',
-                  icon: Icons.work_outline_sharp,
-                  onPressed: () {
-                    HapticFeedback.mediumImpact();
-                    _navigateToPage(
-                        context,
-                        CreateWork(
-                          currentUserId: _user.userId ?? '',
-                          userPortfolio: null,
-                        ));
-                  },
-                  text: 'Create work request',
-                ),
+              // if (!_user.profileHandle!.startsWith('Fans'))
+              BottomModelSheetListTileActionWidget(
+                isLoading: _provide2.isLoading,
+                dontPop: true,
+                colorCode: '',
+                icon: Icons.event,
+                onPressed: () async {
+                  if (!_provide2.isLoading) _provider.setIsLoading(true);
+                  try {
+                    Query eventQuery = await eventsDraftRef
+                        .doc(_user!.userId)
+                        .collection('events')
+                        .orderBy('timestamp', descending: true);
+                    QuerySnapshot postFeedSnapShot = await eventQuery.get();
+
+                    List<Event> events = await postFeedSnapShot.docs
+                        .map((doc) => Event.fromDoc(doc))
+                        .toList();
+                    _provider.setIsLoading(false);
+                    Navigator.pop(context);
+                    _showBottomDraft(context, events);
+                  } catch (e) {
+                    _provider.setIsLoading(false);
+                    EventDatabase.showBottomSheetErrorMessage(
+                        context, 'Could\'nt load draft');
+                  }
+                },
+                text: _provide2.isLoading ? 'Loading...' : 'Choose from draft',
+                //  'Create work request',
+              ),
             ])));
   }
 }

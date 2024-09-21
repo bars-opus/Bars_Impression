@@ -15,9 +15,9 @@ class TaggedPeopleGroup extends StatelessWidget {
     TaggedEventPeopleModel removingTaggedEventPeople,
   ) {
     var _provider = Provider.of<UserData>(context, listen: false);
-
     _provider.taggedEventPeople.removeWhere(
         (taggedPerson) => taggedPerson.id == removingTaggedEventPeople.id);
+    _provider.setInt2(3);
   }
 
   void _showBottomTaggedPersonExternalLink(

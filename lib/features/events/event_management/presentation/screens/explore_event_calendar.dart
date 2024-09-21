@@ -331,7 +331,7 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
               ),
               headerStyle: HeaderStyle(
                 titleTextStyle: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 30),
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
                 ),
                 headerMargin:
                     const EdgeInsets.only(top: 20, bottom: 10, left: 10),

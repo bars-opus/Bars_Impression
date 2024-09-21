@@ -238,9 +238,9 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
 
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
-            CachedNetworkImageProvider(_event.imageUrl,
+            CachedNetworkImageProvider(
+              _event.imageUrl,
             ),
-            
             size: Size(1110, 150),
             maximumColorCount: 20,
           );
@@ -530,7 +530,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
     );
   }
 
-  void _showBottomSheetAffiliateDoc() {
+  void _showBottomSheetAffiliateDoc(bool isMessage) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -543,14 +543,38 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(30)),
-              child: AffiliateDoc(
-                isAffiliated: false,
-                isOganiser: false,
-                affiliateOnPressed: () {
-                  Navigator.pop(context);
-                  // _showBottomSheetCreateAffiliate();
-                },
-              ));
+              child: isMessage
+                  ? ListView(children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TicketPurchasingIcon(
+                        title: '',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: RichText(
+                            textScaler: MediaQuery.of(context).textScaler,
+                            text: TextSpan(children: [
+                              TextSpan(
+                                text: '',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              TextSpan(
+                                text: widget.affiliate.message,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ])),
+                      )
+                    ])
+                  : AffiliateDoc(
+                      isAffiliated: false,
+                      isOganiser: false,
+                      affiliateOnPressed: () {
+                        Navigator.pop(context);
+                        // _showBottomSheetCreateAffiliate();
+                      },
+                    ));
         });
       },
     );
@@ -674,7 +698,8 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                               color: Colors.blue,
                               image: DecorationImage(
                                 image: CachedNetworkImageProvider(
-                                    widget.affiliate.eventImageUrl,   errorListener: (_) {
+                                    widget.affiliate.eventImageUrl,
+                                    errorListener: (_) {
                                   return;
                                 }),
                                 fit: BoxFit.cover,
@@ -703,15 +728,26 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.affiliate.message,
-                  style: Theme.of(context).textTheme.bodyMedium,
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheetAffiliateDoc(true);
+                },
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    widget.affiliate.message,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    maxLines: 10,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
+              if (_eventHasEnded)
+                const SizedBox(
+                  height: 20,
+                ),
               if (widget.affiliate.affiliateLink.isNotEmpty && widget.isUser)
                 if (!_eventHasEnded)
                   GestureDetector(
@@ -868,7 +904,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
               ),
               GestureDetector(
                 onTap: () {
-                  _showBottomSheetAffiliateDoc();
+                  _showBottomSheetAffiliateDoc(false);
                 },
                 child: Text(
                   '\nWho is an affiliate',

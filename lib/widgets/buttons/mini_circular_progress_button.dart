@@ -5,9 +5,13 @@ class MiniCircularProgressButton extends StatelessWidget {
 
   final VoidCallback? onPressed;
   final Color color;
+  final bool dontShowShadow;
 
   MiniCircularProgressButton(
-      {required this.text, required this.onPressed, this.color = Colors.white});
+      {required this.text,
+      required this.onPressed,
+      this.dontShowShadow = false,
+      this.color = Colors.white});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +23,7 @@ class MiniCircularProgressButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: color,
             surfaceTintColor: Colors.transparent,
-            elevation: 20.0,
+            elevation: dontShowShadow ? 5 : 20.0,
             foregroundColor: color == Colors.blue ? Colors.white : Colors.blue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),

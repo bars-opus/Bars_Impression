@@ -123,6 +123,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                   currentUserId: widget.currentUserId,
                   event: widget.event,
                   isCompleted: _eventHasEnded,
+                  isDraft: false,
                 ),
               )
             : _navigateToPage(
@@ -296,7 +297,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                           Text(
                             widget.event.isFree
                                 ? 'Free'
-                                : currencyPartition.length > 0
+                                : currencyPartition.length > 1
                                     ? " ${currencyPartition[1]}\n${_fristTickePrice.toString()}"
                                     : _fristTickePrice.toString(),
                             style: TextStyle(
