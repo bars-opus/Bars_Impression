@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bars/features/creatives/presentation/widgets/notification_sort_button.dart';
+import 'package:bars/utilities/dimensions.dart';
 import 'package:flutter/material.dart';
 
 class NewModalActionButton extends StatelessWidget {
@@ -18,19 +19,23 @@ class NewModalActionButton extends StatelessWidget {
     required this.title,
     this.color,
     this.fromModalSheet = true,
-       this.popOnPressed = true,
+    this.popOnPressed = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if(popOnPressed)
-        Navigator.pop(context);
+        if (popOnPressed) Navigator.pop(context);
         onPressed();
       },
       child: Container(
-        width: fromModalSheet ? double.infinity : 183,
+        width: fromModalSheet
+            ? double.infinity
+            :
+
+            //  ResponsiveHelper.responsiveFontSize(context, 168.0),
+            183,
         padding: EdgeInsets.symmetric(
             vertical: 20, horizontal: fromModalSheet ? 20 : 5),
         margin: EdgeInsets.symmetric(
