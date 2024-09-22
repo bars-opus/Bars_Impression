@@ -542,12 +542,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         width: double.infinity,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        child: _provider.isLoading
+        child: _provider.isLoading || _provider.isLoading2
             ? Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Saving to draft. Please wait...',
+                    _provider.isLoading2
+                        ? 'Processing image'
+                        : 'Saving to draft. Please wait...',
                     style: TextStyle(
                       color: Colors.blue,
                       fontSize:
@@ -3351,7 +3353,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
         Positioned(top: 50, left: 10, child: _popButton()), // Back button.
 
-        if (_provider.isLoading)
+        if (_provider.isLoading || _provider.isLoading2)
           // Shows a loading indicator if data is being processed.
           Positioned(
             top: 100,

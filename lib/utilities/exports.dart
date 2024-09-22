@@ -407,3 +407,4 @@ export 'package:bars/features/events/event_management/models/tagged_notification
 export 'package:bars/features/events/affiliate/presentation/screens/user_tags.dart';
 export 'package:bars/features/events/affiliate/presentation/widgets/tag_widget.dart';
 export 'package:bars/features/events/affiliate/presentation/screens/tag_page.dart';
+export 'package:bars/general/docs/verify_info.dart';

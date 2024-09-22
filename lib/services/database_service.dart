@@ -3138,11 +3138,11 @@ class DatabaseService {
       // Find the tag to update
       for (int i = 0; i < taggedPeople.length; i++) {
         var taggedPerson = taggedPeople[i];
-        print("taggedPerson.id  " + taggedPerson.id.toString());
-        print("tag.id  " + tag.id.toString());
-        print("taggedPerson.internalProfileLink  " +
-            taggedPerson.internalProfileLink.toString());
-        print("tag.personId  " + tag.personId.toString());
+        // print("taggedPerson.id  " + taggedPerson.id.toString());
+        // print("tag.id  " + tag.id.toString());
+        // print("taggedPerson.internalProfileLink  " +
+        //     taggedPerson.internalProfileLink.toString());
+        // print("tag.personId  " + tag.personId.toString());
 
         if (taggedPerson.id == tag.id &&
             taggedPerson.internalProfileLink == tag.personId) {

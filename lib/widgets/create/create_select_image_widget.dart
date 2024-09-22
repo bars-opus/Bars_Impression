@@ -17,7 +17,6 @@ class CreateSelectImageWidget extends StatelessWidget {
       required this.isEvent,
       required this.onPressed});
 
-
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(
@@ -27,7 +26,7 @@ class CreateSelectImageWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (!_provider.isLoading)
+        if (!_provider.isLoading2)
           AvatarGlow(
             animate: true,
             showTwoGlows: true,
@@ -60,7 +59,7 @@ class CreateSelectImageWidget extends StatelessWidget {
                   },
                 )),
           ),
-        _provider.isLoading
+        _provider.isLoading2
             ? Text(
                 'Processing...',
                 style: TextStyle(

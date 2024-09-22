@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:bars/utilities/exports.dart';
 
 class TaggedUsersWidget extends StatefulWidget {
- final List<TaggedEventPeopleModel> taggedPeopleOption;
+  final List<TaggedEventPeopleModel> taggedPeopleOption;
 
   TaggedUsersWidget({required this.taggedPeopleOption});
 
@@ -90,9 +90,26 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
     );
   }
 
+  void _verifyInfo(String name) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 200),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: VerifyInfo(userName: name));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-
     var _provider = Provider.of<UserData>(context, listen: false);
     if (positions.isEmpty) {
       // Return a placeholder widget or an empty Container
@@ -190,11 +207,21 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
                             const SizedBox(
                               width: 10,
                             ),
+                            if (taggedPerson.verifiedTag)
+                              GestureDetector(
+                                onTap: () => _verifyInfo(taggedPerson.name),
+                                child: Icon(
+                                  Icons.check_circle_sharp,
+                                  color: Colors.green,
+                                  size: ResponsiveHelper.responsiveHeight(
+                                      context, 15),
+                                ),
+                              ),
                             Icon(
                               taggedPerson.internalProfileLink!.isEmpty
                                   ? Icons.link
                                   : Icons.arrow_forward_ios_outlined,
-                              color: Colors.white,
+                              color: Colors.grey,
                               size: taggedPerson.internalProfileLink!.isEmpty
                                   ? ResponsiveHelper.responsiveHeight(
                                       context, 25)

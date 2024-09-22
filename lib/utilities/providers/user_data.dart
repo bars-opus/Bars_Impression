@@ -179,6 +179,8 @@ class UserData extends ChangeNotifier {
   late bool _showUsersTab;
   late bool _shortcutBool;
   late bool _isLoading;
+  late bool _isLoading2;
+
   late bool _enlargeStartBarcode;
   late bool _enlargeEndBarcode;
   late File? _postImage;
@@ -286,6 +288,7 @@ class UserData extends ChangeNotifier {
     _shortcutBool = false;
     _loadingThisWeekEvent = true;
     _isLoading = false;
+    _isLoading2 = false;
     _chatCount = 0;
     _workRequestoverView = '';
     _changeNewUserName = '';
@@ -409,10 +412,8 @@ class UserData extends ChangeNotifier {
 
   String get overviewDraft => _overviewDraft;
   String get aiMarketingDraft => _aiMarketingDraft;
-   String get taggedUserSelectedProfileImageUrl => _taggedUserSelectedProfileImageUrl;
-
-
-  
+  String get taggedUserSelectedProfileImageUrl =>
+      _taggedUserSelectedProfileImageUrl;
 
   String get taggedUserSelectedProfileName => _taggedUserSelectedProfileName;
 
@@ -531,6 +532,9 @@ class UserData extends ChangeNotifier {
   bool get shortcutBool => _shortcutBool;
   bool get loadingThisWeekEvent => _loadingThisWeekEvent;
   bool get isLoading => _isLoading;
+    bool get isLoading2 => _isLoading2;
+
+  
   bool get enlargeStartBarcode => _enlargeStartBarcode;
   bool get enlargeEndBarcode => _enlargeEndBarcode;
   File? get postImage => _postImage;
@@ -1196,6 +1200,13 @@ class UserData extends ChangeNotifier {
     _isLoading = isLoading;
     notifyListeners();
   }
+  void setIsLoading2(bool isLoading2) {
+    _isLoading2 = isLoading2;
+    notifyListeners();
+  }
+
+
+  
 
   void setEnlargeEndBarcode(bool enlargeEndBarcode) {
     _enlargeEndBarcode = enlargeEndBarcode;
@@ -1379,14 +1390,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  void setTaggedUserSelectedProfileImageUrl(String taggedUserSelectedProfileImageUrl) {
+  void setTaggedUserSelectedProfileImageUrl(
+      String taggedUserSelectedProfileImageUrl) {
     _taggedUserSelectedProfileImageUrl = taggedUserSelectedProfileImageUrl;
     notifyListeners();
   }
-
-
-
 
   void setTaggedUserSelectedProfileName(String taggedUserSelectedProfileName) {
     _taggedUserSelectedProfileName = taggedUserSelectedProfileName;

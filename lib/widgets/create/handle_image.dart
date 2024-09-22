@@ -10,13 +10,13 @@ class ImageSafetyHandler {
       final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
       if (file == null) return;
 
-      _provider.setIsLoading(true);
+      _provider.setIsLoading2(true);
       // final isHarmful = await _checkForHarmfulContent(context, file as File);
       bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
           context, file as File);
 
       if (isHarmful) {
-        _provider.setIsLoading(false);
+        _provider.setIsLoading2(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -25,12 +25,13 @@ class ImageSafetyHandler {
           ),
         );
       } else {
-        _provider.setIsLoading(false);
+        _provider.setIsLoading2(false);
         // isEvent ?
         _provider.setEventImage(file);
         //  : _provider.setPostImage(file);
       }
     } catch (e) {
+      _provider.setIsLoading2(false);
       mySnackBar(context, 'Image not selected');
     }
   }
@@ -42,5 +43,4 @@ class ImageSafetyHandler {
     );
     return croppedImage!;
   }
-
 }

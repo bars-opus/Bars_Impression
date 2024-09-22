@@ -43,6 +43,24 @@ class TaggedPeopleGroup extends StatelessWidget {
     );
   }
 
+  void _verifyInfo(BuildContext context, String name) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 200),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: VerifyInfo(userName: name));
+      },
+    );
+  }
+
   _display(BuildContext context, TaggedEventPeopleModel taggedPerson) {
     String imageUrl = taggedPerson.profileImageUrl ?? '';
     return ListTile(
@@ -70,12 +88,29 @@ class TaggedPeopleGroup extends StatelessWidget {
                   taggedPerson,
                 );
               })
-          : Icon(
-              taggedPerson.internalProfileLink!.isEmpty
-                  ? Icons.link
-                  : Icons.arrow_forward_ios_outlined,
-              color: Colors.black,
-              size: taggedPerson.internalProfileLink!.isEmpty ? 25 : 15,
+          : Container(
+              width: ResponsiveHelper.responsiveFontSize(context, 60),
+              height: ResponsiveHelper.responsiveFontSize(context, 30),
+              child: Row(
+                children: [
+                  if (taggedPerson.verifiedTag)
+                    GestureDetector(
+                      onTap: () => _verifyInfo(context, taggedPerson.name),
+                      child: Icon(
+                        Icons.check_circle_sharp,
+                        color: Colors.green,
+                        size: ResponsiveHelper.responsiveHeight(context, 15),
+                      ),
+                    ),
+                  Icon(
+                    taggedPerson.internalProfileLink!.isEmpty
+                        ? Icons.link
+                        : Icons.arrow_forward_ios_outlined,
+                    color: Colors.black,
+                    size: taggedPerson.internalProfileLink!.isEmpty ? 25 : 15,
+                  ),
+                ],
+              ),
             ),
       onTap: () {
         HapticFeedback.lightImpact();

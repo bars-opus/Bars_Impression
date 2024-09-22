@@ -142,6 +142,8 @@ Please deliver detailed and actionable insights to assist organizers in marketin
 
     provider.setIsVirtual(false);
     provider.setIsVirtualDraft(false);
+    provider.setIsLoading(false);
+    provider.setIsLoading2(false);
 
     provider.setIsPrivate(false);
     provider.setIsPrivateDraft(false);
@@ -287,7 +289,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
           id: person.id,
           taggedParentTitle: event.title, // Assign name to taggedParentTitle
           role: 'Schedule',
-          taggedType: 'performer',
+          taggedType: 'person',
           verifiedTag: false,
           isEvent: true, // Example value; adjust as needed
           personId: person.internalProfileLink,
