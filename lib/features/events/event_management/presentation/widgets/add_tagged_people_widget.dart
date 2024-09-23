@@ -80,6 +80,7 @@ class _AddTaggedPeopleState extends State<AddTaggedPeople> {
                 internalProfileLink: user.userId!,
                 taggedUserExternalLink: '',
                 profileImageUrl: user.profileImageUrl!);
+            widget.tagNameController.clear();
             Navigator.pop(context);
           }
         : () {

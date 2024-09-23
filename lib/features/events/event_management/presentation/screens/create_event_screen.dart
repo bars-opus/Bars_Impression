@@ -620,17 +620,18 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             children: [
               _eventProcessNumber('1. ', 'Event\nsettings.'),
               if (!_provider.isLoading)
-                MiniCircularProgressButton(
-                    onPressed: () async {
-                      if (widget.event == null || widget.isDraft)
-                        await EventDatabaseDraft.submitDraft(
-                            context,
-                            _isLoading,
-                            widget.event,
-                            widget.isDraft,
-                            _pageController);
-                    },
-                    text: "Next")
+                if (!_provider.isLoading2)
+                  MiniCircularProgressButton(
+                      onPressed: () async {
+                        if (widget.event == null || widget.isDraft)
+                          await EventDatabaseDraft.submitDraft(
+                              context,
+                              _isLoading,
+                              widget.event,
+                              widget.isDraft,
+                              _pageController);
+                      },
+                      text: "Next")
             ],
           ),
           const SizedBox(height: 20),
@@ -3194,19 +3195,29 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   ),
                 ),
                 const SizedBox(height: 40),
-                MarkdownBody(
-                  data: widget.event != null
-                      ? widget.event!.aiMarketingAdvice.isEmpty
-                          ? _provider.aiMarketingDraft
-                          : widget.event!.aiMarketingAdvice
-                      : _provider.aiMarketingDraft,
-                  styleSheet: MarkdownStyleSheet(
-                    h1: Theme.of(context).textTheme.titleLarge,
-                    h2: Theme.of(context).textTheme.titleMedium,
-                    p: Theme.of(context).textTheme.bodyMedium,
-                    listBullet: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
+                _provider.isPrivate
+                    ? Text(
+                        'No marketing analysis for private event.',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 12.0),
+                          color: Colors.grey,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : MarkdownBody(
+                        data: widget.event != null
+                            ? widget.event!.aiMarketingAdvice.isEmpty
+                                ? _provider.aiMarketingDraft
+                                : widget.event!.aiMarketingAdvice
+                            : _provider.aiMarketingDraft,
+                        styleSheet: MarkdownStyleSheet(
+                          h1: Theme.of(context).textTheme.titleLarge,
+                          h2: Theme.of(context).textTheme.titleMedium,
+                          p: Theme.of(context).textTheme.bodyMedium,
+                          listBullet: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
               ],
             ),
           ),
@@ -3253,29 +3264,27 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   duration: const Duration(seconds: 2),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: RichText(
-                      textScaler: MediaQuery.of(context).textScaler,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Confirm information',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 20)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Confirm information',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 20),
                           ),
-                          TextSpan(
-                            text:
-                                '\n\nPlease note that certain event details, such as the background image, and settings, cannot be modified once the event is published. We recommend carefully reviewing this information before proceeding.',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12)),
-                          )
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          '\nPlease note that certain event details, such as the background image, and settings, cannot be modified once the event is published. We recommend carefully reviewing this information before proceeding.\n\nTagged individuals, such as performers on schedules and sponsoring partners, must confirm their tag requests in order to verify the tags. A notification will be sent to each of them.',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 12)),
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -3322,9 +3331,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       children: [
         // Displays the event image.
         DisplayCreateImage(isEvent: true),
-        if (widget.isCompleted)
-          _completed() // Shows completed state if the event is finished.
-        else if (_provider.eventImage == null && !widget.isEditting)
+        // if (widget.isCompleted)
+        //   _completed() // Shows completed state if the event is finished.
+        // else
+        if (_provider.eventImage == null && !widget.isEditting)
           // Prompts the user to select an image if none is set and not editing.
           CreateSelectImageWidget(
             onPressed: () {
@@ -3341,7 +3351,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           SafeArea(
             child: PageView(
               controller: _pageController,
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (int index) {
                 _provider.setInt1(
                     index); // Updates the current page index in the provider.

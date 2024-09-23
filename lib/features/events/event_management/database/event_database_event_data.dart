@@ -90,6 +90,8 @@ class EventDatabaseEventData {
     users = null;
     _provider.setInt2(1);
     _provider.setSchedule(schedule);
+    _provider.setSchedulePeopleList(schedule.people);
+
     _provider.setIsEndTimeSelected(false);
     _provider.setIsStartTimeSelected(false);
     _provider.schedulePerson.clear();

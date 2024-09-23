@@ -67,6 +67,24 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
     );
   }
 
+  void _verifyInfo(BuildContext context, String name) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 200),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: VerifyInfo(userName: name));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     void _navigateToPage(BuildContext context, Widget page) {
@@ -148,28 +166,59 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
               ),
             ),
             Container(
-              height: ResponsiveHelper.responsiveHeight(
-                context,
-                40,
-              ),
-              width: ResponsiveHelper.responsiveHeight(
-                context,
-                30,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: Icon(
-                  widget.person.externalProfileLink!.isEmpty
-                      ? Icons.arrow_forward_ios_rounded
-                      : Icons.link,
-                  size: ResponsiveHelper.responsiveHeight(
-                    context,
-                    20,
+              width: ResponsiveHelper.responsiveFontSize(context, 60),
+              height: ResponsiveHelper.responsiveFontSize(context, 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (widget.person.verifiedTag)
+                    GestureDetector(
+                      onTap: () => _verifyInfo(context, widget.person.name),
+                      child: Icon(
+                        Icons.check_circle_sharp,
+                        color: Colors.green,
+                        size: ResponsiveHelper.responsiveHeight(context, 15),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: Icon(
+                      widget.person.externalProfileLink!.isEmpty
+                          ? Icons.arrow_forward_ios_rounded
+                          : Icons.link,
+                      size: ResponsiveHelper.responsiveHeight(
+                        context,
+                        20,
+                      ),
+                      color: Colors.blue,
+                    ),
                   ),
-                  color: Colors.blue,
-                ),
+                ],
               ),
-            )
+            ),
+            // Container(
+            //   height: ResponsiveHelper.responsiveHeight(
+            //     context,
+            //     40,
+            //   ),
+            //   width: ResponsiveHelper.responsiveHeight(
+            //     context,
+            //     30,
+            //   ),
+            // child: Padding(
+            //   padding: const EdgeInsets.only(right: 20.0),
+            //     child: Icon(
+            //       widget.person.externalProfileLink!.isEmpty
+            //           ? Icons.arrow_forward_ios_rounded
+            //           : Icons.link,
+            //       size: ResponsiveHelper.responsiveHeight(
+            //         context,
+            //         20,
+            //       ),
+            //       color: Colors.blue,
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),

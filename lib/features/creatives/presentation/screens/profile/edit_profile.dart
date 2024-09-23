@@ -154,6 +154,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _updateAuthorHive(name, bio, _profileImageUrl, dynamicLink);
 
         Navigator.pop(context);
+        _provider.setIsLoading2(false);
         _flushBar(
           widget.user.name!,
           "Your profile was edited successfully!!!",
@@ -666,7 +667,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   _validateTextToxicity() async {
     var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.setIsLoading(true);
+    _provider.setIsLoading2(true);
 
     TextModerator moderator = TextModerator();
 
@@ -680,7 +681,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     for (String text in textsToCheck) {
       if (text.isEmpty) {
         // Handle the case where the text is empty
-        _provider.setIsLoading(false);
+        _provider.setIsLoading2(false);
         _submit();
         // mySnackBar(context, 'Text cannot be empty.');
         allTextsValid = false;
@@ -698,14 +699,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
           mySnackBarModeration(context,
               'Your bio, stagename or username contains inappropriate statements. Please review');
-          _provider.setIsLoading(false);
+          _provider.setIsLoading2(false);
 
           allTextsValid = false;
           break; // Exit loop as we already found inappropriate content
         }
       } else {
         // Handle the case where the API call failed
-        _provider.setIsLoading(false);
+        _provider.setIsLoading2(false);
         mySnackBar(context, 'Try again.');
         allTextsValid = false;
         break; // Exit loop as there was an API error
@@ -714,8 +715,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // Animate to the next page if all texts are valid
     if (allTextsValid) {
-      _provider.setIsLoading(false);
-
       _submit();
       // animateToPage(1);
     }
@@ -732,7 +731,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       title: 'Edit Profile',
       action: _name == widget.user.name && _bio == widget.user.bio
           ? null
-          : _isLoading
+          : _provider.isLoading2
               ? Padding(
                   padding: const EdgeInsets.only(
                     right: 20.0,
@@ -758,7 +757,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         dontShowShadow: true,
                         color: Colors.blue,
                         text: 'Save',
-                        onPressed: () {}),
+                        onPressed: () {
+                          _validateTextToxicity();
+                        }),
                   ),
                 ),
       widget: Form(

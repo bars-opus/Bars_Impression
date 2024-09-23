@@ -2476,7 +2476,17 @@ class HomeScreenState extends State<HomeScreen> {
                                 // affiliateId: '',
                               ),
                             )
-                          : contentType.endsWith('eventRoom')
+                          :  contentType.endsWith('tag')
+                          ? _navigateToPage(
+                              context,
+                              ViewSentContent(
+                                contentId: contentId,
+                                contentType: 'tag',
+                                eventAuthorId: '',
+                                // affiliateId: '',
+                              ),
+                            )
+                          : contentType.endsWith('eventRoom') 
                               ? _navigateToPage(
                                   context,
                                   ViewSentContent(

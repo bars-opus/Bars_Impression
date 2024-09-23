@@ -85,6 +85,8 @@ class UserData extends ChangeNotifier {
 // event variables
   List<TaggedEventPeopleModel> _taggedEventPeople = [];
   List<SchedulePeopleModel> _schedulePerson = [];
+  List<SchedulePeopleModel> _schedulePeople = [];
+
   List<TicketModel> _ticketList = [];
   late String _title;
   late String _theme;
@@ -313,6 +315,7 @@ class UserData extends ChangeNotifier {
     _taggedNotification = [];
     _taggedEventPeople = [];
     _schedulePerson = [];
+    _schedulePeople = [];
     _ticketList = [];
     _performances = [];
     _collaborations = [];
@@ -532,9 +535,8 @@ class UserData extends ChangeNotifier {
   bool get shortcutBool => _shortcutBool;
   bool get loadingThisWeekEvent => _loadingThisWeekEvent;
   bool get isLoading => _isLoading;
-    bool get isLoading2 => _isLoading2;
+  bool get isLoading2 => _isLoading2;
 
-  
   bool get enlargeStartBarcode => _enlargeStartBarcode;
   bool get enlargeEndBarcode => _enlargeEndBarcode;
   File? get postImage => _postImage;
@@ -561,6 +563,9 @@ class UserData extends ChangeNotifier {
 
   List<TaggedEventPeopleModel> get taggedEventPeople => _taggedEventPeople;
   List<SchedulePeopleModel> get schedulePerson => _schedulePerson;
+
+List<SchedulePeopleModel> get schedulePeople => _schedulePeople;
+  
   List<TicketModel> get ticketList => _ticketList;
   List<PortfolioModel> get performances => _performances;
   List<PortfolioCollaborationModel> get collaborations => _collaborations;
@@ -995,6 +1000,15 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+
+void setSchedulePeopleList(List<SchedulePeopleModel> schedulePeople) {
+    _schedulePeople.addAll(schedulePeople);
+    notifyListeners();
+  }
+
+
+  
+
   void addTicketToList(TicketModel ticket) {
     if (!_ticketList.contains(ticket)) {
       _ticketList.add(ticket);
@@ -1200,13 +1214,11 @@ class UserData extends ChangeNotifier {
     _isLoading = isLoading;
     notifyListeners();
   }
+
   void setIsLoading2(bool isLoading2) {
     _isLoading2 = isLoading2;
     notifyListeners();
   }
-
-
-  
 
   void setEnlargeEndBarcode(bool enlargeEndBarcode) {
     _enlargeEndBarcode = enlargeEndBarcode;

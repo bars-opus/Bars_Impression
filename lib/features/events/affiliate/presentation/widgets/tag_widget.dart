@@ -51,8 +51,7 @@ class _TagWidgetState extends State<TagWidget> {
           _isLoading = false;
         });
         _showBottomSheetErrorMessage(
-          isDeleting ? 'Error deleting tag' : 'Error confirming tag',
-        );
+            isDeleting ? 'Error deleting tag' : 'Error confirming tag', true);
       }
     }
   }
@@ -78,7 +77,7 @@ class _TagWidgetState extends State<TagWidget> {
     );
   }
 
-  void _showBottomSheetErrorMessage(String errorTitle) {
+  void _showBottomSheetErrorMessage(String errorTitle, bool showSubtitle) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -90,7 +89,9 @@ class _TagWidgetState extends State<TagWidget> {
             Navigator.pop(context);
           },
           title: errorTitle,
-          subTitle: 'Check your internet connection and try again.',
+          subTitle: showSubtitle
+              ? 'Check your internet connection and try again.'
+              : '',
         );
       },
     );
@@ -123,10 +124,12 @@ class _TagWidgetState extends State<TagWidget> {
                     showPrivateEvent: true,
                   ));
                 } else {
-                  _showBottomSheetErrorMessage('Failed to fetch event.');
+                  _showBottomSheetErrorMessage(
+                      'Event not found.This event might have been deleted or cancelled',
+                      false);
                 }
               } catch (e) {
-                _showBottomSheetErrorMessage('Failed to fetch event');
+                _showBottomSheetErrorMessage('Failed to fetch event', true);
               } finally {
                 _isLoading = false;
               }

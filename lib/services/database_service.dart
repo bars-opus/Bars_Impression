@@ -2309,12 +2309,13 @@ class DatabaseService {
       batch.set(userActivityRef, {
         'helperFielId': taggedUser.taggedParentAuthorId,
         'authorId': taggedUser.taggedParentAuthorId,
-        'postId': taggedUser.taggedParentId,
+        'postId': taggedUser.id,
         'seen': false,
         'type': 'tag',
         'postImageUrl': taggedUser.taggedParentImageUrl,
-        'comment':
-            'You have been tagged as ${taggedUser.role} in ${taggedUser.taggedParentTitle}',
+        'comment': taggedUser.role == 'Schedule'
+            ? 'You have been tagged as a ${taggedUser.role} person in ${taggedUser.taggedParentTitle}'
+            : 'You have been tagged as ${taggedUser.role} in ${taggedUser.taggedParentTitle}',
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': '',
         'authorName': 'Tagged in Event',
@@ -3095,7 +3096,7 @@ class DatabaseService {
 
     // Update the user's tag verification status
     DocumentReference userTagDocRef =
-        userTagRef.doc(tag.personId).collection('tags').doc(tag.taggedParentId);
+        userTagRef.doc(tag.personId).collection('tags').doc(tag.id);
 
     batch.update(userTagDocRef, {'verifiedTag': true});
 
@@ -3114,8 +3115,9 @@ class DatabaseService {
       'seen': false,
       'type': 'tagConfirmed',
       'postImageUrl': tag.taggedParentImageUrl,
-      'comment':
-          'Tag confirmed by ${authorUserName} as ${tag.role} in ${tag.taggedParentTitle}',
+      'comment': tag.role == 'Schedule'
+          ? 'Tag confirmed by ${authorUserName} as a ${tag.role} person in ${tag.taggedParentTitle}'
+          : 'Tag confirmed by ${authorUserName} as ${tag.role} in ${tag.taggedParentTitle}',
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': '',
       'authorName': 'Tag confirmed',
@@ -3134,54 +3136,95 @@ class DatabaseService {
 
     if (event != null) {
       List<TaggedEventPeopleModel> taggedPeople = event.taggedPeople;
+      List<Schedule> schedules = event.schedule;
 
-      // Find the tag to update
-      for (int i = 0; i < taggedPeople.length; i++) {
-        var taggedPerson = taggedPeople[i];
-        // print("taggedPerson.id  " + taggedPerson.id.toString());
-        // print("tag.id  " + tag.id.toString());
-        // print("taggedPerson.internalProfileLink  " +
-        //     taggedPerson.internalProfileLink.toString());
-        // print("tag.personId  " + tag.personId.toString());
+      if (tag.role == 'Schedule') {
+        for (var schedule in schedules) {
+          for (int i = 0; i < schedule.people.length; i++) {
+            var person = schedule.people[i];
 
-        if (taggedPerson.id == tag.id &&
-            taggedPerson.internalProfileLink == tag.personId) {
-          // Update the verifiedTag status
-          taggedPeople[i] = TaggedEventPeopleModel(
-            id: taggedPerson.id,
-            name: taggedPerson.name,
-            role: taggedPerson.role,
-            taggedType: taggedPerson.taggedType,
-            verifiedTag: true, // Update verification status
-            internalProfileLink: taggedPerson.internalProfileLink,
-            externalProfileLink: taggedPerson.externalProfileLink,
-            profileImageUrl: taggedPerson.profileImageUrl,
-          );
-          print("\n\n\ntag    data  " + taggedPeople[i].toString());
+            if (person.id == tag.id &&
+                person.internalProfileLink == tag.personId) {
+              // Update the verifiedTag status
+              schedule.people[i] = SchedulePeopleModel(
+                id: person.id,
+                name: person.name,
+                verifiedTag: true, // Update verification status
+                internalProfileLink: person.internalProfileLink,
+                externalProfileLink: person.externalProfileLink,
+                profileImageUrl: person.profileImageUrl,
+              );
 
-          // Update the event in the database
-          DocumentReference eventDocRef = eventsRef
-              .doc(event.authorId)
-              .collection('userEvents')
-              .doc(event.id);
+              // Update the schedule in the database
+              DocumentReference eventDocRef = eventsRef
+                  .doc(event.authorId)
+                  .collection('userEvents')
+                  .doc(event.id);
 
-          // Update the event in 'allEventsRef'
-          if (!event.isPrivate) {
-            DocumentReference allEventRef = allEventsRef.doc(event.id);
-            batch.update(allEventRef, {
+              // Update in 'allEventsRef'
+              if (!event.isPrivate) {
+                DocumentReference allEventRef = allEventsRef.doc(event.id);
+                batch.update(allEventRef, {
+                  'schedule': schedules
+                      .map((s) => s.toJson())
+                      .toList(), // Ensure Schedule has a toJson method
+                });
+              }
+
+              batch.update(eventDocRef, {
+                'schedule': schedules
+                    .map((s) => s.toJson())
+                    .toList(), // Ensure Schedule has a toJson method
+              });
+
+              break; // Exit inner loop once the person is updated
+            }
+          }
+        }
+      } else {
+        // Find the tag to update
+        for (int i = 0; i < taggedPeople.length; i++) {
+          var taggedPerson = taggedPeople[i];
+
+          if (taggedPerson.id == tag.id &&
+              taggedPerson.internalProfileLink == tag.personId) {
+            // Update the verifiedTag status
+            taggedPeople[i] = TaggedEventPeopleModel(
+              id: taggedPerson.id,
+              name: taggedPerson.name,
+              role: taggedPerson.role,
+              taggedType: taggedPerson.taggedType,
+              verifiedTag: true, // Update verification status
+              internalProfileLink: taggedPerson.internalProfileLink,
+              externalProfileLink: taggedPerson.externalProfileLink,
+              profileImageUrl: taggedPerson.profileImageUrl,
+            );
+            // print("\n\n\ntag    data  " + taggedPeople[i].toString());
+
+            // Update the event in the database
+            DocumentReference eventDocRef = eventsRef
+                .doc(event.authorId)
+                .collection('userEvents')
+                .doc(event.id);
+
+            // Update the event in 'allEventsRef'
+            if (!event.isPrivate) {
+              DocumentReference allEventRef = allEventsRef.doc(event.id);
+              batch.update(allEventRef, {
+                'taggedPeople': taggedPeople
+                    .map((e) => e.toJson())
+                    .toList(), // Ensure TaggedEventPeopleModel has a toJson method
+              });
+            }
+
+            batch.update(eventDocRef, {
               'taggedPeople': taggedPeople
                   .map((e) => e.toJson())
                   .toList(), // Ensure TaggedEventPeopleModel has a toJson method
             });
+
+            break; // Exit loop once the tag is updated
           }
-
-          batch.update(eventDocRef, {
-            'taggedPeople': taggedPeople
-                .map((e) => e.toJson())
-                .toList(), // Ensure TaggedEventPeopleModel has a toJson method
-          });
-
-          break; // Exit loop once the tag is updated
         }
       }
     }

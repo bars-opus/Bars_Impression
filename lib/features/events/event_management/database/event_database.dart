@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:uuid/uuid.dart';
 
 class EventDatabase {
   final Event? event;
@@ -15,9 +14,14 @@ class EventDatabase {
   static Future<String> summarizeEvent(Event event) async {
     final prompt =
         'Summarize the following event details:\n\nTitle: ${event.title}\nOverview: ${event.overview}\nTheme: ${event.theme}\nCity: ${event.city}\nDate: ${event.startDate.toDate().toString()}\n\nSummary:';
-    final response = await _googleGenerativeAIService.generateResponse(prompt);
-    // print(response);
-    return response!.trim();
+    try {
+      final response =
+          await _googleGenerativeAIService.generateResponse(prompt);
+      // print(response);
+      return response!.trim();
+    } catch (e) {
+      return '';
+    }
   }
 
 // Function to get similarity score using Gemini API
@@ -60,10 +64,14 @@ Analyze the following event information and develop in-depth marketing strategie
 Please deliver detailed and actionable insights to assist organizers in marketing, planning, and executing a successful event.
 """;
     // final response = await _model.generateContent([Content.text(prompt)]);
-    final response = await _googleGenerativeAIService.generateResponse(prompt);
-    final _insighText = response!.trim();
-    // print(_insighText);
-    return _insighText;
+    try {
+      final response =
+          await _googleGenerativeAIService.generateResponse(prompt);
+      final _insighText = response!.trim();
+      return _insighText;
+    } catch (e) {
+      return '';
+    } // print(_insighText);
   }
 
   static setNull(UserData provider, bool pop, BuildContext context) {
@@ -113,6 +121,8 @@ Please deliver detailed and actionable insights to assist organizers in marketin
 
     provider.setTicketSite('');
     provider.setTicketSiteDraft('');
+
+    provider.setClossingDayString('');
 
     provider.setCurrency('');
     provider.setCurrencyDraft('');
@@ -187,51 +197,51 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       // Call your animation method here
       _isLoading = true;
       String commonId = _provider.eventId;
-      // try {
-      String imageUrl = _provider.imageUrl;
-      Event event = await _createEvent(imageUrl, commonId, context);
+      try {
+        String imageUrl = _provider.imageUrl;
+        Event event = await _createEvent(imageUrl, commonId, context);
 
-      PaletteGenerator _paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(event.imageUrl, errorListener: (_) {
-          return;
-        }),
-        size: Size(1110, 150),
-        maximumColorCount: 20,
-      );
+        PaletteGenerator _paletteGenerator =
+            await PaletteGenerator.fromImageProvider(
+          CachedNetworkImageProvider(event.imageUrl, errorListener: (_) {
+            return;
+          }),
+          size: Size(1110, 150),
+          maximumColorCount: 20,
+        );
 
-      DocumentSnapshot doc = await eventsRef
-          .doc(_provider.currentUserId)
-          .collection('userEvents')
-          .doc(commonId)
-          .get();
+        DocumentSnapshot doc = await eventsRef
+            .doc(_provider.currentUserId)
+            .collection('userEvents')
+            .doc(commonId)
+            .get();
 
-      Event newEvent = await Event.fromDoc(doc);
-      await setNull(_provider, true, context);
+        Event newEvent = await Event.fromDoc(doc);
+        await setNull(_provider, true, context);
 
-      // await Future.delayed(Duration(milliseconds: 100));
-      _isLoading = false;
-      // if (mounted) {
-      _navigateToPage(
-          context,
-          EventEnlargedScreen(
-            justCreated: true,
-            currentUserId: _provider.currentUserId!,
-            event: newEvent,
-            type: newEvent.type,
-            palette: _paletteGenerator,
-            showPrivateEvent: false,
-          ));
-      mySnackBar(context, 'Your event was published successfully.');
-      // }
-      // } catch (e) {
-      //   _isLoading = false;
-      //   animateToBack(1, pageController);
-      //   showBottomSheetErrorMessage(context, 'Failed to edit event');
-      //   // Handle errors here
+        // await Future.delayed(Duration(milliseconds: 100));
+        _isLoading = false;
+        // if (mounted) {
+        _navigateToPage(
+            context,
+            EventEnlargedScreen(
+              justCreated: true,
+              currentUserId: _provider.currentUserId!,
+              event: newEvent,
+              type: newEvent.type,
+              palette: _paletteGenerator,
+              showPrivateEvent: false,
+            ));
+        mySnackBar(context, 'Your event was published successfully.');
+        // }
+      } catch (e) {
+        _isLoading = false;
+        animateToBack(1, pageController);
+        showBottomSheetErrorMessage(context, 'Failed to edit event');
+        // Handle errors here
 
-      //   // Show error message
-      // }
+        // Show error message
+      }
     }
   }
 
@@ -239,23 +249,20 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       String imageUrl, String commonId, BuildContext context) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    String link = '';
-    // await DatabaseService.myDynamicLink(
-    //     imageUrl,
-    //     _provider.title,
-    //     _provider.theme,
-    //     'https://www.barsopus.com/event_${commonId}_${_provider.currentUserId}');
+    String link = await DatabaseService.myDynamicLink(
+        imageUrl,
+        _provider.title,
+        _provider.theme,
+        'https://www.barsopus.com/event_${commonId}_${_provider.currentUserId}');
 
-    String insight = '';
-
-    //  await gettInsight(
-    //     eventTitle: _provider.title,
-    //     eventTheme: _provider.theme,
-    //     eventDressCode: _provider.dressCode,
-    //     eventAdress: _provider.address,
-    //     eventCity: _provider.city,
-    //     eventStartDate: _provider.startDate,
-    //     isInsight: true);
+    String insight = await gettInsight(
+        eventTitle: _provider.title,
+        eventTheme: _provider.theme,
+        eventDressCode: _provider.dressCode,
+        eventAdress: _provider.address,
+        eventCity: _provider.city,
+        eventStartDate: _provider.startDate,
+        isInsight: true);
 
     Event event = createEvent(
       blurHash: _provider.blurHash,
@@ -284,7 +291,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
     }).toList();
 
     List<TaggedNotificationModel> notificationsSchedulePeople =
-        await _provider.schedulePerson.map((person) {
+        await _provider.schedulePeople.map((person) {
       return TaggedNotificationModel(
           id: person.id,
           taggedParentTitle: event.title, // Assign name to taggedParentTitle
@@ -298,10 +305,10 @@ Please deliver detailed and actionable insights to assist organizers in marketin
           taggedParentImageUrl: event.imageUrl);
     }).toList();
 
-    String summary = '';
-    // await summarizeEvent(event);
+    String summary = await summarizeEvent(event);
     await DatabaseService.createEvent(event, _provider.user!,
         notificationsSponsorsPartners + notificationsSchedulePeople, summary);
+    _provider.schedulePeople.clear();
 
     return event;
   }

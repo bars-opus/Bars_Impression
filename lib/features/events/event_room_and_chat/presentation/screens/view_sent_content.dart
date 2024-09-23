@@ -317,6 +317,35 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                           _provider.currentUserId!,
                                           _ticketOrder);
                                     })
-                                : const SizedBox.shrink());
+                                : widget.contentType.startsWith('tag')
+                                    ? FutureBuilder(
+                                        future: DatabaseService.getUserTag(
+                                          _provider.currentUserId!,
+                                          widget.contentId,
+                                        ),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot snapshot) {
+                                          if (!snapshot.hasData) {
+                                            return Container(
+                                              width: width,
+                                              height: height,
+                                              color: Colors.black,
+                                              child: Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                color: Colors.blue,
+                                              )),
+                                            );
+                                          }
+                                          TaggedNotificationModel _tag =
+                                              snapshot.data;
+
+                                          return TagPage(
+                                            currentUserId:
+                                                _provider.currentUserId!,
+                                            currentTag: _tag,
+                                          );
+                                        })
+                                    : const SizedBox.shrink());
   }
 }

@@ -92,6 +92,7 @@ class TaggedPeopleGroup extends StatelessWidget {
               width: ResponsiveHelper.responsiveFontSize(context, 60),
               height: ResponsiveHelper.responsiveFontSize(context, 30),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (taggedPerson.verifiedTag)
                     GestureDetector(
