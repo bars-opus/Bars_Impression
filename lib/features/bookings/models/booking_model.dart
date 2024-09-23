@@ -5,7 +5,7 @@
 // Displayed Data: Dates and times of confirmed bookings.
 // Purpose: To keep track of when events are scheduled and avoid double-booking.
 
-import 'package:bars/features/creatives/models/Price_order_model.dart';
+import 'package:bars/features/creatives/models/price_order_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookingModel {

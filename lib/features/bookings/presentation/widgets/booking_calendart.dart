@@ -822,25 +822,25 @@ class _BookingCalendarState extends State<BookingCalendar> {
             textAlign: TextAlign.center,
           ),
         ),
-        Text(
-          widget.bookingUser.contacts.isNotEmpty
-              ? ' ${widget.bookingUser.userName} has not yet set up their booking details. You can directly contact ${widget.bookingUser.userName} by tapping the button below.'
-              : '${widget.bookingUser.userName} has not setup his booking details.',
-          style: Theme.of(context).textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
+        // Text(
+        //   widget.bookingUser.contacts.isNotEmpty
+        //       ? ' ${widget.bookingUser.userName} has not yet set up their booking details. You can directly contact ${widget.bookingUser.userName} by tapping the button below.'
+        //       : '${widget.bookingUser.userName} has not setup his booking details.',
+        //   style: Theme.of(context).textTheme.bodyMedium,
+        //   textAlign: TextAlign.center,
+        // ),
         const SizedBox(
           height: 20,
         ),
-        if (widget.bookingUser.contacts.isNotEmpty)
-          EventBottomButton(
-            buttonColor: Colors.blue,
-            buttonText: 'Contact ${widget.bookingUser.userName} directly',
-            onPressed: () {
-              Navigator.pop(context);
-              _showBottomSheetBookMe();
-            },
-          ),
+        // if (widget.bookingUser.contacts.isNotEmpty)
+        //   EventBottomButton(
+        //     buttonColor: Colors.blue,
+        //     buttonText: 'Contact ${widget.bookingUser.userName} directly',
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //       _showBottomSheetBookMe();
+        //     },
+        //   ),
       ],
     );
   }
@@ -1314,9 +1314,12 @@ class _BookingCalendarState extends State<BookingCalendar> {
                     ),
                   ),
                 )
-              : widget.bookingUser.contacts.isEmpty
-                  ? SizedBox.shrink()
-                  : EventBottomButton(
+              : 
+              // widget.bookingUser.contacts.isEmpty
+              //     ? SizedBox.shrink()
+              //     :
+                  
+                   EventBottomButton(
                       buttonColor: Colors.blue,
                       buttonText:
                           'Contact ${widget.bookingUser.userName} directly',

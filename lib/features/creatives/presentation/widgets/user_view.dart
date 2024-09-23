@@ -201,37 +201,37 @@ class _UserViewState extends State<UserView> {
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      RichText(
-                        textScaler: MediaQuery.of(context).textScaler,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: "Collaborations: ", style: textStyle),
-                            TextSpan(
-                              text: widget.userProfessional.collaborations
-                                  .map((collaborations) => collaborations.name)
-                                  .join(', '),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            )
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      RichText(
-                        textScaler: MediaQuery.of(context).textScaler,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(text: "Performance: ", style: textStyle),
-                            TextSpan(
-                              text: widget.userProfessional.performances
-                                  .map((performances) => performances.name)
-                                  .join(', '),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            )
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      // RichText(
+                      //   textScaler: MediaQuery.of(context).textScaler,
+                      //   text: TextSpan(
+                      //     children: [
+                      //       TextSpan(
+                      //           text: "Collaborations: ", style: textStyle),
+                      //       TextSpan(
+                      //         text: widget.userProfessional.collaborations
+                      //             .map((collaborations) => collaborations.name)
+                      //             .join(', '),
+                      //         style: Theme.of(context).textTheme.bodySmall,
+                      //       )
+                      //     ],
+                      //   ),
+                      //   overflow: TextOverflow.ellipsis,
+                      // ),
+                      // RichText(
+                      //   textScaler: MediaQuery.of(context).textScaler,
+                      //   text: TextSpan(
+                      //     children: [
+                      //       TextSpan(text: "Performance: ", style: textStyle),
+                      //       TextSpan(
+                      //         text: widget.userProfessional.performances
+                      //             .map((performances) => performances.name)
+                      //             .join(', '),
+                      //         style: Theme.of(context).textTheme.bodySmall,
+                      //       )
+                      //     ],
+                      //   ),
+                      //   overflow: TextOverflow.ellipsis,
+                      // ),
                       RichText(
                         textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(

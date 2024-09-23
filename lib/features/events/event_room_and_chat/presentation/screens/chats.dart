@@ -46,7 +46,7 @@ class _ChatsState extends State<Chats>
     _initConnectivity();
     _timer = Timer.periodic(Duration(hours: 24), (_) {
       expireOldChats(Duration(days: 30));
-      expireOldRooms(Duration(days: 30));
+      // expireOldRooms(Duration(days: 30));
       expireOldTicketIds(Duration(days: 30));
     });
     _connectivitySubscription =
@@ -194,7 +194,7 @@ class _ChatsState extends State<Chats>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Text('   Network',
+              child: Text('   Chats',
                   style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 30.0),
@@ -297,16 +297,16 @@ class _ChatsState extends State<Chats>
 // If the difference between the current time (now) and the chat's
 // newMessageTimestamp is greater than the ageLimit, it deletes that chat from the box.
 
-  void expireOldRooms(Duration ageLimit) async {
-    var box = await Hive.openBox<EventRoom>('eventRooms');
-    var now = DateTime.now();
+  // void expireOldRooms(Duration ageLimit) async {
+  //   var box = await Hive.openBox<EventRoom>('eventRooms');
+  //   var now = DateTime.now();
 
-    for (var message in box.values) {
-      if (now.difference(message.timestamp!.toDate()) > ageLimit) {
-        box.delete(message.id);
-      }
-    }
-  }
+  //   for (var message in box.values) {
+  //     if (now.difference(message.timestamp!.toDate()) > ageLimit) {
+  //       box.delete(message.id);
+  //     }
+  //   }
+  // }
 
   void expireOldTicketIds(Duration ageLimit) async {
     var box = await Hive.openBox<TicketIdModel>('ticketIds');
@@ -516,8 +516,8 @@ class _ChatsState extends State<Chats>
                         chatUserId: updatedChat.toUserId == widget.currentUserId
                             ? updatedChat.fromUserId
                             : updatedChat.toUserId,
-                        isEventRoom: false,
-                        room: null,
+                        // isEventRoom: false,
+                        // room: null,
                         author: author,
                       );
                     },
@@ -651,183 +651,183 @@ class _ChatsState extends State<Chats>
     );
   }
 
-  // Define this in your State class
-  Future<EventRoom?> _getEventRoom(String eventId) async {
-    final eventRoomsBox = Hive.box<EventRoom>('eventRooms');
-    // Check if the event room is already in the cache
-    if (eventRoomsBox.containsKey(eventId)) {
-      return eventRoomsBox.get(eventId);
-    } else {
-      // If not, fetch it from Firestore and store it in the cache
-      final room = await DatabaseService.getEventRoomWithId(eventId);
-      if (room != null) await eventRoomsBox.put(eventId, room);
-      return room;
-    }
-  }
+  // // Define this in your State class
+  // Future<EventRoom?> _getEventRoom(String eventId) async {
+  //   final eventRoomsBox = Hive.box<EventRoom>('eventRooms');
+  //   // Check if the event room is already in the cache
+  //   if (eventRoomsBox.containsKey(eventId)) {
+  //     return eventRoomsBox.get(eventId);
+  //   } else {
+  //     // If not, fetch it from Firestore and store it in the cache
+  //     final room = await DatabaseService.getEventRoomWithId(eventId);
+  //     if (room != null) await eventRoomsBox.put(eventId, room);
+  //     return room;
+  //   }
+  // }
 
-  void _listenToTicketIdUpdates(String ticketIdKey) {
-    final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
-    var subscription = userTicketIdRef
-        .doc(widget.currentUserId)
-        .collection('tickedIds')
-        .doc(ticketIdKey)
-        .snapshots()
-        .listen((snapshot) {
-      try {
-        if (snapshot.exists) {
-          // Document exists, update the local Hive box
-          TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
-          ticketIdsBox.put(ticketIdKey, updatedTicketId);
-        } else {
-          // Document does not exist, remove the entry from the Hive box
-          ticketIdsBox.delete(ticketIdKey);
-        }
-      } catch (e) {
-        print("Error updating Hive box for $ticketIdKey: $e");
-      }
-    }, onError: (error) => print("Listen failed: $error"));
+  // void _listenToTicketIdUpdates(String ticketIdKey) {
+  //   final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
+  //   var subscription = userTicketIdRef
+  //       .doc(widget.currentUserId)
+  //       .collection('tickedIds')
+  //       .doc(ticketIdKey)
+  //       .snapshots()
+  //       .listen((snapshot) {
+  //     try {
+  //       if (snapshot.exists) {
+  //         // Document exists, update the local Hive box
+  //         TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
+  //         ticketIdsBox.put(ticketIdKey, updatedTicketId);
+  //       } else {
+  //         // Document does not exist, remove the entry from the Hive box
+  //         ticketIdsBox.delete(ticketIdKey);
+  //       }
+  //     } catch (e) {
+  //       print("Error updating Hive box for $ticketIdKey: $e");
+  //     }
+  //   }, onError: (error) => print("Listen failed: $error"));
 
-    // Store the subscription so you can cancel it when it's no longer needed
-    _subscriptions.add(subscription);
-  }
+  //   // Store the subscription so you can cancel it when it's no longer needed
+  //   _subscriptions.add(subscription);
+  // }
 
-  Box<TicketIdModel>? ticketIdsBox;
+  // Box<TicketIdModel>? ticketIdsBox;
 
-  void accessHiveBox(String boxName) {
-    if (!Hive.isBoxOpen(boxName)) {
-      // The box is not open yet, so we need to open it.
-      Hive.openBox<TicketIdModel>(boxName).then((box) {
-        ticketIdsBox = box;
-        printBoxContent(ticketIdsBox!);
-      });
-    } else {
-      // The box is already open, we can access it directly.
-      ticketIdsBox = Hive.box<TicketIdModel>(boxName);
-      printBoxContent(ticketIdsBox!);
-    }
-  }
+  // void accessHiveBox(String boxName) {
+  //   if (!Hive.isBoxOpen(boxName)) {
+  //     // The box is not open yet, so we need to open it.
+  //     Hive.openBox<TicketIdModel>(boxName).then((box) {
+  //       ticketIdsBox = box;
+  //       printBoxContent(ticketIdsBox!);
+  //     });
+  //   } else {
+  //     // The box is already open, we can access it directly.
+  //     ticketIdsBox = Hive.box<TicketIdModel>(boxName);
+  //     printBoxContent(ticketIdsBox!);
+  //   }
+  // }
 
-  void printBoxContent(Box<TicketIdModel> box) {
-    box.toMap().forEach((key, value) {
-      print('Key: $key, Value: ${value.toJson()}');
-    });
-  }
+  // void printBoxContent(Box<TicketIdModel> box) {
+  //   box.toMap().forEach((key, value) {
+  //     print('Key: $key, Value: ${value.toJson()}');
+  //   });
+  // }
 
-  _eventRoom() {
-    final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
+  // _eventRoom() {
+  //   final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: userTicketIdRef
-          .doc(widget.currentUserId)
-          .collection('tickedIds')
-          .orderBy('timestamp', descending: true)
-          .snapshots(),
-      builder:
-          (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-        if (!streamSnapshot.hasData) {
-          return Center(
-              child: CircularProgressIndicator(
-            color: Colors.blue,
-          ));
-        }
+  //   return StreamBuilder<QuerySnapshot>(
+  //     stream: userTicketIdRef
+  //         .doc(widget.currentUserId)
+  //         .collection('tickedIds')
+  //         .orderBy('timestamp', descending: true)
+  //         .snapshots(),
+  //     builder:
+  //         (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+  //       if (!streamSnapshot.hasData) {
+  //         return Center(
+  //             child: CircularProgressIndicator(
+  //           color: Colors.blue,
+  //         ));
+  //       }
 
-        if (streamSnapshot.data!.docs.isEmpty) {
-          return Center(
-            child: NoContents(
-              icon: Icons.chat_bubble_outline_outlined,
-              title: 'No event room',
-              subTitle:
-                  'Your event rooms will be displayed here. An event room is a networking group comprised of all the attendees of a particular event. It facilitates networking, fosters friendships, and helps build relationships. ',
-            ),
-          );
-        }
-        List<TicketIdModel> sortedTicketIds = ticketIdsBox.values.toList();
-        sortedTicketIds.sort((a, b) {
-          // Attempt to use the timestamp if available
-          var aTimestamp = a.timestamp?.toDate();
-          var bTimestamp = b.timestamp?.toDate();
+  //       if (streamSnapshot.data!.docs.isEmpty) {
+  //         return Center(
+  //           child: NoContents(
+  //             icon: Icons.chat_bubble_outline_outlined,
+  //             title: 'No event room',
+  //             subTitle:
+  //                 'Your event rooms will be displayed here. An event room is a networking group comprised of all the attendees of a particular event. It facilitates networking, fosters friendships, and helps build relationships. ',
+  //           ),
+  //         );
+  //       }
+  //       List<TicketIdModel> sortedTicketIds = ticketIdsBox.values.toList();
+  //       sortedTicketIds.sort((a, b) {
+  //         // Attempt to use the timestamp if available
+  //         var aTimestamp = a.timestamp?.toDate();
+  //         var bTimestamp = b.timestamp?.toDate();
 
-          // If both timestamps are available, compare them
-          if (aTimestamp != null && bTimestamp != null) {
-            return bTimestamp.compareTo(aTimestamp);
-          } else {
-            // If timestamps are not available, do not sort and keep the original order
-            // This assumes that your list retrievedChats is already in the original order
-            // that you wish to preserve. If not, you might need to implement a logic
-            // to maintain the original order when retrieving the chats.
-            return 0; // Returning 0 keeps the original order
-          }
-        });
-        // sortedTicketIds.sort((a, b) {
-        //   var aTimestamp = a.timestamp?.toDate() ?? DateTime.now();
-        //   var bTimestamp = b.timestamp?.toDate() ?? DateTime.now();
-        //   return bTimestamp.compareTo(aTimestamp);
-        // });
+  //         // If both timestamps are available, compare them
+  //         if (aTimestamp != null && bTimestamp != null) {
+  //           return bTimestamp.compareTo(aTimestamp);
+  //         } else {
+  //           // If timestamps are not available, do not sort and keep the original order
+  //           // This assumes that your list retrievedChats is already in the original order
+  //           // that you wish to preserve. If not, you might need to implement a logic
+  //           // to maintain the original order when retrieving the chats.
+  //           return 0; // Returning 0 keeps the original order
+  //         }
+  //       });
+  //       // sortedTicketIds.sort((a, b) {
+  //       //   var aTimestamp = a.timestamp?.toDate() ?? DateTime.now();
+  //       //   var bTimestamp = b.timestamp?.toDate() ?? DateTime.now();
+  //       //   return bTimestamp.compareTo(aTimestamp);
+  //       // });
 
-        // Now you can access the documents through streamSnapshot.data.docs
-        return ListView.builder(
-          itemCount: streamSnapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            DocumentSnapshot docSnapshot = streamSnapshot.data!.docs[index];
-            String ticketIdKey = docSnapshot.id;
+  //       // Now you can access the documents through streamSnapshot.data.docs
+  //       return ListView.builder(
+  //         itemCount: streamSnapshot.data!.docs.length,
+  //         itemBuilder: (context, index) {
+  //           DocumentSnapshot docSnapshot = streamSnapshot.data!.docs[index];
+  //           String ticketIdKey = docSnapshot.id;
 
-            // Check if the ticketId is already in the cache
-            TicketIdModel ticketId;
-            if (ticketIdsBox.containsKey(ticketIdKey)) {
-              ticketId = ticketIdsBox.get(ticketIdKey)!;
-            } else {
-              // If not, create it from the DocumentSnapshot and store it in the cache
-              ticketId = TicketIdModel.fromDoc(
-                  docSnapshot); // pass the DocumentSnapshot directly
-              ticketIdsBox.put(ticketIdKey, ticketId);
-            }
+  //           // Check if the ticketId is already in the cache
+  //           TicketIdModel ticketId;
+  //           if (ticketIdsBox.containsKey(ticketIdKey)) {
+  //             ticketId = ticketIdsBox.get(ticketIdKey)!;
+  //           } else {
+  //             // If not, create it from the DocumentSnapshot and store it in the cache
+  //             ticketId = TicketIdModel.fromDoc(
+  //                 docSnapshot); // pass the DocumentSnapshot directly
+  //             ticketIdsBox.put(ticketIdKey, ticketId);
+  //           }
 
-            // Set up a listener for this TicketIdModel if not already listening
-            if (!_activeEventListeners.contains(ticketIdKey)) {
-              _listenToTicketIdUpdates(ticketIdKey);
-              _activeEventListeners.add(ticketIdKey);
-            }
-            // Use FutureBuilder inside itemBuilder to handle asynchronous fetching of EventRoom
-            return FutureBuilder<EventRoom?>(
-              future: _getEventRoom(ticketId.eventId),
-              builder: (BuildContext context,
-                  AsyncSnapshot<EventRoom?> roomSnapshot) {
-                if (roomSnapshot.hasError) {
-                  return const Text('Error loading event room');
-                }
-                if (!roomSnapshot.hasData) {
-                  return _loadingSkeleton(false,
-                      ''); // return a loading spinner or some other widget
-                }
-                final room = roomSnapshot.data;
+  //           // Set up a listener for this TicketIdModel if not already listening
+  //           if (!_activeEventListeners.contains(ticketIdKey)) {
+  //             _listenToTicketIdUpdates(ticketIdKey);
+  //             _activeEventListeners.add(ticketIdKey);
+  //           }
+  //           // Use FutureBuilder inside itemBuilder to handle asynchronous fetching of EventRoom
+  //           return FutureBuilder<EventRoom?>(
+  //             future: _getEventRoom(ticketId.eventId),
+  //             builder: (BuildContext context,
+  //                 AsyncSnapshot<EventRoom?> roomSnapshot) {
+  //               if (roomSnapshot.hasError) {
+  //                 return const Text('Error loading event room');
+  //               }
+  //               if (!roomSnapshot.hasData) {
+  //                 return _loadingSkeleton(false,
+  //                     ''); // return a loading spinner or some other widget
+  //               }
+  //               final room = roomSnapshot.data;
 
-                // limitRooms(); // Ensure these functions are defined and manage your data as expected
-                // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
-                return ValueListenableBuilder(
-                  valueListenable: ticketIdsBox.listenable(),
-                  builder: (context, Box<TicketIdModel> box, _) {
-                    // Retrieve the updated TicketIdModel from the box using the correct key.
-                    var updatedTicketId = box.get(ticketIdKey) ?? ticketId;
-                    return GetAuthor(
-                      ticketId: updatedTicketId,
-                      connectivityStatus: _connectivityStatus,
-                      chats: null,
-                      lastMessage: updatedTicketId.lastMessage,
-                      seen: false,
-                      chatUserId: '',
-                      isEventRoom: true,
-                      room: room,
-                      author: null,
-                    );
-                  },
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
+  //               // limitRooms(); // Ensure these functions are defined and manage your data as expected
+  //               // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
+  //               return ValueListenableBuilder(
+  //                 valueListenable: ticketIdsBox.listenable(),
+  //                 builder: (context, Box<TicketIdModel> box, _) {
+  //                   // Retrieve the updated TicketIdModel from the box using the correct key.
+  //                   var updatedTicketId = box.get(ticketIdKey) ?? ticketId;
+  //                   return GetAuthor(
+  //                     ticketId: updatedTicketId,
+  //                     connectivityStatus: _connectivityStatus,
+  //                     chats: null,
+  //                     lastMessage: updatedTicketId.lastMessage,
+  //                     seen: false,
+  //                     chatUserId: '',
+  //                     isEventRoom: true,
+  //                     room: room,
+  //                     author: null,
+  //                   );
+  //                 },
+  //               );
+  //             },
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
 // he build method constructs the UI of the widget. It uses a NestedScrollView
 // with a SliverAppBar for the header, which contains the user's posts and a
@@ -844,75 +844,81 @@ class _ChatsState extends State<Chats>
           child: Scrollbar(
             controller: _hideButtonController,
             child: NestedScrollView(
-              controller: _hideButtonController,
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                // sif (Provider.of<UserData>(context, listen: false).showUsersTab)
-                SliverAppBar(
-                  backgroundColor: Theme.of(context).primaryColorLight,
-                  expandedHeight: 110,
-                  flexibleSpace: SingleChildScrollView(
-                    // controller: _hideButtonController,
-                    child: Column(
-                      children: [
-                        _buildNotification(),
-                        TabBar(
-                          controller: _tabController,
-                          labelColor: Theme.of(context).secondaryHeaderColor,
-                          indicatorSize: TabBarIndicatorSize.label,
-                          indicatorColor: Colors.blue,
-                          unselectedLabelColor: Colors.grey,
-                          dividerColor: Colors.transparent,
-                          labelPadding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10.0,
+                controller: _hideButtonController,
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                      // sif (Provider.of<UserData>(context, listen: false).showUsersTab)
+                      SliverAppBar(
+                        backgroundColor: Theme.of(context).primaryColorLight,
+                        expandedHeight: 50,
+                        flexibleSpace: SingleChildScrollView(
+                          // controller: _hideButtonController,
+                          child: Column(
+                            children: [
+                              _buildNotification(),
+                              // TabBar(
+                              //   controller: _tabController,
+                              //   labelColor: Theme.of(context).secondaryHeaderColor,
+                              //   indicatorSize: TabBarIndicatorSize.label,
+                              //   indicatorColor: Colors.blue,
+                              //   unselectedLabelColor: Colors.grey,
+                              //   dividerColor: Colors.transparent,
+                              //   labelPadding: EdgeInsets.symmetric(
+                              //     horizontal: 20,
+                              //     vertical: 10.0,
+                              //   ),
+                              //   indicatorWeight: 2.0,
+                              //   tabs: <Widget>[
+                              //     Text(
+                              //       'Chats',
+                              //       style: Theme.of(context).textTheme.bodyMedium,
+                              //     ),
+                              //     Text(
+                              //       'Rooms',
+                              //       style: Theme.of(context).textTheme.bodyMedium,
+                              //     ),
+                              //   ],
+                              // ),
+                            ],
                           ),
-                          indicatorWeight: 2.0,
-                          tabs: <Widget>[
-                            Text(
-                              'Chats',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            Text(
-                              'Rooms',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-              body: Listener(
-                onPointerMove: (event) {
-                  final offset = event.delta.dx;
-                  final index = _tabController.index;
-                  //Check if we are in the first or last page of TabView and the notifier is false
-                  if (((offset > 0 && index == 0) ||
-                          (offset < 0 && index == 2 - 1)) &&
-                      !_physycsNotifier.value) {
-                    _physycsNotifier.value = true;
-                  }
-                },
-                onPointerUp: (_) => _physycsNotifier.value = false,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _physycsNotifier,
-                  builder: (_, value, __) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: TabBarView(
-                        controller: _tabController,
-                        physics: value ? NeverScrollableScrollPhysics() : null,
-                        children: [
-                          _chat(),
-                          _eventRoom(),
-                        ],
                       ),
-                    );
-                  },
+                    ],
+                body: Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: _chat(),
+                )
+
+                //  Listener(
+                //   onPointerMove: (event) {
+                //     final offset = event.delta.dx;
+                //     final index = _tabController.index;
+                //     //Check if we are in the first or last page of TabView and the notifier is false
+                //     if (((offset > 0 && index == 0) ||
+                //             (offset < 0 && index == 2 - 1)) &&
+                //         !_physycsNotifier.value) {
+                //       _physycsNotifier.value = true;
+                //     }
+                //   },
+                //   onPointerUp: (_) => _physycsNotifier.value = false,
+                //   child: ValueListenableBuilder<bool>(
+                //     valueListenable: _physycsNotifier,
+                //     builder: (_, value, __) {
+                //       return Padding(
+                //         padding: const EdgeInsets.only(top: 20.0),
+                //         child:
+                //         TabBarView(
+                //           controller: _tabController,
+                //           physics: value ? NeverScrollableScrollPhysics() : null,
+                //           children: [
+                //             _chat(),
+                //             _eventRoom(),
+                //           ],
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
                 ),
-              ),
-            ),
           ),
         ),
       ),
@@ -926,8 +932,8 @@ class GetAuthor extends StatefulWidget {
   final String chatUserId;
   final bool seen;
   final String lastMessage;
-  final bool isEventRoom;
-  final EventRoom? room;
+  // final bool isEventRoom;
+  // final EventRoom? room;
   final TicketIdModel? ticketId;
   final AccountHolderAuthor? author;
 
@@ -937,8 +943,8 @@ class GetAuthor extends StatefulWidget {
     required this.chatUserId,
     required this.seen,
     required this.lastMessage,
-    required this.isEventRoom,
-    required this.room,
+    // required this.isEventRoom,
+    // required this.room,
     required this.connectivityStatus,
     required this.author,
     this.ticketId,
@@ -963,8 +969,8 @@ class _GetAuthorState extends State<GetAuthor>
       lastMessage: widget.lastMessage,
       seen: widget.seen,
       chatUserId: widget.chatUserId,
-      isEventRoom: widget.isEventRoom,
-      room: widget.room,
+      // isEventRoom: widget.isEventRoom,
+      // room: widget.room,
       ticketId: widget.ticketId,
     );
   }
@@ -976,8 +982,8 @@ class Display extends StatefulWidget {
   final String lastMessage;
   final bool seen;
   final String chatUserId;
-  final bool isEventRoom;
-  final EventRoom? room;
+  // final bool isEventRoom;
+  // final EventRoom? room;
   final TicketIdModel? ticketId;
 
   final ConnectivityResult connectivityStatus;
@@ -988,8 +994,8 @@ class Display extends StatefulWidget {
     required this.lastMessage,
     required this.seen,
     required this.chatUserId,
-    required this.isEventRoom,
-    required this.room,
+    // required this.isEventRoom,
+    // required this.room,
     required this.connectivityStatus,
     required this.ticketId,
   });
@@ -1021,23 +1027,23 @@ class _DisplayState extends State<Display> {
     });
   }
 
-  void _showBottomSheetErrorMessage() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return DisplayErrorHandler(
-          buttonText: 'Ok',
-          onPressed: () async {
-            Navigator.pop(context);
-          },
-          title: 'Failed to fecth event',
-          subTitle: 'Please check your internet connection and try again.',
-        );
-      },
-    );
-  }
+  // void _showBottomSheetErrorMessage() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return DisplayErrorHandler(
+  //         buttonText: 'Ok',
+  //         onPressed: () async {
+  //           Navigator.pop(context);
+  //         },
+  //         title: 'Failed to fecth event',
+  //         subTitle: 'Please check your internet connection and try again.',
+  //       );
+  //     },
+  //   );
+  // }
 
   void _navigateToPage(Widget page) {
     Navigator.push(
@@ -1046,239 +1052,239 @@ class _DisplayState extends State<Display> {
     );
   }
 
-  void _showBottomConfirmLeaveRoom(BuildContext context, bool isMute) {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // void _showBottomConfirmLeaveRoom(BuildContext context, bool isMute) {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height:
-              ResponsiveHelper.responsiveHeight(context, isMute ? 300 : 400),
-          child: ConfirmationPrompt(
-            buttonText: isMute ? 'Mute Room' : 'Leave Room',
-            onPressed: isMute
-                ? () async {
-                    HapticFeedback.lightImpact();
-                    Navigator.pop(context);
-                    try {
-                      userTicketIdRef
-                          .doc(_provider.currentUserId)
-                          .collection('tickedIds')
-                          .doc(widget.room!.linkedEventId)
-                          .update({'muteNotification': !muteEvent});
-                      mySnackBar(
-                          context, 'You have successfully left the room.');
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height:
+  //             ResponsiveHelper.responsiveHeight(context, isMute ? 300 : 400),
+  //         child: ConfirmationPrompt(
+  //           buttonText: isMute ? 'Mute Room' : 'Leave Room',
+  //           onPressed: isMute
+  //               ? () async {
+  //                   HapticFeedback.lightImpact();
+  //                   Navigator.pop(context);
+  //                   try {
+  //                     userTicketIdRef
+  //                         .doc(_provider.currentUserId)
+  //                         .collection('tickedIds')
+  //                         .doc(widget.room!.linkedEventId)
+  //                         .update({'muteNotification': !muteEvent});
+  //                     mySnackBar(
+  //                         context, 'You have successfully left the room.');
 
-                      muteEvent = !muteEvent;
-                    } catch (e) {}
-                  }
-                : () async {
-                    HapticFeedback.lightImpact();
-                    Navigator.pop(context);
+  //                     muteEvent = !muteEvent;
+  //                   } catch (e) {}
+  //                 }
+  //               : () async {
+  //                   HapticFeedback.lightImpact();
+  //                   Navigator.pop(context);
 
-                    try {
-                      userTicketIdRef
-                          .doc(_provider.currentUserId)
-                          .collection('tickedIds')
-                          .doc(widget.room!.linkedEventId)
-                          .get()
-                          .then((doc) {
-                        if (doc.exists) {
-                          doc.reference.delete();
-                        }
-                      });
-                      mySnackBar(
-                          context, 'You have successfully left the room.');
-                    } catch (e) {}
-                  },
-            title: isMute
-                ? 'Are you sure you want to mute ${widget.room!.title} room?'
-                : 'Are you sure you want to leave ${widget.room!.title} room?',
-            subTitle: isMute
-                ? ''
-                : 'If you leave this room, you will lose access to this room. This means you won\'t be able to read past conversations or contribute to new conversations. Additionally, please note that once you leave, you cannot be added back to the room. Leaving the room is a permanent action.',
-          ),
-        );
-      },
-    );
-  }
+  //                   try {
+  //                     userTicketIdRef
+  //                         .doc(_provider.currentUserId)
+  //                         .collection('tickedIds')
+  //                         .doc(widget.room!.linkedEventId)
+  //                         .get()
+  //                         .then((doc) {
+  //                       if (doc.exists) {
+  //                         doc.reference.delete();
+  //                       }
+  //                     });
+  //                     mySnackBar(
+  //                         context, 'You have successfully left the room.');
+  //                   } catch (e) {}
+  //                 },
+  //           title: isMute
+  //               ? 'Are you sure you want to mute ${widget.room!.title} room?'
+  //               : 'Are you sure you want to leave ${widget.room!.title} room?',
+  //           subTitle: isMute
+  //               ? ''
+  //               : 'If you leave this room, you will lose access to this room. This means you won\'t be able to read past conversations or contribute to new conversations. Additionally, please note that once you leave, you cannot be added back to the room. Leaving the room is a permanent action.',
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
-  void _showBottomSheetEventRoomMore(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-            height: ResponsiveHelper.responsiveFontSize(context, 460),
-            decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-                borderRadius: BorderRadius.circular(30)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Text(
-                    widget.room!.title,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Text(
-                    MyDateFormat.toDate(widget.room!.timestamp!.toDate()),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                Container(
-                  // color: Colors.blue,
-                  height: ResponsiveHelper.responsiveFontSize(context, 360),
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 10),
-                      child: MyBottomModelSheetAction(actions: [
-                        BottomModelSheetListTileActionWidget(
-                          colorCode: '',
-                          icon: Icons.event_available_outlined,
-                          onPressed: () async {
-                            _navigateToPage(
-                              _provider.brandMatching == null
-                                  ? HopeIntroductionScreen(
-                                      isIntro: true,
-                                    )
-                                  : UserBrandMatching(
-                                      eventId: widget.room!.id,
-                                    ),
-                            );
-                          },
-                          text: 'Brand matching',
-                        ),
-                        BottomModelSheetListTileActionWidget(
-                          colorCode: muteEvent ? 'Blue' : '',
-                          icon: muteEvent
-                              ? Icons.volume_off_outlined
-                              : Icons.volume_up_outlined,
-                          onPressed: () async {
-                            _showBottomConfirmLeaveRoom(context, true);
-                          },
-                          text: muteEvent ? 'Unmute room' : 'Mute room',
-                        ),
-                        BottomModelSheetListTileActionWidget(
-                          colorCode: '',
-                          icon: Icons.remove,
-                          onPressed: () async {
-                            _showBottomConfirmLeaveRoom(context, false);
-                          },
-                          text: 'Leave room',
-                        ),
-                        BottomModelSheetListTileActionWidget(
-                          colorCode: '',
-                          icon: Icons.event_available_outlined,
-                          onPressed: () async {
-                            _isLoading = true;
-                            try {
-                              Event? event =
-                                  await DatabaseService.getUserEventWithId(
-                                widget.room!.linkedEventId,
-                                widget.room!.eventAuthorId,
-                              );
+  // void _showBottomSheetEventRoomMore(BuildContext context) {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //           height: ResponsiveHelper.responsiveFontSize(context, 460),
+  //           decoration: BoxDecoration(
+  //               color: Theme.of(context).primaryColorLight,
+  //               borderRadius: BorderRadius.circular(30)),
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             mainAxisAlignment: MainAxisAlignment.start,
+  //             children: [
+  //               const SizedBox(
+  //                 height: 30,
+  //               ),
+  //               Padding(
+  //                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
+  //                 child: Text(
+  //                   widget.room!.title,
+  //                   style: Theme.of(context).textTheme.bodyLarge,
+  //                 ),
+  //               ),
+  //               Padding(
+  //                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
+  //                 child: Text(
+  //                   MyDateFormat.toDate(widget.room!.timestamp!.toDate()),
+  //                   style: Theme.of(context).textTheme.bodyMedium,
+  //                 ),
+  //               ),
+  //               Container(
+  //                 // color: Colors.blue,
+  //                 height: ResponsiveHelper.responsiveFontSize(context, 360),
+  //                 child: Padding(
+  //                     padding: const EdgeInsets.symmetric(
+  //                         horizontal: 30.0, vertical: 10),
+  //                     child: MyBottomModelSheetAction(actions: [
+  //                       BottomModelSheetListTileActionWidget(
+  //                         colorCode: '',
+  //                         icon: Icons.event_available_outlined,
+  //                         onPressed: () async {
+  //                           _navigateToPage(
+  //                             _provider.brandMatching == null
+  //                                 ? HopeIntroductionScreen(
+  //                                     isIntro: true,
+  //                                   )
+  //                                 : UserBrandMatching(
+  //                                     eventId: widget.room!.id,
+  //                                   ),
+  //                           );
+  //                         },
+  //                         text: 'Brand matching',
+  //                       ),
+  //                       BottomModelSheetListTileActionWidget(
+  //                         colorCode: muteEvent ? 'Blue' : '',
+  //                         icon: muteEvent
+  //                             ? Icons.volume_off_outlined
+  //                             : Icons.volume_up_outlined,
+  //                         onPressed: () async {
+  //                           _showBottomConfirmLeaveRoom(context, true);
+  //                         },
+  //                         text: muteEvent ? 'Unmute room' : 'Mute room',
+  //                       ),
+  //                       BottomModelSheetListTileActionWidget(
+  //                         colorCode: '',
+  //                         icon: Icons.remove,
+  //                         onPressed: () async {
+  //                           _showBottomConfirmLeaveRoom(context, false);
+  //                         },
+  //                         text: 'Leave room',
+  //                       ),
+  //                       BottomModelSheetListTileActionWidget(
+  //                         colorCode: '',
+  //                         icon: Icons.event_available_outlined,
+  //                         onPressed: () async {
+  //                           _isLoading = true;
+  //                           try {
+  //                             Event? event =
+  //                                 await DatabaseService.getUserEventWithId(
+  //                               widget.room!.linkedEventId,
+  //                               widget.room!.eventAuthorId,
+  //                             );
 
-                              if (event != null) {
-                                _navigateToPage(EventEnlargedScreen(
-                                  currentUserId: _provider.currentUserId!,
-                                  event: event,
-                                  type: event.type,
-                                  showPrivateEvent: true,
-                                ));
-                              } else {
-                                _showBottomSheetErrorMessage();
-                              }
-                            } catch (e) {
-                              _showBottomSheetErrorMessage();
-                            } finally {
-                              _isLoading = false;
-                            }
-                          },
-                          text: 'View event',
-                        ),
+  //                             if (event != null) {
+  //                               _navigateToPage(EventEnlargedScreen(
+  //                                 currentUserId: _provider.currentUserId!,
+  //                                 event: event,
+  //                                 type: event.type,
+  //                                 showPrivateEvent: true,
+  //                               ));
+  //                             } else {
+  //                               _showBottomSheetErrorMessage();
+  //                             }
+  //                           } catch (e) {
+  //                             _showBottomSheetErrorMessage();
+  //                           } finally {
+  //                             _isLoading = false;
+  //                           }
+  //                         },
+  //                         text: 'View event',
+  //                       ),
 
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        BottomModelSheetListTileActionWidget(
-                          colorCode: '',
-                          icon: Icons.person_outline,
-                          onPressed: () async {
-                            _isLoading = true;
-                            try {
-                              _navigateToPage(ProfileScreen(
-                                currentUserId: _provider.currentUserId!,
-                                userId: widget.room!.eventAuthorId,
-                                user: null,
-                              ));
-                            } catch (e) {
-                              _showBottomSheetErrorMessage();
-                            } finally {
-                              _isLoading = false;
-                            }
-                          },
-                          text: 'View event organizer',
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        BottomModelSheetListTileActionWidget(
-                          colorCode: 'Red',
-                          icon: Icons.flag_outlined,
-                          onPressed: () {
-                            _navigateToPage(ReportContentPage(
-                              contentId: widget.room!.id,
-                              contentType: widget.room!.title,
-                              parentContentId: widget.room!.linkedEventId,
-                              repotedAuthorId: widget.room!.linkedEventId,
-                            ));
-                          },
-                          text: 'Report',
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // const SizedBox(
-                        //   height: 20,
-                        // ),
-                        // NotificationSortButton(
-                        //   fromModalSheet: true,
-                        //   isMini: true,
-                        //   icon: FontAwesomeIcons.m,
-                        //   onPressed: () {
-                        //     _navigateToPage(
-                        //       _provider.brandMatching == null
-                        //           ? HopeIntroductionScreen(
-                        //               isIntro: true,
-                        //             )
-                        //           : UserBrandMatching(
-                        //               eventId: widget.room!.id,
-                        //             ),
-                        //     );
-                        //   },
-                        //   title: 'See brand style matching',
-                        // ),
-                      ])),
-                ),
-              ],
-            ));
-      },
-    );
-  }
+  //                       const SizedBox(
+  //                         height: 10,
+  //                       ),
+  //                       BottomModelSheetListTileActionWidget(
+  //                         colorCode: '',
+  //                         icon: Icons.person_outline,
+  //                         onPressed: () async {
+  //                           _isLoading = true;
+  //                           try {
+  //                             _navigateToPage(ProfileScreen(
+  //                               currentUserId: _provider.currentUserId!,
+  //                               userId: widget.room!.eventAuthorId,
+  //                               user: null,
+  //                             ));
+  //                           } catch (e) {
+  //                             _showBottomSheetErrorMessage();
+  //                           } finally {
+  //                             _isLoading = false;
+  //                           }
+  //                         },
+  //                         text: 'View event organizer',
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 10,
+  //                       ),
+  //                       BottomModelSheetListTileActionWidget(
+  //                         colorCode: 'Red',
+  //                         icon: Icons.flag_outlined,
+  //                         onPressed: () {
+  //                           _navigateToPage(ReportContentPage(
+  //                             contentId: widget.room!.id,
+  //                             contentType: widget.room!.title,
+  //                             parentContentId: widget.room!.linkedEventId,
+  //                             repotedAuthorId: widget.room!.linkedEventId,
+  //                           ));
+  //                         },
+  //                         text: 'Report',
+  //                       ),
+  //                       const SizedBox(
+  //                         height: 20,
+  //                       ),
+  //                       // const SizedBox(
+  //                       //   height: 20,
+  //                       // ),
+  //                       // NotificationSortButton(
+  //                       //   fromModalSheet: true,
+  //                       //   isMini: true,
+  //                       //   icon: FontAwesomeIcons.m,
+  //                       //   onPressed: () {
+  //                       //     _navigateToPage(
+  //                       //       _provider.brandMatching == null
+  //                       //           ? HopeIntroductionScreen(
+  //                       //               isIntro: true,
+  //                       //             )
+  //                       //           : UserBrandMatching(
+  //                       //               eventId: widget.room!.id,
+  //                       //             ),
+  //                       //     );
+  //                       //   },
+  //                       //   title: 'See brand style matching',
+  //                       // ),
+  //                     ])),
+  //               ),
+  //             ],
+  //           ));
+  //     },
+  //   );
+  // }
 
   void _showBottomConfirmMutChat(
     BuildContext context,
@@ -1376,22 +1382,20 @@ class _DisplayState extends State<Display> {
           title: Container(
             width: width / 2,
             child: Text(
-              widget.isEventRoom ? 'Report room' : 'Report chat',
+              'Report chat',
               style: TextStyle(color: Colors.black),
               overflow: TextOverflow.ellipsis,
               textScaler: MediaQuery.of(context).textScaler,
             ),
           ),
-          onPressed: widget.isEventRoom
-              ? () {}
-              : () {
-                  _navigateToPage(ReportContentPage(
-                    contentId: widget.chatUserId,
-                    contentType: widget.author!.userName!,
-                    parentContentId: widget.chatUserId,
-                    repotedAuthorId: currentUserId,
-                  ));
-                },
+          onPressed: () {
+            _navigateToPage(ReportContentPage(
+              contentId: widget.chatUserId,
+              contentType: widget.author!.userName!,
+              parentContentId: widget.chatUserId,
+              repotedAuthorId: currentUserId,
+            ));
+          },
         ),
       ],
       child: MediaQuery(
@@ -1400,72 +1404,41 @@ class _DisplayState extends State<Display> {
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ListTile(
             leading: Hero(
-              tag: widget.isEventRoom
-                  ? "${widget.room!.id} v"
-                  : widget.chatUserId,
-              child: widget.isEventRoom
-                  ? CircleAvatar(
+              tag: widget.chatUserId,
+              child: widget.author!.profileImageUrl!.isEmpty
+                  ? Icon(
+                      Icons.account_circle,
+                      color: Theme.of(context).secondaryHeaderColor,
+                      size: ResponsiveHelper.responsiveHeight(context, 40),
+                    )
+                  : CircleAvatar(
                       radius: 20.0,
                       backgroundColor: Colors.blue,
-                      backgroundImage:
-                          CachedNetworkImageProvider(widget.room!.imageUrl),
-                    )
-                  : widget.author!.profileImageUrl!.isEmpty
-                      ? Icon(
-                          Icons.account_circle,
-                          color: Theme.of(context).secondaryHeaderColor,
-                          size: ResponsiveHelper.responsiveHeight(context, 40),
-                        )
-                      : CircleAvatar(
-                          radius: 20.0,
-                          backgroundColor: Colors.blue,
-                          backgroundImage: CachedNetworkImageProvider(
-                              widget.author!.profileImageUrl!),
-                        ),
+                      backgroundImage: CachedNetworkImageProvider(
+                          widget.author!.profileImageUrl!),
+                    ),
             ),
-            trailing: widget.isEventRoom
-                ? GestureDetector(
-                    onTap: () {
-                      _showBottomSheetEventRoomMore(context);
-                    },
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.more_vert_outlined,
-                          size: 25,
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
-                        muteEvent
-                            ? Icon(
-                                Icons.volume_off_outlined,
-                                size: 20,
-                                color: Colors.grey,
-                              )
-                            : SizedBox.shrink(),
-                      ],
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      _showBottomSheetChatMore(context);
-                    },
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.more_vert_outlined,
-                          size: 25,
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
-                        muteMessage
-                            ? Icon(
-                                Icons.volume_off_outlined,
-                                size: 20,
-                                color: Colors.grey,
-                              )
-                            : SizedBox.shrink(),
-                      ],
-                    ),
+            trailing: GestureDetector(
+              onTap: () {
+                _showBottomSheetChatMore(context);
+              },
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.more_vert_outlined,
+                    size: 25,
+                    color: Theme.of(context).secondaryHeaderColor,
                   ),
+                  muteMessage
+                      ? Icon(
+                          Icons.volume_off_outlined,
+                          size: 20,
+                          color: Colors.grey,
+                        )
+                      : SizedBox.shrink(),
+                ],
+              ),
+            ),
             title: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1475,29 +1448,16 @@ class _DisplayState extends State<Display> {
                   children: [
                     Expanded(
                       child: NameText(
-                        name: widget.isEventRoom
-                            ? widget.room!.title
-                            : widget.author!.userName!,
-                        verified: widget.isEventRoom
-                            ? false
-                            : widget.author!.verified!
-                                ? true
-                                : false,
+                        name: widget.author!.userName!,
+                        verified: widget.author!.verified! ? true : false,
                       ),
                     ),
                     Text(
-                        widget.isEventRoom
-                            ? timeago.format(
-                                widget.ticketId!.timestamp == null
-                                    ? DateTime.now()
-                                    : widget.ticketId!.timestamp!.toDate(),
-                              )
-                            : timeago.format(
-                                widget.chats!.newMessageTimestamp == null
-                                    ? DateTime.now()
-                                    : widget.chats!.newMessageTimestamp!
-                                        .toDate(),
-                              ),
+                        timeago.format(
+                          widget.chats!.newMessageTimestamp == null
+                              ? DateTime.now()
+                              : widget.chats!.newMessageTimestamp!.toDate(),
+                        ),
                         style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 10.0),
@@ -1508,101 +1468,58 @@ class _DisplayState extends State<Display> {
                 const SizedBox(
                   height: 2.0,
                 ),
-                widget.isEventRoom
-                    ? Wrap(
-                        children: [
-                          Text(
-                            widget.lastMessage,
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              fontWeight: widget.ticketId!.isSeen
-                                  ? FontWeight.normal
-                                  : FontWeight.bold,
-                              color: widget.ticketId!.isSeen
-                                  ? Colors.grey
-                                  : Colors.blue,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            maxLines: 1,
+                Wrap(
+                  children: [
+                    widget.chats!.mediaType.isEmpty
+                        ? const SizedBox.shrink()
+                        : Icon(
+                            MdiIcons.image,
+                            size: 20,
+                            color: widget.seen ? Colors.grey : Colors.blue,
                           ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          Divider(
-                            thickness: .2,
-                          ),
-                        ],
-                      )
-                    : Wrap(
-                        children: [
-                          widget.chats!.mediaType.isEmpty
-                              ? const SizedBox.shrink()
-                              : Icon(
-                                  MdiIcons.image,
-                                  size: 20,
-                                  color:
-                                      widget.seen ? Colors.grey : Colors.blue,
-                                ),
-                          Text(
-                            widget.lastMessage,
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              fontWeight: widget.seen
-                                  ? FontWeight.normal
-                                  : FontWeight.bold,
-                              color: widget.seen ? Colors.grey : Colors.blue,
-                              overflow: TextOverflow.ellipsis,
-                              decoration: widget.chats!.restrictChat
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
-                            ),
-                            maxLines: 1,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          Divider(
-                            thickness: .2,
-                          ),
-                        ],
+                    Text(
+                      widget.lastMessage,
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                        fontWeight:
+                            widget.seen ? FontWeight.normal : FontWeight.bold,
+                        color: widget.seen ? Colors.grey : Colors.blue,
+                        overflow: TextOverflow.ellipsis,
+                        decoration: widget.chats!.restrictChat
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
                       ),
+                      maxLines: 1,
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Divider(
+                      thickness: .2,
+                    ),
+                  ],
+                ),
               ],
             ),
-            onTap: widget.isEventRoom
-                ? () async {
-                    var _paletteGenerator =
-                        await PaletteGenerator.fromImageProvider(
-                      CachedNetworkImageProvider(widget.room!.imageUrl),
-                      size: const Size(1110, 150),
-                      maximumColorCount: 20,
-                    );
-                    _navigateToPage(EventRoomScreen(
-                      currentUserId: currentUserId,
-                      room: widget.room!,
-                      palette: _paletteGenerator,
-                      ticketId: widget.ticketId!,
-                    ));
-                  }
-                : () {
-                    _navigateToPage(BottomModalSheetMessage(
-                      currentUserId: currentUserId,
-                      user: null,
-                      showAppbar: true,
-                      userAuthor: widget.author!,
-                      chatLoaded: widget.chats!,
-                      userPortfolio: null,
-                      userId: widget.author!.userId!,
-                    ));
-                    usersAuthorRef
-                        .doc(currentUserId)
-                        .collection('new_chats')
-                        .doc(widget.chatUserId)
-                        .update({
-                      'seen': true,
-                    });
-                  }),
+            onTap: () {
+              _navigateToPage(BottomModalSheetMessage(
+                currentUserId: currentUserId,
+                user: null,
+                showAppbar: true,
+                userAuthor: widget.author!,
+                chatLoaded: widget.chats!,
+                userPortfolio: null,
+                userId: widget.author!.userId!,
+              ));
+              usersAuthorRef
+                  .doc(currentUserId)
+                  .collection('new_chats')
+                  .doc(widget.chatUserId)
+                  .update({
+                'seen': true,
+              });
+            }),
       ),
     );
   }

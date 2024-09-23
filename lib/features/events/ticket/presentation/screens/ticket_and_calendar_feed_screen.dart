@@ -557,7 +557,7 @@ class _TicketAndCalendarFeedScreenState
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  "Tickets",
+                  "Appointments",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -567,9 +567,9 @@ class _TicketAndCalendarFeedScreenState
                         ? Center(
                             child: NoContents(
                               icon: MdiIcons.ticketOutline,
-                              title: 'No tickets found',
+                              title: 'No appointments found',
                               subTitle:
-                                  'This section will display the tickets for the events you plan to attend.',
+                                  'This section will display the appoints you have on your schedule.',
                             ),
                           )
                         : _buildInviteBuilder()

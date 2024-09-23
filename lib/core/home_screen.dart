@@ -2698,15 +2698,15 @@ class HomeMobile extends StatefulWidget {
 class _HomeMobileState extends State<HomeMobile>
     with SingleTickerProviderStateMixin {
   // FirebaseDynamicLinks dynamicLi,nks = FirebaseDynamicLinks.instance;
-  int _currentTab = 1;
+  int _currentTab = 0;
   late PageController _pageController;
   int _version = 0;
   bool _showInfo = false;
-  int _affiliateCount = 0;
+  // int _affiliateCount = 0;
 
   // int _inviteCount = -1;
 
-  List<InviteModel> _inviteList = [];
+  // List<InviteModel> _inviteList = [];
 
   @override
   void initState() {
@@ -2730,8 +2730,6 @@ class _HomeMobileState extends State<HomeMobile>
           ? widget.updateApp.updateVersionIos
           : widget.updateApp.updateVersionAndroid;
       _version = version!;
-      await _setUpInvites();
-      await _setAffiliateCount();
 
       _setShowDelayInfo();
     });
@@ -2753,80 +2751,6 @@ class _HomeMobileState extends State<HomeMobile>
 
   DocumentSnapshot? lastDocument;
   final now = DateTime.now();
-
-// Define a constant for how many documents to fetch at a time
-  static const int inviteLimit = 2;
-
-  _setAffiliateCount() async {
-    final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId!;
-    DatabaseService.numUerAffiliates(
-      currentUserId,
-    ).listen((affiliateCount) {
-      if (mounted) {
-        setState(() {
-          _affiliateCount = affiliateCount;
-        });
-      }
-    });
-  }
-
-  _setUpInvites() async {
-    final currentDate = DateTime(now.year, now.month, now.day);
-    int sortNumberOfDays = 7;
-    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
-    try {
-      final String currentUserId =
-          Provider.of<UserData>(context, listen: false).currentUserId!;
-      QuerySnapshot eventFeedSnapShot;
-
-      // If lastDocument is null, this is the first fetch
-      if (lastDocument == null) {
-        eventFeedSnapShot = await userInvitesRef
-            .doc(currentUserId)
-            .collection('eventInvite')
-            .where('answer', isEqualTo: '')
-            .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
-            .where('eventTimestamp', isLessThanOrEqualTo: sortDate)
-            .orderBy('eventTimestamp')
-            .limit(inviteLimit)
-            .get();
-      } else {
-        // If lastDocument is not null, fetch the next batch starting after the last document
-        eventFeedSnapShot = await userInvitesRef
-            .doc(currentUserId)
-            .collection('eventInvite')
-            .where('answer', isEqualTo: '')
-            .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
-            .where('eventTimestamp', isLessThanOrEqualTo: sortDate)
-            .orderBy('eventTimestamp')
-            .startAfterDocument(lastDocument!)
-            .limit(inviteLimit)
-            .get();
-      }
-
-      // If there are documents, set the last one
-      if (eventFeedSnapShot.docs.isNotEmpty) {
-        lastDocument = eventFeedSnapShot.docs.last;
-      }
-
-      List<InviteModel> invites = eventFeedSnapShot.docs
-          .map((doc) => InviteModel.fromDoc(doc))
-          .toList();
-
-      if (mounted) {
-        setState(() {
-          _inviteList
-              .addAll(invites); // append new invites to the existing list
-        });
-      }
-      return invites;
-    } catch (e) {
-      // print('Error fetching invites: $e');
-      _showBottomSheetErrorMessage('Failed to fetch invites.');
-      return null; // return null or an empty list, depending on how you want to handle errors
-    }
-  }
 
   _setShowDelayInfo() {
     if (!_showInfo) {
@@ -2856,7 +2780,7 @@ class _HomeMobileState extends State<HomeMobile>
 
     return Column(
       children: [
-        index != 4
+        index != 3
             ? const SizedBox.shrink()
             : _provider.activityCount == 0
                 ? const SizedBox.shrink()
@@ -2924,6 +2848,8 @@ class _HomeMobileState extends State<HomeMobile>
     // Use conditional access and provide default/fallback values or handle the case where the value might be null
     final String? currentUserId = _provider.currentUserId;
     final AccountHolderAuthor? user = _provider.user;
+    final UserProfessionalModel? userStore = _provider.userStore;
+
     final UserSettingsLoadingPreferenceModel? userLocationSettings =
         _provider.userLocationPreference;
 
@@ -2936,7 +2862,7 @@ class _HomeMobileState extends State<HomeMobile>
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     bool dontShowActivityCount = _provider.activityCount == 0 || !_showInfo;
-    bool dontShowInvite = _inviteList.length < 1 || !_showInfo;
+    // bool dontShowInvite = _inviteList.length < 1 || !_showInfo;
 
     return widget.updateAppVersion < _version &&
             widget.updateApp.displayFullUpdate!
@@ -2971,10 +2897,10 @@ class _HomeMobileState extends State<HomeMobile>
                           physics: const AlwaysScrollableScrollPhysics(),
                           controller: _pageController,
                           children: <Widget>[
-                            Chats(
-                              currentUserId: currentUserId,
-                              userId: '',
-                            ),
+                            // Chats(
+                            //   currentUserId: currentUserId,
+                            //   userId: '',
+                            // ),
                             DiscoverEventScreen(
                               currentUserId: currentUserId,
                               userLocationSettings: userLocationSettings,
@@ -2984,14 +2910,14 @@ class _HomeMobileState extends State<HomeMobile>
                               liveLocationIntialPage: 0,
                               sortNumberOfDays: 0,
                             ),
-                            DiscoverUser(
-                              currentUserId: currentUserId,
-                              isWelcome: false,
-                              isLiveLocation: false,
-                              liveCity: '',
-                              liveCountry: '',
-                              liveLocationIntialPage: 0,
-                            ),
+                            // DiscoverUser(
+                            //   currentUserId: currentUserId,
+                            //   isWelcome: false,
+                            //   isLiveLocation: false,
+                            //   liveCity: '',
+                            //   liveCountry: '',
+                            //   liveLocationIntialPage: 0,
+                            // ),
                             TicketAndCalendarFeedScreen(
                               currentUserId: currentUserId,
                             ),
@@ -3002,7 +2928,7 @@ class _HomeMobileState extends State<HomeMobile>
                             ProfileScreen(
                               currentUserId: currentUserId,
                               userId: currentUserId,
-                              user: user,
+                              user: userStore,
                             ),
                           ],
                           onPageChanged: (int index) {
@@ -3028,180 +2954,176 @@ class _HomeMobileState extends State<HomeMobile>
                               );
                             },
                           )),
-                      Positioned(
-                          bottom: widget.updateAppVersion < _version ? 90 : 7,
-                          child: MiniAffiliateNote(
-                            updateNote:
-                                'Congratulations, you have one or more affiliate deals.',
-                            showinfo: _affiliateCount > 0 ? true : false,
-                            displayMiniUpdate:
-                                widget.updateApp.displayMiniUpdate!,
-                          )),
+                      // Positioned(
+                      //     bottom: widget.updateAppVersion < _version ? 90 : 7,
+                      //     child: MiniAffiliateNote(
+                      //       updateNote:
+                      //           'Congratulations, you have one or more affiliate deals.',
+                      //       showinfo: _affiliateCount > 0 ? true : false,
+                      //       displayMiniUpdate:
+                      //           widget.updateApp.displayMiniUpdate!,
+                      //     )),
                       Positioned(bottom: 7, child: NoConnection()),
                     ],
                   ),
                 ),
-                bottomNavigationBar: _currentTab == 0
-                    ? const SizedBox.shrink()
-                    : Wrap(
-                        children: [
-                          BottomNavigationBar(
-                            type: BottomNavigationBarType.fixed,
-                            backgroundColor:
-                                Theme.of(context).primaryColorLight,
-                            currentIndex: _currentTab - 1,
-                            onTap: (int index) {
-                              setState(() {
-                                _currentTab = index + 1;
-                              });
+                bottomNavigationBar: Wrap(
+                  children: [
+                    BottomNavigationBar(
+                      type: BottomNavigationBarType.fixed,
+                      backgroundColor: Theme.of(context).primaryColorLight,
+                      // currentIndex: _currentTab,
+                      onTap: (int index) {
+                        setState(() {
+                          _currentTab = index + 1;
+                        });
 
-                              _pageController.animateToPage(
-                                index + 1,
-                                duration: const Duration(milliseconds: 10),
-                                curve: Curves.easeIn,
-                              );
-                            },
-                            showUnselectedLabels: true,
-                            selectedLabelStyle: TextStyle(
-                              color: Theme.of(context).secondaryHeaderColor,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 10.0),
-                            ), // font size of selected item
-                            unselectedLabelStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 10.0),
-                            ),
-                            unselectedItemColor: Colors.grey,
-
-                            selectedItemColor:
-                                Theme.of(context).secondaryHeaderColor,
-
-                            items: [
-                              BottomNavigationBarItem(
-                                icon: _tabColumn(Icons.event, _currentTab, 1),
-                                label: 'Event',
-                              ),
-                              BottomNavigationBarItem(
-                                icon: _tabColumn(Icons.search, _currentTab, 2),
-                                label: 'Book',
-                              ),
-                              BottomNavigationBarItem(
-                                icon: _tabColumn(
-                                    MdiIcons.ticketOutline, _currentTab, 3),
-                                label: 'Tickets',
-                              ),
-                              BottomNavigationBarItem(
-                                icon: _tabColumn(
-                                    Icons.send_outlined, _currentTab, 4),
-                                label: 'Chats',
-                              ),
-                              BottomNavigationBarItem(
-                                icon: _tabColumn(Icons.account_circle_outlined,
-                                    _currentTab, 5),
-                                label: 'Profile',
-                              ),
-                            ],
-                          ),
-                        ],
+                        _pageController.animateToPage(
+                          index + 1,
+                          duration: const Duration(milliseconds: 10),
+                          curve: Curves.easeIn,
+                        );
+                      },
+                      showUnselectedLabels: true,
+                      selectedLabelStyle: TextStyle(
+                        color: Theme.of(context).secondaryHeaderColor,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 10.0),
+                      ), // font size of selected item
+                      unselectedLabelStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 10.0),
                       ),
-              ),
-              dontShowInvite
-                  ? const SizedBox.shrink()
-                  : Container(
-                      height: height,
-                      width: width,
-                      color: Colors.black.withOpacity(.7),
-                    ),
-              Positioned(
-                bottom: 0,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: AnimatedContainer(
-                    curve: Curves.easeInOut,
-                    duration: const Duration(milliseconds: 800),
-                    height: dontShowInvite
-                        ? 0
-                        : ResponsiveHelper.responsiveHeight(context, 500.0),
-                    width: width,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              height: 40,
-                              width: width,
-                              child: GestureDetector(
-                                child: ListTile(
-                                  trailing: GestureDetector(
-                                    onTap: () {
-                                      _navigateToPage(InvitationPages(
-                                        currentUserId: currentUserId,
-                                      ));
-                                    },
-                                    child: Text(
-                                      'See all',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize:
-                                            ResponsiveHelper.responsiveFontSize(
-                                                context, 14.0),
-                                      ),
-                                    ),
-                                  ),
-                                  leading: IconButton(
-                                    icon: const Icon(Icons.close),
-                                    iconSize: ResponsiveHelper.responsiveHeight(
-                                        context, 25.0),
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
-                                    onPressed: () {
-                                      _inviteList.clear();
-                                    },
-                                  ),
-                                  title: Text(
-                                    'Event\nInvitations',
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 14.0),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SingleChildScrollView(
-                              child: Container(
-                                height: ResponsiveHelper.responsiveHeight(
-                                    context, 400),
-                                child: ListView.builder(
-                                  itemCount: _inviteList.length,
-                                  itemBuilder: (context, index) {
-                                    InviteModel invite = _inviteList[index];
-                                    return InviteContainerWidget(
-                                      invite: invite,
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
+                      unselectedItemColor: Colors.grey,
+
+                      selectedItemColor: Theme.of(context).secondaryHeaderColor,
+
+                      items: [
+                        BottomNavigationBarItem(
+                          icon:
+                              _tabColumn(Icons.store_outlined, _currentTab, 0),
+                          label: 'Stores',
                         ),
-                      ),
+                        // BottomNavigationBarItem(
+                        //   icon: _tabColumn(Icons.search, _currentTab, 2),
+                        //   label: 'Book',
+                        // ),
+                        BottomNavigationBarItem(
+                          icon: _tabColumn(
+                              Icons.calendar_month_outlined, _currentTab, 1),
+                          label: 'Appointments',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: _tabColumn(Icons.send_outlined, _currentTab, 2),
+                          label: 'Chats',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: _tabColumn(
+                              Icons.account_circle_outlined, _currentTab, 3),
+                          label: 'Profile',
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ),
+              // dontShowInvite
+              //     ? const SizedBox.shrink()
+              //     : Container(
+              //         height: height,
+              //         width: width,
+              //         color: Colors.black.withOpacity(.7),
+              //       ),
+              // Positioned(
+              //   bottom: 0,
+              //   child: Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              //     child: AnimatedContainer(
+              //       curve: Curves.easeInOut,
+              //       duration: const Duration(milliseconds: 800),
+              //       height: dontShowInvite
+              //           ? 0
+              //           : ResponsiveHelper.responsiveHeight(context, 500.0),
+              //       width: width,
+              //       decoration: BoxDecoration(
+              //         color: Theme.of(context).primaryColor,
+              //         borderRadius: BorderRadius.circular(10),
+              //       ),
+              //       child: SingleChildScrollView(
+              //         child: Material(
+              //           color: Colors.transparent,
+              //           child: Column(
+              //             children: [
+              //               const SizedBox(
+              //                 height: 10,
+              //               ),
+              //               Container(
+              //                 height: 40,
+              //                 width: width,
+              //                 child: GestureDetector(
+              //                   child: ListTile(
+              //                     trailing: GestureDetector(
+              //                       onTap: () {
+              //                         _navigateToPage(InvitationPages(
+              //                           currentUserId: currentUserId,
+              //                         ));
+              //                       },
+              //                       child: Text(
+              //                         'See all',
+              //                         style: TextStyle(
+              //                           color: Colors.blue,
+              //                           fontSize:
+              //                               ResponsiveHelper.responsiveFontSize(
+              //                                   context, 14.0),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                     leading: IconButton(
+              //                       icon: const Icon(Icons.close),
+              //                       iconSize: ResponsiveHelper.responsiveHeight(
+              //                           context, 25.0),
+              //                       color:
+              //                           Theme.of(context).secondaryHeaderColor,
+              //                       onPressed: () {
+              //                         _inviteList.clear();
+              //                       },
+              //                     ),
+              //                     title: Text(
+              //                       'Event\nInvitations',
+              //                       style: TextStyle(
+              //                         color: Theme.of(context)
+              //                             .secondaryHeaderColor,
+              //                         fontSize:
+              //                             ResponsiveHelper.responsiveFontSize(
+              //                                 context, 14.0),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ),
+              //               SingleChildScrollView(
+              //                 child: Container(
+              //                   height: ResponsiveHelper.responsiveHeight(
+              //                       context, 400),
+              //                   child: ListView.builder(
+              //                     itemCount: _inviteList.length,
+              //                     itemBuilder: (context, index) {
+              //                       InviteModel invite = _inviteList[index];
+              //                       return InviteContainerWidget(
+              //                         invite: invite,
+              //                       );
+              //                     },
+              //                   ),
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               _provider.shortcutBool
                   ? Positioned(
                       bottom: 0.0,
@@ -3217,79 +3139,79 @@ class _HomeMobileState extends State<HomeMobile>
                     )
                   : const SizedBox.shrink(),
               if (_provider.florenceActive)
-                HopeActions(
-                    showAffiliateNote: _inviteList.length > 0,
-                    updateApp: widget.updateApp,
-                    showUpdate: widget.updateAppVersion < _version),
-              Positioned(
-                bottom: ResponsiveHelper.responsiveHeight(
-                    context, _provider.int2 == 3 ? 50 : 100
+                // HopeActions(
+                //     showAffiliateNote: _inviteList.length > 0,
+                //     updateApp: widget.updateApp,
+                //     showUpdate: widget.updateAppVersion < _version),
+                Positioned(
+                  bottom: ResponsiveHelper.responsiveHeight(
+                      context, _provider.int2 == 3 ? 50 : 100
 
-                    //  _inviteList.length < 1
-                    //     ? 100
-                    //     : 70
+                      //  _inviteList.length < 1
+                      //     ? 100
+                      //     : 70
 
-                    ),
-                child: GestureDetector(
-                  onTap: () async {
-                    HapticFeedback.mediumImpact();
-                    _provider.setFlorenceActive(
-                        _provider.florenceActive ? false : true);
-                    _provider.setInt2(0);
-                  },
-                  child: Container(
-                    height: ResponsiveHelper.responsiveFontSize(
-                        context, dontShowActivityCount ? 40 : 100),
-                    width: ResponsiveHelper.responsiveFontSize(context, 60),
-                    color: Colors.transparent,
-                    child: AnimatedContainer(
-                      margin: EdgeInsets.only(
-                          bottom: dontShowActivityCount ? 0 : 50),
-                      curve: Curves.easeInOut,
-                      duration: Duration(milliseconds: 800),
-                      height: _provider.showEventTab && _provider.showUsersTab
-                          ? 40
-                          : 0,
-                      width: _provider.showEventTab && _provider.showUsersTab
-                          ? 40
-                          : 0,
-                      // padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _provider.int2 == 3
-                            ? Theme.of(context)
-                                .secondaryHeaderColor
-                                .withOpacity(.6)
-                            : _provider.florenceActive
-                                ? Colors.transparent
-                                : Theme.of(context).primaryColor,
                       ),
-                      child: Center(
-                        child: _provider.florenceActive
-                            ? Icon(
-                                Icons.close,
-                                color: _provider.int2 == 3
-                                    ? Theme.of(context)
-                                        .primaryColorLight
-                                        .withOpacity(.6)
-                                    : _provider.florenceActive
-                                        ? Colors.white
-                                        : Colors.black,
-                                size: _provider.florenceActive ? 30 : 20,
-                              )
-                            : AnimatedCircle(
-                                size: 25,
-                                stroke: 2,
-                                animateSize: false,
-                                animateShape: false,
-                              ),
+                  child: GestureDetector(
+                    onTap: () async {
+                      HapticFeedback.mediumImpact();
+                      _provider.setFlorenceActive(
+                          _provider.florenceActive ? false : true);
+                      _provider.setInt2(0);
+                    },
+                    child: Container(
+                      height: ResponsiveHelper.responsiveFontSize(
+                          context, dontShowActivityCount ? 40 : 100),
+                      width: ResponsiveHelper.responsiveFontSize(context, 60),
+                      color: Colors.transparent,
+                      child: AnimatedContainer(
+                        margin: EdgeInsets.only(
+                            bottom: dontShowActivityCount ? 0 : 50),
+                        curve: Curves.easeInOut,
+                        duration: Duration(milliseconds: 800),
+                        height: _provider.showEventTab && _provider.showUsersTab
+                            ? 40
+                            : 0,
+                        width: _provider.showEventTab && _provider.showUsersTab
+                            ? 40
+                            : 0,
+                        // padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _provider.int2 == 3
+                              ? Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(.6)
+                              : _provider.florenceActive
+                                  ? Colors.transparent
+                                  : Theme.of(context).primaryColor,
+                        ),
+                        child: Center(
+                          child: _provider.florenceActive
+                              ? Icon(
+                                  Icons.close,
+                                  color: _provider.int2 == 3
+                                      ? Theme.of(context)
+                                          .primaryColorLight
+                                          .withOpacity(.6)
+                                      : _provider.florenceActive
+                                          ? Colors.white
+                                          : Colors.black,
+                                  size: _provider.florenceActive ? 30 : 20,
+                                )
+                              : AnimatedCircle(
+                                  size: 25,
+                                  stroke: 2,
+                                  animateSize: false,
+                                  animateShape: false,
+                                ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
               Positioned(
-                bottom: _inviteList.length < 1 ? 108 : 30,
+                bottom: 30,
                 child: GestureDetector(
                   onTap: () {
                     _navigateToPage(

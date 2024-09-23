@@ -23,26 +23,26 @@ class _UserSearchState extends State<UserSearch> {
     }).toList();
   }
 
-  _buildUserTile(AccountHolderAuthor user) {
-    return SearchUserTile(
-        userName: user.userName!.toUpperCase(),
-        profileHandle: user.profileHandle!,
-        verified: user.verified!,
-        profileImageUrl: user.profileImageUrl!,
-        bio: user.bio!,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ProfileScreen(
-                        currentUserId:
-                            Provider.of<UserData>(context, listen: false)
-                                .currentUserId!,
-                        userId: user.userId!,
-                        user: user,
-                      )));
-        });
-  }
+  // _buildUserTile(AccountHolderAuthor user) {
+  //   return SearchUserTile(
+  //       userName: user.userName!.toUpperCase(),
+  //       profileHandle: user.profileHandle!,
+  //       verified: user.verified!,
+  //       profileImageUrl: user.profileImageUrl!,
+  //       bio: user.bio!,
+  //       onPressed: () {
+  //         Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //                 builder: (_) => ProfileScreen(
+  //                       currentUserId:
+  //                           Provider.of<UserData>(context, listen: false)
+  //                               .currentUserId!,
+  //                       userId: user.userId!,
+  //                       user: user,
+  //                     )));
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {

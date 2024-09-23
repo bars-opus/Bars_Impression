@@ -74,22 +74,22 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     List<PortfolioModel> awards = widget.user.awards;
     awards.forEach((award) => _provider.setAwards(award));
 
-    // Add user companies
-    List<PortfolioCompanyModel> companies = widget.user.company;
-    companies.forEach((company) => _provider.setCompanies(company));
+    // // Add user companies
+    // List<PortfolioCompanyModel> companies = widget.user.company;
+    // companies.forEach((company) => _provider.setCompanies(company));
 
-    // Add user contact
-    List<PortfolioContactModel> contacts = widget.user.contacts;
-    contacts.forEach((contact) => _provider.setBookingContacts(contact));
+    // // Add user contact
+    // List<PortfolioContactModel> contacts = widget.user.contacts;
+    // contacts.forEach((contact) => _provider.setBookingContacts(contact));
 
     // Add links to work
     List<PortfolioModel> links = widget.user.links;
     links.forEach((link) => _provider.setLinksToWork(link));
 
-    // Add performance
-    List<PortfolioModel> performances = widget.user.performances;
-    performances
-        .forEach((performance) => _provider.setPerformances(performance));
+    // // Add performance
+    // List<PortfolioModel> performances = widget.user.performances;
+    // performances
+    //     .forEach((performance) => _provider.setPerformances(performance));
 
     // Add skills
     List<PortfolioModel> skills = widget.user.skills;
@@ -100,10 +100,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     genreTags.forEach((genre) => _provider.setGenereTags(genre));
 
     // Add collaborations
-    List<PortfolioCollaborationModel> collaborations =
-        widget.user.collaborations;
-    collaborations
-        .forEach((collaboration) => _provider.setCollaborations(collaboration));
+    // List<PortfolioCollaborationModel> collaborations =
+    //     widget.user.collaborations;
+    // collaborations
+    //     .forEach((collaboration) => _provider.setCollaborations(collaboration));
 
     // Add price
     List<PriceModel> priceTags = widget.user.priceTags;
@@ -141,7 +141,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   clear() {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.awards.clear();
-    _provider.company.clear();
+    // _provider.company.clear();
     _provider.bookingContacts.clear();
     _provider.linksToWork.clear();
     _provider.performances.clear();
@@ -254,15 +254,15 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     if (_companiesFormKey.currentState!.validate()) {
-      final portfolio = PortfolioCompanyModel(
-        id: UniqueKey().toString(),
-        link: _linkController.text,
-        name: _nameController.text,
-        type: _typeController.text,
-        verified: false,
-      );
+      // final portfolio = PortfolioCompanyModel(
+      //   id: UniqueKey().toString(),
+      //   link: _linkController.text,
+      //   name: _nameController.text,
+      //   type: _typeController.text,
+      //   verified: false,
+      // );
       // adds ticket to ticket list
-      _provider.setCompanies(portfolio);
+      // _provider.setCompanies(portfolio);
 
       // Reset ticket variables
 
@@ -427,8 +427,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               'collaborations': _provider.collaborations
                   .map((collaborations) => collaborations.toJson())
                   .toList(),
-              'company':
-                  _provider.company.map((company) => company.toJson()).toList(),
+              // 'company':
+              //     _provider.company.map((company) => company.toJson()).toList(),
               'contacts': _provider.bookingContacts
                   .map((bookingContacts) => bookingContacts.toJson())
                   .toList(),
@@ -653,7 +653,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           ),
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: CachedNetworkImageProvider(imageUrl,  errorListener: (_) {
+              image: CachedNetworkImageProvider(imageUrl, errorListener: (_) {
                 return;
               }),
               fit: BoxFit.cover,
@@ -947,147 +947,147 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     );
   }
 
-  void _showBottomCompany(List<PortfolioCompanyModel> portfolios) {
-    var _size = MediaQuery.of(context).size;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return AnimatedBuilder(
-              animation: Listenable.merge([_nameController, _linkController]),
-              builder: (BuildContext context, Widget? child) {
-                return Form(
-                  key: _companiesFormKey,
-                  child: Container(
-                    height: _size.height.toDouble() / 1.3,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Scaffold(
-                      backgroundColor: Colors.transparent,
-                      body: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: ListView(
-                          children: [
-                            portfolios.length < 6 &&
-                                    _nameController.text.length > 0 &&
-                                    _linkController.text.length > 0
-                                ? Align(
-                                    alignment: Alignment.centerRight,
-                                    child: MiniCircularProgressButton(
-                                      onPressed: () {
-                                        _addCompany();
-                                      },
-                                      text: "Add",
-                                      color: Colors.blue,
-                                    ),
-                                  )
-                                : ListTile(
-                                    leading: portfolios.length > 0
-                                        ? SizedBox.shrink()
-                                        : IconButton(
-                                            icon: const Icon(Icons.close),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            color: Theme.of(context)
-                                                .secondaryHeaderColor,
-                                          ),
-                                    trailing: portfolios.length < 1
-                                        ? SizedBox.shrink()
-                                        : GestureDetector(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                              'Done',
-                                              style: TextStyle(
-                                                  fontSize: ResponsiveHelper
-                                                      .responsiveFontSize(
-                                                          context, 14.0),
-                                                  color: Colors.blue,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                  ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            if (portfolios.length > 5 &&
-                                _nameController.text.length > 0 &&
-                                _linkController.text.length > 0)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 30.0),
-                                child: Text(
-                                  'You cannot add more than six contacts',
-                                  style: TextStyle(
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 14.0),
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            _textField(
-                              'company',
-                              'Company / organization name',
-                              true,
-                              _nameController,
-                              (value) {
-                                setState(() {});
-                              },
-                              // false,
-                              false,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            _textField(
-                              'Type',
-                              'Eg. record label, NGO, management',
-                              true,
-                              _typeController,
-                              (value) {
-                                setState(() {});
-                              },
-                              // false,
-                              false,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            _textField(
-                              'link to company',
-                              'website or socal media of company',
-                              false,
-                              _linkController,
-                              (value) {
-                                setState(() {});
-                              },
-                              // false,
-                              true,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              'The link fields for the company and type must not be left empty. These links are essential for individuals to gain a comprehensive understanding of the companies you are associated with. Each link should direct to a website or webpage that provides detailed information about the respective company',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              });
-        });
-      },
-    );
-  }
+  // void _showBottomCompany(List<PortfolioCompanyModel> portfolios) {
+  //   var _size = MediaQuery.of(context).size;
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setState) {
+  //         return AnimatedBuilder(
+  //             animation: Listenable.merge([_nameController, _linkController]),
+  //             builder: (BuildContext context, Widget? child) {
+  //               return Form(
+  //                 key: _companiesFormKey,
+  //                 child: Container(
+  //                   height: _size.height.toDouble() / 1.3,
+  //                   decoration: BoxDecoration(
+  //                       color: Theme.of(context).primaryColorLight,
+  //                       borderRadius: BorderRadius.circular(30)),
+  //                   child: Scaffold(
+  //                     backgroundColor: Colors.transparent,
+  //                     body: Padding(
+  //                       padding: const EdgeInsets.all(20.0),
+  //                       child: ListView(
+  //                         children: [
+  //                           portfolios.length < 6 &&
+  //                                   _nameController.text.length > 0 &&
+  //                                   _linkController.text.length > 0
+  //                               ? Align(
+  //                                   alignment: Alignment.centerRight,
+  //                                   child: MiniCircularProgressButton(
+  //                                     onPressed: () {
+  //                                       _addCompany();
+  //                                     },
+  //                                     text: "Add",
+  //                                     color: Colors.blue,
+  //                                   ),
+  //                                 )
+  //                               : ListTile(
+  //                                   leading: portfolios.length > 0
+  //                                       ? SizedBox.shrink()
+  //                                       : IconButton(
+  //                                           icon: const Icon(Icons.close),
+  //                                           onPressed: () {
+  //                                             Navigator.pop(context);
+  //                                           },
+  //                                           color: Theme.of(context)
+  //                                               .secondaryHeaderColor,
+  //                                         ),
+  //                                   trailing: portfolios.length < 1
+  //                                       ? SizedBox.shrink()
+  //                                       : GestureDetector(
+  //                                           onTap: () {
+  //                                             Navigator.pop(context);
+  //                                           },
+  //                                           child: Text(
+  //                                             'Done',
+  //                                             style: TextStyle(
+  //                                                 fontSize: ResponsiveHelper
+  //                                                     .responsiveFontSize(
+  //                                                         context, 14.0),
+  //                                                 color: Colors.blue,
+  //                                                 fontWeight: FontWeight.bold),
+  //                                           ),
+  //                                         ),
+  //                                 ),
+  //                           const SizedBox(
+  //                             height: 30,
+  //                           ),
+  //                           if (portfolios.length > 5 &&
+  //                               _nameController.text.length > 0 &&
+  //                               _linkController.text.length > 0)
+  //                             Padding(
+  //                               padding: const EdgeInsets.only(bottom: 30.0),
+  //                               child: Text(
+  //                                 'You cannot add more than six contacts',
+  //                                 style: TextStyle(
+  //                                     fontSize:
+  //                                         ResponsiveHelper.responsiveFontSize(
+  //                                             context, 14.0),
+  //                                     color: Colors.red,
+  //                                     fontWeight: FontWeight.bold),
+  //                               ),
+  //                             ),
+  //                           _textField(
+  //                             'company',
+  //                             'Company / organization name',
+  //                             true,
+  //                             _nameController,
+  //                             (value) {
+  //                               setState(() {});
+  //                             },
+  //                             // false,
+  //                             false,
+  //                           ),
+  //                           const SizedBox(
+  //                             height: 20,
+  //                           ),
+  //                           _textField(
+  //                             'Type',
+  //                             'Eg. record label, NGO, management',
+  //                             true,
+  //                             _typeController,
+  //                             (value) {
+  //                               setState(() {});
+  //                             },
+  //                             // false,
+  //                             false,
+  //                           ),
+  //                           const SizedBox(
+  //                             height: 20,
+  //                           ),
+  //                           _textField(
+  //                             'link to company',
+  //                             'website or socal media of company',
+  //                             false,
+  //                             _linkController,
+  //                             (value) {
+  //                               setState(() {});
+  //                             },
+  //                             // false,
+  //                             true,
+  //                           ),
+  //                           const SizedBox(
+  //                             height: 20,
+  //                           ),
+  //                           Text(
+  //                             'The link fields for the company and type must not be left empty. These links are essential for individuals to gain a comprehensive understanding of the companies you are associated with. Each link should direct to a website or webpage that provides detailed information about the respective company',
+  //                             style: Theme.of(context).textTheme.bodyMedium,
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               );
+  //             });
+  //       });
+  //     },
+  //   );
+  // }
 
 // The _showBottomContact method is responsible for displaying a modal bottom sheet with a form for contact-related input.
 // It accepts a boolean isEmail to determine whether it should display an email input field or a phone number input field,
@@ -1884,10 +1884,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         _widget = PriceRateWidget(
             edit: false, prices: _provider.priceRate, seeMore: true);
         break;
-      case 'companies':
-        _widget = PortfolioCompanyWidget(
-            seeMore: true, portfolios: _provider.company, edit: false);
-        break;
+      // case 'companies':
+      //   _widget = PortfolioCompanyWidget(
+      //       seeMore: true, portfolios: _provider.company, edit: false);
+      //   break;
       case 'portfolio':
         _widget =
             PortfolioWidget(portfolios: portfolios, seeMore: true, edit: false);
@@ -1992,11 +1992,11 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         _widget = PortfolioWidget(
             portfolios: _provider.performances, seeMore: false, edit: true);
         break;
-      case 'companies':
-        _onPressed = () => _showBottomCompany(_provider.company);
-        _widget = PortfolioCompanyWidget(
-            portfolios: _provider.company, seeMore: false, edit: true);
-        break;
+      // case 'companies':
+      //   _onPressed = () => _showBottomCompany(_provider.company);
+      //   _widget = PortfolioCompanyWidget(
+      //       portfolios: _provider.company, seeMore: false, edit: true);
+      //   break;
       case 'portfolio':
         _onPressed =
             () => _showBottomTaggedPeopleRole(label, label, portfolios);
@@ -2137,12 +2137,12 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               const SizedBox(
                 height: 30,
               ),
-              _addPotfolio(
-                  'Companies',
-                  'Please provide the name and any other necessary information about the companies you work with or for. As a creative, this can be a record labels, media houses, event houses, or any other relevant organizations.',
-                  'companies',
-                  [],
-                  _provider.company.length),
+              // _addPotfolio(
+              //     'Companies',
+              //     'Please provide the name and any other necessary information about the companies you work with or for. As a creative, this can be a record labels, media houses, event houses, or any other relevant organizations.',
+              //     'companies',
+              //     [],
+              //     _provider.company.length),
               _addPotfolio(
                   'Skills',
                   'Please list your skills in your field of work, whether it\'s as a musician, producer, video director, or any other relevant account type. Skills can include dancing, singing, and any other relevant abilities.',

@@ -214,7 +214,7 @@ export 'package:bars/features/creatives/models/portfolio_collaboration_model.dar
 export 'package:bars/features/creatives/models/portfolio_company_model.dart';
 export 'package:bars/features/creatives/models/portfolio_contact_model.dart';
 export 'package:bars/features/creatives/models/portfolio_model.dart';
-export 'package:bars/features/creatives/models/Price_order_model.dart';
+export 'package:bars/features/creatives/models/price_order_model.dart';
 export 'package:bars/features/events/event_management/models/collaborated_people_model.dart';
 export 'package:bars/features/creatives/presentation/widgets/portfolio_collaboration_widget.dart';
 export 'package:bars/features/creatives/presentation/widgets/portfolio_company_widget.dart';

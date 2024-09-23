@@ -22,6 +22,7 @@ class UserData extends ChangeNotifier {
   late bool _startTimeSelected;
   late bool _endTimeSelected;
   late AccountHolderAuthor? _user;
+  late UserProfessionalModel? _userStore;
   late UserSettingsLoadingPreferenceModel? _userLocationPreference;
   late UserSettingsGeneralModel? _userGeneraSentence;
   // late CreativeBrandTargetModel? _brandTarget;
@@ -50,7 +51,7 @@ class UserData extends ChangeNotifier {
   List<PortfolioModel> _linksToWork = [];
   List<PortfolioModel> _skills = [];
   List<PortfolioModel> _genreTages = [];
-  List<PortfolioCompanyModel> _company = [];
+  // List<PortfolioCompanyModel> _company = [];
   List<String> _professionalImages = [];
   List<String> _eventOrganizerContacts = [];
   late String _workRequestoverView;
@@ -235,7 +236,7 @@ class UserData extends ChangeNotifier {
     _password = '';
     _bio = '';
     _name = '';
-    _company = [];
+    // _company = [];
     _noBooking = false;
     _termAndConditions = '';
     _email = '';
@@ -258,6 +259,8 @@ class UserData extends ChangeNotifier {
     _activityCount = 0;
     _availableDynamicLink = '';
     _user = null;
+ _userStore = null;
+    
     _userGeneraSentence = null;
     _userLocationPreference = null;
     // _brandTarget = null;
@@ -547,6 +550,10 @@ class UserData extends ChangeNotifier {
   File? get image => _image;
   PickedFile? get videoFile1 => _videoFile1;
   AccountHolderAuthor? get user => _user;
+  UserProfessionalModel? get userStore => _userStore;
+
+
+  
   UserSettingsGeneralModel? get userGeneraSentenceser => _userGeneraSentence;
   UserSettingsLoadingPreferenceModel? get userLocationPreference =>
       _userLocationPreference;
@@ -569,7 +576,7 @@ class UserData extends ChangeNotifier {
   List<PortfolioModel> get linksToWork => _linksToWork;
   List<PortfolioModel> get skills => _skills;
   List<PortfolioModel> get genreTages => _genreTages;
-  List<PortfolioCompanyModel> get company => _company;
+  // List<PortfolioCompanyModel> get company => _company;
   List<PortfolioContactModel> get bookingContacts => _bookingContacts;
   List<CollaboratedPeople> get collaboratedPeople => _collaboratedPeople;
   List<String> get professionalImages => _professionalImages;
@@ -904,6 +911,12 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setUserStore(UserProfessionalModel? userStore) {
+    _userStore = userStore;
+    notifyListeners();
+  }
+  
+
   void setUserGeneralSettings(UserSettingsGeneralModel? userGeneraSentence) {
     _userGeneraSentence = userGeneraSentence;
     notifyListeners();
@@ -1042,10 +1055,10 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCompanies(PortfolioCompanyModel company) {
-    _company.add(company);
-    notifyListeners();
-  }
+  // void setCompanies(PortfolioCompanyModel company) {
+  //   _company.add(company);
+  //   notifyListeners();
+  // }
 
   void setBookingContacts(PortfolioContactModel bookingContacts) {
     _bookingContacts.add(bookingContacts);

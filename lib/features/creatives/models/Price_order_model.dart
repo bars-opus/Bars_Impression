@@ -1,10 +1,20 @@
+import 'package:hive/hive.dart';
+
 import 'package:bars/utilities/exports.dart';
 
+part 'price_order_model.g.dart';
+
+@HiveType(typeId: 13)
 class PriceModel {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String price;
+  @HiveField(2)
   final String name;
+  @HiveField(3)
   final String value;
+  @HiveField(4)
   final String duruation;
 
   PriceModel({

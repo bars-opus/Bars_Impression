@@ -1,6 +1,15 @@
+import 'package:hive/hive.dart';
+
+part 'portfolio_model.g.dart';
+
+@HiveType(typeId: 12) // Use unique IDs for different classes
+
 class PortfolioModel {
+  @HiveField(0)
   String id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final String link;
 
   PortfolioModel({
@@ -25,5 +34,3 @@ class PortfolioModel {
     };
   }
 }
-
-

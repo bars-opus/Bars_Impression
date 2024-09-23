@@ -128,7 +128,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
       provider.setCurrency('');
       provider.awards.clear();
       provider.priceRate.clear();
-      provider.company.clear();
+      // provider.company.clear();
       provider.bookingContacts.clear();
       provider.linksToWork.clear();
       provider.performances.clear();
@@ -229,21 +229,21 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     awards.forEach((award) => provider.setAwards(award));
 
     // Add userPortfolio companies
-    List<PortfolioCompanyModel> companies = widget.userPortfolio.company;
-    companies.forEach((company) => provider.setCompanies(company));
+    // List<PortfolioCompanyModel> companies = widget.userPortfolio.company;
+    // companies.forEach((company) => provider.setCompanies(company));
 
-    // Add userPortfolio contact
-    List<PortfolioContactModel> contacts = widget.userPortfolio.contacts;
-    contacts.forEach((contact) => provider.setBookingContacts(contact));
+    // // Add userPortfolio contact
+    // List<PortfolioContactModel> contacts = widget.userPortfolio.contacts;
+    // contacts.forEach((contact) => provider.setBookingContacts(contact));
 
     // Add links to work
     List<PortfolioModel> links = widget.userPortfolio.links;
     links.forEach((link) => provider.setLinksToWork(link));
 
     // Add performance
-    List<PortfolioModel> performances = widget.userPortfolio.performances;
-    performances
-        .forEach((performance) => provider.setPerformances(performance));
+    // List<PortfolioModel> performances = widget.userPortfolio.performances;
+    // performances
+    //     .forEach((performance) => provider.setPerformances(performance));
 
     // Add skills
     List<PortfolioModel> skills = widget.userPortfolio.skills;
@@ -254,11 +254,11 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     genreTags.forEach((genre) => provider.setGenereTags(genre));
 
     // Add collaborations
-    List<PortfolioCollaborationModel> collaborations =
-        widget.userPortfolio.collaborations;
-    collaborations
-        .forEach((collaboration) => provider.setCollaborations(collaboration));
-    // Add price
+    // List<PortfolioCollaborationModel> collaborations =
+    //     widget.userPortfolio.collaborations;
+    // collaborations
+    //     .forEach((collaboration) => provider.setCollaborations(collaboration));
+    // // Add price
     List<PriceModel> priceTags = widget.userPortfolio.priceTags;
     priceTags.forEach((priceTags) => provider.setPriceRate(priceTags));
 
@@ -1048,73 +1048,72 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       portfolios: _provider.bookingContacts,
                       edit: _isAuthor,
                     )
-                  : from.startsWith('company')
-                      ? PortfolioCompanyWidget(
-                          portfolios: _provider.company,
+                  // : from.startsWith('company')
+                  //     ? PortfolioCompanyWidget(
+                  //         portfolios: _provider.company,
+                  //         seeMore: true,
+                  //         edit: false,
+                  //       )
+                  : from.startsWith('skills')
+                      ? PortfolioWidget(
+                          portfolios: _provider.skills,
                           seeMore: true,
                           edit: false,
                         )
-                      : from.startsWith('skills')
+                      : from.startsWith('performance')
                           ? PortfolioWidget(
-                              portfolios: _provider.skills,
+                              portfolios: _provider.performances,
                               seeMore: true,
                               edit: false,
                             )
-                          : from.startsWith('performance')
+                          : from.startsWith('awards')
                               ? PortfolioWidget(
-                                  portfolios: _provider.performances,
+                                  portfolios: _provider.awards,
                                   seeMore: true,
                                   edit: false,
                                 )
-                              : from.startsWith('awards')
-                                  ? PortfolioWidget(
-                                      portfolios: _provider.awards,
+                              : from.startsWith('work')
+                                  ? PortfolioWidgetWorkLink(
+                                      portfolios: _provider.linksToWork,
                                       seeMore: true,
                                       edit: false,
                                     )
-                                  : from.startsWith('work')
-                                      ? PortfolioWidgetWorkLink(
-                                          portfolios: _provider.linksToWork,
-                                          seeMore: true,
-                                          edit: false,
+                                  : from.startsWith('price')
+                                      ? Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 30.0),
+                                          child: PriceRateWidget(
+                                            edit: false,
+                                            prices: _provider.priceRate,
+                                            seeMore: true,
+                                          ),
                                         )
-                                      : from.startsWith('price')
+                                      : from.startsWith('collaborations')
                                           ? Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 30.0),
-                                              child: PriceRateWidget(
+                                              child:
+                                                  PortfolioCollaborationWidget(
                                                 edit: false,
-                                                prices: _provider.priceRate,
                                                 seeMore: true,
+                                                collaborations:
+                                                    _provider.collaborations,
                                               ),
                                             )
-                                          : from.startsWith('collaborations')
+                                          : from.startsWith('review')
                                               ? Padding(
                                                   padding:
                                                       const EdgeInsets.only(
                                                           top: 30.0),
                                                   child:
-                                                      PortfolioCollaborationWidget(
-                                                    edit: false,
-                                                    seeMore: true,
-                                                    collaborations: _provider
-                                                        .collaborations,
-                                                  ),
+                                                      _buildDisplayReviewList(
+                                                          context),
                                                 )
-                                              : from.startsWith('review')
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 30.0),
-                                                      child:
-                                                          _buildDisplayReviewList(
-                                                              context),
-                                                    )
-                                                  : PortfolioWidget(
-                                                      portfolios: [],
-                                                      seeMore: true,
-                                                      edit: false,
-                                                    ),
+                                              : PortfolioWidget(
+                                                  portfolios: [],
+                                                  seeMore: true,
+                                                  edit: false,
+                                                ),
               const SizedBox(
                 height: 40,
               ),
@@ -1935,13 +1934,13 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                 seeMore: true,
                 // currency: _provider,
               ),
-              _divider('Company', 'company',
-                  _provider.company.length >= 4 ? true : false),
-              PortfolioCompanyWidget(
-                portfolios: _provider.company,
-                seeMore: false,
-                edit: false,
-              ),
+              // _divider('Company', 'company',
+              //     _provider.company.length >= 4 ? true : false),
+              // PortfolioCompanyWidget(
+              //   portfolios: _provider.company,
+              //   seeMore: false,
+              //   edit: false,
+              // ),
               _divider('Skills', 'skills',
                   _provider.skills.length >= 4 ? true : false),
               PortfolioWidget(

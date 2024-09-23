@@ -184,8 +184,8 @@ class DatabaseService {
 
   static void followUser(
       {required String currentUserId,
-      required AccountHolderAuthor user,
-      required AccountHolderAuthor currentUser}) {
+      required UserProfessionalModel user,
+      required UserProfessionalModel currentUser}) {
     // Add use to current user's following collection
     followingRef
         .doc(currentUserId)
@@ -204,15 +204,15 @@ class DatabaseService {
       'userId': currentUserId,
     });
 
-    addActivityItem(
-      user: currentUser,
-      event: null,
-      comment: "Started following you",
-      followerUser: user,
-      post: null,
-      type: NotificationActivityType.follow,
-      advicedUserId: '',
-    );
+    // addActivityItem(
+    //   user: currentUser,
+    //   event: null,
+    //   comment: "Started following you",
+    //   followerUser: user,
+    //   post: null,
+    //   type: NotificationActivityType.follow,
+    //   advicedUserId: '',
+    // );
   }
 
   static void unfollowUser(
@@ -3599,10 +3599,9 @@ class DatabaseService {
           await usersLocationSettingsRef.doc(userId).get();
 
       if (userDocSnapshot.exists) {
-        print('dfdfdfdfd');
+      
         return UserSettingsLoadingPreferenceModel.fromDoc(userDocSnapshot);
       } else {
-        print('00000');
         return null;
       }
     } catch (e) {
@@ -3610,6 +3609,25 @@ class DatabaseService {
       return null;
     }
   }
+
+    static Future<UserProfessionalModel?>
+      getUserStoreWithId(String userId) async {
+    try {
+      DocumentSnapshot userDocSnapshot =
+          await userProfessionalRef.doc(userId).get();
+
+      if (userDocSnapshot.exists) {
+      
+        return UserProfessionalModel.fromDoc(userDocSnapshot);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
 
   static Future<UserSettingsGeneralModel?> getUserGeneralSettingWithId(
       String userId) async {
@@ -5796,15 +5814,15 @@ class DatabaseService {
       'report': '',
       'reportConfirmed': '',
     });
-    addActivityItem(
-      user: user,
-      post: null,
-      comment: ask,
-      type: NotificationActivityType.ask,
-      event: event,
-      followerUser: null,
-      advicedUserId: '',
-    );
+    // addActivityItem(
+    //   user: user,
+    //   post: null,
+    //   comment: ask,
+    //   type: NotificationActivityType.ask,
+    //   event: event,
+    //   followerUser: null,
+    //   advicedUserId: '',
+    // );
   }
 
   static Future<String> myDynamicLink(

@@ -32,10 +32,10 @@ class UserBookingOption extends StatelessWidget {
                   icon: Icons.call,
                 ),
                 const SizedBox(height: 40),
-                PortfolioContactWidget(
-                  portfolios: bookingUser.contacts,
-                  edit: false,
-                ),
+                // PortfolioContactWidget(
+                //   portfolios: bookingUser.contacts,
+                //   edit: false,
+                // ),
                 const SizedBox(
                   height: 10,
                 ),
