@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class UserBookingOption extends StatelessWidget {
-  final UserProfessionalModel bookingUser;
+  final UserStoreModel bookingUser;
 
   UserBookingOption({required this.bookingUser});
 

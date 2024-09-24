@@ -8,7 +8,7 @@ class BrandMatchingModel {
   final String creativeStyle;
   final String userName;
   final String profileImageUrl;
-  final String profileHandle;
+  final String storeType;
   final bool verified;
   final String inspiration;
   String matchReason;
@@ -23,7 +23,7 @@ class BrandMatchingModel {
     required this.longTermGoals,
     required this.userName,
     required this.profileImageUrl,
-    required this.profileHandle,
+    required this.storeType,
     required this.verified,
   });
 
@@ -37,7 +37,7 @@ class BrandMatchingModel {
       matchReason: doc['matchReason'] ?? '',
       userName: doc['userName'] ?? '',
       profileImageUrl: doc['profileImageUrl'],
-      profileHandle: doc['profileHandle'] ?? 'Fan',
+      storeType: doc['storeType'] ?? 'Fan',
       verified: doc['verified'] ?? false,
       longTermGoals: doc['longTermGoals'] ?? '',
     );
@@ -50,7 +50,7 @@ class BrandMatchingModel {
       profileImageUrl: json['profileImageUrl'],
       creativeStyle: json['creativeStyle'],
       userId: json['userId'],
-      profileHandle: json['profileHandle'] ?? 'Fan',
+      storeType: json['storeType'] ?? 'Fan',
       verified: json['verified'] ?? false,
       shortTermGoals: json['shortTermGoals'],
       inspiration: json['inspiration'],
@@ -70,7 +70,7 @@ class BrandMatchingModel {
       'longTermGoals': longTermGoals,
       'userName': userName,
       'profileImageUrl': profileImageUrl,
-      'profileHandle': profileHandle,
+      'storeType': storeType,
       'verified': verified,
     };
   }

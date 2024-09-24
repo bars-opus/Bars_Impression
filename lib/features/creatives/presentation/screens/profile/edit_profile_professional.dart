@@ -3,7 +3,7 @@ import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/scheduler.dart';
 
 class EditProfileProfessional extends StatefulWidget {
-  final UserProfessionalModel user;
+  final UserStoreModel user;
 
   EditProfileProfessional({
     required this.user,
@@ -96,8 +96,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     skills.forEach((skill) => _provider.setSkills(skill));
 
     // Add genre tags
-    List<PortfolioModel> genreTags = widget.user.genreTags;
-    genreTags.forEach((genre) => _provider.setGenereTags(genre));
+    // List<PortfolioModel> genreTags = widget.user.genreTags;
+    // genreTags.forEach((genre) => _provider.setGenereTags(genre));
 
     // Add collaborations
     // List<PortfolioCollaborationModel> collaborations =
@@ -455,7 +455,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             await userProfessionalRef.doc(widget.user.userId).get();
 
         // Assuming 'Event' is a class that can be constructed from a Firestore document
-        UserProfessionalModel updatedUser = UserProfessionalModel.fromDoc(doc);
+        UserStoreModel updatedUser = UserStoreModel.fromDoc(doc);
         Navigator.pop(context);
         _navigateToPage(
           context,
@@ -1455,7 +1455,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     return SearchUserTile(
         verified: user.verified!,
         userName: user.userName!.toUpperCase(),
-        profileHandle: user.profileHandle!,
+        storeType: user.storeType!,
         // company: user.company!,
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
@@ -1858,7 +1858,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 // _showBottomTaggedPeople
   setNull() {
     Provider.of<UserData>(context, listen: false).setInt1(0);
-    Provider.of<UserData>(context, listen: false).setProfileHandle('');
+    Provider.of<UserData>(context, listen: false).setstoreType('');
     Provider.of<UserData>(context, listen: false).setEmail('');
     Provider.of<UserData>(context, listen: false).setBool5(false);
     Provider.of<UserData>(context, listen: false).setBool6(false);

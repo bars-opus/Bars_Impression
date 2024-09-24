@@ -8,7 +8,7 @@ class UserAdvice {
   final String reportConfirmed;
   final Timestamp timestamp;
   final String authorName;
-  final String authorProfileHandle;
+  final String authorstoreType;
   final String authorProfileImageUrl;
   final bool authorVerification;
 
@@ -20,7 +20,7 @@ class UserAdvice {
     required this.reportConfirmed,
     required this.timestamp,
     required this.authorName,
-    required this.authorProfileHandle,
+    required this.authorstoreType,
     required this.authorProfileImageUrl,
     required this.authorVerification,
   });
@@ -34,7 +34,7 @@ class UserAdvice {
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
       authorName: doc['authorName'] ?? '',
-      authorProfileHandle: doc['authorProfileHandle'] ?? '',
+      authorstoreType: doc['authorstoreType'] ?? '',
       authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
       authorVerification: doc['authorVerification'] ?? false,
     );

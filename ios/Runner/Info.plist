@@ -35,7 +35,7 @@
 			<string>Bundle Id</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.bars-Opus.barsImpression</string>
+				<string>com.bars-Opus.florence</string>
 			</array>
 		</dict>
 	</array>

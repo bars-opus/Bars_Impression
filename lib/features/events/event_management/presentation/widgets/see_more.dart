@@ -37,21 +37,25 @@ class SeeMore extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColorLight,
       ),
       body: Container(
-        child: isEvent
-            ? EventTypes(
+        child:
+        
+        //  isEvent
+        //     ? EventTypes(
+        //         currentUserId: currentUserId,
+        //         types: types.startsWith('All') ? '' : types,
+        //         pageIndex: types.startsWith('All') ? 0 : pageIndex,
+        //         userLocationSettings: userLocationSettings,
+        //         liveCity: liveCity,
+        //         liveCountry: liveCountry,
+        //         seeMoreFrom: isFrom,
+        //         sortNumberOfDays: sortNumberOfDays,
+        //         isFrom: isFrom,
+        //       )
+        //     :
+            
+             CreativesScreen(
                 currentUserId: currentUserId,
-                types: types.startsWith('All') ? '' : types,
-                pageIndex: types.startsWith('All') ? 0 : pageIndex,
-                userLocationSettings: userLocationSettings,
-                liveCity: liveCity,
-                liveCountry: liveCountry,
-                seeMoreFrom: isFrom,
-                sortNumberOfDays: sortNumberOfDays,
-                isFrom: isFrom,
-              )
-            : CreativesScreen(
-                currentUserId: currentUserId,
-                profileHandle: types,
+                storeType: types,
                 // exploreLocation: '',
                 pageIndex: pageIndex,
                 userLocationSettings: userLocationSettings,

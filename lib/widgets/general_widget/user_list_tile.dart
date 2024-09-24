@@ -75,7 +75,7 @@ class UserListTile extends StatelessWidget {
                   ),
                 ],
               ),
-              Text(user.profileHandle!,
+              Text(user.storeType!,
                   style: TextStyle(
                     fontSize:
                         ResponsiveHelper.responsiveFontSize(context, 12.0),

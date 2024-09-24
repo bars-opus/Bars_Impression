@@ -9,10 +9,10 @@ import 'package:bars/utilities/exports.dart';
 class DiscographyPages extends StatefulWidget {
   final String currentUserId;
   final String types;
-  final UserProfessionalModel user;
+  final UserStoreModel user;
   final int userIndex;
   final int pageIndex;
-  final List<UserProfessionalModel> userList;
+  final List<UserStoreModel> userList;
   final List<DocumentSnapshot> userSnapshot;
   final String liveCity;
   final String liveCountry;
@@ -37,7 +37,7 @@ class DiscographyPages extends StatefulWidget {
 
 class _DiscographyPagesState extends State<DiscographyPages> {
   late PageController _pageController2;
-  List<UserProfessionalModel> userList = [];
+  List<UserStoreModel> userList = [];
   List<DocumentSnapshot> userSnapshot = [];
   int limit = 2;
   bool hasMoreUsers = true;
@@ -61,14 +61,14 @@ class _DiscographyPagesState extends State<DiscographyPages> {
     super.dispose();
   }
 
-  Future<List<UserProfessionalModel>> _loadMoreUsers({
+  Future<List<UserStoreModel>> _loadMoreUsers({
     // DocumentSnapshot? startAfterDocument,
     String? country,
     String? city,
   }) async {
     var query = userProfessionalRef
         .where('showOnExplorePage', isEqualTo: true)
-        .where('profileHandle', isEqualTo: widget.types)
+        .where('storeType', isEqualTo: widget.types)
         .where('noBooking', isEqualTo: false);
 
     if (country != null) {
@@ -100,8 +100,8 @@ class _DiscographyPagesState extends State<DiscographyPages> {
         eventFeedSnapShot.docs.addAll(additionalSnapshot.docs);
       }
 
-      List<UserProfessionalModel> users = eventFeedSnapShot.docs
-          .map((doc) => UserProfessionalModel.fromDoc(doc))
+      List<UserStoreModel> users = eventFeedSnapShot.docs
+          .map((doc) => UserStoreModel.fromDoc(doc))
           .toList();
 
 // Add new user to existing list
@@ -163,7 +163,7 @@ class _DiscographyPagesState extends State<DiscographyPages> {
               _currentPageIndex = i;
 
               if (i == userList.length) {
-                List<UserProfessionalModel> newUsers =
+                List<UserStoreModel> newUsers =
                     await (widget.liveCity.isNotEmpty
                         ? _loadMoreUsers(
                             city: widget.liveCity,

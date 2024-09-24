@@ -75,20 +75,21 @@ class _FetchingLocationState extends State<FetchingLocation> {
           _userCountry = firstPlacemark.country ?? '';
 
           Navigator.pop(context);
-          widget.isEvent
-              ? _navigateToPage(
-                  context,
-                  DiscoverEventScreen(
-                    currentUserId: widget.currentUserId,
-                    userLocationSettings: widget.userLocationSettings,
-                    isLiveLocation: true,
-                    liveCity: _city,
-                    liveCountry: _userCountry,
-                    liveLocationIntialPage: widget.liveLocationIntialPage,
-                    sortNumberOfDays: 0,
-                  ),
-                )
-              : _navigateToPage(
+          // widget.isEvent
+          //     ? _navigateToPage(
+          //         context,
+          //         DiscoverEventScreen(
+          //           currentUserId: widget.currentUserId,
+          //           userLocationSettings: widget.userLocationSettings,
+          //           isLiveLocation: true,
+          //           liveCity: _city,
+          //           liveCountry: _userCountry,
+          //           liveLocationIntialPage: widget.liveLocationIntialPage,
+          //           sortNumberOfDays: 0,
+          //         ),
+          //       )
+          //     : 
+              _navigateToPage(
                   context,
                   DiscoverUser(
                     currentUserId: widget.currentUserId,

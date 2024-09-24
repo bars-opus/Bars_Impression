@@ -411,7 +411,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				MARKETING_VERSION = 2.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.barsImpression";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.florence";
 				PRODUCT_NAME = Bars;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -555,7 +555,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				MARKETING_VERSION = 2.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.barsImpression";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.florence";
 				PRODUCT_NAME = Bars;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -593,7 +593,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				MARKETING_VERSION = 2.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.barsImpression";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bars-Opus.florence";
 				PRODUCT_NAME = Bars;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

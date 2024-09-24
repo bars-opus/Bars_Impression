@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 
 class SubAccounts extends StatefulWidget {
   final AccountHolderAuthor user;
-  final String profileHandle;
+  final String storeType;
 
   SubAccounts({
     required this.user,
-    required this.profileHandle,
+    required this.storeType,
   });
 
   @override
@@ -41,7 +41,7 @@ class _SubAccountsState extends State<SubAccounts> {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  _clearSubAcount();
+                  // _clearSubAcount();
                 },
               )
             ],
@@ -82,7 +82,7 @@ class _SubAccountsState extends State<SubAccounts> {
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    _clearSubAcount();
+                    // _clearSubAcount();
                   },
                 ),
               ),
@@ -102,16 +102,16 @@ class _SubAccountsState extends State<SubAccounts> {
         });
   }
 
-  _clearSubAcount() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => EditProfileHandleSubAccount(
-                  user: widget.user,
-                  profileHandle: widget.profileHandle,
-                )));
-    try {} catch (e) {}
-  }
+  // _clearSubAcount() {
+  //   Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (_) => EditstoreTypeSubAccount(
+  //                 user: widget.user,
+  //                 storeType: widget.storeType,
+  //               )));
+  //   try {} catch (e) {}
+  // }
 
   @override
   Widget build(BuildContext context) {

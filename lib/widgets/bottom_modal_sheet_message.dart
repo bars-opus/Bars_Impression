@@ -5,7 +5,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:uuid/uuid.dart';
 
 class BottomModalSheetMessage extends StatefulWidget {
-  final UserProfessionalModel? userPortfolio;
+  final UserStoreModel? userPortfolio;
   final AccountHolderAuthor? user;
   final AccountHolderAuthor? userAuthor;
   final String userId;
@@ -561,7 +561,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
         verified: _user!.verified! ? true : false,
       ),
       subtitle: Text(
-        _user.profileHandle,
+        _user.storeType,
         style: TextStyle(
           color: Colors.blue,
           fontSize: ResponsiveHelper.responsiveFontSize(context, 12),

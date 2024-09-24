@@ -6,7 +6,7 @@ final storageRef = FirebaseStorage.instance.ref();
 final usersLocationSettingsRef =
     _firestore.collection('user_location_settings');
 final usersGeneralSettingsRef = _firestore.collection('user_general_settings');
-final userProfessionalRef = _firestore.collection('user_professsional');
+final userProfessionalRef = _firestore.collection('user_store');
 final usersRatingRef = _firestore.collection('new_userRating');
 final userWorkRequestRef = _firestore.collection('user_workRequest');
 final allWorkRequestRef = _firestore.collection('all_workRequest');

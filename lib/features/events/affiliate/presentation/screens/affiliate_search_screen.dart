@@ -717,9 +717,10 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                                                   .primaryColor,
                                               backgroundImage:
                                                   CachedNetworkImageProvider(
-                                                      user.profileImageUrl!,   errorListener: (_) {
-                                  return;
-                                }),
+                                                      user.profileImageUrl!,
+                                                      errorListener: (_) {
+                                                return;
+                                              }),
                                             ),
                                       const SizedBox(
                                         width: 10,
@@ -737,7 +738,7 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                                                     .bodyLarge,
                                               ),
                                               TextSpan(
-                                                text: "\n${user.profileHandle}",
+                                                text: "\n${user.storeType}",
                                                 style: TextStyle(
                                                   fontSize: ResponsiveHelper
                                                       .responsiveFontSize(

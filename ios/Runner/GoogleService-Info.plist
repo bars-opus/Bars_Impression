@@ -2,24 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>270470269823-sud89kgbe7qsmasq3rb1tcqgn0sj95fg.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.270470269823-sud89kgbe7qsmasq3rb1tcqgn0sj95fg</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>270470269823-1v7oij7fjnm1u83sa5pms7ker6q5ffvr.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyByJbQjEBXgQK3UfGMJKhjantsZ6Qvf96A</string>
+	<string>AIzaSyBzHw92VZQACGWRoNBk51FJRa2dvtRIwu8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>270470269823</string>
+	<string>706235705872</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.bars-Opus.barsImpression</string>
+	<string>com.bars-Opus.florence</string>
 	<key>PROJECT_ID</key>
-	<string>bars-5e3e5</string>
+	<string>florence-f9b65</string>
 	<key>STORAGE_BUCKET</key>
-	<string>bars-5e3e5.appspot.com</string>
+	<string>florence-f9b65.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:270470269823:ios:571914e8116c79fdb4a84a</string>
-	<key>DATABASE_URL</key>
-	<string>https://bars-5e3e5.firebaseio.com</string>
+	<string>1:706235705872:ios:32952b8a6ff38a39e4b895</string>
 </dict>
 </plist>

@@ -186,8 +186,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         Hive.box<UserSettingsLoadingPreferenceModel>(
             'accountLocationPreference');
 
-    final accountUserStoreBox =
-        Hive.box<UserProfessionalModel>('accountUserStore');
+    final accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
 
     return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -210,7 +209,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               UserSettingsLoadingPreferenceModel? _setting =
                   accountLocationPreferenceBox.getAt(0);
 
-              UserProfessionalModel? _userStore = accountUserStoreBox.getAt(0);
+              UserStoreModel? _userStore = accountUserStoreBox.getAt(0);
 
               SchedulerBinding.instance.addPostFrameCallback((_) {
                 if (_provider.user == null || _provider.user != _user) {
@@ -232,8 +231,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               /// Then return the appropriate widget
               return _user!.userName == null ||
                       _user.userName!.isEmpty ||
-                      _user.profileHandle == null ||
-                      _user.profileHandle!.isEmpty
+                      _user.storeType == null ||
+                      _user.storeType!.isEmpty
                   ? AuthCreateUserCredentials()
                   : _user.disabledAccount!
                       ? ReActivateAccount(user: _user)
@@ -274,8 +273,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   UserSettingsLoadingPreferenceModel _setting =
                       snapshot.data![1] as UserSettingsLoadingPreferenceModel;
 
-                  UserProfessionalModel _userStore =
-                      snapshot.data![2] as UserProfessionalModel;
+                  UserStoreModel _userStore =
+                      snapshot.data![2] as UserStoreModel;
 
                   SchedulerBinding.instance.addPostFrameCallback((_) {
                     if (_provider.user == null || _provider.user != _user) {
@@ -298,8 +297,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
                   if (_user.userName == null ||
                       _user.userName!.isEmpty ||
-                      _user.profileHandle == null ||
-                      _user.profileHandle!.isEmpty) {
+                      _user.storeType == null ||
+                      _user.storeType!.isEmpty) {
                     return AuthCreateUserCredentials();
                   }
 

@@ -1,27 +1,27 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:hive/hive.dart';
 
-class EditProfileHandle extends StatefulWidget {
+class EditstoreType extends StatefulWidget {
   final AccountHolderAuthor user;
 
-  EditProfileHandle({
+  EditstoreType({
     required this.user,
   });
 
   @override
-  _EditProfileHandleState createState() => _EditProfileHandleState();
+  _EditstoreTypeState createState() => _EditstoreTypeState();
 }
 
-class _EditProfileHandleState extends State<EditProfileHandle> {
+class _EditstoreTypeState extends State<EditstoreType> {
   final _formKey = GlobalKey<FormState>();
-  String _profileHandle = '';
+  String _storeType = '';
   String selectedValue = '';
 
   @override
   void initState() {
     super.initState();
-    _profileHandle = widget.user.profileHandle!;
-    selectedValue = _profileHandle.isEmpty ? values.last : _profileHandle;
+    _storeType = widget.user.storeType!;
+    selectedValue = _storeType.isEmpty ? values.last : _storeType;
   }
 
   void _showBottomSheetErrorMessage() {
@@ -43,8 +43,8 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
   }
 
   _submit() async {
-    if (_profileHandle.isEmpty) {
-      _profileHandle = 'Fan';
+    if (_storeType.isEmpty) {
+      _storeType = 'Fan';
     }
     try {
       // widget.user.verified! ? _update() : _unVerify();
@@ -60,44 +60,44 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     batch.update(
       usersAuthorRef.doc(widget.user.userId),
       {
-        'profileHandle': _profileHandle,
+        'storeType': _storeType,
       },
     );
 
     batch.update(
       userProfessionalRef.doc(widget.user.userId),
       {
-        'profileHandle': _profileHandle,
+        'storeType': _storeType,
       },
     );
 
     try {
       batch.commit();
-      _updateAuthorHive(_profileHandle);
+      _updateAuthorHive(_storeType);
     } catch (error) {
       // Handle the error appropriately
     }
   }
 
-  _updateAuthorHive(String profileHandle) {
+  _updateAuthorHive(String storeType) {
     final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
     var _provider = Provider.of<UserData>(context, listen: false);
 
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: _provider.user!.name,
+      // name: _provider.user!.name,
       bio: _provider.user!.bio,
       disabledAccount: _provider.user!.disabledAccount,
       dynamicLink: _provider.user!.dynamicLink,
       lastActiveDate: _provider.user!.lastActiveDate,
-      profileHandle: profileHandle,
+      storeType: storeType,
       profileImageUrl: _provider.user!.profileImageUrl,
       reportConfirmed: _provider.user!.reportConfirmed,
       userId: _provider.user!.userId,
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
-      privateAccount: _provider.user!.privateAccount,
+      // privateAccount: _provider.user!.privateAccount,
       disableChat: _provider.user!.disableChat,
     );
 
@@ -110,7 +110,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     batch.update(
       usersAuthorRef.doc(widget.user.userId),
       {
-        'profileHandle': _profileHandle,
+        'storeType': _storeType,
         'verified': false,
       },
     );
@@ -118,7 +118,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     batch.update(
       userProfessionalRef.doc(widget.user.userId),
       {
-        'profileHandle': _profileHandle,
+        'storeType': _storeType,
         'verified': false,
       },
     );
@@ -189,7 +189,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
             activeColor: Colors.blue,
             onChanged: (value) => setState(
               () {
-                _profileHandle = this.selectedValue = value!;
+                _storeType = this.selectedValue = value!;
                 _submit();
               },
             ),

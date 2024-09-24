@@ -52,8 +52,7 @@ class _DiscoverUserState extends State<DiscoverUser>
   _searchContainer() {
     return GestureDetector(
         onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => Search()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => Search()));
         },
         child: DummySearchContainer());
   }
@@ -300,7 +299,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                 }
                 return CreativesScreen(
                   currentUserId: widget.currentUserId,
-                  profileHandle: eventType.trim(),
+                  storeType: eventType.trim(),
                   pageIndex: tabIndex,
                   userLocationSettings: _userLocationSettings!,
                   liveCity: widget.liveCity,

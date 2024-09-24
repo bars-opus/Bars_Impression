@@ -96,7 +96,6 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
       text: _provider.brandMatching?.inspiration,
     );
 
-
     _shortTermGoalsController = TextEditingController(
       text: _provider.brandMatching?.shortTermGoals,
     );
@@ -104,8 +103,6 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
     _longTermGoalsController = TextEditingController(
       text: _provider.brandMatching?.longTermGoals,
     );
-
-
   }
 
   @override
@@ -293,9 +290,8 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
       matchReason: '',
       userName: _provider.user!.userName!,
       profileImageUrl: _provider.user!.profileImageUrl!,
-      profileHandle: _provider.user!.profileHandle!,
+      storeType: _provider.user!.storeType!,
       verified: _provider.user!.verified!,
-     
     );
 
     Future<void> sendInvites() => DatabaseService.createBrandInfo(
@@ -441,7 +437,6 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
             content:
                 'Branding is a critical aspect of your creative business. It encompasses your visual identity, your messaging, and how you connect with your audience. A strong brand helps you stand out in a crowded market and communicates your values and vision to your audience.\n\nBooks to read on personal branding:\n1. "Building a StoryBrand" by Donald Miller\n2. "Crushing It!" by Gary Vaynerchuk\n3. "The Brand Gap" by Marty Neumeier\n4. "Start with Why" by Simon Sinek\n\nThese books will provide you with a deeper understanding of how to create and maintain a strong personal brand.',
           ),
-
           GeminiOnboardingPage(
             onPressed: () {
               animateToPage(1);
@@ -477,7 +472,6 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
 3.  I draw a lot of inspiration from the natural world, particularly the dramatic landscapes and vibrant colors of the American Southwest. I\'m also inspired by the rich cultural heritage and storytelling traditions of indigenous communities.'),
          
           """),
-
           GeminiOnboardingPage(
             onPressed: () {
               animateToPage(1);
@@ -496,7 +490,6 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
           
             """,
           ),
-
           GeminiOnboardingPage(
             onPressed: () {
               animateToPage(1);
@@ -533,12 +526,8 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
           
             """,
           ),
-
-         
         ],
       ),
     );
   }
 }
-
-

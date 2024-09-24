@@ -64,7 +64,7 @@ class _AddTaggedPeopleState extends State<AddTaggedPeople> {
     return SearchUserTile(
         verified: user.verified!,
         userName: user.userName!.toUpperCase(),
-        profileHandle: user.profileHandle!,
+        storeType: user.storeType!,
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
         onPressed: _addPeopleFunction(user, isSchedule));

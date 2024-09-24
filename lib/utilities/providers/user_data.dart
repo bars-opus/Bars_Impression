@@ -22,7 +22,7 @@ class UserData extends ChangeNotifier {
   late bool _startTimeSelected;
   late bool _endTimeSelected;
   late AccountHolderAuthor? _user;
-  late UserProfessionalModel? _userStore;
+  late UserStoreModel? _userStore;
   late UserSettingsLoadingPreferenceModel? _userLocationPreference;
   late UserSettingsGeneralModel? _userGeneraSentence;
   // late CreativeBrandTargetModel? _brandTarget;
@@ -259,8 +259,8 @@ class UserData extends ChangeNotifier {
     _activityCount = 0;
     _availableDynamicLink = '';
     _user = null;
- _userStore = null;
-    
+    _userStore = null;
+
     _userGeneraSentence = null;
     _userLocationPreference = null;
     // _brandTarget = null;
@@ -535,9 +535,8 @@ class UserData extends ChangeNotifier {
   bool get shortcutBool => _shortcutBool;
   bool get loadingThisWeekEvent => _loadingThisWeekEvent;
   bool get isLoading => _isLoading;
-    bool get isLoading2 => _isLoading2;
+  bool get isLoading2 => _isLoading2;
 
-  
   bool get enlargeStartBarcode => _enlargeStartBarcode;
   bool get enlargeEndBarcode => _enlargeEndBarcode;
   File? get postImage => _postImage;
@@ -550,10 +549,8 @@ class UserData extends ChangeNotifier {
   File? get image => _image;
   PickedFile? get videoFile1 => _videoFile1;
   AccountHolderAuthor? get user => _user;
-  UserProfessionalModel? get userStore => _userStore;
+  UserStoreModel? get userStore => _userStore;
 
-
-  
   UserSettingsGeneralModel? get userGeneraSentenceser => _userGeneraSentence;
   UserSettingsLoadingPreferenceModel? get userLocationPreference =>
       _userLocationPreference;
@@ -811,7 +808,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setProfileHandle(String profrilehandle) {
+  void setstoreType(String profrilehandle) {
     _profrilehandle = profrilehandle;
     notifyListeners();
   }
@@ -911,11 +908,10 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setUserStore(UserProfessionalModel? userStore) {
+  void setUserStore(UserStoreModel? userStore) {
     _userStore = userStore;
     notifyListeners();
   }
-  
 
   void setUserGeneralSettings(UserSettingsGeneralModel? userGeneraSentence) {
     _userGeneraSentence = userGeneraSentence;
@@ -1213,13 +1209,11 @@ class UserData extends ChangeNotifier {
     _isLoading = isLoading;
     notifyListeners();
   }
+
   void setIsLoading2(bool isLoading2) {
     _isLoading2 = isLoading2;
     notifyListeners();
   }
-
-
-  
 
   void setEnlargeEndBarcode(bool enlargeEndBarcode) {
     _enlargeEndBarcode = enlargeEndBarcode;

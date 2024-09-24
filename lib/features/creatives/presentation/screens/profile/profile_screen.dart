@@ -10,7 +10,7 @@ class ProfileScreen extends StatefulWidget {
   final String currentUserId;
   static final id = 'Profile_screen';
   final String userId;
-  final UserProfessionalModel? user;
+  final UserStoreModel? user;
   ProfileScreen(
       {required this.currentUserId, required this.userId, required this.user});
 
@@ -35,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool _isLoadingEvents = true;
   late ScrollController _hideButtonController;
   List<Event> _eventsList = [];
-  UserProfessionalModel? _profileUser;
+  UserStoreModel? _profileUser;
   double coseTope = 10;
   late TabController _tabController;
   List<InviteModel> _inviteList = [];
@@ -92,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
   }
 
-  _addLists(UserData provider, UserProfessionalModel userPortfolio) {
+  _addLists(UserData provider, UserStoreModel userPortfolio) {
     processCurrency(provider, userPortfolio);
     // var _provider = Provider.of<UserData>(context, listen: false);
     provider.setOverview(userPortfolio.overview);
@@ -125,8 +125,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     skills.forEach((skill) => provider.setSkills(skill));
 
     // Add genre tags
-    List<PortfolioModel> genreTags = userPortfolio.genreTags;
-    genreTags.forEach((genre) => provider.setGenereTags(genre));
+    // List<PortfolioModel> genreTags = userPortfolio.genreTags;
+    // genreTags.forEach((genre) => provider.setGenereTags(genre));
 
     // Add collaborations
     // List<PortfolioCollaborationModel> collaborations =
@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     provider.setProfessionalImages(imageUrls);
   }
 
-  void processCurrency(UserData provider, UserProfessionalModel userPortfolio) {
+  void processCurrency(UserData provider, UserStoreModel userPortfolio) {
     // Check if widget.userPortfolio.currency is null or empty
     if (userPortfolio.currency == null ||
         userPortfolio.currency.trim().isEmpty) {
@@ -216,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
   }
 
-  _setCurrency(UserData _provider, UserProfessionalModel userPortfolio) {
+  _setCurrency(UserData _provider, UserStoreModel userPortfolio) {
     try {
       UserSettingsLoadingPreferenceModel currentUserPayoutInfo =
           _provider.userLocationPreference!;
@@ -243,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     var userSnapshot = await userProfessionalRef.doc(widget.userId).get();
     // Check if the snapshot contains data and if the user has a private account
     if (userSnapshot.exists) {
-      UserProfessionalModel user = UserProfessionalModel.fromDoc(userSnapshot);
+      UserStoreModel user = UserStoreModel.fromDoc(userSnapshot);
       // If the user has a private account, setup the follow request check
       // if (user.privateAccount!) {
       //   await _setupIsFollowRequest();
@@ -503,7 +503,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  _followOrUnfollow(UserProfessionalModel user) {
+  _followOrUnfollow(UserStoreModel user) {
     HapticFeedback.heavyImpact();
     if (_isFollowing) {
       _showBottomSheetUnfollow(context, user, 'unfollow');
@@ -512,7 +512,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  _requestFollowOrUnfollow(UserProfessionalModel user) {
+  _requestFollowOrUnfollow(UserStoreModel user) {
     HapticFeedback.heavyImpact();
     if (_isFollowerResquested) {
       _showBottomSheetUnfollow(context, user, 'cancelFollowRequest');
@@ -521,7 +521,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  _blockOrUnBlock(UserProfessionalModel user) {
+  _blockOrUnBlock(UserStoreModel user) {
     if (_isBlockingUser) {
       _showBottomSheetUnfollow(context, user, 'unBlock');
     } else {
@@ -529,7 +529,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  _unBlockser(UserProfessionalModel user) {
+  _unBlockser(UserStoreModel user) {
     HapticFeedback.heavyImpact();
     DatabaseService.unBlockUser(
       currentUserId: widget.currentUserId,
@@ -548,7 +548,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     ));
   }
 
-  _cancelFollowRequest(UserProfessionalModel user) {
+  _cancelFollowRequest(UserStoreModel user) {
     HapticFeedback.heavyImpact();
     try {
       DatabaseService.cancelFollowRequest(
@@ -569,10 +569,10 @@ class _ProfileScreenState extends State<ProfileScreen>
     } catch (e) {}
   }
 
-  _blockser(UserProfessionalModel user) async {
+  _blockser(UserStoreModel user) async {
     HapticFeedback.heavyImpact();
     try {
-      // UserProfessionalModel? fromUser =
+      // UserStoreModel? fromUser =
       //     await DatabaseService.getUserWithId(widget.currentUserId);
       // if (fromUser != null) {
       //   DatabaseService.blockUser(
@@ -605,7 +605,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     ));
   }
 
-  _unfollowUser(UserProfessionalModel user) {
+  _unfollowUser(UserStoreModel user) {
     try {
       DatabaseService.unfollowUser(
         currentUserId: widget.currentUserId,
@@ -626,7 +626,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     ));
   }
 
-  _followUser(UserProfessionalModel user) async {
+  _followUser(UserStoreModel user) async {
     // user.privateAccount!
     //     ? DatabaseService.sendFollowRequest(
     //         currentUserId: widget.currentUserId,
@@ -680,7 +680,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
       );
 
-  _buildStatistics(UserProfessionalModel user) {
+  _buildStatistics(UserStoreModel user) {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
 
@@ -833,8 +833,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   final picker = ImagePicker();
 
-  void _showBottomSheetAdvice(
-      BuildContext context, UserProfessionalModel user) async {
+  void _showBottomSheetAdvice(BuildContext context, UserStoreModel user) async {
     await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -867,7 +866,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _bottomModalSheetMessage(
-      BuildContext context, UserProfessionalModel user, Chat? chat) {
+      BuildContext context, UserStoreModel user, Chat? chat) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -910,7 +909,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _showBottomSheetNoPortolio(
-      BuildContext context, UserProfessionalModel _user) async {
+      BuildContext context, UserStoreModel _user) async {
     bool _isAuthor = _user.userId == widget.currentUserId;
 
     await showModalBottomSheet(
@@ -1002,7 +1001,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _showBottomSheetNoBooking(
-      BuildContext context, UserProfessionalModel _user) async {
+      BuildContext context, UserStoreModel _user) async {
     bool _isAuthor = _user.userId == widget.currentUserId;
 
     await showModalBottomSheet(
@@ -1063,7 +1062,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _chatButton(UserProfessionalModel user) {
+  _chatButton(UserStoreModel user) {
     bool _isAuthor = user.userId == widget.currentUserId;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0.0),
@@ -1078,7 +1077,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
             // _isLoading = true;
             // try {
-            //   UserProfessionalModel? _user =
+            //   UserStoreModel? _user =
             //       await DatabaseService.getUserProfessionalWithId(
             //     user.userId!,
             //   );
@@ -1123,7 +1122,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _followContainer(UserProfessionalModel user) {
+  _followContainer(UserStoreModel user) {
     bool _isAuthor = user.userId == widget.currentUserId;
     return Container(
       color: Color(0xFF1a1a1a),
@@ -1233,7 +1232,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         new Material(
                           color: Colors.transparent,
                           child: Text(
-                            user.profileHandle!,
+                            user.storeType!,
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: ResponsiveHelper.responsiveFontSize(
@@ -1338,7 +1337,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ))));
   }
 
-  void _showBottomSheetTermsAndConditions(UserProfessionalModel user) {
+  void _showBottomSheetTermsAndConditions(UserStoreModel user) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1846,7 +1845,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   final _physycsNotifier = ValueNotifier<bool>(false);
 
-  _scaffold(BuildContext context, UserProfessionalModel user) {
+  _scaffold(BuildContext context, UserStoreModel user) {
     bool _isAuthor = user.userId == widget.currentUserId;
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
@@ -1989,7 +1988,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _showBottomSheetUnfollow(
-      BuildContext context, UserProfessionalModel user, String from) {
+      BuildContext context, UserStoreModel user, String from) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -2074,8 +2073,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  void _showBottomSheetContact(
-      BuildContext context, UserProfessionalModel user) {
+  void _showBottomSheetContact(BuildContext context, UserStoreModel user) {
     // bool _isAuthor = user.userId == widget.currentUserId;
     showModalBottomSheet(
       context: context,
@@ -2142,7 +2140,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  void _showBottomSheet(BuildContext context, UserProfessionalModel user) {
+  void _showBottomSheet(BuildContext context, UserStoreModel user) {
     bool _isAuthor = user.userId == widget.currentUserId;
     showModalBottomSheet(
       context: context,
@@ -2215,7 +2213,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             text: user.userName!.toUpperCase(),
                             style: Theme.of(context).textTheme.bodyMedium),
                         TextSpan(
-                          text: "\n${user.profileHandle}",
+                          text: "\n${user.storeType}",
                           style: TextStyle(
                               color: Colors.blue,
                               fontSize: ResponsiveHelper.responsiveFontSize(
@@ -2451,7 +2449,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _displayScaffold() {
-    UserProfessionalModel user = widget.user!;
+    UserStoreModel user = widget.user!;
     return
 
         // _isBlockedUser || user.disabledAccount!

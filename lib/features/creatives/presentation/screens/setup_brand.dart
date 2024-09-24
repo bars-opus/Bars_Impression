@@ -15,7 +15,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
   File? _profileImage;
-  String _profileHandle = '';
+  String _storeType = '';
   String selectedValue = '';
   String query = "";
   late TextEditingController _namecontroller;
@@ -37,7 +37,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     _namecontroller.addListener(_oninputChanged);
     _bioTextController.addListener(_oninputChanged);
 
-    selectedValue = _profileHandle.isEmpty ? '' : _profileHandle;
+    selectedValue = _storeType.isEmpty ? '' : _storeType;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       var _provider = Provider.of<UserData>(context, listen: false);
       _provider.setIsLoading(false);
@@ -177,41 +177,41 @@ class _SetUpBrandState extends State<SetUpBrand> {
     var _provider = Provider.of<UserData>(context, listen: false);
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: _provider.name,
+      // name: _provider.name,
       bio: '',
       disabledAccount: false,
       dynamicLink: '',
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      profileHandle: '',
+      storeType: '',
       profileImageUrl: '',
       reportConfirmed: false,
       userId: _provider.currentUserId,
       userName: userName,
       verified: false,
-      privateAccount: false,
+      // privateAccount: false,
       disableChat: false,
     );
     // Put the new object back into the box with the same key
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-  _updateAuthorProfiHandleHive(String profileHandle, String link) {
+  _updateAuthorProfiHandleHive(String storeType, String link) {
     final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
     var _provider = Provider.of<UserData>(context, listen: false);
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: _provider.name,
+      // name: _provider.name,
       bio: '',
       disabledAccount: false,
       dynamicLink: link,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      profileHandle: profileHandle,
+      storeType: storeType,
       profileImageUrl: '',
       reportConfirmed: false,
       userId: _provider.currentUserId,
       userName: _provider.changeNewUserName,
       verified: false,
-      privateAccount: false,
+      // privateAccount: false,
       disableChat: false,
     );
     // Put the new object back into the box with the same key
@@ -224,12 +224,12 @@ class _SetUpBrandState extends State<SetUpBrand> {
     var _provider = Provider.of<UserData>(context, listen: false);
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: _provider.name,
+      // name: _provider.name,
       bio: bio,
       disabledAccount: false,
       dynamicLink: link,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      profileHandle: _provider.profrilehandle,
+      storeType: _provider.profrilehandle,
       profileImageUrl: profileImageUrl,
       reportConfirmed: false,
       userId: _provider.currentUserId,
@@ -237,7 +237,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
           ? _namecontroller.text.toUpperCase()
           : _provider.changeNewUserName.toUpperCase(),
       verified: false,
-      privateAccount: false,
+      // privateAccount: false,
       disableChat: false,
     );
     // Put the new object back into the box with the same key
@@ -391,13 +391,13 @@ class _SetUpBrandState extends State<SetUpBrand> {
     );
   }
 
-  _submitProfileHandle() async {
+  _submitstoreType() async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     _provider.setIsLoading(true);
     String currentUserId = _provider.currentUserId!;
-    if (_profileHandle.isEmpty) {
-      _profileHandle = 'Fan';
+    if (_storeType.isEmpty) {
+      _storeType = 'Fan';
     }
     WriteBatch batch = FirebaseFirestore.instance.batch();
     String link = await DatabaseService.myDynamicLink(
@@ -410,7 +410,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     batch.update(
       usersAuthorRef.doc(currentUserId),
       {
-        'profileHandle': _profileHandle,
+        'storeType': _storeType,
         'dynamicLink': link,
       },
     );
@@ -418,15 +418,15 @@ class _SetUpBrandState extends State<SetUpBrand> {
     batch.update(
       userProfessionalRef.doc(currentUserId),
       {
-        'profileHandle': _profileHandle,
+        'storeType': _storeType,
         'dynamicLink': link,
       },
     );
     try {
       batch.commit();
-      _provider.setProfileHandle(_profileHandle);
+      _provider.setstoreType(_storeType);
       animateToPage(1);
-      _updateAuthorProfiHandleHive(_profileHandle, link);
+      _updateAuthorProfiHandleHive(_storeType, link);
     } catch (e) {
       _showBottomSheetErrorMessage();
     }
@@ -489,8 +489,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
             activeColor: Colors.blue,
             onChanged: (value) => setState(
               () {
-                _profileHandle = this.selectedValue = value!;
-                _submitProfileHandle();
+                _storeType = this.selectedValue = value!;
+                _submitstoreType();
               },
             ),
           );
@@ -645,7 +645,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
               ),
             ),
             if (_provider.int2 != 4)
-           
               Center(
                 child: Container(
                   margin: const EdgeInsets.only(top: 30),

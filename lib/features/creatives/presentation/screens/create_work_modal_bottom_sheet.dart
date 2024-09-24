@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 
 class CreateWork extends StatefulWidget {
   final String currentUserId;
-  final UserProfessionalModel? userPortfolio;
+  final UserStoreModel? userPortfolio;
 
   const CreateWork(
       {super.key, required this.currentUserId, required this.userPortfolio});
@@ -31,7 +31,7 @@ class _CreateWorkState extends State<CreateWork> {
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
   List<String> selectedTypes = [];
-  UserProfessionalModel? _userPortfolio;
+  UserStoreModel? _userPortfolio;
 
   @override
   void initState() {
@@ -64,8 +64,7 @@ class _CreateWorkState extends State<CreateWork> {
 
   _setUpPortfoilio() async {
     try {
-      UserProfessionalModel? _user =
-          await DatabaseService.getUserProfessionalWithId(
+      UserStoreModel? _user = await DatabaseService.getUserProfessionalWithId(
         widget.currentUserId,
       );
 
@@ -447,7 +446,9 @@ class _CreateWorkState extends State<CreateWork> {
                                           //     .addressSearchResults![index]
                                           //     .description);
                                         }),
-                                    Divider( thickness: .2,),
+                                    Divider(
+                                      thickness: .2,
+                                    ),
                                   ],
                                 );
                               },

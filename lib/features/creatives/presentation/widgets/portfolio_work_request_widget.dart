@@ -155,7 +155,7 @@ class _RequestWidgetState extends State<RequestWidget> {
                       if (_isLoading) return;
                       _isLoading = true;
                       try {
-                        UserProfessionalModel? _user =
+                        UserStoreModel? _user =
                             await DatabaseService.getUserProfessionalWithId(
                           widget.workRequest.userId,
                         );
@@ -196,7 +196,8 @@ class _RequestWidgetState extends State<RequestWidget> {
                         height: 10,
                         width: 10,
                         child: CircularProgressIndicator(
-                          strokeWidth: 3, color:Colors.blue,
+                          strokeWidth: 3,
+                          color: Colors.blue,
                         ),
                       )
                     : Container(
@@ -236,7 +237,8 @@ class _RequestWidgetState extends State<RequestWidget> {
                           widget.workRequest.overView.replaceAll('\n', ' '),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        Divider( thickness: .2,
+                        Divider(
+                          thickness: .2,
                           color: Theme.of(context).primaryColorLight,
                         ),
                         _sizedBox,
@@ -248,7 +250,8 @@ class _RequestWidgetState extends State<RequestWidget> {
                         _buildDisplayPortfolioGrid(
                             context, widget.workRequest.type),
                         _sizedBox,
-                        Divider( thickness: .2,
+                        Divider(
+                          thickness: .2,
                           color: Theme.of(context).primaryColorLight,
                         ),
                         Text(
@@ -259,7 +262,8 @@ class _RequestWidgetState extends State<RequestWidget> {
                         _buildDisplayPortfolioGrid(
                             context, widget.workRequest.genre),
                         _sizedBox,
-                        Divider( thickness: .2,
+                        Divider(
+                          thickness: .2,
                           color: Theme.of(context).primaryColorLight,
                         ),
                         Text(

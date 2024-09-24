@@ -238,8 +238,8 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
   }
 
   // Displays message options in a modal sheet
-  void _bottomModalSheetMessage(BuildContext context, Chat? chat,
-      UserProfessionalModel? userProfessional) {
+  void _bottomModalSheetMessage(
+      BuildContext context, Chat? chat, UserStoreModel? userProfessional) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -269,7 +269,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
 
   // Shows booking options in a modal sheet
   void _showBottomSheetBookMe(
-      BuildContext context, UserProfessionalModel userProfessional) {
+      BuildContext context, UserStoreModel userProfessional) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -312,7 +312,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
               : () async {
                   _provider.setIsLoading(true);
                   try {
-                    UserProfessionalModel? _userProfessional =
+                    UserStoreModel? _userProfessional =
                         await DatabaseService.getUserProfessionalWithId(
                       widget.brandMatching.userId,
                     );
@@ -336,7 +336,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
               : () async {
                   _provider.setIsLoading(true);
                   try {
-                    UserProfessionalModel? _userProfessional =
+                    UserStoreModel? _userProfessional =
                         await DatabaseService.getUserProfessionalWithId(
                       widget.brandMatching.userId,
                     );
@@ -419,7 +419,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
             onTap: () async {
               _provider.setIsLoading(true);
               try {
-                UserProfessionalModel? _userProfessional =
+                UserStoreModel? _userProfessional =
                     await DatabaseService.getUserProfessionalWithId(
                   widget.brandMatching.userId,
                 );
@@ -465,7 +465,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
                             .replaceAll('\n', ' '),
                         verified: widget.brandMatching.verified,
                       ),
-                      Text(widget.brandMatching.profileHandle,
+                      Text(widget.brandMatching.storeType,
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 11.0),
@@ -498,4 +498,3 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
     );
   }
 }
-

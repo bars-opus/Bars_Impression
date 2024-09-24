@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 class BookingCalendar extends StatefulWidget {
   final String currentUserId;
   final List<PriceModel> prices;
-  final UserProfessionalModel bookingUser;
+  final UserStoreModel bookingUser;
   final bool fromPrice;
 
   BookingCalendar({
@@ -1314,20 +1314,19 @@ class _BookingCalendarState extends State<BookingCalendar> {
                     ),
                   ),
                 )
-              : 
+              :
               // widget.bookingUser.contacts.isEmpty
               //     ? SizedBox.shrink()
               //     :
-                  
-                   EventBottomButton(
-                      buttonColor: Colors.blue,
-                      buttonText:
-                          'Contact ${widget.bookingUser.userName} directly',
-                      onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        _showBottomSheetBookMe();
-                      },
-                    ),
+
+              EventBottomButton(
+                  buttonColor: Colors.blue,
+                  buttonText: 'Contact ${widget.bookingUser.userName} directly',
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    _showBottomSheetBookMe();
+                  },
+                ),
           if (!loading)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),

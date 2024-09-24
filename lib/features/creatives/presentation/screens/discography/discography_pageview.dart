@@ -9,10 +9,10 @@ import 'package:bars/utilities/exports.dart';
 class DiscographyPageView extends StatefulWidget {
   final String currentUserId;
   final String types;
-  final UserProfessionalModel user;
+  final UserStoreModel user;
   final int userIndex;
   final int pageIndex;
-  final List<UserProfessionalModel> userList;
+  final List<UserStoreModel> userList;
   final List<DocumentSnapshot> userSnapshot;
   final String liveCity;
   final String liveCountry;
@@ -37,7 +37,7 @@ class DiscographyPageView extends StatefulWidget {
 
 class _DiscographyPageViewState extends State<DiscographyPageView> {
   late PageController _pageController2;
-  List<UserProfessionalModel> _filteredUsers = [];
+  List<UserStoreModel> _filteredUsers = [];
   final _filteredUserSnapshot = <DocumentSnapshot>[];
 
   double page = 0.0;
@@ -200,7 +200,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     );
   }
 
-  Future<List<UserProfessionalModel>> _setupUsers({
+  Future<List<UserStoreModel>> _setupUsers({
     required String type,
     String? country,
     String? city,
@@ -211,8 +211,8 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     });
 
     var query = userProfessionalRef
-    .where('showOnExplorePage', isEqualTo: true)
-        .where('profileHandle', isEqualTo: type)
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('storeType', isEqualTo: type)
         .where('noBooking', isEqualTo: false);
 
     if (city != null) {
@@ -235,8 +235,8 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
           .limit(2)
           .get();
 
-      List<UserProfessionalModel> users = eventFeedSnapShot.docs
-          .map((doc) => UserProfessionalModel.fromDoc(doc))
+      List<UserStoreModel> users = eventFeedSnapShot.docs
+          .map((doc) => UserStoreModel.fromDoc(doc))
           .toList();
 
       if (mounted) {
@@ -416,7 +416,6 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                               userIndex: widget.userIndex,
                               user: widget.user,
                               userList: _filteredUsers,
-
                               userSnapshot: _filteredUsers.isEmpty
                                   ? widget.userSnapshot
                                   : _filteredUserSnapshot,

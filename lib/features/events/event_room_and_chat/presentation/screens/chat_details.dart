@@ -3,7 +3,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 //display
 class ChatDetails extends StatefulWidget {
-   var user;
+  var user;
   final Chat chat;
   final String currentUserId;
   final bool isBlockingUser;
@@ -24,7 +24,6 @@ class ChatDetails extends StatefulWidget {
 }
 
 class _ChatDetailsState extends State<ChatDetails> {
-
   _blockOrUnBlock() {
     HapticFeedback.heavyImpact();
     if (widget.isBlockingUser) {
@@ -151,13 +150,18 @@ class _ChatDetailsState extends State<ChatDetails> {
               verified: widget.user!.verified! ? true : false,
             ),
             subtitle: Text(
-              widget.user.profileHandle!,
-              style: TextStyle(color: Colors.blue, fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 12),),
+              widget.user.storeType!,
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Divider(color: Colors.blue, thickness: .2,),
+          Divider(
+            color: Colors.blue,
+            thickness: .2,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: SettingSwitch(
@@ -171,7 +175,10 @@ class _ChatDetailsState extends State<ChatDetails> {
               },
             ),
           ),
-          Divider(color: Colors.blue,  thickness: .2,),
+          Divider(
+            color: Colors.blue,
+            thickness: .2,
+          ),
           GestureDetector(
             onTap: () {
               _showBottomSheetClearActivity(context);
@@ -189,7 +196,10 @@ class _ChatDetailsState extends State<ChatDetails> {
               icon: Icons.block,
             ),
           ),
-          Divider(color: Colors.blue,  thickness: .2,),
+          Divider(
+            color: Colors.blue,
+            thickness: .2,
+          ),
           const SizedBox(height: 30),
           Text(
             '     Details',
@@ -286,7 +296,9 @@ class _ChatDetailsState extends State<ChatDetails> {
                               color: Colors.grey,
                             )),
                       ],
-                    ), textScaler: TextScaler.linear(MediaQuery.of(context).textScaleFactor),
+                    ),
+                    textScaler: TextScaler.linear(
+                        MediaQuery.of(context).textScaleFactor),
                   ),
                 ),
               ]),
@@ -351,7 +363,9 @@ class _ChatDetailsState extends State<ChatDetails> {
                               color: Colors.grey,
                             )),
                       ],
-                    ), textScaler: TextScaler.linear(MediaQuery.of(context).textScaleFactor),
+                    ),
+                    textScaler: TextScaler.linear(
+                        MediaQuery.of(context).textScaleFactor),
                   ),
                 ),
               ]),

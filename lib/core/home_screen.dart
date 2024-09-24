@@ -661,9 +661,9 @@ class HomeScreenState extends State<HomeScreen> {
 
       // Only proceed if data is not null
       if (data != null) {
-        if (!data.containsKey('profileHandle')) {
-          if (data['profileHandle'] == 'Music_Video_Director') {
-            data['profileHandle'] = 'Videographer';
+        if (!data.containsKey('storeType')) {
+          if (data['storeType'] == 'Music_Video_Director') {
+            data['storeType'] = 'Videographer';
             batch.update(doc.reference, data);
           }
         }
@@ -826,7 +826,7 @@ class HomeScreenState extends State<HomeScreen> {
   //     var userName = targetDoc.get('userName');
   //     var profileImageUrl = targetDoc.get('profileImageUrl');
   //     var verified = targetDoc.get('verified');
-  //     String profileHandle = targetDoc.get('profileHandle');
+  //     String storeType = targetDoc.get('storeType');
   //     var dynamicLink = targetDoc.get('dynamicLink');
   //     var terms = targetDoc.get('terms');
   //     var overview = targetDoc.get('overview');
@@ -858,7 +858,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userName': userName,
   //         'profileImageUrl': profileImageUrl,
   //         'verified': verified,
-  //         'profileHandle': profileHandle,
+  //         'storeType': storeType,
   //         'dynamicLink': dynamicLink,
   //         'terms': terms,
   //         'overview': overview,
@@ -953,7 +953,7 @@ class HomeScreenState extends State<HomeScreen> {
   //     var userName = targetDoc.get('userName');
   //     var profileImageUrl = targetDoc.get('profileImageUrl');
   //     var verified = targetDoc.get('verified');
-  //     String profileHandle = targetDoc.get('profileHandle');
+  //     String storeType = targetDoc.get('storeType');
   //     var dynamicLink = targetDoc.get('dynamicLink');
   //     var terms = targetDoc.get('terms');
   //     var overview = targetDoc.get('overview');
@@ -986,7 +986,7 @@ class HomeScreenState extends State<HomeScreen> {
   //       WriteBatch continentBatch = FirebaseFirestore.instance.batch();
 
   //       DocumentReference usersByTypeRef =
-  //           userProfessionalRef.doc(profileHandle.toUpperCase());
+  //           userProfessionalRef.doc(storeType.toUpperCase());
 
   //       DocumentReference usersByContinentRef =
   //           usersByTypeRef.collection('usersByContinent').doc(continent);
@@ -1015,7 +1015,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userName': userName,
   //         'profileImageUrl': profileImageUrl,
   //         'verified': verified,
-  //         'profileHandle': profileHandle,
+  //         'storeType': storeType,
   //         'dynamicLink': dynamicLink,
   //         'terms': terms,
   //         'overview': overview,
@@ -1374,7 +1374,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   //     var bio = targetDoc.get('bio');
 
-  //     var profileHandle = targetDoc.get('profileHandle');
+  //     var storeType = targetDoc.get('storeType');
   //     var dynamicLink = targetDoc.get('dynamicLink');
   //     var verified = targetDoc.get('verified');
   //     var disabledAccount = targetDoc.get('disabledAccount');
@@ -1391,7 +1391,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userName': userName,
   //         'profileImageUrl': profileImageUrl,
   //         'bio': bio,
-  //         'profileHandle': profileHandle,
+  //         'storeType': storeType,
   //         'dynamicLink': dynamicLink,
   //         'verified': verified,
   //         'disabledAccount': disabledAccount,
@@ -1729,7 +1729,7 @@ class HomeScreenState extends State<HomeScreen> {
   //     var id = targetDoc.id;
   //     var userName = targetDoc.get('userName');
   //     // var profileImageUrl = targetDoc.get('profileImageUrl');
-  //     // var profileHandle = targetDoc.get('profileHandle');
+  //     // var storeType = targetDoc.get('storeType');
   //     // var verified = targetDoc.get('verified');
   //     // var dynamicLink = targetDoc.get('dynamicLink');
 
@@ -1741,7 +1741,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userId': id,
   //         // 'userName': userName,
   //         // 'profileImageUrl': profileImageUrl,
-  //         // 'profileHandle': profileHandle,
+  //         // 'storeType': storeType,
   //         // 'verified': verified,
   //         // 'dynamicLink': dynamicLink,
   //       });
@@ -1893,10 +1893,10 @@ class HomeScreenState extends State<HomeScreen> {
   //       Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
   //       if (data != null) {
   //         var professionalPicture1 = data['professionalPicture1'];
-  //         var profileHandle = data['profileHandle'];
+  //         var storeType = data['storeType'];
 
   //         // Check conditions
-  //         if (professionalPicture1.isEmpty && profileHandle != 'Fan') {
+  //         if (professionalPicture1.isEmpty && storeType != 'Fan') {
   //           // Delete the document from the target collection
   //           batch.delete(targetDoc.reference);
   //           print('Deleted document ${targetDoc.id}');
@@ -2848,7 +2848,7 @@ class _HomeMobileState extends State<HomeMobile>
     // Use conditional access and provide default/fallback values or handle the case where the value might be null
     final String? currentUserId = _provider.currentUserId;
     final AccountHolderAuthor? user = _provider.user;
-    final UserProfessionalModel? userStore = _provider.userStore;
+    final UserStoreModel? userStore = _provider.userStore;
 
     final UserSettingsLoadingPreferenceModel? userLocationSettings =
         _provider.userLocationPreference;
@@ -2901,23 +2901,23 @@ class _HomeMobileState extends State<HomeMobile>
                             //   currentUserId: currentUserId,
                             //   userId: '',
                             // ),
-                            DiscoverEventScreen(
-                              currentUserId: currentUserId,
-                              userLocationSettings: userLocationSettings,
-                              isLiveLocation: false,
-                              liveCity: '',
-                              liveCountry: '',
-                              liveLocationIntialPage: 0,
-                              sortNumberOfDays: 0,
-                            ),
-                            // DiscoverUser(
+                            // DiscoverEventScreen(
                             //   currentUserId: currentUserId,
-                            //   isWelcome: false,
+                            //   userLocationSettings: userLocationSettings,
                             //   isLiveLocation: false,
                             //   liveCity: '',
                             //   liveCountry: '',
                             //   liveLocationIntialPage: 0,
+                            //   sortNumberOfDays: 0,
                             // ),
+                            DiscoverUser(
+                              currentUserId: currentUserId,
+                              isWelcome: false,
+                              isLiveLocation: false,
+                              liveCity: '',
+                              liveCountry: '',
+                              liveLocationIntialPage: 0,
+                            ),
                             TicketAndCalendarFeedScreen(
                               currentUserId: currentUserId,
                             ),
@@ -2949,7 +2949,7 @@ class _HomeMobileState extends State<HomeMobile>
                                 widget.updateApp.displayMiniUpdate!,
                             onPressed: () {
                               StoreRedirect.redirect(
-                                androidAppId: "com.barsOpus.barsImpression",
+                                androidAppId: "com.bars-Opus.florence",
                                 iOSAppId: "1610868894",
                               );
                             },

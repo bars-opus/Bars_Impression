@@ -154,19 +154,19 @@ class UsernameService {
       // name: _provider.name,
       // bio: _provider.user!.bio,
       disabledAccount: false,
-      name: _provider.name,
+      // name: _provider.name,
       bio: _provider.user?.bio ?? '',
       dynamicLink: dynamicLink,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      profileHandle: _provider.profrilehandle,
+      storeType: _provider.profrilehandle,
       profileImageUrl: _provider.user?.profileImageUrl ?? '',
-      // profileHandle: _provider.profrilehandle,
+      // storeType: _provider.profrilehandle,
       // profileImageUrl: _provider.user!.profileImageUrl,
       reportConfirmed: false,
       userId: _provider.currentUserId,
       userName: userName,
       verified: false,
-      privateAccount: false,
+      // privateAccount: false,
       disableChat: false,
     );
 
@@ -181,18 +181,18 @@ class UsernameService {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: _provider.user!.name,
+      // name: _provider.user!.name,
       bio: _provider.user!.bio,
       disabledAccount: _provider.user!.disabledAccount,
       dynamicLink: dynamicLink,
       lastActiveDate: _provider.user!.lastActiveDate,
-      profileHandle: _provider.user!.profileHandle,
+      storeType: _provider.user!.storeType,
       profileImageUrl: _provider.user!.profileImageUrl,
       reportConfirmed: _provider.user!.reportConfirmed,
       userId: _provider.user!.userId,
       userName: userName,
       verified: _provider.user!.verified,
-      privateAccount: _provider.user!.privateAccount,
+      // privateAccount: _provider.user!.privateAccount,
       disableChat: _provider.user!.disableChat,
     );
 

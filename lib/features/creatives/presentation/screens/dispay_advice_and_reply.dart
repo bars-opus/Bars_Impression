@@ -5,9 +5,7 @@ class DisplayAdviceAndReply extends StatefulWidget {
   final String userId;
 
   DisplayAdviceAndReply(
-      {super.key,
-      required this.userId,
-      required this.advice});
+      {super.key, required this.userId, required this.advice});
 
   @override
   State<DisplayAdviceAndReply> createState() => _DisplayAdviceAndReplyState();
@@ -178,7 +176,7 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
                       content: widget.advice.content,
                       timestamp: widget.advice.timestamp,
                       authorId: widget.advice.authorId,
-                      profileHandle: widget.advice.authorProfileHandle,
+                      storeType: widget.advice.authorstoreType,
                       profileImageUrl: widget.advice.authorProfileImageUrl,
                       verified: widget.advice.authorVerification,
                       userName: widget.advice.authorName,
@@ -204,7 +202,9 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
                         if (!snapshot.hasData) {
                           return Expanded(
                             child: Center(
-                              child: CircularProgressIndicator( color:Colors.blue,),
+                              child: CircularProgressIndicator(
+                                color: Colors.blue,
+                              ),
                             ),
                           );
                         }
@@ -289,7 +289,7 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
                   content: widget.advice.content,
                   timestamp: widget.advice.timestamp,
                   authorId: widget.advice.authorId,
-                  profileHandle: widget.advice.authorProfileHandle,
+                  storeType: widget.advice.authorstoreType,
                   profileImageUrl: widget.advice.authorProfileImageUrl,
                   verified: widget.advice.authorVerification,
                   userName: widget.advice.authorName,
@@ -338,7 +338,7 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
       content: reply.content,
       timestamp: reply.timestamp,
       authorId: reply.authorId,
-      profileHandle: reply.authorProfileHandle,
+      storeType: reply.authorstoreType,
       profileImageUrl: reply.authorProfileImageUrl,
       verified: reply.authorVerification,
       userName: reply.authorName,

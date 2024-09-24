@@ -3,7 +3,7 @@ import 'package:bars/utilities/exports.dart';
 class SearchUserTile extends StatelessWidget {
   final String profileImageUrl;
   final String userName;
-  final String profileHandle;
+  final String storeType;
   final String bio;
   final bool verified;
   final VoidCallback onPressed;
@@ -12,7 +12,7 @@ class SearchUserTile extends StatelessWidget {
       {required this.bio,
       required this.userName,
       required this.profileImageUrl,
-      required this.profileHandle,
+      required this.storeType,
       required this.verified,
       required this.onPressed});
 
@@ -34,9 +34,10 @@ class SearchUserTile extends StatelessWidget {
             : CircleAvatar(
                 radius: ResponsiveHelper.responsiveHeight(context, 25.0),
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
-                backgroundImage: CachedNetworkImageProvider(profileImageUrl,   errorListener: (_) {
-                                  return;
-                                }),
+                backgroundImage: CachedNetworkImageProvider(profileImageUrl,
+                    errorListener: (_) {
+                  return;
+                }),
               ),
         title: NameText(
           fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
@@ -61,7 +62,7 @@ class SearchUserTile extends StatelessWidget {
                 ),
               ],
             ),
-            Text(profileHandle,
+            Text(storeType,
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                   color: Colors.blue,

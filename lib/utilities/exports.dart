@@ -220,7 +220,7 @@ export 'package:bars/features/creatives/presentation/widgets/portfolio_collabora
 export 'package:bars/features/creatives/presentation/widgets/portfolio_company_widget.dart';
 export 'package:bars/features/creatives/presentation/widgets/portfolio_contact_widget.dart';
 export 'package:bars/features/creatives/presentation/widgets/portfolio_widget.dart';
-export 'package:bars/features/creatives/models/user_professional_model.dart';
+export 'package:bars/features/creatives/models/user_store_model.dart';
 export 'package:bars/features/creatives/presentation/screens/create_content_widget.dart';
 export 'package:bars/widgets/price_rate.dart';
 export 'package:bars/features/creatives/models/work_request_offer_model.dart';

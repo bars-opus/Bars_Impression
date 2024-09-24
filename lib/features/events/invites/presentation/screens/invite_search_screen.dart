@@ -763,7 +763,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                                                     .bodyLarge,
                                               ),
                                               TextSpan(
-                                                text: "\n${user.profileHandle}",
+                                                text: "\n${user.storeType}",
                                                 style: TextStyle(
                                                   fontSize: ResponsiveHelper
                                                       .responsiveFontSize(

@@ -14,22 +14,22 @@ class AccountHolderAuthor {
   @HiveField(3)
   final bool? verified;
   @HiveField(4)
-  final String? profileHandle;
+  final String? storeType;
   @HiveField(5)
-  final String? name;
-  @HiveField(6)
+  // final String? name;
+  // @HiveField(6)
   final String? bio;
-  @HiveField(8)
+  @HiveField(6)
   final String? dynamicLink;
-  @HiveField(9)
+  @HiveField(7)
   final bool? disabledAccount;
-  @HiveField(10)
+  @HiveField(8)
   final bool? reportConfirmed;
-  @HiveField(11)
+  @HiveField(9)
   final Timestamp? lastActiveDate;
-  @HiveField(12)
-  final bool? privateAccount;
-    @HiveField(13)
+  // @HiveField(12)
+  // final bool? privateAccount;
+    @HiveField(10)
   final bool? disableChat;
 
   AccountHolderAuthor({
@@ -37,14 +37,14 @@ class AccountHolderAuthor {
     required this.userName,
     required this.profileImageUrl,
     required this.bio,
-    required this.profileHandle,
+    required this.storeType,
     required this.verified,
-    required this.name,
+    // required this.name,
     required this.dynamicLink,
     required this.disabledAccount,
     required this.reportConfirmed,
     required this.lastActiveDate,
-    required this.privateAccount,
+    // required this.privateAccount,
      required this.disableChat,
   });
 
@@ -54,16 +54,16 @@ class AccountHolderAuthor {
       userName: doc['userName'] ?? '',
       profileImageUrl: doc['profileImageUrl'],
       bio: doc['bio'] ?? '',
-      profileHandle: doc['profileHandle'] ?? 'Fan',
+      storeType: doc['storeType'] ?? 'Fan',
       dynamicLink: doc['dynamicLink'] ?? '',
       verified: doc['verified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       reportConfirmed: doc['reportConfirmed'] ?? false,
-      privateAccount: doc['privateAccount'] ?? false,
+      // privateAccount: doc['privateAccount'] ?? false,
             disableChat: doc['disableChat'] ?? false,
 
       
-      name: doc['name'] ?? '',
+      // name: doc['name'] ?? '',
       lastActiveDate:
           doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
     );
@@ -73,7 +73,7 @@ class AccountHolderAuthor {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return AccountHolderAuthor(
       userId: doc.id,
-      name: data['name'] ?? '',
+      // name: data['name'] ?? '',
       dynamicLink: data['dynamicLink'] ?? '',
       lastActiveDate:
           doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
@@ -81,11 +81,11 @@ class AccountHolderAuthor {
       userName: data['userName'] ?? '',
       profileImageUrl: data['profileImageUrl'],
       bio: data['bio'] ?? '',
-      profileHandle: data['profileHandle'] ?? 'Fan',
+      storeType: data['storeType'] ?? 'Fan',
       verified: data['verified'] ?? false,
       disabledAccount: data['disabledAccount'] ?? false,
       reportConfirmed: data['reportConfirmed'] ?? false,
-      privateAccount: data['privateAccount'] ?? false,
+      // privateAccount: data['privateAccount'] ?? false,
         disableChat: data['disableChat'] ?? false,
       
       // other fields...

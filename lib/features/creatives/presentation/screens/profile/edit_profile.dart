@@ -27,7 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _name = widget.user.name!;
+    _name = widget.user.userName!;
     _userName = widget.user.userName!;
     _bio = widget.user.bio!;
   }
@@ -155,7 +155,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         Navigator.pop(context);
         _flushBar(
-          widget.user.name!,
+          widget.user.userName!,
           "Your profile was edited successfully!!!",
         );
       } catch (e) {
@@ -225,8 +225,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           batch.commit();
         } catch (error) {}
 
-        _updateAuthorHive(
-            widget.user.name!, widget.user.bio!, _profileImageUrl, dynamicLink);
+        _updateAuthorHive(widget.user.userName!, widget.user.bio!,
+            _profileImageUrl, dynamicLink);
       } catch (e) {
         _showBottomSheetErrorMessage('Failed change profile picture');
 
@@ -252,18 +252,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
-      name: name,
+      // name: name,
       bio: bio,
       disabledAccount: _provider.user!.disabledAccount,
       dynamicLink: link,
       lastActiveDate: _provider.user!.lastActiveDate,
-      profileHandle: _provider.user!.profileHandle,
+      storeType: _provider.user!.storeType,
       profileImageUrl: profileImageUrl,
       reportConfirmed: _provider.user!.reportConfirmed,
       userId: _provider.user!.userId,
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
-      privateAccount: _provider.user!.privateAccount,
+      // privateAccount: _provider.user!.privateAccount,
       disableChat: _provider.user!.disableChat,
     );
 
@@ -470,7 +470,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           onPressed: () {
             _navigateToPage(
               context,
-              EditProfileHandle(
+              EditstoreType(
                 user: widget.user,
               ),
             );
@@ -510,7 +510,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _isLoadingBooking = true;
 
                         try {
-                          UserProfessionalModel? user =
+                          UserStoreModel? user =
                               await DatabaseService.getUserProfessionalWithId(
                             widget.user.userId!,
                           );
@@ -730,37 +730,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return EditProfileScaffold(
       title: 'Edit Profile',
-      action: _name == widget.user.name && _bio == widget.user.bio
-          ? null
-          : _isLoading
-              ? Padding(
-                  padding: const EdgeInsets.only(
-                    right: 20.0,
-                  ),
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                        Colors.blue,
+      action:
+
+          // _name == widget.user.name &&
+
+          _bio == widget.user.bio
+              ? null
+              : _isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        right: 20.0,
                       ),
-                      strokeWidth:
-                          ResponsiveHelper.responsiveFontSize(context, 2.0),
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.transparent,
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
+                          ),
+                          strokeWidth:
+                              ResponsiveHelper.responsiveFontSize(context, 2.0),
+                        ),
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8.0, bottom: 20),
+                        child: MiniCircularProgressButton(
+                            dontShowShadow: true,
+                            color: Colors.blue,
+                            text: 'Save',
+                            onPressed: () {}),
+                      ),
                     ),
-                  ),
-                )
-              : Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0, bottom: 20),
-                    child: MiniCircularProgressButton(
-                        dontShowShadow: true,
-                        color: Colors.blue,
-                        text: 'Save',
-                        onPressed: () {}),
-                  ),
-                ),
       widget: Form(
         key: _formKey,
         child: Column(

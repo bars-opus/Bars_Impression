@@ -33,7 +33,7 @@ class _TagWidgetState extends State<TagWidget> {
       } else {
         await DatabaseService.confirmUserTag(
           widget.currentTag,
-          _provider.user!.profileHandle,
+          _provider.user!.storeType,
           _provider.user!.verified,
           _provider.user!.userName,
         );

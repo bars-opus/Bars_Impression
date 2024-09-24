@@ -184,10 +184,10 @@ class _EventAttendeesInvitedScreeenState
                     : CircleAvatar(
                         radius: 18.0,
                         backgroundColor: Colors.blue,
-                        backgroundImage:
-                            CachedNetworkImageProvider(user.profileImageUrl!,errorListener: (_) {
-                            return;
-                          }),
+                        backgroundImage: CachedNetworkImageProvider(
+                            user.profileImageUrl!, errorListener: (_) {
+                          return;
+                        }),
                       ),
                 title: RichText(
                     textScaler: MediaQuery.of(context).textScaler,
@@ -197,7 +197,7 @@ class _EventAttendeesInvitedScreeenState
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
-                          text: "\n${user.profileHandle}",
+                          text: "\n${user.storeType}",
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 12.0),

@@ -9,7 +9,7 @@ import 'package:bars/utilities/exports.dart';
 class CreativesScreen extends StatefulWidget {
   static final id = 'CreativesScreen';
   final String currentUserId;
-  final String profileHandle;
+  final String storeType;
   final int pageIndex;
   final UserSettingsLoadingPreferenceModel userLocationSettings;
   final String liveCity;
@@ -19,7 +19,7 @@ class CreativesScreen extends StatefulWidget {
 
   CreativesScreen({
     required this.currentUserId,
-    required this.profileHandle,
+    required this.storeType,
     required this.pageIndex,
     required this.userLocationSettings,
     required this.liveCity,
@@ -33,10 +33,10 @@ class CreativesScreen extends StatefulWidget {
 
 class _CreativesScreenState extends State<CreativesScreen>
     with AutomaticKeepAliveClientMixin {
-  List<UserProfessionalModel> _usersCity = [];
-  List<UserProfessionalModel> _usersCountry = [];
-  List<UserProfessionalModel> _usersContinent = [];
-  List<UserProfessionalModel> _usersAll = [];
+  List<UserStoreModel> _usersCity = [];
+  List<UserStoreModel> _usersCountry = [];
+  List<UserStoreModel> _usersContinent = [];
+  List<UserStoreModel> _usersAll = [];
   final _usersCitySnapshot = <DocumentSnapshot>[];
   final _usersCountrySnapshot = <DocumentSnapshot>[];
   final _usersContinentSnapshot = <DocumentSnapshot>[];
@@ -80,9 +80,9 @@ class _CreativesScreenState extends State<CreativesScreen>
     print(widget.liveCity);
     int feedCount = widget.liveCity.isNotEmpty
         ? await DatabaseService.numusersLiveLocation(
-            widget.profileHandle, widget.liveCity, widget.liveCountry)
+            widget.storeType, widget.liveCity, widget.liveCountry)
         : await DatabaseService.numUsersAll(
-            widget.profileHandle,
+            widget.storeType,
           );
     if (mounted) {
       setState(() {
@@ -99,9 +99,9 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     _setupUsers(
         city: city, country: country, isAll: isAll, from: 'City'); // For city
-    _setupUsers(country: country, isAll: isAll, from: 'Country'); // For country
-    _setupUsers(
-        continent: continent, isAll: isAll, from: 'Continent'); // For country
+    // _setupUsers(country: country, isAll: isAll, from: 'Country'); // For country
+    // _setupUsers(
+    //     continent: continent, isAll: isAll, from: 'Continent'); // For country
     _setupUsers(isAll: true, from: ''); // For all
   }
 
@@ -119,10 +119,12 @@ class _CreativesScreenState extends State<CreativesScreen>
     String? continent = widget.userLocationSettings.continent;
     widget.seeMoreFrom.startsWith('City')
         ? _setupUsers(city: city, country: country, isAll: true, from: 'City')
-        : widget.seeMoreFrom.startsWith('Country')
-            ? _setupUsers(country: country, isAll: true, from: 'Country')
-            : _setupUsers(
-                continent: continent,
+        : 
+        // widget.seeMoreFrom.startsWith('Country')
+        //     ? _setupUsers(country: country, isAll: true, from: 'Country')
+        //     :
+             _setupUsers(
+                // continent: continent,
                 isAll: true,
                 from: 'Continent'); // For country
   }
@@ -136,10 +138,10 @@ class _CreativesScreenState extends State<CreativesScreen>
   Set<String> addedUserIds = Set<String>();
   Set<String> addedCityCountryUserIds = Set<String>();
 
-  Future<List<UserProfessionalModel>> _setupUsers({
+  Future<List<UserStoreModel>> _setupUsers({
     String? city,
     String? country,
-    String? continent,
+    // String? continent,
     required bool isAll,
     required String from,
   }) async {
@@ -149,7 +151,7 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     var query = userProfessionalRef
         .where('showOnExplorePage', isEqualTo: true)
-        .where('profileHandle', isEqualTo: widget.profileHandle)
+        .where('storeType', isEqualTo: widget.storeType)
         .where('noBooking', isEqualTo: false);
 
     if (city != null) {
@@ -159,9 +161,9 @@ class _CreativesScreenState extends State<CreativesScreen>
     if (country != null) {
       query = query.where('country', isEqualTo: country);
     }
-    if (continent != null) {
-      query = query.where('continent', isEqualTo: continent);
-    }
+    // if (continent != null) {
+    //   query = query.where('continent', isEqualTo: continent);
+    // }
 
     final randomValue = Random().nextDouble();
 
@@ -182,11 +184,11 @@ class _CreativesScreenState extends State<CreativesScreen>
       userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
     }
 
-    List<UserProfessionalModel> users = userFeedSnapShot.docs
-        .map((doc) => UserProfessionalModel.fromDoc(doc))
+    List<UserStoreModel> users = userFeedSnapShot.docs
+        .map((doc) => UserStoreModel.fromDoc(doc))
         .toList();
 
-    List<UserProfessionalModel> uniqueEvents = [];
+    List<UserStoreModel> uniqueEvents = [];
     if (from.startsWith('City')) {
       for (var user in users) {
         if (addedCityCountryUserIds.add(user.userId)) {
@@ -199,13 +201,15 @@ class _CreativesScreenState extends State<CreativesScreen>
           uniqueEvents.add(user);
         }
       }
-    } else if (from.startsWith('Continent')) {
-      for (var user in users) {
-        if (addedCityCountryUserIds.add(user.userId)) {
-          uniqueEvents.add(user);
-        }
-      }
-    } else {
+    }
+    //  else if (from.startsWith('Continent')) {
+    //   for (var user in users) {
+    //     if (addedCityCountryUserIds.add(user.userId)) {
+    //       uniqueEvents.add(user);
+    //     }
+    //   }
+    // } 
+    else {
       for (var event in users) {
         if (addedUserIds.add(event.userId)) {
           uniqueEvents.add(event);
@@ -213,10 +217,10 @@ class _CreativesScreenState extends State<CreativesScreen>
       }
     }
 
-    List<UserProfessionalModel>? newUsersCity;
-    List<UserProfessionalModel>? newUsersCountry;
-    List<UserProfessionalModel>? newUsersContinent;
-    List<UserProfessionalModel>? newUsersAll;
+    List<UserStoreModel>? newUsersCity;
+    List<UserStoreModel>? newUsersCountry;
+    List<UserStoreModel>? newUsersContinent;
+    List<UserStoreModel>? newUsersAll;
 
     if (from.startsWith('Country')) {
       _usersCountrySnapshot.addAll((userFeedSnapShot.docs));
@@ -239,9 +243,11 @@ class _CreativesScreenState extends State<CreativesScreen>
         newUsersCity = uniqueEvents;
       } else if (country != null) {
         newUsersCountry = uniqueEvents;
-      } else if (continent != null) {
-        newUsersContinent = uniqueEvents;
-      } else {
+      }
+      //  else if (continent != null) {
+      //   newUsersContinent = uniqueEvents;
+      // } 
+      else {
         newUsersAll = _provider.userLocationPreference!.city!.isEmpty
             ? users
             : uniqueEvents;
@@ -319,7 +325,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     return false;
   }
 
-  Future<List<UserProfessionalModel>> _loadMoreUsers({
+  Future<List<UserStoreModel>> _loadMoreUsers({
     // DocumentSnapshot? startAfterDocument,
     String? country,
     String? city,
@@ -328,7 +334,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     try {
       var query = userProfessionalRef
           .where('showOnExplorePage', isEqualTo: true)
-          .where('profileHandle', isEqualTo: widget.profileHandle);
+          .where('storeType', isEqualTo: widget.storeType);
 
       if (country != null) {
         query = query.where('country', isEqualTo: country);
@@ -355,7 +361,7 @@ class _CreativesScreenState extends State<CreativesScreen>
 
         // Make an additional query to get more documents
         QuerySnapshot additionalSnapshot = await userProfessionalRef
-            .where('profileHandle', isEqualTo: widget.profileHandle)
+            .where('storeType', isEqualTo: widget.storeType)
             .orderBy('randomId') // Order by must be the same as the first query
             .where('randomId', isLessThan: randomValue)
             .limit(remainingLimit)
@@ -365,11 +371,11 @@ class _CreativesScreenState extends State<CreativesScreen>
         userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
       }
 
-      List<UserProfessionalModel> users = userFeedSnapShot.docs
-          .map((doc) => UserProfessionalModel.fromDoc(doc))
+      List<UserStoreModel> users = userFeedSnapShot.docs
+          .map((doc) => UserStoreModel.fromDoc(doc))
           .toList();
 
-      List<UserProfessionalModel> moreUsers = [];
+      List<UserStoreModel> moreUsers = [];
 
       for (var user in users) {
         if (!addedUserIds.contains(user.userId)) {
@@ -415,7 +421,7 @@ class _CreativesScreenState extends State<CreativesScreen>
   }
 
   _userBuilder(
-    List<UserProfessionalModel> usersList,
+    List<UserStoreModel> usersList,
     List<DocumentSnapshot> usersSnapshot,
     String locationCategory,
     VoidCallback loadMore,
@@ -424,7 +430,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       currentUserId: widget.currentUserId,
       locationCategory: locationCategory,
       type: 'User',
-      typeSpecific: widget.profileHandle,
+      typeSpecific: widget.storeType,
       pageIndex: widget.pageIndex,
       usersSnapshot: usersSnapshot,
       usersList: usersList,
@@ -444,7 +450,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     _setUp();
   }
 
-  _userFan(UserProfessionalModel user) {
+  _userFan(UserStoreModel user) {
     var _provider = Provider.of<UserData>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -478,7 +484,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                   textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(children: [
                     TextSpan(
-                        text: user.profileHandle,
+                        text: user.storeType,
                         style: TextStyle(
                           fontSize:
                               ResponsiveHelper.responsiveFontSize(context, 10),
@@ -535,7 +541,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                             ? const SizedBox.shrink()
                             : NoEventInfoWidget(
                                 from: 'Location',
-                                specificType: widget.profileHandle,
+                                specificType: widget.storeType,
                                 liveLocation: widget.liveCity,
                                 liveLocationIntialPage: widget.pageIndex,
                                 isEvent: false,
@@ -546,8 +552,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        UserProfessionalModel userProfessional =
-                            _usersAll[index];
+                        UserStoreModel userProfessional = _usersAll[index];
                         return UserView(
                           userSnapshot: _usersAllSnapshot,
                           userList: _usersAll,
@@ -584,7 +589,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                         if (widget.liveCity.isEmpty)
                           NoEventInfoWidget(
                             from: 'Location',
-                            specificType: widget.profileHandle,
+                            specificType: widget.storeType,
                             liveLocation: widget.liveCity,
                             liveLocationIntialPage: widget.pageIndex,
                             isEvent: false,
@@ -600,7 +605,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                               ? CategoryContainerEmpty(
                                   liveLocationIntialPage: widget.pageIndex,
                                   containerSubTitle:
-                                      'Enter your city, and countryto unlock a world of ${widget.profileHandle.toLowerCase()}\'s living around you.\n',
+                                      'Enter your city, and countryto unlock a world of ${widget.storeType.toLowerCase()}\'s living around you.\n',
                                   containerTitle:
                                       'Please set up your location to get started',
                                   noLocation: true,
@@ -619,12 +624,12 @@ class _CreativesScreenState extends State<CreativesScreen>
                                       SeeMore(
                                         userLocationSettings:
                                             widget.userLocationSettings,
-                                        // profileHandle: _profileHandle,
+                                        // storeType: _storeType,
                                         currentUserId: widget.currentUserId,
                                         liveCity: widget.liveCity,
                                         liveCountry: widget.liveCountry,
                                         pageIndex: widget.pageIndex,
-                                        types: widget.profileHandle,
+                                        types: widget.storeType,
                                         // seeMoreFrom: 'City',
                                         isEvent: false, isFrom: 'City',
                                         sortNumberOfDays: 0,
@@ -644,7 +649,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         liveCity: widget.liveCity,
                                         liveCountry: widget.liveCountry,
                                         pageIndex: widget.pageIndex,
-                                        types: widget.profileHandle,
+                                        types: widget.storeType,
                                         isEvent: false,
                                         isFrom: 'Country',
                                         sortNumberOfDays: 0,
@@ -664,7 +669,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         liveCity: widget.liveCity,
                                         liveCountry: widget.liveCountry,
                                         pageIndex: widget.pageIndex,
-                                        types: widget.profileHandle,
+                                        types: widget.storeType,
                                         isEvent: false,
                                         isFrom: 'Continent',
                                         sortNumberOfDays: 0,
@@ -677,8 +682,8 @@ class _CreativesScreenState extends State<CreativesScreen>
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        UserProfessionalModel user = _usersAll[index];
-                        return widget.profileHandle == 'Fan'
+                        UserStoreModel user = _usersAll[index];
+                        return widget.storeType == 'Fan'
                             ? _userFan(user)
                             : UserView(
                                 userSnapshot: _usersAllSnapshot,
@@ -726,7 +731,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       isEvent: true,
       liveLocationIntialPage: widget.pageIndex,
       from: from,
-      specificType: widget.profileHandle,
+      specificType: widget.storeType,
       liveLocation: widget.liveCity,
     );
   }

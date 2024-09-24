@@ -20,23 +20,21 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
       userId: fields[0] as String?,
       userName: fields[1] as String?,
       profileImageUrl: fields[2] as String?,
-      bio: fields[6] as String?,
-      profileHandle: fields[4] as String?,
+      bio: fields[5] as String?,
+      storeType: fields[4] as String?,
       verified: fields[3] as bool?,
-      name: fields[5] as String?,
-      dynamicLink: fields[8] as String?,
-      disabledAccount: fields[9] as bool?,
-      reportConfirmed: fields[10] as bool?,
-      lastActiveDate: fields[11] as Timestamp?,
-      privateAccount: fields[12] as bool?,
-      disableChat: fields[13] as bool?,
+      dynamicLink: fields[6] as String?,
+      disabledAccount: fields[7] as bool?,
+      reportConfirmed: fields[8] as bool?,
+      lastActiveDate: fields[9] as Timestamp?,
+      disableChat: fields[10] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AccountHolderAuthor obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -46,22 +44,18 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
       ..writeByte(3)
       ..write(obj.verified)
       ..writeByte(4)
-      ..write(obj.profileHandle)
+      ..write(obj.storeType)
       ..writeByte(5)
-      ..write(obj.name)
-      ..writeByte(6)
       ..write(obj.bio)
-      ..writeByte(8)
+      ..writeByte(6)
       ..write(obj.dynamicLink)
-      ..writeByte(9)
+      ..writeByte(7)
       ..write(obj.disabledAccount)
-      ..writeByte(10)
+      ..writeByte(8)
       ..write(obj.reportConfirmed)
-      ..writeByte(11)
+      ..writeByte(9)
       ..write(obj.lastActiveDate)
-      ..writeByte(12)
-      ..write(obj.privateAccount)
-      ..writeByte(13)
+      ..writeByte(10)
       ..write(obj.disableChat);
   }
 

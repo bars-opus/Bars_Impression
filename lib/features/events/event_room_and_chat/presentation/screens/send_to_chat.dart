@@ -450,7 +450,7 @@ class _GetAuthorState extends State<GetAuthor>
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
-                        text: "\n${widget.author.profileHandle}",
+                        text: "\n${widget.author.storeType}",
                         style: TextStyle(
                           fontSize:
                               ResponsiveHelper.responsiveFontSize(context, 12),

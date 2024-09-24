@@ -23,7 +23,6 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
     _commentController.addListener(_onAskTextChanged);
   }
 
-
   @override
   void dispose() {
     _commentController.dispose();
@@ -176,7 +175,7 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                       content: widget.ask.content,
                       timestamp: widget.ask.timestamp,
                       authorId: widget.ask.authorId,
-                      profileHandle: widget.ask.authorProfileHandle,
+                      storeType: widget.ask.authorstoreType,
                       profileImageUrl: widget.ask.authorProfileImageUrl,
                       verified: widget.ask.authorVerification,
                       userName: widget.ask.authorName,
@@ -202,7 +201,9 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                         if (!snapshot.hasData) {
                           return Expanded(
                             child: Center(
-                              child: CircularProgressIndicator( color:Colors.blue,),
+                              child: CircularProgressIndicator(
+                                color: Colors.blue,
+                              ),
                             ),
                           );
                         }
@@ -278,7 +279,6 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                   //  Column(
                   //   children: [
                   ExpansionTile(
-               
                 collapsedIconColor: Colors.transparent,
                 initiallyExpanded: isExpanded,
                 onExpansionChanged: (bool expanded) {},
@@ -290,7 +290,7 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                   content: widget.ask.content,
                   timestamp: widget.ask.timestamp,
                   authorId: widget.ask.authorId,
-                  profileHandle: widget.ask.authorProfileHandle,
+                  storeType: widget.ask.authorstoreType,
                   profileImageUrl: widget.ask.authorProfileImageUrl,
                   verified: widget.ask.authorVerification,
                   userName: widget.ask.authorName,
@@ -337,7 +337,7 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
       content: reply.content,
       timestamp: reply.timestamp,
       authorId: reply.authorId,
-      profileHandle: reply.authorProfileHandle,
+      storeType: reply.authorstoreType,
       profileImageUrl: reply.authorProfileImageUrl,
       verified: reply.authorVerification,
       userName: reply.authorName,

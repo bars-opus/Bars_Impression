@@ -30,15 +30,15 @@ class _ProfileSettingsNotificationState
   void initState() {
     super.initState();
     _disableChat = widget.userGeneralSettings.disableChat!;
-    _disableAdvice = widget.userGeneralSettings.disableAdvice!;
-    _hideAdvice = widget.userGeneralSettings.hideAdvice!;
+    // _disableAdvice = widget.userGeneralSettings.disableAdvice!;
+    // _hideAdvice = widget.userGeneralSettings.hideAdvice!;
     _disableBooking = widget.userGeneralSettings.disableBooking!;
     _disabledAccount = widget.userGeneralSettings.disabledAccount!;
-    _privateAccount = widget.userGeneralSettings.privateAccount!;
-    _disableEventSuggestionNotification =
-        widget.userGeneralSettings.disableEventSuggestionNotification!;
-    _muteEventSuggestionNotification =
-        widget.userGeneralSettings.muteEventSuggestionNotification!;
+    // _privateAccount = widget.userGeneralSettings.privateAccount!;
+    // _disableEventSuggestionNotification =
+    //     widget.userGeneralSettings.disableEventSuggestionNotification!;
+    // _muteEventSuggestionNotification =
+    //     widget.userGeneralSettings.muteEventSuggestionNotification!;
     // _disableNewCreativeNotifications =
     //     widget.userGeneralSettings.disableNewCreativeNotifications;
     // _disableWorkVacancyNotifications =

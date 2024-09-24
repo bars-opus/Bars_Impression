@@ -65,7 +65,7 @@ class CreateContent extends StatelessWidget {
         height: ResponsiveHelper.responsiveHeight(
             context,
 
-            //  _user!.profileHandle!.startsWith('Fans') ? 170 :
+            //  _user!.storeType!.startsWith('Fans') ? 170 :
 
             230),
         decoration: BoxDecoration(
@@ -97,7 +97,7 @@ class CreateContent extends StatelessWidget {
                     : () {},
                 text: 'Create new event',
               ),
-              // if (!_user.profileHandle!.startsWith('Fans'))
+              // if (!_user.storeType!.startsWith('Fans'))
               BottomModelSheetListTileActionWidget(
                 isLoading: _provide2.isLoading,
                 dontPop: true,

@@ -1,53 +1,50 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_professional_model.dart';
+part of 'user_store_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserProfessionalModelAdapter extends TypeAdapter<UserProfessionalModel> {
+class UserStoreModelAdapter extends TypeAdapter<UserStoreModel> {
   @override
   final int typeId = 11;
 
   @override
-  UserProfessionalModel read(BinaryReader reader) {
+  UserStoreModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UserProfessionalModel(
+    return UserStoreModel(
       userId: fields[0] as String,
       userName: fields[1] as String,
       profileImageUrl: fields[2] as String,
-      profileHandle: fields[4] as String,
+      storeType: fields[4] as String,
       verified: fields[3] as bool,
       terms: fields[6] as String,
-      city: fields[11] as String,
-      country: fields[12] as String,
-      continent: fields[13] as String,
+      city: fields[9] as String,
+      country: fields[10] as String,
       overview: fields[7] as String,
       noBooking: fields[8] as bool,
-      awards: (fields[19] as List).cast<PortfolioModel>(),
-      skills: (fields[20] as List).cast<PortfolioModel>(),
-      links: (fields[21] as List).cast<PortfolioModel>(),
-      genreTags: (fields[22] as List).cast<PortfolioModel>(),
-      professionalImageUrls: (fields[23] as List).cast<String>(),
-      subAccountType: (fields[24] as List).cast<String>(),
-      priceTags: (fields[25] as List).cast<PriceModel>(),
+      awards: (fields[12] as List).cast<PortfolioModel>(),
+      contacts: (fields[19] as List).cast<PortfolioContactModel>(),
+      skills: (fields[13] as List).cast<PortfolioModel>(),
+      links: (fields[14] as List).cast<PortfolioModel>(),
+      services: (fields[15] as List).cast<PortfolioModel>(),
+      professionalImageUrls: (fields[16] as List).cast<String>(),
+      priceTags: (fields[17] as List).cast<PriceModel>(),
       dynamicLink: fields[5] as String,
-      randomId: fields[26] as double,
-      currency: fields[14] as String,
-      disableAdvice: fields[9] as bool?,
-      hideAdvice: fields[10] as bool?,
-      transferRecepientId: fields[27] as String,
+      randomId: fields[18] as double,
+      currency: fields[11] as String,
+      transferRecepientId: fields[20] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UserProfessionalModel obj) {
+  void write(BinaryWriter writer, UserStoreModel obj) {
     writer
-      ..writeByte(24)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -57,7 +54,7 @@ class UserProfessionalModelAdapter extends TypeAdapter<UserProfessionalModel> {
       ..writeByte(3)
       ..write(obj.verified)
       ..writeByte(4)
-      ..write(obj.profileHandle)
+      ..write(obj.storeType)
       ..writeByte(5)
       ..write(obj.dynamicLink)
       ..writeByte(6)
@@ -67,34 +64,28 @@ class UserProfessionalModelAdapter extends TypeAdapter<UserProfessionalModel> {
       ..writeByte(8)
       ..write(obj.noBooking)
       ..writeByte(9)
-      ..write(obj.disableAdvice)
-      ..writeByte(10)
-      ..write(obj.hideAdvice)
-      ..writeByte(11)
       ..write(obj.city)
-      ..writeByte(12)
+      ..writeByte(10)
       ..write(obj.country)
-      ..writeByte(13)
-      ..write(obj.continent)
-      ..writeByte(14)
+      ..writeByte(11)
       ..write(obj.currency)
-      ..writeByte(19)
+      ..writeByte(12)
       ..write(obj.awards)
-      ..writeByte(20)
+      ..writeByte(13)
       ..write(obj.skills)
-      ..writeByte(21)
+      ..writeByte(14)
       ..write(obj.links)
-      ..writeByte(22)
-      ..write(obj.genreTags)
-      ..writeByte(23)
+      ..writeByte(15)
+      ..write(obj.services)
+      ..writeByte(16)
       ..write(obj.professionalImageUrls)
-      ..writeByte(24)
-      ..write(obj.subAccountType)
-      ..writeByte(25)
+      ..writeByte(17)
       ..write(obj.priceTags)
-      ..writeByte(26)
+      ..writeByte(18)
       ..write(obj.randomId)
-      ..writeByte(27)
+      ..writeByte(19)
+      ..write(obj.contacts)
+      ..writeByte(20)
       ..write(obj.transferRecepientId);
   }
 
@@ -104,7 +95,7 @@ class UserProfessionalModelAdapter extends TypeAdapter<UserProfessionalModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserProfessionalModelAdapter &&
+      other is UserStoreModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

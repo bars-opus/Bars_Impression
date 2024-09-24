@@ -4,7 +4,7 @@ class Verification {
   final String userId;
   final String verificationType;
   final String govIdType;
-  final String profileHandle;
+  final String storeType;
   final String email;
   final String phoneNumber;
   final String gvIdImageUrl;
@@ -21,7 +21,7 @@ class Verification {
   Verification({
     required this.userId,
     required this.verificationType,
-    required this.profileHandle,
+    required this.storeType,
     required this.newsCoverage,
     required this.govIdType,
     required this.email,
@@ -44,7 +44,7 @@ class Verification {
       wikipedia: doc['wikipedia'],
       govIdType: doc['govIdType'],
       email: doc['email'],
-      profileHandle: doc['profileHandle'] ?? '',
+      storeType: doc['storeType'] ?? '',
       phoneNumber: doc['phoneNumber'] ?? '',
       gvIdImageUrl: doc['gvIdImageUrl'] ?? '',
       website: doc['website'] ?? '',

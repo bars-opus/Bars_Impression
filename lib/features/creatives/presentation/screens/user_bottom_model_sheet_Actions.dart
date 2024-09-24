@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class UserBottomModalSheetActions extends StatefulWidget {
-  final UserProfessionalModel user;
+  final UserStoreModel user;
   final String currentUserId;
 
   UserBottomModalSheetActions(
@@ -89,41 +89,41 @@ class _UserBottomModalSheetActionsState
     );
   }
 
-  void _showBottomSheetAdvice(
-    BuildContext context,
-  ) async {
-    // var _provider = Provider.of<UserData>(context, listen: false);
+  // void _showBottomSheetAdvice(
+  //   BuildContext context,
+  // ) async {
+  //   // var _provider = Provider.of<UserData>(context, listen: false);
 
-    // final width =
-    //      MediaQuery.of(context).size.width;
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 650),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 25.0),
-            child: UserAdviceScreen(
-              updateBlockStatus: () {
-                setState(() {});
-              },
-              userId: widget.user.userId,
-              userName: widget.user.userName,
-              currentUserId: widget.currentUserId,
-              disableAdvice: widget.user.disableAdvice,
-              hideAdvice: widget.user.hideAdvice,
-              // user: widget.user,
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //   // final width =
+  //   //      MediaQuery.of(context).size.width;
+  //   await showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Colors.transparent,
+  //     isScrollControlled: true,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: ResponsiveHelper.responsiveHeight(context, 650),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).cardColor,
+  //             borderRadius: BorderRadius.circular(30)),
+  //         child: Padding(
+  //           padding: const EdgeInsets.only(top: 25.0),
+  //           child: UserAdviceScreen(
+  //             updateBlockStatus: () {
+  //               setState(() {});
+  //             },
+  //             userId: widget.user.userId,
+  //             userName: widget.user.userName,
+  //             currentUserId: widget.currentUserId,
+  //             // disableAdvice: widget.user.disableAdvice,
+  //             // hideAdvice: widget.user.hideAdvice,
+  //             // user: widget.user,
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   _sortByWidget(
     VoidCallback onPressed,
@@ -230,7 +230,7 @@ class _UserBottomModalSheetActionsState
               children: [
                 _sortByWidget(
                   () async {
-                    _showBottomSheetAdvice(context);
+                    // _showBottomSheetAdvice(context);
                   },
                   MdiIcons.thoughtBubbleOutline,
                   'Advice',

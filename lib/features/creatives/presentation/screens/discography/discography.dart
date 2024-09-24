@@ -10,7 +10,7 @@ import 'package:uuid/uuid.dart';
 class DiscographyWidget extends StatefulWidget {
   final String currentUserId;
   final int userIndex;
-  final UserProfessionalModel userPortfolio;
+  final UserStoreModel userPortfolio;
 
   const DiscographyWidget({
     super.key,
@@ -250,8 +250,8 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     skills.forEach((skill) => provider.setSkills(skill));
 
     // Add genre tags
-    List<PortfolioModel> genreTags = widget.userPortfolio.genreTags;
-    genreTags.forEach((genre) => provider.setGenereTags(genre));
+    // List<PortfolioModel> genreTags = widget.userPortfolio.genreTags;
+    // genreTags.forEach((genre) => provider.setGenereTags(genre));
 
     // Add collaborations
     // List<PortfolioCollaborationModel> collaborations =
@@ -459,37 +459,37 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     );
   }
 
-  void _showBottomSheetAdvice(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 650),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 25.0),
-            child: UserAdviceScreen(
-              currentUserId: widget.currentUserId,
-              userId: widget.userPortfolio.userId,
-              userName: widget.userPortfolio.userName,
-              isBlocked: _isBlockedUser,
-              isBlocking: _isBlockingUser,
-              updateBlockStatus: () {
-                setState(() {});
-              },
-              // user: widget.userPortfolio,
-              disableAdvice: widget.userPortfolio.disableAdvice,
-              hideAdvice: widget.userPortfolio.hideAdvice,
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // void _showBottomSheetAdvice(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Colors.transparent,
+  //     isScrollControlled: true,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: ResponsiveHelper.responsiveHeight(context, 650),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).cardColor,
+  //             borderRadius: BorderRadius.circular(30)),
+  //         child: Padding(
+  //           padding: const EdgeInsets.only(top: 25.0),
+  //           child: UserAdviceScreen(
+  //             currentUserId: widget.currentUserId,
+  //             userId: widget.userPortfolio.userId,
+  //             userName: widget.userPortfolio.userName,
+  //             isBlocked: _isBlockedUser,
+  //             isBlocking: _isBlockingUser,
+  //             updateBlockStatus: () {
+  //               setState(() {});
+  //             },
+  //             // user: widget.userPortfolio,
+  //             disableAdvice: widget.userPortfolio.disableAdvice,
+  //             hideAdvice: widget.userPortfolio.hideAdvice,
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   void _bottomModalSheetMessage(
     BuildContext context,
@@ -1239,7 +1239,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      widget.userPortfolio.profileHandle,
+                      widget.userPortfolio.storeType,
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 14.0),
@@ -1547,7 +1547,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
               child: GestureDetector(
                 onTap: _isCurrentUser
                     ? () {
-                        _showBottomSheetAdvice(context);
+                        // _showBottomSheetAdvice(context);
                       }
                     : () async {
                         if (_isLoading) return;
@@ -1781,7 +1781,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                   ? 'Advices for you'
                   : 'Advice ${widget.userPortfolio.userName}',
               () {
-                _showBottomSheetAdvice(context);
+                // _showBottomSheetAdvice(context);
               },
               false,
             ),

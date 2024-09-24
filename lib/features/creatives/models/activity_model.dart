@@ -33,7 +33,7 @@ class Activity {
   final String? helperFielId;
 
   final String authorName;
-  final String authorProfileHandle;
+  final String authorstoreType;
   final String authorProfileImageUrl;
   final bool authorVerification;
   final Timestamp? timestamp;
@@ -48,7 +48,7 @@ class Activity {
     required this.comment,
     required this.timestamp,
     required this.authorName,
-    required this.authorProfileHandle,
+    required this.authorstoreType,
     required this.authorProfileImageUrl,
     required this.authorVerification,
     required this.helperFielId,
@@ -66,7 +66,7 @@ class Activity {
       comment: doc['comment'],
       timestamp: doc['timestamp'] ?? DateTime.now(),
       authorName: doc['authorName'] ?? '',
-      authorProfileHandle: doc['authorProfileHandle'] ?? '',
+      authorstoreType: doc['authorstoreType'] ?? '',
       authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
       authorVerification: doc['authorVerification'] ?? false,
     );
@@ -111,15 +111,11 @@ class Activity {
 
       case 'tag':
         return NotificationActivityType.tag;
-        case 'tagConfirmed':
+      case 'tagConfirmed':
         return NotificationActivityType.tagConfirmed;
-
-
-        
 
       default:
         return NotificationActivityType.eventUpdate;
-
     }
   }
 }

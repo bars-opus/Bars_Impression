@@ -410,7 +410,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
       attachments: attachement,
       eventId: widget.room.linkedEventId,
       authorName: _provider.user!.userName!,
-      authorProfileHanlde: _provider.user!.profileHandle!,
+      authorProfileHanlde: _provider.user!.storeType!,
       authorProfileImageUrl: _provider.user!.profileImageUrl!,
       authorVerification: _provider.user!.verified! ? false : true,
     );

@@ -3,8 +3,8 @@ import 'package:bars/utilities/exports.dart';
 
 class UserView extends StatefulWidget {
   final String currentUserId;
-  final UserProfessionalModel userProfessional;
-  List<UserProfessionalModel> userList;
+  final UserStoreModel userProfessional;
+  List<UserStoreModel> userList;
   List<DocumentSnapshot> userSnapshot;
   final int pageIndex;
   final String liveCity;
@@ -129,7 +129,7 @@ class _UserViewState extends State<UserView> {
                             Provider.of<UserData>(context).currentUserId!,
                         user: widget.userProfessional,
                         userIndex: userIndex,
-                        types: widget.userProfessional.profileHandle,
+                        types: widget.userProfessional.storeType,
                         pageIndex: widget.pageIndex,
                         userList: widget.userList,
                         userSnapshot: widget.userSnapshot,
@@ -177,8 +177,7 @@ class _UserViewState extends State<UserView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        widget.userProfessional.profileHandle
-                            .replaceAll('\n', ' '),
+                        widget.userProfessional.storeType.replaceAll('\n', ' '),
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 10.0),
@@ -253,16 +252,16 @@ class _UserViewState extends State<UserView> {
                                 text: widget.userProfessional.country,
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
-                            if (widget.userProfessional.continent.isNotEmpty &&
-                                widget.userProfessional.country.isNotEmpty)
-                              TextSpan(
-                                text: ', ',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            TextSpan(
-                              text: widget.userProfessional.continent,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
+                            // if (widget.userProfessional.continent.isNotEmpty &&
+                            //     widget.userProfessional.country.isNotEmpty)
+                            //   TextSpan(
+                            //     text: ', ',
+                            //     style: Theme.of(context).textTheme.bodySmall,
+                            //   ),
+                            // TextSpan(
+                            //   text: widget.userProfessional.continent,
+                            //   style: Theme.of(context).textTheme.bodySmall,
+                            // ),
                           ],
                         ),
                         overflow: TextOverflow.ellipsis,

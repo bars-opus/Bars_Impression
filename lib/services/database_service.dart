@@ -37,9 +37,9 @@ class DatabaseService {
       'disabledAccount': false,
       'dynamicLink': '',
       'lastActiveDate': Timestamp.fromDate(DateTime.now()),
-      'name': signedInHandler.displayName ?? name,
-      'privateAccount': false,
-      'profileHandle': 'Fan',
+      // 'name': signedInHandler.displayName ?? name,
+      // 'privateAccount': false,
+      'storeType': 'Fan',
       'profileImageUrl': '',
       'reportConfirmed': false,
       'userId': signedInHandler.uid,
@@ -61,22 +61,22 @@ class DatabaseService {
     batch.set(userGeneralSettingsRef, {
       'userId': signedInHandler.uid,
       'disableChat': false,
-      'privateAccount': false,
-      'disableAdvice': false,
-      'hideAdvice': false,
+      // 'privateAccount': false,
+      // 'disableAdvice': false,
+      // 'hideAdvice': false,
       'disableBooking': false,
       'disabledAccount': false,
       'isEmailVerified': false,
-      'disableEventSuggestionNotification': false,
-      'muteEventSuggestionNotification': false,
+      // 'disableEventSuggestionNotification': false,
+      // 'muteEventSuggestionNotification': false,
       'androidNotificationToken': '',
-      'preferredEventTypes': [],
-      'preferredCreatives': [],
+      // 'preferredEventTypes': [],
+      // 'preferredCreatives': [],
       'report': '',
       'reportConfirmedReason': '',
-      'disableNewCreativeNotifications': false,
-      'disableWorkVacancyNotifications': false,
-      'muteWorkVacancyNotifications': false,
+      // 'disableNewCreativeNotifications': false,
+      // 'disableWorkVacancyNotifications': false,
+      // 'muteWorkVacancyNotifications': false,
       'reportConfirmed': false,
     });
 
@@ -84,7 +84,7 @@ class DatabaseService {
       'userId': signedInHandler.uid,
       'userName': '',
       'profileImageUrl': '',
-      'profileHandle': 'Fan',
+      'storeType': 'Fan',
       'dynamicLink': '',
       'currency': '',
       'randomId': randomId,
@@ -93,21 +93,21 @@ class DatabaseService {
       'overview': '',
       'city': '',
       'country': '',
-      'continent': '',
+      // 'continent': '',
       'noBooking': false,
-      'company': [],
-      'collaborations': [],
-      'performances': [],
+      // 'company': [],
+      // 'collaborations': [],
+      // 'performances': [],
       'awards': [],
       'contacts': [],
       'skills': [],
       'links': [],
-      'genreTags': [],
+      'services': [],
       'professionalImageUrls': [],
-      'subAccountType': [],
+      // 'subAccountTyp .e': [],
       'priceTags': [],
-      'disableAdvice': false,
-      'hideAdvice': false,
+      // 'disableAdvice': false,
+      // 'hideAdvice': false,
       'improvemenSuggestion': '',
       'showOnExplorePage': true,
       'transferRecepientId': '',
@@ -128,11 +128,11 @@ class DatabaseService {
 
   static void updateUser(AccountHolderAuthor user) {
     usersAuthorRef.doc(user.userId).update({
-      'name': user.name,
+      // 'name': user.name,
       'userName': user.userName,
       'profileImageUrl': user.profileImageUrl!,
       'bio': user.bio,
-      'profileHandle': user.profileHandle!,
+      'storeType': user.storeType!,
     });
   }
 
@@ -184,8 +184,8 @@ class DatabaseService {
 
   static void followUser(
       {required String currentUserId,
-      required UserProfessionalModel user,
-      required UserProfessionalModel currentUser}) {
+      required UserStoreModel user,
+      required UserStoreModel currentUser}) {
     // Add use to current user's following collection
     followingRef
         .doc(currentUserId)
@@ -328,7 +328,7 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': currentUser.profileImageUrl,
       'authorName': currentUser.userName,
-      'authorProfileHandle': currentUser.profileHandle,
+      'authorstoreType': currentUser.storeType,
       'authorVerification': currentUser.verified,
     });
 
@@ -508,24 +508,24 @@ class DatabaseService {
 
   static Future<int> numUsersAll111() async {
     QuerySnapshot feedSnapShot = await userProfessionalRef
-        // .where('profileHandle', isEqualTo: profileHandle)
+        // .where('storeType', isEqualTo: storeType)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedSnapShot.docs.length;
   }
 
-  static Future<int> numUsersAll(String profileHandle) async {
+  static Future<int> numUsersAll(String storeType) async {
     QuerySnapshot feedSnapShot = await userProfessionalRef
-        .where('profileHandle', isEqualTo: profileHandle)
+        .where('storeType', isEqualTo: storeType)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedSnapShot.docs.length - 1;
   }
 
   static Future<int> numusersLiveLocation(
-      String profileHandle, String liveCity, String liveCountry) async {
+      String storeType, String liveCity, String liveCountry) async {
     QuerySnapshot feedSnapShot = await userProfessionalRef
-        .where('profileHandle', isEqualTo: profileHandle)
+        .where('storeType', isEqualTo: storeType)
         .where('city', isEqualTo: liveCity)
         .where('country', isEqualTo: liveCountry)
         // .where('showOnExplorePage', isEqualTo: true)
@@ -2266,7 +2266,7 @@ class DatabaseService {
     await sendTaggedNotificaton(
       batch: batch,
       taggedUsers: taggedsers,
-      authorProfileHandle: author.profileHandle,
+      authorstoreType: author.storeType,
       authorVerification: author.verified,
     );
 
@@ -2287,7 +2287,7 @@ class DatabaseService {
   static Future<void> sendTaggedNotificaton({
     required WriteBatch batch,
     required List<TaggedNotificationModel> taggedUsers,
-    required authorProfileHandle,
+    required authorstoreType,
     required authorVerification,
   }) async {
     for (var taggedUser in taggedUsers) {
@@ -2318,7 +2318,7 @@ class DatabaseService {
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': '',
         'authorName': 'Tagged in Event',
-        'authorProfileHandle': authorProfileHandle,
+        'authorstoreType': authorstoreType,
         'authorVerification': authorVerification,
       });
     }
@@ -2359,7 +2359,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': '',
             'authorName': 'New event in ${event.city}',
-            'authorProfileHandle': event.authorId,
+            'authorstoreType': event.authorId,
             'authorVerification': false
           });
 
@@ -2416,7 +2416,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': '',
             'authorName': 'New event by ${event.authorName}\n${event.title}',
-            'authorProfileHandle': event.authorId,
+            'authorstoreType': event.authorId,
             'authorVerification': false
           });
 
@@ -2586,7 +2586,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': '',
             'authorName': 'Event informaiton updated',
-            'authorProfileHandle': event.authorId,
+            'authorstoreType': event.authorId,
             'authorVerification': false
           });
           operationCount++; // One operation for the user activity
@@ -2660,7 +2660,7 @@ class DatabaseService {
       //     'timestamp': Timestamp.fromDate(DateTime.now()),
       //     'authorProfileImageUrl': '',
       //     'authorName': 'Event informaiton updated',
-      //     'authorProfileHandle': event.authorId,
+      //     'authorstoreType': event.authorId,
       //     'authorVerification': false
       //   });
       //   operationCount++; // One operation for the user activity
@@ -2851,7 +2851,7 @@ class DatabaseService {
           'timestamp': Timestamp.fromDate(DateTime.now()),
           'authorProfileImageUrl': '',
           'authorName': 'Event deleted',
-          'authorProfileHandle': '',
+          'authorstoreType': '',
           'authorVerification': false
         });
 
@@ -3058,7 +3058,7 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': '',
       'authorName': 'Refund requested ',
-      'authorProfileHandle': event.authorId,
+      'authorstoreType': event.authorId,
       'authorVerification': false
     });
 
@@ -3087,7 +3087,7 @@ class DatabaseService {
 
   static Future<void> confirmUserTag(
     TaggedNotificationModel tag,
-    authorProfileHandle,
+    authorstoreType,
     authorVerification,
     authorUserName,
   ) async {
@@ -3119,7 +3119,7 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': '',
       'authorName': 'Tag confirmed',
-      'authorProfileHandle': authorProfileHandle,
+      'authorstoreType': authorstoreType,
       'authorVerification': authorVerification,
     });
 
@@ -3357,7 +3357,7 @@ class DatabaseService {
       'govIdType': verification.govIdType,
       'email': verification.email,
       'phoneNumber': verification.phoneNumber,
-      'profileHandle': verification.profileHandle,
+      'storeType': verification.storeType,
       'gvIdImageUrl': verification.gvIdImageUrl,
       'website': verification.website,
       'socialMedia': verification.socialMedia,
@@ -3599,7 +3599,6 @@ class DatabaseService {
           await usersLocationSettingsRef.doc(userId).get();
 
       if (userDocSnapshot.exists) {
-      
         return UserSettingsLoadingPreferenceModel.fromDoc(userDocSnapshot);
       } else {
         return null;
@@ -3610,15 +3609,13 @@ class DatabaseService {
     }
   }
 
-    static Future<UserProfessionalModel?>
-      getUserStoreWithId(String userId) async {
+  static Future<UserStoreModel?> getUserStoreWithId(String userId) async {
     try {
       DocumentSnapshot userDocSnapshot =
           await userProfessionalRef.doc(userId).get();
 
       if (userDocSnapshot.exists) {
-      
-        return UserProfessionalModel.fromDoc(userDocSnapshot);
+        return UserStoreModel.fromDoc(userDocSnapshot);
       } else {
         return null;
       }
@@ -3627,7 +3624,6 @@ class DatabaseService {
       return null;
     }
   }
-
 
   static Future<UserSettingsGeneralModel?> getUserGeneralSettingWithId(
       String userId) async {
@@ -3673,13 +3669,13 @@ class DatabaseService {
     );
   }
 
-  static Future<UserProfessionalModel?> getUserProfessionalWithId(
+  static Future<UserStoreModel?> getUserProfessionalWithId(
       String userId) async {
     try {
       DocumentSnapshot userDocSnapshot =
           await userProfessionalRef.doc(userId).get();
       if (userDocSnapshot.exists) {
-        return UserProfessionalModel.fromDoc(userDocSnapshot);
+        return UserStoreModel.fromDoc(userDocSnapshot);
       } else {
         return null;
       }
@@ -3891,7 +3887,7 @@ class DatabaseService {
       otherLink: '',
       newsCoverage: '',
       phoneNumber: '',
-      profileHandle: '',
+      storeType: '',
       rejectedReason: '',
       socialMedia: '',
       status: '',
@@ -3921,7 +3917,7 @@ class DatabaseService {
       'authorId': currentUserId,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorVerification': user.verified,
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'report': '',
@@ -3962,7 +3958,7 @@ class DatabaseService {
       'content': comment,
       'authorId': user.userId,
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -4059,7 +4055,7 @@ class DatabaseService {
       'content': advice,
       'authorId': user.userId,
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -4088,7 +4084,7 @@ class DatabaseService {
       'report': '',
       'reportConfirmed': reportConfirmed,
       'authorName': currentUser.userName,
-      'authorProfileHandle': currentUser.profileHandle,
+      'authorstoreType': currentUser.storeType,
       'authorProfileImageUrl': currentUser.profileImageUrl,
       'authorVerification': currentUser.verified,
       'authorId': currentUser.userId,
@@ -4484,7 +4480,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorProfileHandle': '',
+      'authorstoreType': '',
       'authorVerification': currentUser.verified,
     });
 
@@ -4629,7 +4625,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorProfileHandle': '',
+      'authorstoreType': '',
       'authorVerification': currentUser.verified,
     });
 
@@ -4693,7 +4689,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorProfileHandle': '',
+      'authorstoreType': '',
       'authorVerification': currentUser.verified,
     });
 
@@ -4775,7 +4771,7 @@ class DatabaseService {
         'authorProfileImageUrl':
             authorProfileImageUrl, // Assuming there's a profileImageUrl field
         'authorName': event.authorName,
-        'authorProfileHandle': '',
+        'authorstoreType': '',
         'authorVerification': false,
       });
     }
@@ -4845,7 +4841,7 @@ class DatabaseService {
       'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorVerification': user.verified,
     });
   }
@@ -4921,7 +4917,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorProfileHandle': '',
+      'authorstoreType': '',
       'authorVerification': currentUser.verified,
     });
   }
@@ -5026,7 +5022,7 @@ class DatabaseService {
       'authorProfileImageUrl':
           user.profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorVerification': user.verified,
     });
   }
@@ -5205,7 +5201,7 @@ class DatabaseService {
       'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorVerification': user.verified,
     });
   }
@@ -5463,7 +5459,7 @@ class DatabaseService {
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': '',
         'authorName': 'Cordially Invited',
-        'authorProfileHandle': event.authorId,
+        'authorstoreType': event.authorId,
         'authorVerification': user.verified,
       });
     }
@@ -5486,7 +5482,7 @@ class DatabaseService {
       'mediaType': '',
       'mediaUrl': '',
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'reportConfirmed': reportConfirmed,
@@ -5576,7 +5572,7 @@ class DatabaseService {
       'authorProfileImageUrl':
           user.profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorVerification': user.verified,
     });
   }
@@ -5602,7 +5598,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': user.profileImageUrl,
             'authorName': user.userName,
-            'authorProfileHandle': user.profileHandle,
+            'authorstoreType': user.storeType,
             'authorVerification': user.verified,
           })
         : event != null
@@ -5620,7 +5616,7 @@ class DatabaseService {
                 'timestamp': Timestamp.fromDate(DateTime.now()),
                 'authorProfileImageUrl': user.profileImageUrl,
                 'authorName': user.userName,
-                'authorProfileHandle': user.profileHandle,
+                'authorstoreType': user.storeType,
                 'authorVerification': user.verified,
               })
             : followerUser != null
@@ -5638,7 +5634,7 @@ class DatabaseService {
                     'timestamp': Timestamp.fromDate(DateTime.now()),
                     'authorProfileImageUrl': user.profileImageUrl,
                     'authorName': user.userName,
-                    'authorProfileHandle': user.profileHandle,
+                    'authorstoreType': user.storeType,
                     'authorVerification': user.verified,
                   })
                 : followerUser != null
@@ -5656,7 +5652,7 @@ class DatabaseService {
                         'timestamp': Timestamp.fromDate(DateTime.now()),
                         'authorProfileImageUrl': user.profileImageUrl,
                         'authorName': user.userName,
-                        'authorProfileHandle': user.profileHandle,
+                        'authorstoreType': user.storeType,
                         'authorVerification': user.verified,
                       })
                     : null;
@@ -5806,7 +5802,7 @@ class DatabaseService {
       'content': ask,
       'authorId': user.userId,
       'authorName': user.userName,
-      'authorProfileHandle': user.profileHandle,
+      'authorstoreType': user.storeType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -5839,9 +5835,9 @@ class DatabaseService {
         link: Uri.parse(urilink),
         uriPrefix: 'https://links.barsopus.com/barsImpression',
         androidParameters:
-            AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+            AndroidParameters(packageName: 'com.bars-Opus.florence'),
         iosParameters: IOSParameters(
-          bundleId: 'com.bars-Opus.barsImpression',
+          bundleId: 'com.bars-Opus.florence',
           appStoreId: '1610868894',
         ),
       );

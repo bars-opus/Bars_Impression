@@ -721,8 +721,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               color: Colors.blue,
             ),
           )
-        : activity.type == NotificationActivityType.follow &&
-                _provider.user!.privateAccount!
+        : activity.type == NotificationActivityType.follow 
+        // &&
+        //         _provider.user!.privateAccount!
             ? _followRequestRespond(activity)
             : activity.type == NotificationActivityType.follow ||
                     activity.postImageUrl!.isEmpty

@@ -26,7 +26,7 @@ class _UserSearchState extends State<UserSearch> {
   // _buildUserTile(AccountHolderAuthor user) {
   //   return SearchUserTile(
   //       userName: user.userName!.toUpperCase(),
-  //       profileHandle: user.profileHandle!,
+  //       storeType: user.storeType!,
   //       verified: user.verified!,
   //       profileImageUrl: user.profileImageUrl!,
   //       bio: user.bio!,

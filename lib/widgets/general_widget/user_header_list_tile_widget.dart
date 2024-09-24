@@ -29,9 +29,10 @@ class UserHeaderListTileWidget extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Theme.of(context).primaryColor,
                 image: DecorationImage(
-                  image: CachedNetworkImageProvider(user.profileImageUrl!,errorListener: (_) {
-                            return;
-                          }),
+                  image: CachedNetworkImageProvider(user.profileImageUrl!,
+                      errorListener: (_) {
+                    return;
+                  }),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -44,7 +45,7 @@ class UserHeaderListTileWidget extends StatelessWidget {
                 text: user.userName!.toUpperCase(),
                 style: Theme.of(context).textTheme.bodyMedium),
             TextSpan(
-              text: "\n${user.profileHandle}",
+              text: "\n${user.storeType}",
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),

@@ -4,7 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 // ignore: must_be_immutable
 class Authorview extends StatelessWidget {
   final String userName;
-  final String profileHandle;
+  final String storeType;
   final String profileImageUrl;
   final bool verified;
   final String authorId;
@@ -26,7 +26,7 @@ class Authorview extends StatelessWidget {
     required this.report,
     required this.timestamp,
     required this.userName,
-    required this.profileHandle,
+    required this.storeType,
     required this.profileImageUrl,
     required this.verified,
     required this.authorId,
@@ -108,10 +108,10 @@ class Authorview extends StatelessWidget {
                         ? ResponsiveHelper.responsiveHeight(context, 15.0)
                         : ResponsiveHelper.responsiveHeight(context, 18.0),
                     backgroundColor: Colors.blue,
-                    backgroundImage:
-                        CachedNetworkImageProvider(profileImageUrl,   errorListener: (_) {
-                                  return;
-                                }),
+                    backgroundImage: CachedNetworkImageProvider(profileImageUrl,
+                        errorListener: (_) {
+                      return;
+                    }),
                   ),
             title: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -126,7 +126,7 @@ class Authorview extends StatelessWidget {
                     textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
-                          text: profileHandle,
+                          text: storeType,
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 10),

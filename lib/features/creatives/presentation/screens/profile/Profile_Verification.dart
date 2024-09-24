@@ -38,7 +38,6 @@ class _ProfileVerificationState extends State<ProfileVerification> {
     });
   }
 
-
   // _submit() async {
   //   if (!_isLoading) {
   //     animateToPage();
@@ -50,7 +49,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
   //       newsCoverage: _newsCoverage,
   //       govIdType: _govIdType,
   //       verificationType: 'ThroughApp',
-  //       profileHandle: widget.user.profileHandle!,
+  //       storeType: widget.user.storeType!,
   //       wikipedia: _wikipedia,
   //       // email: widget.user.email!,
   //       // phoneNumber: widget.user.contacts!,
@@ -171,8 +170,10 @@ class _ProfileVerificationState extends State<ProfileVerification> {
             groupValue: selectedGovIdType,
             title: Text(
               govIdType,
-              style: TextStyle(color: color, fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14),),
+              style: TextStyle(
+                color: color,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+              ),
             ),
             activeColor: Colors.blue,
             onChanged: (govIdType) => setState(
@@ -358,7 +359,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -373,7 +376,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   },
                 ),
               ),
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -388,7 +393,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   },
                 ),
               ),
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -407,7 +414,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
   }
 
   // _gotToEditProfile() async {
-  //   UserProfessionalModel user =
+  //   UserStoreModel user =
   //       await DatabaseService.getUserProfessionalWithId(
   //     widget.user.userId!,
   //   );
@@ -445,7 +452,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   ),
                 ],
               ),
-              textAlign: TextAlign.start, textScaler: TextScaler.linear(MediaQuery.of(context).textScaleFactor),
+              textAlign: TextAlign.start,
+              textScaler:
+                  TextScaler.linear(MediaQuery.of(context).textScaleFactor),
             ),
             actions: <Widget>[
               CupertinoActionSheetAction(
@@ -457,7 +466,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  // widget.user.profileHandle!.startsWith('Fan')
+                  // widget.user.storeType!.startsWith('Fan')
                   //     ? Navigator.push(
                   //         context,
                   //         MaterialPageRoute(
@@ -507,10 +516,14 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   ),
                 ],
               ),
-              textAlign: TextAlign.start, textScaler: TextScaler.linear(MediaQuery.of(context).textScaleFactor),
+              textAlign: TextAlign.start,
+              textScaler:
+                  TextScaler.linear(MediaQuery.of(context).textScaleFactor),
             ),
             children: <Widget>[
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -521,7 +534,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    // widget.user.profileHandle!.startsWith('Fan')
+                    // widget.user.storeType!.startsWith('Fan')
                     //     ? Navigator.push(
                     //         context,
                     //         MaterialPageRoute(
@@ -533,7 +546,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   },
                 ),
               ),
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -664,7 +679,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
               height: MediaQuery.of(context).size.height,
               color: Theme.of(context).primaryColor,
               child: Center(
-                child: CircularProgressIndicator( color:Colors.blue,),
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                ),
               ),
             );
           }
@@ -746,9 +763,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                     'A blue check is added to a verified account to establish the authenticity of that account. You will need to confirm your identity with Bars Impression in order to be Verified. This helps encourage and maintain trust between users.',
                                     style: TextStyle(
                                       color: Theme.of(context).primaryColor,
-                                        fontSize: 
-                                      ResponsiveHelper.responsiveFontSize(
-                                          context, 14),
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14),
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -843,61 +860,61 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 70.0),
-                                    child: widget.user.profileHandle!
-                                            .startsWith('Fan')
-                                        ? AlwaysWhiteButton(
-                                            onPressed: () {
-                                              widget.user.profileImageUrl!
-                                                          .isNotEmpty &&
-                                                      widget.user.userName!
-                                                          .isNotEmpty &&
-                                                      widget
-                                                          .user.bio!.isNotEmpty
-                                                  ? animateToPage()
-                                                  : _showSelectImageDialog2();
-                                            },
-                                            buttonText: "Continue")
-                                        : AlwaysWhiteButton(
-                                            onPressed: () {
-                                              // widget.user.skills!.isNotEmpty &&
-                                              //         widget.user.otherSites1!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.otherSites2!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.website!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.management!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.contacts!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.mail!
-                                              //             .isNotEmpty &&
-                                              //         widget
-                                              //             .user
-                                              //             .professionalPicture1!
-                                              //             .isNotEmpty &&
-                                              //         widget
-                                              //             .user
-                                              //             .professionalPicture2!
-                                              //             .isNotEmpty &&
-                                              //         widget
-                                              //             .user
-                                              //             .professionalPicture3!
-                                              //             .isNotEmpty &&
-                                              //         widget
-                                              //             .user
-                                              //             .profileImageUrl!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.userName!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.company!
-                                              //             .isNotEmpty &&
-                                              //         widget.user.bio!
-                                              //             .isNotEmpty
-                                              //     ? animateToPage()
-                                              //     : _showSelectImageDialog2();
-                                            },
-                                            buttonText: "Continue"),
+                                    child:
+                                        widget.user.storeType!.startsWith('Fan')
+                                            ? AlwaysWhiteButton(
+                                                onPressed: () {
+                                                  widget.user.profileImageUrl!
+                                                              .isNotEmpty &&
+                                                          widget.user.userName!
+                                                              .isNotEmpty &&
+                                                          widget.user.bio!
+                                                              .isNotEmpty
+                                                      ? animateToPage()
+                                                      : _showSelectImageDialog2();
+                                                },
+                                                buttonText: "Continue")
+                                            : AlwaysWhiteButton(
+                                                onPressed: () {
+                                                  // widget.user.skills!.isNotEmpty &&
+                                                  //         widget.user.otherSites1!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.otherSites2!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.website!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.management!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.contacts!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.mail!
+                                                  //             .isNotEmpty &&
+                                                  //         widget
+                                                  //             .user
+                                                  //             .professionalPicture1!
+                                                  //             .isNotEmpty &&
+                                                  //         widget
+                                                  //             .user
+                                                  //             .professionalPicture2!
+                                                  //             .isNotEmpty &&
+                                                  //         widget
+                                                  //             .user
+                                                  //             .professionalPicture3!
+                                                  //             .isNotEmpty &&
+                                                  //         widget
+                                                  //             .user
+                                                  //             .profileImageUrl!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.userName!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.company!
+                                                  //             .isNotEmpty &&
+                                                  //         widget.user.bio!
+                                                  //             .isNotEmpty
+                                                  //     ? animateToPage()
+                                                  //     : _showSelectImageDialog2();
+                                                },
+                                                buttonText: "Continue"),
                                   ),
                                 ),
                               ],
@@ -992,8 +1009,11 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'Provide a link to a stable Wikipedia article about you',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 12),),
+                                    color: Colors.grey,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12),
+                                  ),
                                   textAlign: TextAlign.start,
                                 ),
                                 const SizedBox(
@@ -1012,8 +1032,11 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'Provide news articles that are about or reference yourself multiple times in the article. These articles must be from recognized news organizations and cannot be blog or self-published content.',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 12),),
+                                    color: Colors.grey,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12),
+                                  ),
                                   textAlign: TextAlign.start,
                                 ),
                                 const SizedBox(
@@ -1074,8 +1097,11 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'Provide a link to any of your social media accounts that are in the public interest.',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize:  ResponsiveHelper.responsiveFontSize(
-                                context, 12),),
+                                    color: Colors.grey,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12),
+                                  ),
                                   textAlign: TextAlign.start,
                                 ),
                                 ContentFieldBlack(
@@ -1091,8 +1117,11 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'You can provide an additional link to confirm your notability.',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize:  ResponsiveHelper.responsiveFontSize(
-                                context, 12),),
+                                    color: Colors.grey,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12),
+                                  ),
                                   textAlign: TextAlign.start,
                                 ),
                                 Center(

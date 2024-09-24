@@ -49,7 +49,7 @@ The date I received the notification: ${MyDateFormat.toDate(activity.timestamp!.
           : '''
 The type of notification: ${activity.type}
 The name of the user sending the notification: ${activity.authorName} 
-The type of user sending the notification: ${activity.authorProfileHandle}
+The type of user sending the notification: ${activity.authorstoreType}
 Is the notification from a verified user?: ${activity.authorVerification} 
 The primary message of the notification: ${activity.comment}
 The date I received the notification: ${MyDateFormat.toDate(activity.timestamp!.toDate())}
@@ -340,7 +340,7 @@ $preparedData
       displayMiniUpdate: widget.updateApp.displayMiniUpdate!,
       onPressed: () {
         StoreRedirect.redirect(
-          androidAppId: "com.barsOpus.barsImpression",
+          androidAppId: "com.bars-Opus.florence",
           iOSAppId: "1610868894",
         );
       },

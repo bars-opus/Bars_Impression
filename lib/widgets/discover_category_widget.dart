@@ -1,14 +1,14 @@
 import 'package:bars/utilities/exports.dart';
 
 class DiscoverCategoryWidget extends StatefulWidget {
-  final List<UserProfessionalModel> usersList;
+  final List<UserStoreModel> usersList;
   final List<DocumentSnapshot> usersSnapshot;
   final List<Event> eventsList;
   final List<DocumentSnapshot> eventsSnapshot;
   final List<Post> postsList;
   final List<DocumentSnapshot> postsSnapshot;
   final String locationCategory; //city, country, continent
-  final String type; //event type or profilehandle type
+  final String type; //event type or storeType type
   final String typeSpecific; // artist, producer or festivals, others
   final int pageIndex; //
   final String currentUserId; // artist, producer or festivals, others
@@ -81,7 +81,7 @@ class _DiscoverCategoryWidgetState extends State<DiscoverCategoryWidget> {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          UserProfessionalModel userProfessional = widget.usersList[index];
+          UserStoreModel userProfessional = widget.usersList[index];
           return UserView(
             userSnapshot: widget.usersSnapshot,
             userList: widget.usersList,
@@ -158,5 +158,4 @@ class _DiscoverCategoryWidgetState extends State<DiscoverCategoryWidget> {
       ),
     );
   }
- 
 }

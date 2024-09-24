@@ -41,7 +41,8 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                       'Update',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize:ResponsiveHelper.responsiveFontSize(context, 50),
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 50),
                         fontWeight: FontWeight.w100,
                       ),
                       textAlign: TextAlign.center,
@@ -49,7 +50,8 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                     Text(
                       'Is Available',
                       style: TextStyle(
-                          fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
+                          fontSize:
+                              ResponsiveHelper.responsiveFontSize(context, 20),
                           // letterSpacing: 2,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
@@ -79,7 +81,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
             SizedBox(height: 50),
             Center(
               child: Container(
-                width:ResponsiveHelper.responsiveHeight(context, 250),
+                width: ResponsiveHelper.responsiveHeight(context, 250),
                 child: TextButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -90,7 +92,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                   ),
                   onPressed: () {
                     StoreRedirect.redirect(
-                      androidAppId: "com.barsOpus.barsImpression",
+                      androidAppId: "com.bars-Opus.florence",
                       iOSAppId: "1610868894",
                     );
                   },
