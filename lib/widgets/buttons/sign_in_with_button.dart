@@ -16,8 +16,8 @@ class SignInWithButton extends StatelessWidget {
         height: ResponsiveHelper.responsiveHeight(context, 45),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            elevation: 20.0,
+            backgroundColor: Theme.of(context).primaryColorLight,
+            elevation: 1.0,
             foregroundColor: Colors.white,
             surfaceTintColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -29,12 +29,13 @@ class SignInWithButton extends StatelessWidget {
             focusColor: Colors.blue,
             leading: Icon(
               icon,
-              color: Color(0xFF1a1a1a),
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             title: Text(
               buttonText,
               style: TextStyle(
-                color: Colors.black,
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).secondaryHeaderColor,
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
               ),
             ),

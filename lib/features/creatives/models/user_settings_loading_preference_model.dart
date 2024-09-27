@@ -13,23 +13,23 @@ class UserSettingsLoadingPreferenceModel {
   final String? city;
   @HiveField(1)
   final String? country;
+  // @HiveField(2)
+  // final String? continent;
   @HiveField(2)
-  final String? continent;
-  @HiveField(3)
   final String? currency;
-  @HiveField(4)
+  @HiveField(3)
   final String? userId;
-  @HiveField(5)
+  @HiveField(4)
   final Timestamp? timestamp;
-  @HiveField(6)
+  @HiveField(5)
   final String? subaccountId;
-  @HiveField(8)
+  @HiveField(6)
   final String? transferRecepientId;
 
   UserSettingsLoadingPreferenceModel({
     required this.city,
     required this.country,
-    required this.continent,
+    // required this.continent,
     required this.userId,
     required this.currency,
     required this.timestamp,
@@ -42,7 +42,7 @@ class UserSettingsLoadingPreferenceModel {
       userId: doc.id,
       country: doc['country'] ?? '',
       timestamp: doc['timestamp'] ?? Timestamp.fromDate(DateTime.now()),
-      continent: doc['continent'],
+      // continent: doc['continent'],
       city: doc['city'] ?? '',
       currency: doc['currency'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
@@ -57,7 +57,7 @@ class UserSettingsLoadingPreferenceModel {
       userId: doc.id,
       timestamp: doc['timestamp'] ?? Timestamp.fromDate(DateTime.now()),
       country: data['country'] ?? '',
-      continent: data['continent'],
+      // continent: data['continent'],
       city: data['city'] ?? '',
       currency: data['currency'] ?? '',
       subaccountId: data['subaccountId'] ?? '',

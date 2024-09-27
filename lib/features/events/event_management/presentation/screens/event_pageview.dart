@@ -6,30 +6,30 @@ import 'package:bars/utilities/exports.dart';
 
 class EventPageView extends StatefulWidget {
   final String currentUserId;
-  final Event event;
+  final Post post;
   final int eventIndex;
-  final List<Event> eventList;
+  final List<Post> postList;
   final List<DocumentSnapshot> eventSnapshot;
   final int pageIndex;
 
   final String liveCity;
   final String liveCountry;
   // final String seeMoreFrom;
-  final int sortNumberOfDays;
+  // final int sortNumberOfDays;
   final String isFrom;
 
   EventPageView(
       {required ValueKey key,
       required this.currentUserId,
       required this.pageIndex,
-      required this.event,
-      required this.eventList,
+      required this.post,
+      required this.postList,
       required this.eventSnapshot,
       required this.eventIndex,
       required this.liveCity,
       required this.liveCountry,
       // required this.seeMoreFrom,
-      required this.sortNumberOfDays,
+      // required this.sortNumberOfDays,
       required this.isFrom})
       : super(key: key);
 
@@ -39,7 +39,7 @@ class EventPageView extends StatefulWidget {
 
 class _EventPageViewState extends State<EventPageView> {
   late PageController _pageController2;
-  List<Event> _filteredEvents = [];
+  List<Post> _filteredPosts = [];
   final _filteredEventSnapshot = <DocumentSnapshot>[];
   double page = 0.0;
   bool _hasNext = true;
@@ -61,7 +61,7 @@ class _EventPageViewState extends State<EventPageView> {
     _pageController2.addListener(_onPageChanged);
     _timer = Timer(Duration(seconds: 0), () {});
 
-    _filteredEvents = widget.eventList;
+    _filteredPosts = widget.postList;
   }
 
   @override
@@ -145,28 +145,28 @@ class _EventPageViewState extends State<EventPageView> {
       });
     }
     if (pageIndex != 0) {
-      _filteredEvents =
-          widget.eventList.where((event) => event.type == type).toList();
+      _filteredPosts =
+          widget.postList.where((post) => post.storeType == type).toList();
       _filteredEventSnapshot.clear();
       widget.liveCity.isNotEmpty
-          ? _setupEvents(
+          ? _setupPosts(
               type: type,
               city: widget.liveCity,
               country: widget.liveCountry,
             )
           : widget.isFrom.isNotEmpty
               ? _setUpCityCountry(type)
-              : _setupEvents(type: type);
+              : _setupPosts(type: type);
     } else {
       widget.liveCity.isNotEmpty
-          ? _setupEvents(
+          ? _setupPosts(
               type: 'All',
               city: widget.liveCity,
               country: widget.liveCountry,
             )
           : widget.isFrom.isNotEmpty
               ? _setUpCityCountry('All')
-              : _setupEvents(type: 'All');
+              : _setupPosts(type: 'All');
     }
   }
 
@@ -177,12 +177,12 @@ class _EventPageViewState extends State<EventPageView> {
         Provider.of<UserData>(context, listen: false).userLocationPreference;
 
     return widget.isFrom.startsWith('City')
-        ? _setupEvents(
+        ? _setupPosts(
             city: _userLocationSettings!.city,
             country: _userLocationSettings.country,
             type: type,
           )
-        : _setupEvents(
+        : _setupPosts(
             country: _userLocationSettings!.country,
             type: type,
           );
@@ -190,7 +190,7 @@ class _EventPageViewState extends State<EventPageView> {
 
   Set<String> addedEventIds = Set<String>();
 
-  Future<List<Event>> _setupEvents({
+  Future<List<Post>> _setupPosts({
     required String type,
     String? country,
     String? city,
@@ -201,14 +201,18 @@ class _EventPageViewState extends State<EventPageView> {
         _loading = true;
       });
     }
-    final currentDate = DateTime(now.year, now.month, now.day);
-    // Calculate the end date based on the sortNumberOfDays
-    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-    var query = (type.startsWith('All'))
-        ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
-        : allEventsRef
+    // final currentDate = DateTime(now.year, now.month, now.day);
+    // // Calculate the end date based on the sortNumberOfDays
+    // final endDate = currentDate.add(Duration(days: sortNumberOfDays));
+    var query = 
+    
+    // (type.startsWith('All'))
+    //     ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+    //     :
+        
+         allEventsRef
             .where('showOnExplorePage', isEqualTo: true)
-            .where('type', isEqualTo: type);
+            .where('storeType', isEqualTo: type);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -217,36 +221,36 @@ class _EventPageViewState extends State<EventPageView> {
       query = query.where('city', isEqualTo: city);
     }
 
-    if (sortNumberOfDays != 0) {
-      query = query.where('clossingDay', isLessThanOrEqualTo: endDate);
-    }
+    // if (sortNumberOfDays != 0) {
+    //   query = query.where('clossingDay', isLessThanOrEqualTo: endDate);
+    // }
 
     try {
-      QuerySnapshot eventFeedSnapShot = await query
-          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-          .orderBy('clossingDay', descending: false)
+      QuerySnapshot postFeedSnapShot = await query
+          // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          // .orderBy('clossingDay', descending: false)
           .limit(2)
           .get();
 
-      List<Event> events =
-          eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+      List<Post> posts =
+          postFeedSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
 
-      List<Event> uniqueEvents = [];
+      List<Post> uniqueEvents = [];
 
-      for (var event in events) {
-        if (addedEventIds.add(event.id)) {
-          uniqueEvents.add(event);
+      for (var post in posts) {
+        if (addedEventIds.add(post.id!)) {
+          uniqueEvents.add(post);
         }
       }
 
       if (mounted) {
         setState(() {
-          _filteredEvents = events;
-          _filteredEventSnapshot.addAll((eventFeedSnapShot.docs));
+          _filteredPosts = posts;
+          _filteredEventSnapshot.addAll((postFeedSnapShot.docs));
           _loading = false;
         });
       }
-      return events;
+      return posts;
     } catch (e) {
       _showBottomSheetErrorMessage();
       if (mounted) {
@@ -270,7 +274,7 @@ class _EventPageViewState extends State<EventPageView> {
           onPressed: () async {
             Navigator.pop(context);
           },
-          title: 'Failed to fetch events.',
+          title: 'Failed to fetch posts.',
           subTitle: 'Please check your internet connection and try again.',
         );
       },
@@ -326,45 +330,45 @@ class _EventPageViewState extends State<EventPageView> {
               String eventType = '';
               switch (index) {
                 case 0:
-                  eventType = 'All';
+                  eventType = 'Salon';
 
                   break;
                 case 1:
-                  eventType = 'Parties';
+                  eventType = 'Barbershop';
 
                   break;
                 case 2:
-                  eventType = 'Music_concerts';
+                  eventType = 'Spa';
 
                   break;
-                case 3:
-                  eventType = 'Festivals';
+                // case 3:
+                //   eventType = 'Festivals';
 
-                  break;
-                case 4:
-                  eventType = 'Club_nights';
+                //   break;
+                // case 4:
+                //   eventType = 'Club_nights';
 
-                  break;
-                case 5:
-                  eventType = 'Pub_events';
+                //   break;
+                // case 5:
+                //   eventType = 'Pub_events';
 
-                  break;
-                case 6:
-                  eventType = 'Games/Sports';
+                //   break;
+                // case 6:
+                //   eventType = 'Games/Sports';
 
-                  break;
-                case 7:
-                  eventType = 'Religious';
+                //   break;
+                // case 7:
+                //   eventType = 'Religious';
 
-                  break;
-                case 8:
-                  eventType = 'Business';
+                //   break;
+                // case 8:
+                //   eventType = 'Business';
 
-                  break;
-                case 9:
-                  eventType = 'Others';
+                //   break;
+                // case 9:
+                //   eventType = 'Others';
 
-                  break;
+                //   break;
               }
 
               return _loading
@@ -375,23 +379,25 @@ class _EventPageViewState extends State<EventPageView> {
                       ? _noEvent(eventType)
                       : EventPages(
                           types: eventType,
-                          event: widget.event,
+                          post: widget.post,
                           currentUserId: widget.currentUserId,
-                          eventList: _filteredEvents,
+                          postList: _filteredPosts,
                           eventSnapshot: _filteredEventSnapshot.isEmpty
                               ? widget.eventSnapshot
                               : _filteredEventSnapshot,
                           eventIndex: widget.eventIndex,
                           liveCity: widget.liveCity,
                           liveCountry: widget.liveCountry,
-                          sortNumberOfDays: widget.sortNumberOfDays,
+                          // sortNumberOfDays: widget.sortNumberOfDays,
                           isFrom: widget.isFrom,
                         );
             },
           ),
           Positioned(
             bottom: 70,
-            child: InfoWidget(
+            child: 
+            
+            InfoWidget(
               info: _isSnackbarType.startsWith('Others')
                   ? 'You are now browsing $_isSnackbarType'
                   : 'You are now browsing $_isSnackbarType',

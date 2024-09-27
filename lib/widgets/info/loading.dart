@@ -22,30 +22,30 @@ class Loading extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-          shakeReapeat
-              ? ShakeTransition(
-                  curve: Curves.easeInOutBack,
-                  axis: Axis.vertical,
-                  duration: Duration(milliseconds: 1300),
-                  child: Padding(
-                    padding: EdgeInsets.only(right: shakeReapeat ? 60.0 : 0),
-                    child: RepeatShakeTransition(
-                        child: SizedBox(
-                            height:
-                                ResponsiveHelper.responsiveHeight(context, 60),
-                            width:
-                                ResponsiveHelper.responsiveHeight(context, 60),
-                            child: AnimatedCircle(
-                              animateShape: true,
-                            ))),
-                  ),
-                )
-              : AnimatedCircle(
-                  size: 50,
-                  stroke: 3,
-                  animateShape: true,
-                  animateSize: true,
-                ),
+          // shakeReapeat
+          //     ? ShakeTransition(
+          //         curve: Curves.easeInOutBack,
+          //         axis: Axis.vertical,
+          //         duration: Duration(milliseconds: 1300),
+          //         child: Padding(
+          //           padding: EdgeInsets.only(right: shakeReapeat ? 60.0 : 0),
+          //           child: RepeatShakeTransition(
+          //               child: SizedBox(
+          //                   height:
+          //                       ResponsiveHelper.responsiveHeight(context, 60),
+          //                   width:
+          //                       ResponsiveHelper.responsiveHeight(context, 60),
+          //                   child: AnimatedCircle(
+          //                     animateShape: true,
+          //                   ))),
+          //         ),
+          //       )
+          //     : AnimatedCircle(
+          //         size: 50,
+          //         stroke: 3,
+          //         animateShape: true,
+          //         animateSize: true,
+          //       ),
           // SizedBox(height: 10),
           RichText(
             textScaler: MediaQuery.of(context).textScaler,

@@ -89,27 +89,27 @@ class StorageService {
     return downloadUrl;
   }
 
-  static Future<String> uploadPost(File imageFile) async {
-    String postId = Uuid().v4();
-    File? image = await compressImage(postId, imageFile);
-    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    UploadTask uploadTask = storageRef
-        .child('images/new_posts/$currentUserId/post_$postId.jpg')
-        .putFile(image!);
-    String downloadUrl = await (await uploadTask).ref.getDownloadURL();
-    return downloadUrl;
-  }
+  // static Future<String> uploadPost(File imageFile) async {
+  //   String postId = Uuid().v4();
+  //   File? image = await compressImage(postId, imageFile);
+  //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  //   UploadTask uploadTask = storageRef
+  //       .child('images/new_posts/$currentUserId/post_$postId.jpg')
+  //       .putFile(image!);
+  //   String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+  //   return downloadUrl;
+  // }
 
-  static Future<String> uploadEvent(File imageFile, String eventId) async {
-    // String? eventId = Uuid().v4();
-    File? image = await compressImage(eventId, imageFile);
+  static Future<String> uploadPost(File imageFile, String postId) async {
+    // String? postId = Uuid().v4();
+    File? image = await compressImage(postId, imageFile);
     // if (url.isNotEmpty) {
     //   RegExp exp = RegExp(r'userProfile_(.*).jpg');
-    //   eventId = exp.firstMatch(url)![1];
+    //   postId = exp.firstMatch(url)![1];
     // }
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/new_events/$currentUserId/event_$eventId.jpg')
+        .child('images/posts/$currentUserId/post_$postId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;

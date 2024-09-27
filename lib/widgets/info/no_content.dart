@@ -57,9 +57,9 @@ class NoContents extends StatelessWidget {
                   ? TextStyle(
                       color: textColor,
                       fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 14),
+                          ResponsiveHelper.responsiveFontSize(context, 12),
                     )
-                  : Theme.of(context).textTheme.bodyMedium,
+                  : Theme.of(context).textTheme.bodySmall,
               textAlign: isFLorence ? TextAlign.start : TextAlign.center,
             ),
           ),

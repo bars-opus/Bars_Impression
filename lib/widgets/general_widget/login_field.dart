@@ -20,8 +20,7 @@ class LoginField extends StatelessWidget {
     this.suffixIcon,
     this.notLogin = false,
     this.obscureText = false,
-        this.inputColor ,
-
+    this.inputColor,
   });
 
   @override
@@ -29,7 +28,12 @@ class LoginField extends StatelessWidget {
     return TextFormField(
       obscureText: obscureText,
       style: TextStyle(
-        color: inputColor != null? inputColor: notLogin ? Theme.of(context).secondaryHeaderColor : Colors.white,
+        color: inputColor != null
+            ? inputColor
+            : Theme.of(context).secondaryHeaderColor,
+        // notLogin
+        //     ? Theme.of(context).secondaryHeaderColor
+        //     : Colors.white,
         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
       ),
       autofocus: notLogin ? true : false,
@@ -50,17 +54,19 @@ class LoginField extends StatelessWidget {
               : Icon(
                   icon,
                   size: ResponsiveHelper.responsiveHeight(context, 20.0),
-                  color: Colors.grey,
+                  color: Theme.of(context).secondaryHeaderColor,
                 ),
           suffixIcon: suffixIcon == null ? null : suffixIcon,
           hintText: hintText,
           hintStyle: TextStyle(
+              fontWeight: FontWeight.normal,
               fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
               color: Colors.grey),
           labelText: labelText,
           labelStyle: TextStyle(
             fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-            color: Colors.grey,
+            color: Theme.of(context).secondaryHeaderColor,
+            fontWeight: FontWeight.normal,
           ),
           enabledBorder: UnderlineInputBorder(
               borderSide: new BorderSide(color: Colors.grey))),

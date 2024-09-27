@@ -398,31 +398,32 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
                           const SizedBox(
                             height: 10,
                           ),
-                          if (selectedEvents.isNotEmpty)
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColorLight,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: selectedEvents
-                                          .map((event) => EventDisplayWidget(
-                                                currentUserId:
-                                                    widget.currentUserId,
-                                                eventList: selectedEvents,
-                                                event: event,
-                                                pageIndex: 0,
-                                                eventSnapshot: [],
-                                                eventPagesOnly: true,
-                                                liveCity: '',
-                                                liveCountry: '',
-                                                isFrom: '',
-                                                sortNumberOfDays: 0,
-                                              ))
-                                          .toList())),
-                            ),
+                          // if (selectedEvents.isNotEmpty)
+                          //   Container(
+                          //     decoration: BoxDecoration(
+                          //         color: Theme.of(context).primaryColorLight,
+                          //         borderRadius: BorderRadius.circular(20)),
+                          //     child: Padding(
+                          //         padding: const EdgeInsets.all(20.0),
+                          //         child: Column(
+                          //             mainAxisSize: MainAxisSize.min,
+                          //             children: selectedEvents
+                                        
+                          //                 .map((event) => EventDisplayWidget(
+                          //                       currentUserId:
+                          //                           widget.currentUserId,
+                          //                       eventList: selectedEvents,
+                          //                       event: event,
+                          //                       pageIndex: 0,
+                          //                       eventSnapshot: [],
+                          //                       eventPagesOnly: true,
+                          //                       liveCity: '',
+                          //                       liveCountry: '',
+                          //                       isFrom: '',
+                          //                       sortNumberOfDays: 0,
+                          //                     ))
+                          //                 .toList())),
+                          //   ),
                         ],
                       ),
                     );

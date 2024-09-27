@@ -3,7 +3,7 @@ import 'package:bars/utilities/exports.dart';
 
 class UserData extends ChangeNotifier {
   String? currentUserId;
-  late String _artist;
+  late String _Salon;
   late String _caption;
   late String _musicLink;
   late String _punchline;
@@ -35,7 +35,7 @@ class UserData extends ChangeNotifier {
   late String _overview;
   late String _termAndConditions;
   late String _email;
-  late String _profrilehandle;
+  late String _storeType;
   late String _dressCode;
   late String _previousEvent;
   late ChatMessage? _replyChatMessage;
@@ -46,7 +46,7 @@ class UserData extends ChangeNotifier {
   late bool _isSendigChat;
   late bool _isChatRoomScrollVisible;
   late String _chatMessageId;
-  List<PortfolioModel> _performances = [];
+  List<PortfolioModel> _services = [];
   List<PortfolioModel> _awards = [];
   List<PortfolioModel> _linksToWork = [];
   List<PortfolioModel> _skills = [];
@@ -185,7 +185,7 @@ class UserData extends ChangeNotifier {
   late bool _enlargeStartBarcode;
   late bool _enlargeEndBarcode;
   late File? _postImage;
-  late File? _eventImage;
+  late File? _profileImage;
   late File? _messageImage;
   late PriceModel? _bookingPriceRate;
   late File? _image;
@@ -205,7 +205,7 @@ class UserData extends ChangeNotifier {
   UserData() {
     _title = '';
     _storeSearchTerm = '';
-    _artist = '';
+    _Salon = '';
     _caption = '';
     _theme = '';
     _musicLink = '';
@@ -241,7 +241,7 @@ class UserData extends ChangeNotifier {
     _termAndConditions = '';
     _email = '';
     _florenceActionChoice = '';
-    _profrilehandle = '';
+    _storeType = '';
     _ticketNames = '';
     _startDate = Timestamp.fromDate(DateTime.now());
     _sheduleDateTemp = Timestamp.fromDate(DateTime.now());
@@ -302,7 +302,7 @@ class UserData extends ChangeNotifier {
     _creatIconIndex = 0;
     _workRequestisEvent = false;
     _postImage = null;
-    _eventImage = null;
+    _profileImage = null;
     _messageImage = null;
     _bookingPriceRate = null;
     _image = null;
@@ -317,7 +317,7 @@ class UserData extends ChangeNotifier {
     _taggedEventPeople = [];
     _schedulePerson = [];
     _ticketList = [];
-    _performances = [];
+    _services = [];
     _collaborations = [];
     _priceRate = [];
     _awards = [];
@@ -449,7 +449,7 @@ class UserData extends ChangeNotifier {
   ///variables
   String get title => _title;
   String get storeSearchTerm => _storeSearchTerm;
-  String get artist => _artist;
+  String get Salon => _Salon;
   String get caption => _caption;
   String get theme => _theme;
   String get musicLink => _musicLink;
@@ -486,7 +486,7 @@ class UserData extends ChangeNotifier {
   String get termAndConditions => _termAndConditions;
   String get email => _email;
   String get florenceActionChoice => _florenceActionChoice;
-  String get profrilehandle => _profrilehandle;
+  String get storeType => _storeType;
   String get overview => _overview;
   String get imageUrl => _imageUrl;
   String get dressingCode => _dressingCode;
@@ -542,7 +542,7 @@ class UserData extends ChangeNotifier {
   File? get postImage => _postImage;
   File? get messageImage => _messageImage;
   PriceModel? get bookingPriceRate => _bookingPriceRate;
-  File? get eventImage => _eventImage;
+  File? get profileImage => _profileImage;
   File? get professionalImageFile1 => _professionalImageFile1;
   File? get professionalImageFile2 => _professionalImageFile2;
   File? get professionalImageFile3 => _professionalImageFile3;
@@ -566,7 +566,7 @@ class UserData extends ChangeNotifier {
   List<TaggedEventPeopleModel> get taggedEventPeople => _taggedEventPeople;
   List<SchedulePeopleModel> get schedulePerson => _schedulePerson;
   List<TicketModel> get ticketList => _ticketList;
-  List<PortfolioModel> get performances => _performances;
+  List<PortfolioModel> get services => _services;
   List<PortfolioCollaborationModel> get collaborations => _collaborations;
   List<PriceModel> get priceRate => _priceRate;
   List<PortfolioModel> get awards => _awards;
@@ -603,8 +603,8 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setArtist(String artist) {
-    _artist = artist;
+  void setSalon(String Salon) {
+    _Salon = Salon;
     notifyListeners();
   }
 
@@ -808,8 +808,8 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setstoreType(String profrilehandle) {
-    _profrilehandle = profrilehandle;
+  void setstoreType(String storeType) {
+    _storeType = storeType;
     notifyListeners();
   }
 
@@ -949,8 +949,8 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setEventImage(File? eventImage) {
-    _eventImage = eventImage;
+  void setProfileImage(File? profileImage) {
+    _profileImage = profileImage;
     notifyListeners();
   }
 
@@ -1016,8 +1016,8 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setPerformances(PortfolioModel performances) {
-    _performances.add(performances);
+  void setServices(PortfolioModel services) {
+    _services.add(services);
     notifyListeners();
   }
 

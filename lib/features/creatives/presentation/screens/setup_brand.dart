@@ -180,6 +180,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
       // name: _provider.name,
       bio: '',
       disabledAccount: false,
+      isShop: _provider.user!.isShop,
       dynamicLink: '',
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
       storeType: '',
@@ -188,7 +189,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
       userId: _provider.currentUserId,
       userName: userName,
       verified: false,
-      // privateAccount: false,
+      // isShop: false,
       disableChat: false,
     );
     // Put the new object back into the box with the same key
@@ -201,6 +202,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
       // name: _provider.name,
+      isShop: _provider.user!.isShop,
       bio: '',
       disabledAccount: false,
       dynamicLink: link,
@@ -211,7 +213,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
       userId: _provider.currentUserId,
       userName: _provider.changeNewUserName,
       verified: false,
-      // privateAccount: false,
+      // isShop: false,
       disableChat: false,
     );
     // Put the new object back into the box with the same key
@@ -226,10 +228,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
     var updatedAccountAuthor = AccountHolderAuthor(
       // name: _provider.name,
       bio: bio,
+      isShop: _provider.user!.isShop,
       disabledAccount: false,
       dynamicLink: link,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      storeType: _provider.profrilehandle,
+      storeType: _provider.storeType,
       profileImageUrl: profileImageUrl,
       reportConfirmed: false,
       userId: _provider.currentUserId,
@@ -237,7 +240,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
           ? _namecontroller.text.toUpperCase()
           : _provider.changeNewUserName.toUpperCase(),
       verified: false,
-      // privateAccount: false,
+      // isShop: false,
       disableChat: false,
     );
     // Put the new object back into the box with the same key
@@ -434,29 +437,29 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   static const values = <String>[
-    "Artist",
-    "Band",
-    "Battle_Rapper",
-    "Blogger",
-    "Brand_Influencer",
-    'Caterers',
-    "Choire",
-    "Content_creator",
-    "Dancer",
-    'Decorator',
-    "DJ",
-    "Event_organiser",
-    "Graphic_Designer",
-    "Instrumentalist",
-    "Makeup_Artist",
-    "MC(Host)",
-    "Videographer",
-    "Photographer",
-    "Producer",
-    'Sound_and_Light',
-    "Record_Label",
-    "Video_Vixen",
-    "Fan",
+    "Salon",
+    "Barbershop",
+    "Spa",
+    // "Blogger",
+    // "Brand_Influencer",
+    // 'Caterers',
+    // "Choire",
+    // "Content_creator",
+    // "Dancer",
+    // 'Decorator',
+    // "DJ",
+    // "Event_organiser",
+    // "Graphic_Designer",
+    // "Instrumentalist",
+    // "Makeup_Salon",
+    // "MC(Host)",
+    // "Videographer",
+    // "Photographer",
+    // "Producer",
+    // 'Sound_and_Light',
+    // "Record_Label",
+    // "Video_Vixen",
+    // "Fan",
   ];
 
   Widget buildRadios() => Theme(
@@ -583,88 +586,82 @@ class _SetUpBrandState extends State<SetUpBrand> {
         child: child);
   }
 
-  _animatedText(String text) {
-    return TyperAnimatedText(
-      text,
-      textStyle: TextStyle(
-        fontWeight: FontWeight.normal,
-        color: Theme.of(context).secondaryHeaderColor,
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-      ),
-    );
-  }
+  // _animatedText(String text) {
+  //   return TyperAnimatedText(
+  //     text,
+  //     textStyle: TextStyle(
+  //       fontWeight: FontWeight.normal,
+  //       color: Theme.of(context).secondaryHeaderColor,
+  //       fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+  //     ),
+  //   );
+  // }
 
   _setUp() {
     var _provider = Provider.of<UserData>(
       context,
     );
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+      backgroundColor: Theme.of(context).cardColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: ListView(
           children: [
             _animatedContainer(_provider.int2 == 0 ? 100 : 10,
                 SizedBox(height: 0), Duration(seconds: 2), null),
-            Center(
-              child: Material(
-                color: Colors.transparent,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _animatedContainer2(
-                        _provider.int3 == 8 ? 100 : 0,
-                        70,
-                        Center(
-                          child: Text(
-                            'Hell',
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 40.0),
-                              color: Theme.of(context).secondaryHeaderColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Duration(seconds: 2),
-                        null),
-                    if (_provider.int2 != 4)
-                      _provider.int2 != 0
-                          ? AnimatedCircle(
-                              size: 30,
-                              animateSize: true,
-                              animateShape: true,
-                            )
-                          : AnimatedCircle(
-                              size: 80,
-                              animateSize: true,
-                              animateShape: _provider.int3 == 8 ? false : true,
-                            ),
-                  ],
-                ),
-              ),
-            ),
-            if (_provider.int2 != 4)
-              Center(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 30),
-                  height: 2,
-                  color: Colors.blue,
-                  width: 10,
-                ),
-              ),
+            // Center(
+            //   child: Material(
+            //     color: Colors.transparent,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       children: [
+            //         _animatedContainer2(
+            //             _provider.int3 == 8 ? 100 : 0,
+            //             70,
+            //             Center(
+            //               child: Text(
+            //                 'Hell',
+            //                 style: TextStyle(
+            //                   fontSize: ResponsiveHelper.responsiveFontSize(
+            //                       context, 40.0),
+            //                   color: Theme.of(context).secondaryHeaderColor,
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //               ),
+            //             ),
+            //             Duration(seconds: 2),
+            //             null),
+            //         if (_provider.int2 != 4)
+            //           _provider.int2 != 0
+            //               ? AnimatedCircle(
+            //                   size: 30,
+            //                   animateSize: true,
+            //                   animateShape: true,
+            //                 )
+            //               : AnimatedCircle(
+            //                   size: 80,
+            //                   animateSize: true,
+            //                   animateShape: _provider.int3 == 8 ? false : true,
+            //                 ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // if (_provider.int2 != 4)
+
             const SizedBox(height: 10),
             ShakeTransition(
+              curve: Curves.easeInOut,
               child: Center(
                 child: RichText(
                   textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
-                          text: "Welcome\n ",
+                          text: "Welcome to\n ",
                           style: Theme.of(context).textTheme.titleLarge),
                       TextSpan(
-                        text: 'To Bars Impression.',
+                        text: 'Florence.',
                         style: Theme.of(context).textTheme.titleLarge,
                       )
                     ],
@@ -683,30 +680,42 @@ class _SetUpBrandState extends State<SetUpBrand> {
               //   ),
               // ),
             ),
-            const SizedBox(height: 20),
-            if (_provider.int2 == 0)
-              AnimatedTextKit(
-                  repeatForever: false,
-                  totalRepeatCount: 1,
-                  animatedTexts: [
-                    _animatedText("""
-Hello! I'm Hope, your dedicated creative assistant. My goal is to help you elevate your brand, enhance your skills, and connect you with fellow creatives and organizers.
+            Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 30),
+                height: 2,
+                color: Colors.blue,
+                width: 10,
+              ),
+            ),
 
-As we embark on this journey together, I will be here to guide you at every step. I’ll provide more details about how I can assist you as we progress. For now, let’s focus on setting up your profile
-"""),
-                  ]),
+            Text(
+                "Lets setup your profile and then continue to explore some shops.",
+                style: Theme.of(context).textTheme.bodyMedium),
+            // if (_provider.int2 == 0)
+//               AnimatedTextKit(
+//                   repeatForever: false,
+//                   totalRepeatCount: 1,
+//                   animatedTexts: [
+//                     _animatedText("""
+// Hello! I'm Hope, your dedicated creative assistant. My goal is to help you elevate your brand, enhance your skills, and connect you with fellow creatives and organizers.
+
+// As we embark on this journey together, I will be here to guide you at every step. I’ll provide more details about how I can assist you as we progress. For now, let’s focus on setting up your profile
+// """),
+//                   ]),
             const SizedBox(height: 50),
-            if (_provider.int2 == 0)
-              if (_provider.int3 == 9)
-                ShakeTransition(
-                  axis: Axis.vertical,
-                  duration: Duration(seconds: 2),
-                  curve: Curves.easeInOut,
-                  child: _outlineButton('Let\s Start', () {
-                    _provider.setFlorenceActive(true);
-                    _provider.setInt2(1);
-                  }),
-                ),
+            // if (_provider.int2 == 0)
+            //   if (_provider.int3 == 9)
+            ShakeTransition(
+              axis: Axis.vertical,
+              // duration: Duration(seconds: 2),
+              curve: Curves.easeInOut,
+              child: _outlineButton('Let\s Start', () {
+                animateToPage(1);
+                // _provider.setFlorenceActive(true);
+                // _provider.setInt2(1);
+              }),
+            ),
           ],
         ),
       ),
@@ -718,19 +727,16 @@ As we embark on this journey together, I will be here to guide you at every step
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _animatedContainer(
-            value ? 30 : 0,
-            Text(
-              title,
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-                  height: 1),
-            ),
-            Duration(seconds: 2),
-            null),
+        Text(
+          title,
+          style: TextStyle(
+              color: Colors.blue,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+              height: 1),
+        ),
+        const SizedBox(height: 30),
         DirectionWidget(
-          alwaysWhite: true,
+          alwaysWhite: false,
           sizedBox: 0,
           text: subTItle,
           fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
@@ -747,7 +753,7 @@ As we embark on this journey together, I will be here to guide you at every step
                   TextSpan(
                     text: 'If you are uncertain about where you fit in,',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).secondaryHeaderColor,
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 12.0),
                     ),
@@ -813,38 +819,38 @@ As we embark on this journey together, I will be here to guide you at every step
                           false,
                           _provider.int2 == 1),
                       const SizedBox(height: 40),
-                      if (_provider.int2 == 1)
-                        ShakeTransition(
-                          curve: Curves.easeOutBack,
-                          axis: Axis.vertical,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                            ),
-                            child: LoginField(
-                              inputColor: Colors.black,
-                              notLogin: true,
-                              controller: _namecontroller,
-                              hintText: 'A unique name to be identified with',
-                              labelText: 'Username',
-                              onValidateText: (input) {
-                                if (input!.trim().length < 1) {
-                                  return 'Choose a username';
-                                } else if (input.trim().contains(' ')) {
-                                  return 'Username cannot contain space, use ( _ or - )';
-                                } else if (input.trim().contains('@')) {
-                                  return 'Username cannot contain @';
-                                } else if (input.trim().length > 20) {
-                                  return 'Username cannot be longer than 20 characters';
-                                } else {
-                                  return null;
-                                }
-                              },
-                              icon: Icons.email,
-                            ),
+                      // if (_provider.int2 == 1)
+                      ShakeTransition(
+                        curve: Curves.easeOutBack,
+                        axis: Axis.vertical,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                          ),
+                          child: LoginField(
+                            inputColor: Colors.black,
+                            notLogin: true,
+                            controller: _namecontroller,
+                            hintText: 'A unique name to be identified with',
+                            labelText: 'Username',
+                            onValidateText: (input) {
+                              if (input!.trim().length < 1) {
+                                return 'Choose a username';
+                              } else if (input.trim().contains(' ')) {
+                                return 'Username cannot contain space, use ( _ or - )';
+                              } else if (input.trim().contains('@')) {
+                                return 'Username cannot contain @';
+                              } else if (input.trim().length > 20) {
+                                return 'Username cannot be longer than 20 characters';
+                              } else {
+                                return null;
+                              }
+                            },
+                            icon: Icons.email,
                           ),
                         ),
+                      ),
                       const SizedBox(height: 60),
                     ]));
           }),
@@ -899,10 +905,7 @@ As we embark on this journey together, I will be here to guide you at every step
               true,
               _provider.int2 == 2,
             ),
-            _animatedContainer3(
-              _provider.int2 == 2,
-              buildRadios(),
-            ),
+            buildRadios(),
             const SizedBox(
               height: 50.0,
             ),
@@ -939,136 +942,133 @@ As we embark on this journey together, I will be here to guide you at every step
                           ),
                         ),
                       ),
-                    if (_provider.int2 == 3)
-                      !_provider.isLoading
-                          ? Align(
-                              alignment: Alignment.centerRight,
-                              child: MiniCircularProgressButton(
-                                color: Colors.blue,
-                                text: _bioTextController.text.isNotEmpty ||
-                                        _profileImage != null
-                                    ? 'Save'
-                                    : 'Skip',
-                                onPressed:
-                                    _bioTextController.text.trim().isNotEmpty ||
-                                            _profileImage != null
-                                        ? () {
-                                            _validateTextToxicityBio(user);
-                                          }
-                                        : () {
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ConfigPage()),
-                                                    (Route<dynamic> route) =>
-                                                        false);
-                                          },
-                              ))
-                          : SizedBox(),
+                    // if (_provider.int2 == 3)
+                    !_provider.isLoading
+                        ? Align(
+                            alignment: Alignment.centerRight,
+                            child: MiniCircularProgressButton(
+                              color: Colors.blue,
+                              text: _bioTextController.text.isNotEmpty ||
+                                      _profileImage != null
+                                  ? 'Save'
+                                  : 'Skip',
+                              onPressed: _bioTextController.text
+                                          .trim()
+                                          .isNotEmpty ||
+                                      _profileImage != null
+                                  ? () {
+                                      _validateTextToxicityBio(user);
+                                    }
+                                  : () {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ConfigPage()),
+                                          (Route<dynamic> route) => false);
+                                    },
+                            ))
+                        : SizedBox(),
                     _directionWidget(
                       'Set photo and bio',
                       'Choose a brand picture that represents your identity. Utilize the bio text field to share more about yourself, allowing others to get to know you better.',
                       false,
                       _provider.int2 == 3,
                     ),
-                    if (_provider.int2 == 3)
-                      ShakeTransition(
-                        axis: Axis.vertical,
-                        curve: Curves.easeOutBack,
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 20),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 30.0,
-                              ),
-                              _provider.isLoading
-                                  ? SchimmerSkeleton(
-                                      schimmerWidget: CircleAvatar(
-                                        backgroundColor:
-                                            Theme.of(context).primaryColorLight,
-                                        radius:
-                                            ResponsiveHelper.responsiveHeight(
-                                                context, 50.0),
-                                      ),
-                                    )
-                                  : GestureDetector(
-                                      onTap: () => _handleImageFromGallery,
-                                      child: _profileImage == null
-                                          ? Icon(
-                                              Icons.account_circle_outlined,
-                                              size: ResponsiveHelper
-                                                  .responsiveHeight(
-                                                context,
-                                                120,
-                                              ),
-                                              color: Colors.grey,
-                                            )
-                                          : CircleAvatar(
-                                              backgroundColor: Theme.of(context)
-                                                  .primaryColor,
-                                              radius: ResponsiveHelper
-                                                  .responsiveHeight(
-                                                context,
-                                                50.0,
-                                              ),
-                                              backgroundImage:
-                                                  _displayProfileImage()),
+                    // if (_provider.int2 == 3)
+                    ShakeTransition(
+                      axis: Axis.vertical,
+                      curve: Curves.easeOutBack,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 30.0,
+                            ),
+                            _provider.isLoading
+                                ? SchimmerSkeleton(
+                                    schimmerWidget: CircleAvatar(
+                                      backgroundColor:
+                                          Theme.of(context).primaryColorLight,
+                                      radius: ResponsiveHelper.responsiveHeight(
+                                          context, 50.0),
                                     ),
-                              ShakeTransition(
-                                curve: Curves.easeOutBack,
-                                child: Center(
-                                  child: OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      side: BorderSide(
-                                          width: 1.0,
-                                          color: Colors.transparent),
-                                    ),
-                                    onPressed: _handleImageFromGallery,
-                                    child: Text(
-                                      'Set Photo',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey,
-                                        fontSize:
-                                            ResponsiveHelper.responsiveFontSize(
-                                                context, 12.0),
-                                      ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () => _handleImageFromGallery,
+                                    child: _profileImage == null
+                                        ? Icon(
+                                            Icons.account_circle_outlined,
+                                            size: ResponsiveHelper
+                                                .responsiveHeight(
+                                              context,
+                                              120,
+                                            ),
+                                            color: Colors.grey,
+                                          )
+                                        : CircleAvatar(
+                                            backgroundColor:
+                                                Theme.of(context).primaryColor,
+                                            radius: ResponsiveHelper
+                                                .responsiveHeight(
+                                              context,
+                                              50.0,
+                                            ),
+                                            backgroundImage:
+                                                _displayProfileImage()),
+                                  ),
+                            ShakeTransition(
+                              curve: Curves.easeOutBack,
+                              child: Center(
+                                child: OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    side: BorderSide(
+                                        width: 1.0, color: Colors.transparent),
+                                  ),
+                                  onPressed: _handleImageFromGallery,
+                                  child: Text(
+                                    'Set Photo',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 12.0),
                                     ),
                                   ),
                                 ),
                               ),
-                              if (_provider.int2 == 3)
-                                ShakeTransition(
-                                  offset: -140,
-                                  curve: Curves.easeOutBack,
-                                  child: UnderlinedTextField(
-                                    isFlorence: true,
-                                    autofocus: false,
-                                    controler: _bioTextController,
-                                    labelText: 'bio',
-                                    hintText:
-                                        'A piece of short information about yourself',
-                                    onValidateText: (input) => input!
-                                                .trim()
-                                                .length >
-                                            700
-                                        ? 'Please, enter a bio of fewer than 700 characters.'
-                                        : null,
-                                  ),
-                                ),
-                              const SizedBox(height: 30),
-                            ],
-                          ),
+                            ),
+                            // if (_provider.int2 == 3)
+                            // ShakeTransition(
+                            //   offset: -140,
+                            //   curve: Curves.easeOutBack,
+                            //   child: UnderlinedTextField(
+                            //     isFlorence: true,
+                            //     autofocus: false,
+                            //     controler: _bioTextController,
+                            //     labelText: 'bio',
+                            //     hintText:
+                            //         'A piece of short information about yourself',
+                            //     onValidateText: (input) => input!
+                            //                 .trim()
+                            //                 .length >
+                            //             700
+                            //         ? 'Please, enter a bio of fewer than 700 characters.'
+                            //         : null,
+                            //   ),
+                            // ),
+                            const SizedBox(height: 30),
+                          ],
                         ),
                       ),
+                    ),
                   ]);
             }),
       ),
@@ -1137,61 +1137,52 @@ As we embark on this journey together, I will be here to guide you at every step
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Stack(
-        children: [
-          _setUp(),
-          // if (_provider.florenceActive)
-          _animatedContainerWrapper(
-            _provider.florenceActive,
-            Scaffold(
-              backgroundColor: Colors.black.withOpacity(.8),
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                iconTheme: IconThemeData(
-                    color: Theme.of(context).secondaryHeaderColor),
-                automaticallyImplyLeading: true,
-                leading: _index == 4 ? const SizedBox.shrink() : _backButton(),
-                elevation: 0,
-              ),
-              body: FutureBuilder(
-                  future: usersAuthorRef.doc(_provider.currentUserId).get(),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) {
-                      return _loadingToPage();
-                    }
-                    AccountHolderAuthor user =
-                        AccountHolderAuthor.fromDoc(snapshot.data);
-                    return GestureDetector(
-                      onTap: () => FocusScope.of(context).unfocus(),
-                      child: Form(
-                        key: _formKey,
-                        child: PageView(
-                          controller: _pageController,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            _setUserName(),
-                            _selectAccountType(),
-                            _bioAndProfilePhoto(user),
-                            SingleChildScrollView(
-                              child: Container(
-                                  color: Colors.transparent,
-                                  height:
-                                      MediaQuery.of(context).size.height - 200,
-                                  child: Center(
-                                      child: Loading(
-                                    color: Colors.white,
-                                    title: 'Setting up brand',
-                                    icon: (FontAwesomeIcons.circle),
-                                  ))),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-            ),
-          ),
-        ],
+      child: Scaffold(
+        backgroundColor: Theme.of(context).cardColor,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          iconTheme:
+              IconThemeData(color: Theme.of(context).secondaryHeaderColor),
+          automaticallyImplyLeading: true,
+          leading: _index == 4 ? const SizedBox.shrink() : _backButton(),
+          elevation: 0,
+        ),
+        body: FutureBuilder(
+            future: usersAuthorRef.doc(_provider.currentUserId).get(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return _loadingToPage();
+              }
+              AccountHolderAuthor user =
+                  AccountHolderAuthor.fromDoc(snapshot.data);
+              return GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Form(
+                  key: _formKey,
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      _setUp(),
+                      _setUserName(),
+                      _selectAccountType(),
+                      _bioAndProfilePhoto(user),
+                      SingleChildScrollView(
+                        child: Container(
+                            color: Colors.transparent,
+                            height: MediaQuery.of(context).size.height - 200,
+                            child: Center(
+                                child: Loading(
+                              color: Colors.blue,
+                              title: 'Setting up profile',
+                              icon: (FontAwesomeIcons.circle),
+                            ))),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }),
       ),
     );
   }

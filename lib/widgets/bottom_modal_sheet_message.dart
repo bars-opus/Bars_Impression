@@ -630,8 +630,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                   child: CircularButton(
                       color: readyToSend ? Colors.blue : Colors.transparent,
-                      icon: Icon(Icons.send,
-                          color: readyToSend ? Colors.white : Colors.grey),
+                      icon:  Icons.send,
                       onPressed: onSend),
                 ),
         ),

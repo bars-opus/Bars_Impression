@@ -108,7 +108,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
   }
 
   Map<int, String> eventTypes = {
-    0: 'Artist',
+    0: 'Salon',
     1: 'Producer',
     2: 'DJ',
     3: 'Dancer',
@@ -121,15 +121,15 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     10: 'Record_Label',
     11: 'Brand_Influencer',
     12: 'Event_organiser',
-    13: 'Band',
+    13: 'Barbershop',
     14: 'Instrumentalist',
     15: 'Graphic_Designer',
-    16: 'Makeup_Artist',
+    16: 'Makeup_Salon',
     17: 'Video_Vixen',
     18: 'Blogger',
     19: 'MC(Host)',
     20: 'Choir',
-    21: 'Battle_Rapper',
+    21: 'Spa',
     22: 'Fan',
   };
 
@@ -307,7 +307,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
               int tabIndex = 0;
               switch (index) {
                 case 0:
-                  eventType = 'Artist';
+                  eventType = 'Salon';
                   tabIndex = 0;
                   break;
                 case 1:
@@ -359,7 +359,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   tabIndex = 12;
                   break;
                 case 13:
-                  eventType = 'Band';
+                  eventType = 'Barbershop';
                   tabIndex = 13;
                   break;
                 case 14:
@@ -371,7 +371,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   tabIndex = 15;
                   break;
                 case 16:
-                  eventType = 'Makeup_Artist';
+                  eventType = 'Makeup_Salon';
                   tabIndex = 16;
                   break;
                 case 17:
@@ -391,7 +391,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   tabIndex = 20;
                   break;
                 case 21:
-                  eventType = 'Battle_Rapper';
+                  eventType = 'Spa';
                   tabIndex = 21;
                   break;
                 case 22:

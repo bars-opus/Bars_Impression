@@ -449,7 +449,7 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
             example: """
 1.Blogger\n As a blogger, my creative style is centered around storytelling and visual imagery. I have a distinct editorial aesthetic, characterized by a muted color palette, clean typography, and a focus on capturing the emotional essence of my subject matter. Thematically, I often explore topics related to personal growth, mindfulness, and the human experience, aiming to inspire and connect with my audience through relatable narratives and authentic content.
 
-2.Makeup Artist\n As a makeup artist, my creative style is bold, artistic, and heavily influenced by the world of fashion and high couture. I am known for my elaborate eye makeup designs, which often feature intricate patterns, jewel-toned pigments, and dramatic lashes. My work is also distinguished by a flawless base and a signature focus on sculpting and highlighting the features to achieve a striking, editorial-inspired look.
+2.Makeup Salon\n As a makeup Salon, my creative style is bold, Salonic, and heavily influenced by the world of fashion and high couture. I am known for my elaborate eye makeup designs, which often feature intricate patterns, jewel-toned pigments, and dramatic lashes. My work is also distinguished by a flawless base and a signature focus on sculpting and highlighting the features to achieve a striking, editorial-inspired look.
 
 3.Instrumentalist\n As an instrumentalist, my creative style is characterized by a unique blend of technical mastery and emotive expression. Whether I'm performing classical pieces or improvising in a jazz setting, I aim to infuse my playing with a deep sense of passion and musicality. Thematically, my work often explores themes of human connection, the beauty of nature, and the power of storytelling through sound. I strive to create a captivating, immersive sonic experience for my audience.
          
@@ -461,7 +461,7 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
               },
               title: 'Inspirations',
               description:
-                  'Who or what inspires your work? This could be other artists, nature, music, or anything that sparks your creativity."',
+                  'Who or what inspires your work? This could be other Salons, nature, music, or anything that sparks your creativity."',
               textController: _inspirationController,
               hintText: 'Enter your inspirations here...',
               example: """
@@ -484,7 +484,7 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
             example: """
 1.  Grapher designer\n I have 7 years of experience in graphic design, with a focus on branding and digital marketing materials. I am highly proficient in Adobe Creative Cloud, particularly Photoshop, Illustrator, and InDesign. I also have experience in user interface (UI) design and am familiar with various design principles and best practices.
                 
-2.Music Artist\n  As a professional musician, I have 10 years of experience in the music industry. I am a skilled vocalist and multi-instrumentalist, proficient in playing the guitar, piano, and drums. I have a strong background in music theory and composition, and I have produced several albums and singles that have been well-received by critics and fans alike. I am also experienced in live performance, having toured extensively and performed at various music festivals and venues.
+2.Music Salon\n  As a professional musician, I have 10 years of experience in the music industry. I am a skilled vocalist and multi-instrumentalist, proficient in playing the guitar, piano, and drums. I have a strong background in music theory and composition, and I have produced several albums and singles that have been well-received by critics and fans alike. I am also experienced in live performance, having toured extensively and performed at various music festivals and venues.
 
 3.Dj\n  As a DJ and music producer, I have 8 years of experience in the electronic music scene. I am highly skilled in software like Ableton Live, Pro Tools, and Logic Pro, and I have a deep understanding of music production techniques, sound design, and audio engineering. I have a diverse music library spanning various genres, including house, techno, and bass music, and I am adept at reading crowds and creating dynamic, engaging sets that keep the dance floor packed. I have performed at renowned clubs and festivals, and my original productions have received support from leading DJs and radio stations.',
           

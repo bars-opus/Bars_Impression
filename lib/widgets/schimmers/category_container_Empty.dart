@@ -4,11 +4,13 @@ class CategoryContainerEmpty extends StatelessWidget {
   final String containerTitle;
   final String containerSubTitle;
   final bool noLocation;
-  final bool liveLocation;
+  final String liveLocation;
   final bool isEvent;
 
   final double height;
   final int liveLocationIntialPage;
+
+  final String storeType;
 
   CategoryContainerEmpty({
     required this.containerTitle,
@@ -18,6 +20,7 @@ class CategoryContainerEmpty extends StatelessWidget {
     required this.liveLocation,
     required this.liveLocationIntialPage,
     required this.isEvent,
+    required this.storeType,
   });
 
   void _showBottomSheetFetchLiveLocation(
@@ -60,32 +63,52 @@ class CategoryContainerEmpty extends StatelessWidget {
             borderRadius: BorderRadius.circular(0),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
             child: ListTile(
-              trailing: liveLocation
-                  ? Icon(Icons.location_on, size: 25.0, color: Colors.blue)
+              trailing: liveLocation.startsWith('Location') ||
+                      liveLocation.startsWith('Images')
+                  ? Icon(
+                      liveLocation.startsWith('Images')
+                          ? Icons.image
+                          : Icons.location_on,
+                      size: 25.0,
+                      color: Colors.grey)
                   : null,
-              onTap: liveLocation
+              onTap: liveLocation.startsWith('Location')
                   ? () {
                       HapticFeedback.lightImpact();
-                      liveLocation
-                          ? _showBottomSheetFetchLiveLocation(
-                              context, _user, _provider.currentUserId!)
-                          : () {};
+                      _showBottomSheetFetchLiveLocation(
+                          context, _user, _provider.currentUserId!);
                     }
-                  : () {
-                      noLocation
-                          ? Navigator.push(
+                  : liveLocation.startsWith('Images')
+                      ? () {
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => EditProfileSelectLocation(
-                                  user: _user,
-                                  notFromEditProfile: true,
+                                builder: (_) => AllPosts(
+                                  currentUserId: _provider.currentUserId!,
+                                  storeType: storeType,
+                                  pageIndex: 0,
+                                  // userLocationSettings: null,
+                                  liveCity: '',
+                                  liveCountry: '',
                                 ),
-                              ))
-                          : () {};
-                    },
-              title: liveLocation
+                              ));
+                        }
+                      : () {
+                          noLocation
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EditProfileSelectLocation(
+                                      user: _user,
+                                      notFromEditProfile: true,
+                                    ),
+                                  ))
+                              : () {};
+                        },
+              title: liveLocation.startsWith('Location') ||
+                      liveLocation.startsWith('Images')
                   ? Text(
                       "$containerTitle\n",
                       style: TextStyle(

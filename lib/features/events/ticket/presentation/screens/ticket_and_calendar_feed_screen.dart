@@ -243,11 +243,13 @@ class _TicketAndCalendarFeedScreenState
                 TicketOrderModel ticketOrder = _ticketOrder[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: EventsFeedAttendingWidget(
-                    ticketOrder: ticketOrder,
-                    currentUserId: widget.currentUserId,
-                    ticketList: _ticketOrder,
-                  ),
+                  child: SizedBox.shrink()
+                  
+                  // EventsFeedAttendingWidget(
+                  //   ticketOrder: ticketOrder,
+                  //   currentUserId: widget.currentUserId,
+                  //   ticketList: _ticketOrder,
+                  // ),
                 );
               },
               childCount: _ticketOrder.length,
@@ -405,31 +407,32 @@ class _TicketAndCalendarFeedScreenState
                   SizedBox(
                     height: ResponsiveHelper.responsiveHeight(context, 100),
                   ),
-                  if (selectedEvents.isNotEmpty)
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColorLight,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: selectedEvents
-                              .map(
-                                (ticket) => Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 2.0),
-                                  child: EventsFeedAttendingWidget(
-                                    ticketOrder: ticket,
-                                    currentUserId: widget.currentUserId,
-                                    ticketList: _ticketOrder,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
+                  // if (selectedEvents.isNotEmpty)
+                  //   Container(
+                  //     decoration: BoxDecoration(
+                  //         color: Theme.of(context).primaryColorLight,
+                  //         borderRadius: BorderRadius.circular(20)),
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.all(20.0),
+                  //       child: Column(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         children: selectedEvents
+                  //             .map(
+                  //               (ticket) => Padding(
+                  //                 padding:
+                  //                     const EdgeInsets.symmetric(vertical: 2.0),
+                  //                 child:
+                  //                  EventsFeedAttendingWidget(
+                  //                   ticketOrder: ticket,
+                  //                   currentUserId: widget.currentUserId,
+                  //                   ticketList: _ticketOrder,
+                  //                 ),
+                  //               ),
+                  //             )
+                  //             .toList(),
+                  //       ),
+                  //     ),
+                  //   ),
                 ],
               );
             },

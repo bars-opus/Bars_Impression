@@ -2,7 +2,7 @@ import 'package:bars/utilities/exports.dart';
 
 class CircularButton extends StatelessWidget {
   final Color color;
-  final Icon icon;
+  final IconData icon;
   final VoidCallback? onPressed;
 
   CircularButton(
@@ -25,7 +25,11 @@ class CircularButton extends StatelessWidget {
       child: RawMaterialButton(
         shape: CircleBorder(),
         onPressed: onPressed,
-        child: icon,
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: ResponsiveHelper.responsiveFontSize(context, 20),
+        ),
       ),
     );
   }

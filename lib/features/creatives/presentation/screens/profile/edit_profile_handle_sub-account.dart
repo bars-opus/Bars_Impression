@@ -17,7 +17,7 @@
 // }
 
 // class _EditstoreTypeSubAccountState extends State<EditstoreTypeSubAccount> {
-//   bool _isArtist = false;
+//   bool _isSalon = false;
 //   bool _isProducer = false;
 //   bool _isCoverArtDesigner = false;
 //   bool _isMusicVideoDirector = false;
@@ -26,13 +26,13 @@
 //   bool _isPhotographer = false;
 //   bool _isDancer = false;
 //   bool _isVideoVixen = false;
-//   bool _isMakeupArtist = false;
+//   bool _isMakeupSalon = false;
 //   bool _isBrandInfluencer = false;
 //   bool _isBlogger = false;
 //   bool _isMC = false;
 //   int _selectCount = 0;
 
-//   String artist = '';
+//   String Salon = '';
 //   String producer = '';
 //   String coverArtDesigner = '';
 //   String musicVideoDirector = '';
@@ -41,7 +41,7 @@
 //   String photographer = '';
 //   String dancer = '';
 //   String videoVixen = '';
-//   String makeupArtist = '';
+//   String makeupSalon = '';
 //   String brandInfluencer = '';
 //   String blogger = '';
 //   String mC = '';
@@ -153,10 +153,10 @@
 //                       EditProfileInfo(
 //                         editTitle: 'Select \nSub-account skills',
 //                         info:
-//                             'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
+//                             'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Salon, sub-accounts: producer, video director.',
 //                         icon: Icons.account_box_outlined,
 //                       ),
-//                       _isArtist ||
+//                       _isSalon ||
 //                               _isProducer ||
 //                               _isBattleRapper ||
 //                               _isBlogger ||
@@ -164,7 +164,7 @@
 //                               _isCoverArtDesigner ||
 //                               _isDJ ||
 //                               _isDancer ||
-//                               _isMakeupArtist ||
+//                               _isMakeupSalon ||
 //                               _isMusicVideoDirector ||
 //                               _isPhotographer ||
 //                               _isProducer ||
@@ -201,7 +201,7 @@
 //                         height: 10,
 //                       ),
 //                       Text(
-//                         artist +
+//                         Salon +
 //                             producer +
 //                             coverArtDesigner +
 //                             musicVideoDirector +
@@ -211,7 +211,7 @@
 //                             videoVixen +
 //                             blogger +
 //                             dancer +
-//                             makeupArtist +
+//                             makeupSalon +
 //                             brandInfluencer +
 //                             mC,
 //                         style: TextStyle(
@@ -222,19 +222,19 @@
 //                       const SizedBox(
 //                         height: 10,
 //                       ),
-//                       widget.storeType.startsWith('Artist')
+//                       widget.storeType.startsWith('Salon')
 //                           ? const SizedBox.shrink()
 //                           : tile(
-//                               'Artist',
-//                               _isArtist,
+//                               'Salon',
+//                               _isSalon,
 //                               _selectCount == 3
 //                                   ? () {
 //                                       _showSelectImageDialog();
 //                                     }
 //                                   : () {
 //                                       setState(() {
-//                                         _isArtist = !_isArtist;
-//                                         artist = _isArtist ? ' | Artist' : '';
+//                                         _isSalon = !_isSalon;
+//                                         Salon = _isSalon ? ' | Salon' : '';
 //                                         _selectCount++;
 //                                       });
 //                                     }),
@@ -310,10 +310,10 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Battle_Rapper')
+//                       widget.storeType.startsWith('Spa')
 //                           ? const SizedBox.shrink()
 //                           : tile(
-//                               'Battle_Rapper',
+//                               'Spa',
 //                               _isBattleRapper,
 //                               _selectCount == 3
 //                                   ? () {
@@ -323,7 +323,7 @@
 //                                       setState(() {
 //                                         _isBattleRapper = !_isBattleRapper;
 //                                         battleRapper = _isBattleRapper
-//                                             ? ' | Battle_Rapper'
+//                                             ? ' | Spa'
 //                                             : '';
 //                                         _selectCount++;
 //                                       });
@@ -380,20 +380,20 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Makeup_Artist')
+//                       widget.storeType.startsWith('Makeup_Salon')
 //                           ? const SizedBox.shrink()
 //                           : tile(
-//                               'Makeup_Artist',
-//                               _isMakeupArtist,
+//                               'Makeup_Salon',
+//                               _isMakeupSalon,
 //                               _selectCount == 3
 //                                   ? () {
 //                                       _showSelectImageDialog();
 //                                     }
 //                                   : () {
 //                                       setState(() {
-//                                         _isMakeupArtist = !_isMakeupArtist;
-//                                         makeupArtist = _isMakeupArtist
-//                                             ? ' | Makeup_Artist'
+//                                         _isMakeupSalon = !_isMakeupSalon;
+//                                         makeupSalon = _isMakeupSalon
+//                                             ? ' | Makeup_Salon'
 //                                             : '';
 //                                         _selectCount++;
 //                                       });

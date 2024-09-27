@@ -19,7 +19,7 @@ class _ProfileSettingsNotificationState
   bool _hideAdvice = false;
   bool _disableBooking = false;
   bool _disabledAccount = false;
-  bool _privateAccount = false;
+  bool _isShop = false;
   bool _disableEventSuggestionNotification = false;
   bool _muteEventSuggestionNotification = false;
   // bool _disableNewCreativeNotifications = false;
@@ -34,7 +34,7 @@ class _ProfileSettingsNotificationState
     // _hideAdvice = widget.userGeneralSettings.hideAdvice!;
     _disableBooking = widget.userGeneralSettings.disableBooking!;
     _disabledAccount = widget.userGeneralSettings.disabledAccount!;
-    // _privateAccount = widget.userGeneralSettings.privateAccount!;
+    // _isShop = widget.userGeneralSettings.isShop!;
     // _disableEventSuggestionNotification =
     //     widget.userGeneralSettings.disableEventSuggestionNotification!;
     // _muteEventSuggestionNotification =
@@ -87,19 +87,19 @@ class _ProfileSettingsNotificationState
                   title: 'Private account',
                   subTitle:
                       'Provides you with more control over who can see your content and engage with you on the app.',
-                  value: _privateAccount,
+                  value: _isShop,
                   onChanged: (value) => setState(() {
-                        _privateAccount = value;
+                        _isShop = value;
                         WriteBatch batch = FirebaseFirestore.instance.batch();
                         batch.update(
                           usersGeneralSettingsRef
                               .doc(widget.userGeneralSettings.userId),
-                          {'privateAccount': _privateAccount},
+                          {'isShop': _isShop},
                         );
 
                         batch.update(
                           usersAuthorRef.doc(widget.userGeneralSettings.userId),
-                          {'privateAccount': _privateAccount},
+                          {'isShop': _isShop},
                         );
 
                         try {
@@ -139,7 +139,7 @@ class _ProfileSettingsNotificationState
               SettingSwitch(
                 title: 'Disable advicing',
                 subTitle:
-                    'This prevents other users from sending you insights aimed at inspiring and guiding your artistic craft.',
+                    'This prevents other users from sending you insights aimed at inspiring and guiding your Salonic craft.',
                 value: _disableAdvice,
                 onChanged: (value) => setState(
                   () {
@@ -205,7 +205,6 @@ class _ProfileSettingsNotificationState
                     } catch (error) {
                       // Handle the error appropriately
                     }
-                   
                   },
                 ),
               ),
@@ -294,7 +293,6 @@ class _ProfileSettingsNotificationState
                   },
                 ),
               ),
-             
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: _divider(),
@@ -322,8 +320,7 @@ class _ProfileSettingsNotificationState
 
                         try {
                           batch.commit();
-                        } catch (error) {
-                        }
+                        } catch (error) {}
                       })),
             ],
           ),

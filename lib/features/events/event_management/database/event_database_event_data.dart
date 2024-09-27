@@ -127,7 +127,7 @@ class EventDatabaseEventData {
       profileImageUrl: _provider.taggedUserSelectedProfileImageUrl,
     );
     _provider.setTaggedEventPeopel(taggedEvenPeople);
-    // _provider.setArtist('');
+    // _provider.setSalon('');
     _provider.setInt2(3);
     // selectedNameToAddProfileImageUrl = '';
     // taggedUserExternalLink = '';
@@ -162,6 +162,6 @@ class EventDatabaseEventData {
     //Add tagged person to taggedPeopleList
     _provider.setSchedulePeople(taggedEvenPeople);
     //Reset tagged people variable
-    _provider.setArtist('');
+    _provider.setSalon('');
   }
 }

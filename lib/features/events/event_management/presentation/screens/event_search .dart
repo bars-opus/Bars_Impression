@@ -12,17 +12,17 @@ class EventSearch extends StatefulWidget {
 }
 
 class _EventSearchState extends State<EventSearch> {
-Future<List<Event>> getEvents() async {
-  List<DocumentSnapshot> documentSnapshots = await widget.events!;
+  Future<List<Post>> getEvents() async {
+    List<DocumentSnapshot> documentSnapshots = await widget.events!;
 
-  if (documentSnapshots.isEmpty) {
-    return [];
+    if (documentSnapshots.isEmpty) {
+      return [];
+    }
+
+    return documentSnapshots.map((doc) {
+      return Post.fromDoc(doc);
+    }).toList();
   }
-
-  return documentSnapshots.map((doc) {
-    return Event.fromDoc(doc);
-  }).toList();
-}
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +47,10 @@ For instance:
                         """
                       : 'Enter event title.',
                   icon: null))
-          : FutureBuilder<List<Event>>(
+          : FutureBuilder<List<Post>>(
               future: getEvents(),
               builder:
-                  (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
+                  (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
                 if (!snapshot.hasData) {
                   return widget.fromFlorence
                       ? Center(
@@ -93,21 +93,21 @@ For instance:
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
-                              Event event = snapshot.data![index];
+                              Post post = snapshot.data![index];
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 1.0),
                                 child: EventDisplayWidget(
                                   currentUserId: Provider.of<UserData>(context)
                                       .currentUserId!,
-                                  event: event,
-                                  eventList: snapshot.data!,
+                                  post: post,
+                                  postList: snapshot.data!,
                                   pageIndex: 0,
                                   eventSnapshot: [],
                                   eventPagesOnly: false,
                                   liveCity: '',
                                   liveCountry: '',
-                                  sortNumberOfDays: 0,
+                                  // sortNumberOfDays: 0,
                                   isFrom: '',
                                 ),
                               );

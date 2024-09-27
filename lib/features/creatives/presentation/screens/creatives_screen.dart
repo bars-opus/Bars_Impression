@@ -35,11 +35,11 @@ class _CreativesScreenState extends State<CreativesScreen>
     with AutomaticKeepAliveClientMixin {
   List<UserStoreModel> _usersCity = [];
   List<UserStoreModel> _usersCountry = [];
-  List<UserStoreModel> _usersContinent = [];
+  // List<UserStoreModel> _usersContinent = [];
   List<UserStoreModel> _usersAll = [];
   final _usersCitySnapshot = <DocumentSnapshot>[];
   final _usersCountrySnapshot = <DocumentSnapshot>[];
-  final _usersContinentSnapshot = <DocumentSnapshot>[];
+  // final _usersContinentSnapshot = <DocumentSnapshot>[];
   final _usersAllSnapshot = <DocumentSnapshot>[];
   int limit = 10;
   late ScrollController _hideButtonController;
@@ -95,7 +95,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     String? city = widget.userLocationSettings.city;
     bool? isAll = false;
     String? country = widget.userLocationSettings.country;
-    String? continent = widget.userLocationSettings.continent;
+    // String? continent = widget.userLocationSettings.continent;
 
     _setupUsers(
         city: city, country: country, isAll: isAll, from: 'City'); // For city
@@ -116,17 +116,17 @@ class _CreativesScreenState extends State<CreativesScreen>
   _setUpFeedSeeMore() {
     String? city = widget.userLocationSettings.city;
     String? country = widget.userLocationSettings.country;
-    String? continent = widget.userLocationSettings.continent;
+    // String? continent = widget.userLocationSettings.continent;
     widget.seeMoreFrom.startsWith('City')
         ? _setupUsers(city: city, country: country, isAll: true, from: 'City')
-        : 
+        :
         // widget.seeMoreFrom.startsWith('Country')
         //     ? _setupUsers(country: country, isAll: true, from: 'Country')
         //     :
-             _setupUsers(
-                // continent: continent,
-                isAll: true,
-                from: 'Continent'); // For country
+        _setupUsers(
+            // continent: continent,
+            isAll: true,
+            from: 'Continent'); // For country
   }
 
   @override
@@ -208,7 +208,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     //       uniqueEvents.add(user);
     //     }
     //   }
-    // } 
+    // }
     else {
       for (var event in users) {
         if (addedUserIds.add(event.userId)) {
@@ -219,18 +219,19 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     List<UserStoreModel>? newUsersCity;
     List<UserStoreModel>? newUsersCountry;
-    List<UserStoreModel>? newUsersContinent;
+    // List<UserStoreModel>? newUsersContinent;
     List<UserStoreModel>? newUsersAll;
+
+    if (from.startsWith('City')) {
+      _usersCitySnapshot.addAll((userFeedSnapShot.docs));
+    }
 
     if (from.startsWith('Country')) {
       _usersCountrySnapshot.addAll((userFeedSnapShot.docs));
     }
-    if (from.startsWith('City')) {
-      _usersCitySnapshot.addAll((userFeedSnapShot.docs));
-    }
-    if (from.startsWith('Continent')) {
-      _usersContinentSnapshot.addAll((userFeedSnapShot.docs));
-    }
+    // if (from.startsWith('Continent')) {
+    //   _usersContinentSnapshot.addAll((userFeedSnapShot.docs));
+    // }
     if (isAll) {
       _usersAllSnapshot.addAll((userFeedSnapShot.docs));
     }
@@ -246,7 +247,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       }
       //  else if (continent != null) {
       //   newUsersContinent = uniqueEvents;
-      // } 
+      // }
       else {
         newUsersAll = _provider.userLocationPreference!.city!.isEmpty
             ? users
@@ -258,7 +259,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       setState(() {
         _usersCity = newUsersCity ?? _usersCity;
         _usersCountry = newUsersCountry ?? _usersCountry;
-        _usersContinent = newUsersContinent ?? _usersContinent;
+        // _usersContinent = newUsersContinent ?? _usersContinent;
         _usersAll = newUsersAll ?? _usersAll;
       });
     }
@@ -300,7 +301,7 @@ class _CreativesScreenState extends State<CreativesScreen>
             ? widget.userLocationSettings.country
             : widget.liveCountry;
 
-        String? continent = widget.userLocationSettings.continent;
+        // String? continent = widget.userLocationSettings.continent;
         widget.liveCity.isNotEmpty
             ? _loadMoreUsers(
                 city: city,
@@ -315,11 +316,12 @@ class _CreativesScreenState extends State<CreativesScreen>
                     ? _loadMoreUsers(
                         country: country,
                       )
-                    : widget.seeMoreFrom.startsWith('Continent')
-                        ? _loadMoreUsers(
-                            continent: continent,
-                          )
-                        : _loadMoreUsers();
+                    // :
+                    // widget.seeMoreFrom.startsWith('Continent')
+                    //     ? _loadMoreUsers(
+                    //         continent: continent,
+                    //       )
+                    : _loadMoreUsers();
       }
     }
     return false;
@@ -395,9 +397,12 @@ class _CreativesScreenState extends State<CreativesScreen>
             _usersCity += moreUsers;
           } else if (country != null) {
             _usersCountry += moreUsers;
-          } else if (continent != null) {
-            _usersContinent += moreUsers;
-          } else {
+          }
+          // else if (continent != null) {
+          //   _usersContinent += moreUsers;
+          // }
+
+          else {
             _usersAll += moreUsers;
           }
         });
@@ -457,7 +462,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       child: Container(
         // color: Theme.of(context).cardColor,
         child: ListTile(
-          leading: user.profileImageUrl.isEmpty
+          leading: user.storeLogomageUrl.isEmpty
               ? Icon(
                   Icons.account_circle,
                   size: ResponsiveHelper.responsiveHeight(context, 50.0),
@@ -467,7 +472,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                   radius: ResponsiveHelper.responsiveHeight(context, 25.0),
                   backgroundColor: Colors.blue,
                   backgroundImage: CachedNetworkImageProvider(
-                      user.profileImageUrl, errorListener: (_) {
+                      user.storeLogomageUrl, errorListener: (_) {
                     return;
                   }),
                 ),
@@ -517,10 +522,10 @@ class _CreativesScreenState extends State<CreativesScreen>
     //     Provider.of<UserData>(context, listen: false).user!;
     final userCity = _userLocationSettings!.city;
     final userCountry = _userLocationSettings.country;
-    final userContinent = _userLocationSettings.continent;
+    // final userContinent = _userLocationSettings.continent;
     final hasCity = userCity!.isNotEmpty;
     final hasCountry = userCountry!.isNotEmpty;
-    final hasContinent = userContinent!.isNotEmpty;
+    // final hasContinent = userContinent!.isNotEmpty;
 
     return widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty
         ? NotificationListener<ScrollNotification>(
@@ -599,6 +604,17 @@ class _CreativesScreenState extends State<CreativesScreen>
                             thickness: .1,
                             color: Colors.black, // replace with your color
                           ),
+                        NoEventInfoWidget(
+                          from: 'Images',
+                          specificType: widget.storeType,
+                          liveLocation: widget.liveCity,
+                          liveLocationIntialPage: widget.pageIndex,
+                          isEvent: false,
+                        ),
+                        const Divider(
+                          thickness: .1,
+                          color: Colors.black, // replace with your color
+                        ),
                         if (!hasCity)
                           _userLocationSettings.city!.isEmpty &&
                                   widget.liveCity.isEmpty
@@ -610,8 +626,9 @@ class _CreativesScreenState extends State<CreativesScreen>
                                       'Please set up your location to get started',
                                   noLocation: true,
                                   height: 100,
-                                  liveLocation: false,
+                                  liveLocation: '',
                                   isEvent: false,
+                                  storeType: widget.storeType,
                                 )
                               : const SizedBox.shrink(),
                         if (hasCity)
@@ -655,26 +672,27 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         sortNumberOfDays: 0,
                                       ));
                                 }),
-                        if (hasContinent && _usersContinent.isNotEmpty)
-                          _usersContinent.length == 0
-                              ? _noUsers()
-                              : _userBuilder(_usersContinent,
-                                  _usersContinentSnapshot, userContinent, () {
-                                  _navigateToPage(
-                                      context,
-                                      SeeMore(
-                                        userLocationSettings:
-                                            widget.userLocationSettings,
-                                        currentUserId: widget.currentUserId,
-                                        liveCity: widget.liveCity,
-                                        liveCountry: widget.liveCountry,
-                                        pageIndex: widget.pageIndex,
-                                        types: widget.storeType,
-                                        isEvent: false,
-                                        isFrom: 'Continent',
-                                        sortNumberOfDays: 0,
-                                      ));
-                                }),
+
+                        // if (hasContinent && _usersContinent.isNotEmpty)
+                        //   _usersContinent.length == 0
+                        //       ? _noUsers()
+                        //       : _userBuilder(_usersContinent,
+                        //           _usersContinentSnapshot, userContinent, () {
+                        //           _navigateToPage(
+                        //               context,
+                        //               SeeMore(
+                        //                 userLocationSettings:
+                        //                     widget.userLocationSettings,
+                        //                 currentUserId: widget.currentUserId,
+                        //                 liveCity: widget.liveCity,
+                        //                 liveCountry: widget.liveCountry,
+                        //                 pageIndex: widget.pageIndex,
+                        //                 types: widget.storeType,
+                        //                 isEvent: false,
+                        //                 isFrom: 'Continent',
+                        //                 sortNumberOfDays: 0,
+                        //               ));
+                        //         }),
                         AroundTheWorldWidget(),
                       ],
                     ),
@@ -720,9 +738,9 @@ class _CreativesScreenState extends State<CreativesScreen>
     if (_usersCountry.isEmpty) {
       from = _isLive ? widget.liveCountry : _userLocationSettings!.country!;
     }
-    if (_usersContinent.isEmpty) {
-      from = _userLocationSettings!.continent!;
-    }
+    // if (_usersContinent.isEmpty) {
+    //   from = _userLocationSettings!.continent!;
+    // }
     if (_usersAll.isEmpty) {
       from = '';
     } // No need for else if (_eventsAll.isEmpty) because from is already ''.
@@ -742,8 +760,10 @@ class _CreativesScreenState extends State<CreativesScreen>
     return _feedCount.isNegative
         ? _noUsers()
         : _usersCity.length > 0 ||
-                _usersCountry.length > 0 ||
-                _usersContinent.length > 0 ||
+                _usersCountry.length > 0
+                // ||
+                // _usersContinent.length > 0
+                ||
                 _usersAll.length > 0
             ? RefreshIndicator(
                 backgroundColor: Colors.grey[300],

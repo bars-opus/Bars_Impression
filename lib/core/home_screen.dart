@@ -415,7 +415,7 @@ class HomeScreenState extends State<HomeScreen> {
   //       return;
   //     }
   //     var disableChat = targetDoc.get('disableChat');
-  //     var privateAccount = targetDoc.get('privateAccount');
+  //     var isShop = targetDoc.get('isShop');
   //     var disableAdvice = targetDoc.get('disableAdvice');
   //     var hideAdvice = targetDoc.get('hideAdvice');
   //     var disableBooking = targetDoc.get('disableBooking');
@@ -446,7 +446,7 @@ class HomeScreenState extends State<HomeScreen> {
   //       batch.set(userAuthorDocRef, {
   //         'userId': id,
   //         'disableChat': disableChat,
-  //         'privateAccount': privateAccount,
+  //         'isShop': isShop,
   //         'disableAdvice': disableAdvice,
   //         'hideAdvice': hideAdvice,
   //         'disableBooking': disableBooking,
@@ -1160,7 +1160,7 @@ class HomeScreenState extends State<HomeScreen> {
   //       return;
   //     }
   //     var disableChat = targetDoc.get('disableChat');
-  //     var privateAccount = targetDoc.get('privateAccount');
+  //     var isShop = targetDoc.get('isShop');
   //     var disableAdvice = targetDoc.get('disableAdvice');
   //     var hideAdvice = targetDoc.get('hideAdvice');
   //     var disableBooking = targetDoc.get('disableBooking');
@@ -1191,7 +1191,7 @@ class HomeScreenState extends State<HomeScreen> {
   //       batch.set(userAuthorDocRef, {
   //         'userId': id,
   //         'disableChat': disableChat,
-  //         'privateAccount': privateAccount,
+  //         'isShop': isShop,
   //         'disableAdvice': disableAdvice,
   //         'hideAdvice': hideAdvice,
   //         'disableBooking': disableBooking,
@@ -1541,7 +1541,7 @@ class HomeScreenState extends State<HomeScreen> {
   // //     batch.set(userAuthorDocRef, {
   // //       'userId': id,
   // //       'disableChat': false,
-  // //       'privateAccount': false,
+  // //       'isShop': false,
   // //       'disableAdvice': false,
   // //       'hideAdvice': false,
   // //       'disableBooking': false,
@@ -2897,19 +2897,6 @@ class _HomeMobileState extends State<HomeMobile>
                           physics: const AlwaysScrollableScrollPhysics(),
                           controller: _pageController,
                           children: <Widget>[
-                            // Chats(
-                            //   currentUserId: currentUserId,
-                            //   userId: '',
-                            // ),
-                            // DiscoverEventScreen(
-                            //   currentUserId: currentUserId,
-                            //   userLocationSettings: userLocationSettings,
-                            //   isLiveLocation: false,
-                            //   liveCity: '',
-                            //   liveCountry: '',
-                            //   liveLocationIntialPage: 0,
-                            //   sortNumberOfDays: 0,
-                            // ),
                             DiscoverUser(
                               currentUserId: currentUserId,
                               isWelcome: false,
@@ -2939,91 +2926,70 @@ class _HomeMobileState extends State<HomeMobile>
                         ),
                       ),
                       Positioned(
-                          bottom: 7,
-                          child: UpdateInfoMini(
-                            updateNote: widget.updateApp.updateNote!,
-                            showinfo: widget.updateAppVersion < _version
-                                ? true
-                                : false,
-                            displayMiniUpdate:
-                                widget.updateApp.displayMiniUpdate!,
-                            onPressed: () {
-                              StoreRedirect.redirect(
-                                androidAppId: "com.bars-Opus.florence",
-                                iOSAppId: "1610868894",
-                              );
-                            },
-                          )),
-                      // Positioned(
-                      //     bottom: widget.updateAppVersion < _version ? 90 : 7,
-                      //     child: MiniAffiliateNote(
-                      //       updateNote:
-                      //           'Congratulations, you have one or more affiliate deals.',
-                      //       showinfo: _affiliateCount > 0 ? true : false,
-                      //       displayMiniUpdate:
-                      //           widget.updateApp.displayMiniUpdate!,
-                      //     )),
+                        bottom: 7,
+                        child: UpdateInfoMini(
+                          updateNote: widget.updateApp.updateNote!,
+                          showinfo:
+                              widget.updateAppVersion < _version ? true : false,
+                          displayMiniUpdate:
+                              widget.updateApp.displayMiniUpdate!,
+                          onPressed: () {
+                            StoreRedirect.redirect(
+                              androidAppId: "com.bars-Opus.florence",
+                              iOSAppId: "1610868894",
+                            );
+                          },
+                        ),
+                      ),
                       Positioned(bottom: 7, child: NoConnection()),
                     ],
                   ),
                 ),
-                bottomNavigationBar: Wrap(
-                  children: [
-                    BottomNavigationBar(
-                      type: BottomNavigationBarType.fixed,
-                      backgroundColor: Theme.of(context).primaryColorLight,
-                      // currentIndex: _currentTab,
-                      onTap: (int index) {
-                        setState(() {
-                          _currentTab = index + 1;
-                        });
-
-                        _pageController.animateToPage(
-                          index + 1,
-                          duration: const Duration(milliseconds: 10),
-                          curve: Curves.easeIn,
-                        );
-                      },
-                      showUnselectedLabels: true,
-                      selectedLabelStyle: TextStyle(
-                        color: Theme.of(context).secondaryHeaderColor,
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 10.0),
-                      ), // font size of selected item
-                      unselectedLabelStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 10.0),
-                      ),
-                      unselectedItemColor: Colors.grey,
-
-                      selectedItemColor: Theme.of(context).secondaryHeaderColor,
-
-                      items: [
-                        BottomNavigationBarItem(
-                          icon:
-                              _tabColumn(Icons.store_outlined, _currentTab, 0),
-                          label: 'Stores',
-                        ),
-                        // BottomNavigationBarItem(
-                        //   icon: _tabColumn(Icons.search, _currentTab, 2),
-                        //   label: 'Book',
-                        // ),
-                        BottomNavigationBarItem(
-                          icon: _tabColumn(
-                              Icons.calendar_month_outlined, _currentTab, 1),
-                          label: 'Appointments',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: _tabColumn(Icons.send_outlined, _currentTab, 2),
-                          label: 'Chats',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: _tabColumn(
-                              Icons.account_circle_outlined, _currentTab, 3),
-                          label: 'Profile',
-                        ),
-                      ],
+                bottomNavigationBar: BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  currentIndex: _currentTab,
+                  onTap: (int index) {
+                    setState(() {
+                      _currentTab = index;
+                    });
+                    _pageController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  showUnselectedLabels: true,
+                  selectedLabelStyle: TextStyle(
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 10.0),
+                  ),
+                  unselectedLabelStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 10.0),
+                  ),
+                  unselectedItemColor: Colors.grey,
+                  selectedItemColor: Theme.of(context).secondaryHeaderColor,
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: _tabColumn(Icons.store_outlined, _currentTab, 0),
+                      label: 'Stores',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: _tabColumn(
+                          Icons.calendar_month_outlined, _currentTab, 1),
+                      label: 'Appointments',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: _tabColumn(Icons.send_outlined, _currentTab, 2),
+                      label: 'Chats',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: _tabColumn(
+                          Icons.account_circle_outlined, _currentTab, 3),
+                      label: 'Profile',
                     ),
                   ],
                 ),

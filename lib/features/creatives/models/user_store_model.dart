@@ -12,7 +12,7 @@ class UserStoreModel {
   final String userName;
 
   @HiveField(2)
-  final String profileImageUrl;
+  final String storeLogomageUrl;
 
   @HiveField(3)
   final bool verified;
@@ -45,33 +45,30 @@ class UserStoreModel {
   final List<PortfolioModel> awards;
 
   @HiveField(13)
-  final List<PortfolioModel> skills;
-
-  @HiveField(14)
   final List<PortfolioModel> links;
 
-  @HiveField(15)
+  @HiveField(14)
   final List<PortfolioModel> services;
 
-  @HiveField(16)
+  @HiveField(15)
   final List<String> professionalImageUrls;
 
-  @HiveField(17)
+  @HiveField(16)
   final List<PriceModel> priceTags;
 
-  @HiveField(18)
+  @HiveField(17)
   final double randomId;
 
-  @HiveField(19)
+  @HiveField(18)
   final List<PortfolioContactModel> contacts;
 
-  @HiveField(20)
+  @HiveField(19)
   final String transferRecepientId;
 
   UserStoreModel({
     required this.userId,
     required this.userName,
-    required this.profileImageUrl,
+    required this.storeLogomageUrl,
     required this.storeType,
     required this.verified,
     required this.terms,
@@ -81,7 +78,6 @@ class UserStoreModel {
     required this.noBooking,
     required this.awards,
     required this.contacts,
-    required this.skills,
     required this.links,
     required this.services,
     required this.professionalImageUrls,
@@ -96,7 +92,7 @@ class UserStoreModel {
     return UserStoreModel(
       userId: doc.id,
       userName: doc['userName'] ?? '',
-      profileImageUrl: doc['profileImageUrl'] ?? '',
+      storeLogomageUrl: doc['storeLogomageUrl'] ?? '',
       storeType: doc['storeType'] ?? 'Fan',
       dynamicLink: doc['dynamicLink'] ?? '',
       verified: doc['verified'] ?? false,
@@ -109,18 +105,21 @@ class UserStoreModel {
       randomId: doc['randomId'] ?? 0.0,
       noBooking: doc['noBooking'] ?? false,
       awards: List<PortfolioModel>.from(
-          doc['awards']?.map((awards) => PortfolioModel.fromJson(awards)) ?? []),
-      contacts: List<PortfolioContactModel>.from(
-          doc['contacts']?.map((contacts) => PortfolioContactModel.fromJson(contacts)) ?? []),
-      skills: List<PortfolioModel>.from(
-          doc['skills']?.map((skills) => PortfolioModel.fromJson(skills)) ?? []),
+          doc['awards']?.map((awards) => PortfolioModel.fromJson(awards)) ??
+              []),
+      contacts: List<PortfolioContactModel>.from(doc['contacts']
+              ?.map((contacts) => PortfolioContactModel.fromJson(contacts)) ??
+          []),
       links: List<PortfolioModel>.from(
           doc['links']?.map((links) => PortfolioModel.fromJson(links)) ?? []),
-      services: List<PortfolioModel>.from(
-          doc['services']?.map((services) => PortfolioModel.fromJson(services)) ?? []),
-      professionalImageUrls: List<String>.from(doc['professionalImageUrls'] ?? []),
+      services: List<PortfolioModel>.from(doc['services']
+              ?.map((services) => PortfolioModel.fromJson(services)) ??
+          []),
+      professionalImageUrls:
+          List<String>.from(doc['professionalImageUrls'] ?? []),
       priceTags: List<PriceModel>.from(
-          doc['priceTags']?.map((priceTag) => PriceModel.fromJson(priceTag)) ?? []),
+          doc['priceTags']?.map((priceTag) => PriceModel.fromJson(priceTag)) ??
+              []),
     );
   }
 
@@ -128,7 +127,7 @@ class UserStoreModel {
     return UserStoreModel(
       userId: json['userId'],
       userName: json['userName'],
-      profileImageUrl: json['profileImageUrl'],
+      storeLogomageUrl: json['storeLogomageUrl'],
       storeType: json['storeType'],
       dynamicLink: json['dynamicLink'],
       verified: json['verified'],
@@ -144,9 +143,6 @@ class UserStoreModel {
           .toList(),
       awards: (json['awards'] as List<dynamic>)
           .map((award) => PortfolioModel.fromJson(award))
-          .toList(),
-      skills: (json['skills'] as List<dynamic>)
-          .map((skill) => PortfolioModel.fromJson(skill))
           .toList(),
       links: (json['links'] as List<dynamic>)
           .map((link) => PortfolioModel.fromJson(link))
@@ -168,7 +164,7 @@ class UserStoreModel {
     return {
       'userId': userId,
       'userName': userName,
-      'profileImageUrl': profileImageUrl,
+      'storeLogomageUrl': storeLogomageUrl,
       'storeType': storeType,
       'dynamicLink': dynamicLink,
       'verified': verified,
@@ -182,7 +178,6 @@ class UserStoreModel {
       'transferRecepientId': transferRecepientId,
       'contacts': contacts.map((contact) => contact.toJson()).toList(),
       'awards': awards.map((award) => award.toJson()).toList(),
-      'skills': skills.map((skill) => skill.toJson()).toList(),
       'links': links.map((link) => link.toJson()).toList(),
       'services': services.map((service) => service.toJson()).toList(),
       'professionalImageUrls': professionalImageUrls,

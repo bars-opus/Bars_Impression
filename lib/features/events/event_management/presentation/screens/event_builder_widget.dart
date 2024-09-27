@@ -15,10 +15,10 @@
 //   final List<Event> eventsCountry;
 //   final List<DocumentSnapshot> eventCountrySnapshot;
 //   final int pageIndex; //
-//   final String currentUserId; // artist, producer or festivals, others
+//   final String currentUserId; // Salon, producer or festivals, others
 //   final VoidCallback loadMoreSeeAllCountry;
 //   final VoidCallback loadMoreSeeAllCity;
-//   final String typeSpecific; // artist, producer or festivals, others
+//   final String typeSpecific; // Salon, producer or festivals, others
 //   final String liveLocation;
 //   final int liveLocationIntialPage;
 //   final String seeMoreFrom;

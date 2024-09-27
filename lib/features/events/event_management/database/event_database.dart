@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:blurhash/blurhash.dart';
 import 'package:uuid/uuid.dart';
 
 class EventDatabase {
@@ -68,108 +69,111 @@ Please deliver detailed and actionable insights to assist organizers in marketin
 
   static setNull(UserData provider, bool pop, BuildContext context) {
     provider.setInt2(0);
+    if (pop) Navigator.pop(context);
     // provider.setInt1(0);
-    provider.setArtist('');
+
+    provider.setCaption('');
+    provider.setHashTagg('');
+
+    provider.setSalon('');
     provider.setEventId('');
     provider.setEventId('');
-    provider.setArtist('');
+    provider.setSalon('');
     provider.setAiMarketingDraft('');
 
     provider.setTitle('');
     provider.setTitleDraft('');
 
     provider.setTheme('');
-    provider.setThemeDraft('');
+    // provider.setThemeDraft('');
 
     provider.setImageUrl('');
-    provider.setImageUrlDraft('');
+    // provider.setImageUrlDraft('');
 
-    provider.setAddress('');
-    provider.setAddressDraft('');
+    // provider.setAddress('');
+    // provider.setAddressDraft('');
 
-    provider.setVenue('');
-    provider.setVenueDraft('');
+    // provider.setVenue('');
+    // provider.setVenueDraft('');
 
-    provider.setType('');
-    provider.setTypeDraft('');
+    // provider.setType('');
+    // provider.setTypeDraft('');
 
-    provider.setCategory('');
-    provider.setCategoryDraft('');
+    // provider.setCategory('');
+    // provider.setCategoryDraft('');
 
-    provider.setStartDateString('');
-    provider.setStartDateStringDraft('');
+    // provider.setStartDateString('');
+    // provider.setStartDateStringDraft('');
 
-    provider.setClossingDate('');
-    provider.setClosingDayStringDraft('');
+    // provider.setClossingDate('');
+    // provider.setClosingDayStringDraft('');
 
-    provider.setCountry('');
-    provider.setCountryDraft('');
+    // provider.setCountry('');
+    // provider.setCountryDraft('');
 
-    provider.setCity('');
-    provider.setCityDraft('');
+    // provider.setCity('');
+    // provider.setCityDraft('');
 
-    provider.setDressCode('');
-    provider.setDressingCodeDraft('');
+    // provider.setDressCode('');
+    // provider.setDressingCodeDraft('');
 
-    provider.setTicketSite('');
-    provider.setTicketSiteDraft('');
+    // provider.setTicketSite('');
+    // provider.setTicketSiteDraft('');
 
-    provider.setCurrency('');
-    provider.setCurrencyDraft('');
+    // provider.setCurrency('');
+    // provider.setCurrencyDraft('');
 
-    provider.setEventTermsAndConditions('');
-    provider.setEventTermsAndConditionsDraft('');
+    // provider.setEventTermsAndConditions('');
+    // provider.setEventTermsAndConditionsDraft('');
 
-    provider.setEventVirtualVenueDraft('');
-    provider.setBlurHash('');
+    // provider.setEventVirtualVenueDraft('');
+    // provider.setBlurHash('');
 
-    provider.ticket.clear();
-    provider.ticketList.clear();
-    provider.ticketListDraft.clear();
+    // provider.ticket.clear();
+    // provider.ticketList.clear();
+    // provider.ticketListDraft.clear();
 
-    provider.schedule.clear();
-    provider.scheduleDraft.clear();
+    // provider.schedule.clear();
+    // provider.scheduleDraft.clear();
 
-    provider.taggedEventPeople.clear();
-    provider.taggedEventPeopleDraft.clear();
+    // provider.taggedEventPeople.clear();
+    // provider.taggedEventPeopleDraft.clear();
 
-    provider.setEventImage(null);
+    // provider.setProfileImage(null);
 
-    provider.setVideoFile1(null);
+    // provider.setVideoFile1(null);
 
-    provider.setIsCashPayment(false);
-    provider.setIsCashPaymentDraft(false);
+    // provider.setIsCashPayment(false);
+    // provider.setIsCashPaymentDraft(false);
 
-    provider.setIsVirtual(false);
-    provider.setIsVirtualDraft(false);
-    provider.setIsLoading(false);
-    provider.setIsLoading2(false);
+    // provider.setIsVirtual(false);
+    // provider.setIsVirtualDraft(false);
+    // provider.setIsLoading(false);
+    // provider.setIsLoading2(false);
 
-    provider.setIsPrivate(false);
-    provider.setIsPrivateDraft(false);
+    // provider.setIsPrivate(false);
+    // provider.setIsPrivateDraft(false);
 
-    provider.setIsFree(false);
-    provider.setIsFreeDraft(false);
+    // provider.setIsFree(false);
+    // provider.setIsFreeDraft(false);
 
-    provider.setshowToFollowers(false);
-    provider.setShowToFollowersDraft(false);
+    // provider.setshowToFollowers(false);
+    // provider.setShowToFollowersDraft(false);
 
-    provider.setIsAffiliateEnabled(false);
-    provider.setIsAffiliateEnabledDraft(false);
+    // provider.setIsAffiliateEnabled(false);
+    // provider.setIsAffiliateEnabledDraft(false);
 
-    provider.setisAffiliateExclusive(false);
+    // provider.setisAffiliateExclusive(false);
 
-    provider.addressSearchResults = [];
+    // provider.addressSearchResults = [];
 
-    provider.setCouldntDecodeCity(false);
+    // provider.setCouldntDecodeCity(false);
 
-    provider.setIsExternalTicketPayment(false);
-    provider.setIsExternalTicketPaymentDraft(false);
+    // provider.setIsExternalTicketPayment(false);
+    // provider.setIsExternalTicketPaymentDraft(false);
 
-    provider.eventOrganizerContacts.clear();
-    provider.eventOrganizerContactsDraft.clear();
-
-    if (pop) Navigator.pop(context);
+    // provider.eventOrganizerContacts.clear();
+    // provider.eventOrganizerContactsDraft.clear();
   }
 
   ///This method helps to create event
@@ -186,56 +190,61 @@ Please deliver detailed and actionable insights to assist organizers in marketin
 
       // Call your animation method here
       _isLoading = true;
-      String commonId = _provider.eventId;
-      // try {
-      String imageUrl = _provider.imageUrl;
-      Event event = await _createEvent(imageUrl, commonId, context);
+      try {
+        String commonId = Uuid().v4();
+        String _imageUrl =
+            await StorageService.uploadPost(_provider.profileImage!, commonId);
+        Uint8List bytes = await (_provider.profileImage!).readAsBytes();
+        var blurHash = await BlurHash.encode(bytes, 4, 3);
+        _provider.setBlurHash(blurHash);
 
-      PaletteGenerator _paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(event.imageUrl, errorListener: (_) {
-          return;
-        }),
-        size: Size(1110, 150),
-        maximumColorCount: 20,
-      );
+        await _createEvent(_imageUrl, commonId, context);
 
-      DocumentSnapshot doc = await eventsRef
-          .doc(_provider.currentUserId)
-          .collection('userEvents')
-          .doc(commonId)
-          .get();
+        // PaletteGenerator _paletteGenerator =
+        //     await PaletteGenerator.fromImageProvider(
+        //   CachedNetworkImageProvider(event.imageUrl, errorListener: (_) {
+        //     return;
+        //   }),
+        //   size: Size(1110, 150),
+        //   maximumColorCount: 20,
+        // );
 
-      Event newEvent = await Event.fromDoc(doc);
-      await setNull(_provider, true, context);
+        // DocumentSnapshot doc = await eventsRef
+        //     .doc(_provider.currentUserId)
+        //     .collection('userEvents')
+        //     .doc(commonId)
+        //     .get();
 
-      // await Future.delayed(Duration(milliseconds: 100));
-      _isLoading = false;
-      // if (mounted) {
-      _navigateToPage(
-          context,
-          EventEnlargedScreen(
-            justCreated: true,
-            currentUserId: _provider.currentUserId!,
-            event: newEvent,
-            type: newEvent.type,
-            palette: _paletteGenerator,
-            showPrivateEvent: false,
-          ));
-      mySnackBar(context, 'Your event was published successfully.');
-      // }
-      // } catch (e) {
-      //   _isLoading = false;
-      //   animateToBack(1, pageController);
-      //   showBottomSheetErrorMessage(context, 'Failed to edit event');
-      //   // Handle errors here
+        // Event newEvent = await Event.fromDoc(doc);
+        await setNull(_provider, true, context);
 
-      //   // Show error message
-      // }
+        // await Future.delayed(Duration(milliseconds: 100));
+        _isLoading = false;
+        // Navigator.pop(context); // if (mounted) {
+        // _navigateToPage(
+        //     context,
+        //     EventEnlargedScreen(
+        //       justCreated: true,
+        //       currentUserId: _provider.currentUserId!,
+        //       event: newEvent,
+        //       type: newEvent.type,
+        //       palette: _paletteGenerator,
+        //       showPrivateEvent: false,
+        //     ));
+        mySnackBar(context, 'Your post was created successfully.');
+        // }
+      } catch (e) {
+        _isLoading = false;
+        animateToBack(1, pageController);
+        showBottomSheetErrorMessage(context, 'Failed to create post');
+        // Handle errors here
+
+        // Show error message
+      }
     }
   }
 
-  static Future<Event> _createEvent(
+  static Future<Post> _createEvent(
       String imageUrl, String commonId, BuildContext context) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -246,7 +255,7 @@ Please deliver detailed and actionable insights to assist organizers in marketin
     //     _provider.theme,
     //     'https://www.barsopus.com/event_${commonId}_${_provider.currentUserId}');
 
-    String insight = '';
+    // String insight = '';
 
     //  await gettInsight(
     //     eventTitle: _provider.title,
@@ -257,241 +266,118 @@ Please deliver detailed and actionable insights to assist organizers in marketin
     //     eventStartDate: _provider.startDate,
     //     isInsight: true);
 
-    Event event = createEvent(
+    Post post = createEvent(
       blurHash: _provider.blurHash,
       imageUrl: imageUrl,
       commonId: commonId,
       link: link,
-      insight: insight,
-      aiMarketingAdvice: _provider.aiMarketingDraft,
+      // insight: insight,
+      // aiMarketingAdvice: _provider.aiMarketingDraft,
       // aiMarketingAdvice,
       provider: _provider,
     );
 
-    List<TaggedNotificationModel> notificationsSponsorsPartners =
-        await _provider.taggedEventPeople.map((person) {
-      return TaggedNotificationModel(
-          id: person.id,
-          taggedParentTitle: event.title, // Assign name to taggedParentTitle
-          role: person.role,
-          taggedType: person.taggedType,
-          verifiedTag: false,
-          isEvent: true, // Example value; adjust as needed
-          personId: person.internalProfileLink,
-          taggedParentId: event.id,
-          taggedParentAuthorId: event.authorId,
-          taggedParentImageUrl: event.imageUrl);
-    }).toList();
+    // List<TaggedNotificationModel> notificationsSponsorsPartners =
+    //     await _provider.taggedEventPeople.map((person) {
+    //   return TaggedNotificationModel(
+    //       id: person.id,
+    //       taggedParentTitle: event.title, // Assign name to taggedParentTitle
+    //       role: person.role,
+    //       taggedType: person.taggedType,
+    //       verifiedTag: false,
+    //       isEvent: true, // Example value; adjust as needed
+    //       personId: person.internalProfileLink,
+    //       taggedParentId: event.id,
+    //       taggedParentAuthorId: event.authorId,
+    //       taggedParentImageUrl: event.imageUrl);
+    // }).toList();
 
-    List<TaggedNotificationModel> notificationsSchedulePeople =
-        await _provider.schedulePerson.map((person) {
-      return TaggedNotificationModel(
-          id: person.id,
-          taggedParentTitle: event.title, // Assign name to taggedParentTitle
-          role: 'Schedule',
-          taggedType: 'person',
-          verifiedTag: false,
-          isEvent: true, // Example value; adjust as needed
-          personId: person.internalProfileLink,
-          taggedParentId: event.id,
-          taggedParentAuthorId: event.authorId,
-          taggedParentImageUrl: event.imageUrl);
-    }).toList();
+    // List<TaggedNotificationModel> notificationsSchedulePeople =
+    //     await _provider.schedulePerson.map((person) {
+    //   return TaggedNotificationModel(
+    //       id: person.id,
+    //       taggedParentTitle: event.title, // Assign name to taggedParentTitle
+    //       role: 'Schedule',
+    //       taggedType: 'person',
+    //       verifiedTag: false,
+    //       isEvent: true, // Example value; adjust as needed
+    //       personId: person.internalProfileLink,
+    //       taggedParentId: event.id,
+    //       taggedParentAuthorId: event.authorId,
+    //       taggedParentImageUrl: event.imageUrl);
+    // }).toList();
 
     String summary = '';
     // await summarizeEvent(event);
-    await DatabaseService.createEvent(event, _provider.user!,
-        notificationsSponsorsPartners + notificationsSchedulePeople, summary);
+    await DatabaseService.createPost(post, summary);
 
-    return event;
+    return post;
   }
 
-  static Event createEvent({
+  static Post createEvent({
     required String blurHash,
     required String imageUrl,
     required String commonId,
     required String link,
-    required String insight,
-    required String aiMarketingAdvice,
+    // required String insight,
+    // required String aiMarketingAdvice,
     required UserData provider,
   }) {
-    return Event(
+    return Post(
       blurHash: blurHash,
       imageUrl: imageUrl,
-      type: provider.category.isEmpty ? 'Others' : provider.category,
-      category: provider.category,
-      title: provider.title,
-      rate: provider.currency,
-      ticket: provider.ticket,
-      schedule: provider.schedule,
-      taggedPeople: provider.taggedEventPeople,
-      venue: provider.venue,
-      startDate: provider.startDate,
-      time: '',
-      theme: provider.theme,
-      dressCode: provider.dressCode,
-      address: provider.address,
       authorId: provider.currentUserId!,
       timestamp: Timestamp.fromDate(DateTime.now()),
-      previousEvent: provider.previousEvent,
-      hasDateBeenPostponed: false,
-      triller: '',
       report: '',
       reportConfirmed: '',
-      city: provider.city,
-      country: provider.country,
-      virtualVenue: provider.isVirtual ? provider.venue : '',
-      ticketSite: provider.ticketSite,
-      isVirtual: provider.isVirtual,
-      isPrivate: provider.isPrivate,
-      showToFollowers: provider.isPrivate ? provider.showToFollowers : false,
       id: commonId,
-      isFree: provider.isCashPayment
-          ? false
-          : provider.ticketSite.isNotEmpty
-              ? false
-              : provider.isFree,
-      isCashPayment: provider.ticketSite.isEmpty
-          ? provider.isCashPayment
-          : provider.isFree
-              ? false
-              : false,
-      showOnExplorePage: true,
-      fundsDistributed: false,
-      clossingDay: provider.startDate,
       authorName: provider.user!.userName!,
-      termsAndConditions: provider.eventTermsAndConditions,
-      dynamicLink: link,
-      subaccountId: provider.userLocationPreference!.subaccountId!,
-      transferRecepientId:
-          provider.userLocationPreference!.transferRecepientId!,
-      contacts: provider.eventOrganizerContacts,
-      improvemenSuggestion: '',
-      isAffiliateEnabled: provider.isAffiliateEnabled,
-      isAffiliateExclusive: provider.isAffiliateExclusive,
-      totalAffiliateAmount: 0,
-      latLng: provider.latLng,
-      aiAnalysis: insight,
-      overview: provider.overview,
-      aiMarketingAdvice: aiMarketingAdvice,
+      caption: provider.caption,
+      hashTag: provider.hashTagg,
+      storeType: provider.userStore!.storeType,
+      authorIdProfileImageUrl: provider.userStore!.storeLogomageUrl,
+      authorVerification: provider.userStore!.verified,
     );
   }
 
 // This method is used to edit event
-  static Future<Event> editEvent(
+  static Future<Post> editPost(
     BuildContext context,
-    Event event,
     PageController pageController,
+    Post post,
   ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
     animateToPage(1, pageController);
 
-    Event _event = Event(
-      aiAnalysis: '',
-      hasDateBeenPostponed: _provider.clossingDay != event.clossingDay ||
-          _provider.startDate != event.startDate,
-      blurHash: event.blurHash,
-      imageUrl: event.imageUrl,
-      type: _provider.category.isEmpty ? 'Others' : _provider.category,
-      title: _provider.title,
-      rate: _provider.currency,
-      ticket: _provider.ticket,
-      schedule: _provider.schedule,
-      taggedPeople: _provider.taggedEventPeople,
-      venue: _provider.venue,
-      startDate: _provider.startDate,
-      time: '',
-      theme: _provider.theme,
-      dressCode: _provider.dressCode,
-      address: _provider.address,
+    Post _post = Post(
+      blurHash: post.blurHash,
+      imageUrl: post.imageUrl,
       authorId: _provider.currentUserId!,
       timestamp: Timestamp.fromDate(DateTime.now()),
-      previousEvent: _provider.previousEvent,
-      triller: '',
       report: '',
       reportConfirmed: '',
-      city: _provider.city,
-      country: _provider.country,
-      virtualVenue: _provider.isVirtual ? _provider.venue : '',
-      ticketSite: _provider.ticketSite,
-      isVirtual: _provider.isVirtual,
-      isPrivate: _provider.isPrivate,
-      id: event.id,
-      isFree: _provider.isFree,
-      isCashPayment: _provider.isCashPayment,
-      showOnExplorePage: true,
-      fundsDistributed: false,
-      showToFollowers: _provider.bool6,
-      clossingDay: _provider.clossingDay,
-      authorName: _provider.user!.userName!,
-      category: _provider.category,
-      termsAndConditions: _provider.eventTermsAndConditions,
-      dynamicLink: event.dynamicLink,
-      subaccountId: _provider.userLocationPreference!.subaccountId!,
-      transferRecepientId:
-          _provider.userLocationPreference!.transferRecepientId!,
-      contacts: _provider.eventOrganizerContacts,
-      improvemenSuggestion: '',
-      isAffiliateEnabled: _provider.isAffiliateEnabled,
-      isAffiliateExclusive: _provider.isAffiliateExclusive,
-      totalAffiliateAmount: 0,
-      latLng: _provider.latLng,
-      overview: _provider.overview,
-      aiMarketingAdvice: '',
+      id: post.id,
+      caption: _provider.caption,
+      hashTag: _provider.hashTagg,
+      authorName: post.authorName,
+      storeType: post.storeType,
+      authorIdProfileImageUrl: post.authorIdProfileImageUrl,
+      authorVerification: post.authorVerification,
     );
 
-    String insight = event.title != _provider.title ||
-            event.theme != _provider.theme ||
-            event.dressCode != _provider.dressCode ||
-            event.city != _provider.city ||
-            event.startDate != _provider.startDate
-        ? await gettInsight(
-            eventTitle: _event.title,
-            eventTheme: _event.theme,
-            eventDressCode: _event.dressCode,
-            eventAdress: _event.address,
-            eventCity: _event.city,
-            eventStartDate: _event.startDate,
-            isInsight: true)
-        : event.aiAnalysis;
-
-    String aiMarketingAdvice = _provider.isPrivate
-        ? ''
-        : event.title != _provider.title ||
-                event.theme != _provider.theme ||
-                event.dressCode != _provider.dressCode ||
-                event.city != _provider.city ||
-                event.startDate != _provider.startDate
-            ? await gettInsight(
-                eventTitle: _event.title,
-                eventTheme: _event.theme,
-                eventDressCode: _event.dressCode,
-                eventAdress: _event.address,
-                eventCity: _event.city,
-                eventStartDate: _event.startDate,
-                isInsight: false)
-            : event.aiMarketingAdvice;
-
-    String summary = event.title != _provider.title ||
-            event.theme != _provider.theme ||
-            event.dressCode != _provider.dressCode ||
-            event.city != _provider.city ||
-            event.startDate != _provider.startDate
-        ? await summarizeEvent(_event)
-        : '';
-
+   
     try {
-      await DatabaseService.editEvent(
-          _event, insight, summary, aiMarketingAdvice);
+      await DatabaseService.editPost(
+          _post, );
       setNull(_provider, true, context);
       mySnackBar(context, 'Saved successfully');
-      return _event; // Return the edited event
+      return _post; // Return the edited event
     } catch (e) {
       // Handle the error
       animateToBack(1, pageController);
       showBottomSheetErrorMessage(context, 'Failed to edit event');
     }
-    return _event; // Ensure that an Event is returned even if there's an error
+    return _post; // Ensure that an Event is returned even if there's an error
   }
 
   //Code to animate to previous page

@@ -182,7 +182,6 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     }
   }
 
-
   _updateAuthorHive(
     String subacccountId,
     String transferRecepient,
@@ -201,7 +200,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     var updatedLocationPreference = UserSettingsLoadingPreferenceModel(
       userId: _provider.userLocationPreference!.userId,
       city: _provider.userLocationPreference!.city,
-      continent: _provider.userLocationPreference!.continent,
+      // continent: _provider.userLocationPreference!.continent,
       country: _provider.userLocationPreference!.country,
       currency: _provider.userLocationPreference!.currency,
       timestamp: _provider.userLocationPreference!.timestamp,
@@ -257,10 +256,8 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
       throw Exception('Failed to load banks from Paystack');
     }
   }
-  
 
   _selectBank() {
-    
     return ShakeTransition(
       curve: Curves.easeOutBack,
       duration: const Duration(seconds: 2),
@@ -403,8 +400,6 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
 
     double _progress =
         _pageController2.hasClients ? _pageController2.page ?? 0 : 0;
-
-
 
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),

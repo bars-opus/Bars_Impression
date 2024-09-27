@@ -27,6 +27,7 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
       disabledAccount: fields[7] as bool?,
       reportConfirmed: fields[8] as bool?,
       lastActiveDate: fields[9] as Timestamp?,
+      isShop: fields[11] as bool?,
       disableChat: fields[10] as bool?,
     );
   }
@@ -34,7 +35,7 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
   @override
   void write(BinaryWriter writer, AccountHolderAuthor obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
       ..writeByte(9)
       ..write(obj.lastActiveDate)
       ..writeByte(10)
-      ..write(obj.disableChat);
+      ..write(obj.disableChat)
+      ..writeByte(11)
+      ..write(obj.isShop);
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:hive/hive.dart';
 
 class EditProfileSelectLocation extends StatefulWidget {
   final UserSettingsLoadingPreferenceModel user;
@@ -28,15 +27,15 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   @override
   void initState() {
     super.initState();
-    selectedValue = widget.user.continent!;
+    // selectedValue = widget.user.continent!;
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false)
           .setAddress(widget.user.city!);
 
-      _continent = Provider.of<UserData>(context, listen: false)
-          .userLocationPreference!
-          .continent!;
+      // _continent = Provider.of<UserData>(context, listen: false)
+      //     .userLocationPreference!
+      //     .continent!;
     });
   }
 
@@ -63,8 +62,12 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     try {
       batch.commit();
       _provider.setIsLoading(false);
-      _updateAuthorHive(
-          _provider.city, _provider.country, _provider.continent, false);
+      // Inside your widget or function
+      await HiveUtils.updateUserLocation(context, _provider.city,
+          _provider.country, _provider.userStore!.storeType);
+
+      // _updateAuthorHive(
+      //     _provider.city, _provider.country, _provider.continent, false);
     } catch (error) {
       _provider.setIsLoading(false);
       _showBottomSheetErrorMessage('Failed to update city and country');
@@ -74,37 +77,71 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     // }
   }
 
-  _updateAuthorHive(
-      String city, String country, String continent, bool isContinent) async {
-    Box<UserSettingsLoadingPreferenceModel> locationPreferenceBox;
+  // _updateAuthorHive(
+  //     String city, String country, String continent, bool isContinent) async {
+  //   Box<UserSettingsLoadingPreferenceModel> locationPreferenceBox;
+  //   Box<UserStoreModel> accountUserStoreBox;
 
-    if (Hive.isBoxOpen('accountLocationPreference')) {
-      locationPreferenceBox = Hive.box('accountLocationPreference');
-    } else {
-      locationPreferenceBox = await Hive.openBox('accountLocationPreference');
-    }
+  //   // Open or fetch the accountLocationPreference box
+  //   if (Hive.isBoxOpen('accountLocationPreference')) {
+  //     locationPreferenceBox = Hive.box<UserSettingsLoadingPreferenceModel>(
+  //         'accountLocationPreference');
+  //   } else {
+  //     locationPreferenceBox =
+  //         await Hive.openBox<UserSettingsLoadingPreferenceModel>(
+  //             'accountLocationPreference');
+  //   }
 
-    var _provider = Provider.of<UserData>(context, listen: false);
+  //   // Open or fetch the accountUserStore box
+  //   if (Hive.isBoxOpen('accountUserStore')) {
+  //     accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
+  //   } else {
+  //     accountUserStoreBox =
+  //         await Hive.openBox<UserStoreModel>('accountUserStore');
+  //   }
 
-    // Create a new instance of UserSettingsLoadingPreferenceModel with the updated values
-    var updatedLocationPreference = UserSettingsLoadingPreferenceModel(
-      userId: _provider.userLocationPreference!.userId,
-      city: isContinent ? _provider.userLocationPreference!.city : city,
-      continent:
-          isContinent ? continent : _provider.userLocationPreference!.continent,
-      country:
-          isContinent ? _provider.userLocationPreference!.country : country,
-      currency: _provider.userLocationPreference!.currency,
-      timestamp: _provider.userLocationPreference!.timestamp,
-      subaccountId: _provider.userLocationPreference!.subaccountId,
-      transferRecepientId:
-          _provider.userLocationPreference!.transferRecepientId,
-    );
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    // Put the new object back into the box with the same key
-    locationPreferenceBox.put(
-        updatedLocationPreference.userId, updatedLocationPreference);
-  }
+  //   // Create a new instance of UserSettingsLoadingPreferenceModel with the updated values
+  //   var updatedLocationPreference = UserSettingsLoadingPreferenceModel(
+  //     userId: _provider.userLocationPreference!.userId,
+  //     city: city,
+  //     country: country,
+  //     currency: _provider.userLocationPreference!.currency,
+  //     timestamp: _provider.userLocationPreference!.timestamp,
+  //     subaccountId: _provider.userLocationPreference!.subaccountId,
+  //     transferRecepientId:
+  //         _provider.userLocationPreference!.transferRecepientId,
+  //   );
+
+  //   var updatedUserStore = UserStoreModel(
+  //     userId: _provider.userStore!.userId,
+  //     userName: _provider.userStore!.userName,
+  //     storeLogomageUrl: _provider.userStore!.storeLogomageUrl,
+  //     storeType: _provider.userStore!.storeType,
+  //     verified: _provider.userStore!.verified,
+  //     terms: _provider.userStore!.terms,
+  //     city: city,
+  //     country: country,
+  //     overview: _provider.userStore!.overview,
+  //     noBooking: _provider.userStore!.noBooking,
+  //     awards: _provider.userStore!.awards,
+  //     contacts: _provider.userStore!.contacts,
+  //     links: _provider.userStore!.links,
+  //     priceTags: _provider.userStore!.priceTags,
+  //     services: _provider.userStore!.services,
+  //     professionalImageUrls: _provider.userStore!.professionalImageUrls,
+  //     dynamicLink: _provider.userStore!.dynamicLink,
+  //     randomId: _provider.userStore!.randomId,
+  //     currency: _provider.userStore!.currency,
+  //     transferRecepientId: _provider.userStore!.transferRecepientId,
+  //   );
+
+  //   // Update the boxes with new instances
+  //   await accountUserStoreBox.put(updatedUserStore.userId, updatedUserStore);
+  //   await locationPreferenceBox.put(
+  //       updatedLocationPreference.userId, updatedLocationPreference);
+  // }
 
   void _showBottomSheetErrorMessage(String errorTitle) {
     showModalBottomSheet(
@@ -124,82 +161,82 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     );
   }
 
-  _submit1() {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    // try {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  // _submit1() {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   // try {
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    batch.update(
-      usersLocationSettingsRef.doc(widget.user.userId),
-      {'continent': _continent},
-    );
-    batch.update(
-      userProfessionalRef.doc(widget.user.userId),
-      {'continent': _continent},
-    );
+  //   batch.update(
+  //     usersLocationSettingsRef.doc(widget.user.userId),
+  //     {'continent': _continent},
+  //   );
+  //   batch.update(
+  //     userProfessionalRef.doc(widget.user.userId),
+  //     {'continent': _continent},
+  //   );
 
-    try {
-      batch.commit();
-      _updateAuthorHive(_provider.city, _provider.country, _continent, true);
-    } catch (error) {
-      _showBottomSheetErrorMessage(error.toString());
-    }
-    // } catch (e) {
+  //   try {
+  //     batch.commit();
+  //     _updateAuthorHive(_provider.city, _provider.country, _continent, true);
+  //   } catch (error) {
+  //     _showBottomSheetErrorMessage(error.toString());
+  //   }
+  //   // } catch (e) {
 
-    // }
-  }
+  //   // }
+  // }
 
-  static const values = <String>[
-    'Africa',
-    'Antarctica',
-    'Asia',
-    'Australia',
-    'Europe	',
-    'North America',
-    'South America',
-  ];
+  // static const values = <String>[
+  //   'Africa',
+  //   'Antarctica',
+  //   'Asia',
+  //   'Australia',
+  //   'Europe	',
+  //   'North America',
+  //   'South America',
+  // ];
 
-  Widget buildRadios() => Column(
-          children: values.map((value) {
-        final selected = this.selectedValue == value;
-        final color =
-            selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
+  // Widget buildRadios() => Column(
+  //         children: values.map((value) {
+  //       final selected = this.selectedValue == value;
+  //       final color =
+  //           selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
-        return RadioTheme(
-          data: RadioThemeData(
-              fillColor: MaterialStateProperty.all(
-                  Theme.of(context).secondaryHeaderColor)),
-          child: RadioListTile<String>(
-            value: value,
-            groupValue: selectedValue,
-            title: Text(
-              value,
-              style: TextStyle(
-                color: color,
-                fontWeight: this.selectedValue == value
-                    ? FontWeight.bold
-                    : FontWeight.normal,
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-              ),
-            ),
-            activeColor: Colors.blue,
-            onChanged: (value) => setState(
-              () {
-                _continent = this.selectedValue = value!;
-                _submit1();
-              },
-            ),
-          ),
-        );
-      }).toList());
+  //       return RadioTheme(
+  //         data: RadioThemeData(
+  //             fillColor: MaterialStateProperty.all(
+  //                 Theme.of(context).secondaryHeaderColor)),
+  //         child: RadioListTile<String>(
+  //           value: value,
+  //           groupValue: selectedValue,
+  //           title: Text(
+  //             value,
+  //             style: TextStyle(
+  //               color: color,
+  //               fontWeight: this.selectedValue == value
+  //                   ? FontWeight.bold
+  //                   : FontWeight.normal,
+  //               fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+  //             ),
+  //           ),
+  //           activeColor: Colors.blue,
+  //           onChanged: (value) => setState(
+  //             () {
+  //               _continent = this.selectedValue = value!;
+  //               _submit1();
+  //             },
+  //           ),
+  //         ),
+  //       );
+  //     }).toList());
 
-  Widget buildContinentPicker() => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buildRadios(),
-        ],
-      );
+  // Widget buildContinentPicker() => Column(
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         buildRadios(),
+  //       ],
+  //     );
 
   @override
   void dispose() {
@@ -398,8 +435,10 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                 children: [
                   if (widget.notFromEditProfile)
                     if (_provider.country.isNotEmpty &&
-                        _provider.city.isNotEmpty &&
-                        _continent.isNotEmpty)
+                            _provider.city.isNotEmpty
+                        // &&
+                        // _continent.isNotEmpty
+                        )
                       Align(
                         alignment: Alignment.centerRight,
                         child: MiniCircularProgressButton(
@@ -415,7 +454,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                       ),
                   const SizedBox(height: 20.0),
                   EditProfileInfo(
-                    editTitle: _provider.userLocationPreference!.continent!,
+                    editTitle: 'Change \nlocation',
 
                     //  'Choose \nLocation',
                     info:
@@ -439,8 +478,8 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                           _provider.country.isEmpty
                               ? widget.user.country!
                               : _provider.country),
-                  _addressValue('Continent',
-                      _continent.isEmpty ? widget.user.continent! : _continent),
+                  // _addressValue('Continent',
+                  //     _continent.isEmpty ? widget.user.continent! : _continent),
                   const SizedBox(
                     height: 20,
                   ),
@@ -475,10 +514,10 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  buildContinentPicker(),
+                  // const SizedBox(
+                  //   height: 30,
+                  // ),
+                  // buildContinentPicker(),
                 ],
               ),
             ),
@@ -486,7 +525,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
           const SizedBox(
             height: 70.0,
           ),
-          if (_provider.isLoading) LinearProgress(),
+          // if (_provider.isLoading) LinearProgress(),
         ],
       ),
     );

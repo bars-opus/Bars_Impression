@@ -95,82 +95,79 @@ class _PasswordState extends State<Password>
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
-            backgroundColor: Color(0xFF1a1a1a),
-            body: Container(
-              width: width,
-              child: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: SingleChildScrollView(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            width: 60.0,
-                            height: 60.0,
-                            child: Image.asset(
-                              'assets/images/bars.png',
-                            ),
-                          ),
-                          Transform(
-                            transform: Matrix4.translationValues(
-                                delayedAnimation.value * width, 0.0, 0.0),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30.0, vertical: 10.0),
-                              child: LoginField(
-                                controller: _emailController,
-                                hintText: 'example@mail.com',
-                                labelText: 'Email',
-                                onValidateText: (email) => email != null &&
-                                        !EmailValidator.validate(email.trim())
-                                    ? 'Please enter your email'
-                                    : null,
-                                icon: Icons.email_outlined,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20.0),
-                          Transform(
-                            transform: Matrix4.translationValues(
-                                muchDelayedAnimation.value * width, 0.0, 0.0),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30.0, vertical: 10.0),
-                              child: Text(
-                                  'Enter your email to reset your password. A reset link would be sent to your email',
-                                  style: TextStyle(
-                                    color: Colors.blueGrey,
-                                    fontSize:
-                                        ResponsiveHelper.responsiveFontSize(
-                                            context, 12.0),
-                                  ),
-                                  textAlign: TextAlign.center),
-                            ),
-                          ),
-                          const SizedBox(height: 40.0),
-                          Hero(
-                            tag: 'Sign In',
-                            child: AlwaysWhiteButton(
-                              textColor: Colors.black,
-                              buttonText: 'Submit Email',
-                              onPressed: () {
-                                _submit();
-                              },
-                              buttonColor: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: width > 800 ? 40.0 : 20),
-                          LoginBackButton(),
-                          const SizedBox(height: 40.0),
-                        ],
+            backgroundColor: Theme.of(context).cardColor,
+            body: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  // crossAxisAlignment: CrossAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    TicketPurchasingIcon(
+                      title: '',
+                    ),
+                    const SizedBox(height: 50),
+                    // Container(
+                    //   width: 60.0,
+                    //   height: 60.0,
+                    //   child: Image.asset(
+                    //     'assets/images/bars.png',
+                    //   ),
+                    // ),
+                    Transform(
+                      transform: Matrix4.translationValues(
+                          delayedAnimation.value * width, 0.0, 0.0),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        child: LoginField(
+                          controller: _emailController,
+                          hintText: 'example@mail.com',
+                          labelText: 'Email',
+                          onValidateText: (email) => email != null &&
+                                  !EmailValidator.validate(email.trim())
+                              ? 'Please enter your email'
+                              : null,
+                          icon: Icons.email_outlined,
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 20.0),
+                    Transform(
+                      transform: Matrix4.translationValues(
+                          muchDelayedAnimation.value * width, 0.0, 0.0),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        child: Text(
+                            'Enter your email to reset your password. A reset link would be sent to your email',
+                            style: TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 12.0),
+                            ),
+                            textAlign: TextAlign.center),
+                      ),
+                    ),
+                    const SizedBox(height: 40.0),
+                    Hero(
+                      tag: 'Sign In',
+                      child: Center(
+                        child: AlwaysWhiteButton(
+                          textColor: Colors.black,
+                          buttonText: 'Submit Email',
+                          onPressed: () {
+                            _submit();
+                          },
+                          buttonColor: Colors.white,
+                        ),
+                      ),
+                    ),
+                    // SizedBox(height: width > 800 ? 40.0 : 20),
+                    // LoginBackButton(),
+                    const SizedBox(height: 40.0),
+                  ],
                 ),
               ),
             ),

@@ -145,7 +145,7 @@ class _SubAccountsState extends State<SubAccounts> {
                     EditProfileInfo(
                       editTitle: 'Select \nSub-account skills',
                       info:
-                          'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
+                          'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Salon, sub-accounts: producer, video director.',
                       icon: Icons.account_box_outlined,
                     ),
                     Center(

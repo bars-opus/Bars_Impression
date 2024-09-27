@@ -27,7 +27,7 @@ class ImageSafetyHandler {
       } else {
         _provider.setIsLoading2(false);
         // isEvent ?
-        _provider.setEventImage(file);
+        _provider.setProfileImage(file);
         //  : _provider.setPostImage(file);
       }
     } catch (e) {
@@ -44,6 +44,3 @@ class ImageSafetyHandler {
     return croppedImage!;
   }
 }
-
-
-

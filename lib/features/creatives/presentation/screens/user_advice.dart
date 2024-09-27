@@ -190,7 +190,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
             : '\nNo advices for ${widget.userName} yet,\n',
         subTitle: widget.userId == widget.currentUserId
             ? ' Advice from fans and loved ones can provide valuable insights on how an individual can improve their craft. These public views are often aimed at providing inspiration and guidance to help the person grow and develop their skills or talents'
-            : 'Be the first to offer advice to ${widget.userName}. Your advice is meant to encourage and provide insights on how a creative can improve their craft. These public views are aimed at inspiring and guiding them to enhance every aspect of their artistic craft.',
+            : 'Be the first to offer advice to ${widget.userName}. Your advice is meant to encourage and provide insights on how a creative can improve their craft. These public views are aimed at inspiring and guiding them to enhance every aspect of their Salonic craft.',
       ),
     );
   }

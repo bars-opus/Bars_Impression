@@ -348,8 +348,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
                   ? SizedBox.shrink()
                   : CircularButton(
                       color: readyToSend ? palleteColor : Colors.transparent,
-                      icon: Icon(Icons.send,
-                          color: readyToSend ? titleColor : Colors.grey),
+                      icon:  Icons.send,
                       onPressed: onSend),
             ),
           ],

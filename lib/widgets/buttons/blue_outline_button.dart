@@ -3,8 +3,13 @@ import 'package:bars/utilities/exports.dart';
 class BlueOutlineButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback onPressed;
+  final Color color;
 
-  const BlueOutlineButton({super.key, required this.buttonText, required this.onPressed});
+  const BlueOutlineButton(
+      {super.key,
+      required this.buttonText,
+      this.color = Colors.blue,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,7 @@ class BlueOutlineButton extends StatelessWidget {
             foregroundColor: Colors.blue,
             side: BorderSide(
               width: 1.0,
-              color: Colors.blue,
+              color: color,
             ),
           ),
           child: Padding(
@@ -28,7 +33,7 @@ class BlueOutlineButton extends StatelessWidget {
                 buttonText,
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: Colors.blue,
+                  color: color,
                 ),
               ),
             ),

@@ -35,21 +35,21 @@ class MoreAboutAccountTypes extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(
-                  text: "\n\nArtist.",
+                  text: "\n\nSalon.",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextSpan(
                   text:
-                      "\nArtists are individuals who perform their creative work, often in the visual, literary, or performing arts. In the context of events, they can be painters, sculptors, or interactive artists who contribute to the aesthetic and experience of the event.",
+                      "\nSalons are individuals who perform their creative work, often in the visual, literary, or performing arts. In the context of events, they can be painters, sculptors, or interactive Salons who contribute to the aesthetic and experience of the event.",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(
-                  text: "\n\nBand.",
+                  text: "\n\nBarbershop.",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextSpan(
                   text:
-                      "\nBands are groups of musicians who play music together. They may specialize in a variety of genres and provide live music for events, enhancing the atmosphere with their performances.",
+                      "\nBarbershops are groups of musicians who play music together. They may specialize in a variety of genres and provide live music for events, enhancing the atmosphere with their performances.",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(
@@ -130,7 +130,7 @@ class MoreAboutAccountTypes extends StatelessWidget {
                 ),
                 TextSpan(
                   text:
-                      "\nFans are enthusiastic supporters of a particular artist, band, or event and can contribute to the atmosphere by their presence and engagement at events.",
+                      "\nFans are enthusiastic supporters of a particular Salon, Barbershop, or event and can contribute to the atmosphere by their presence and engagement at events.",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(
@@ -143,12 +143,12 @@ class MoreAboutAccountTypes extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(
-                  text: "\n\nMakeup Artist.",
+                  text: "\n\nMakeup Salon.",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextSpan(
                   text:
-                      "\nMakeup artists apply makeup to individuals, enhancing their features for special occasions. They can work on performers or attendees to ensure they look their best for the event..",
+                      "\nMakeup Salons apply makeup to individuals, enhancing their features for special occasions. They can work on performers or attendees to ensure they look their best for the event..",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(
@@ -193,7 +193,7 @@ class MoreAboutAccountTypes extends StatelessWidget {
                 ),
                 TextSpan(
                   text:
-                      "\nRecord labels represent and promote artists and their music. They can work with event organizers to feature their artists at events.",
+                      "\nRecord labels represent and promote Salons and their music. They can work with event organizers to feature their Salons at events.",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 TextSpan(

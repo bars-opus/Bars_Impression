@@ -35,14 +35,21 @@ class NoEventInfoWidget extends StatelessWidget {
                       : 'At the moment, there are no $_specificType in $from.  We will keep you updated if new $_specificType become available. ',
       containerTitle: from.startsWith('Location')
           ? 'Explore $_specificType in live location'
-          : from.isEmpty
-              ? 'No $_specificType'
-              : from.startsWith('by')
-                  ? 'No $_specificType $from'
-                  : 'No $_specificType in $from',
+          : from.startsWith('Images')
+              ? 'Explore $specificType images'
+              : from.isEmpty
+                  ? 'No $_specificType'
+                  : from.startsWith('by')
+                      ? 'No $_specificType $from'
+                      : 'No $_specificType in $from',
       height: from.startsWith('Location') ? 70 : 100,
       noLocation: false,
-      liveLocation: from.startsWith('Location') ? true : false,
+      liveLocation: from,
+storeType: specificType,
+      
+      //  from.startsWith('Location') || from.startsWith('Images')
+      //     ? true
+      //     : false,
       liveLocationIntialPage: liveLocationIntialPage,
       isEvent: isEvent,
     );

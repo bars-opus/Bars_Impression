@@ -2,12 +2,12 @@ import 'package:bars/utilities/exports.dart';
 
 class UserSettingsGeneralModel {
   final bool? disableChat;
-  // final bool? privateAccount;
+  // final bool? isShop;
   // final bool? disableAdvice;
   // final bool? hideAdvice;
   final bool? disableBooking;
   final bool? disabledAccount;
-final bool? isEmailVerified;
+  final bool? isEmailVerified;
   // final bool? disableEventSuggestionNotification;
   // final bool? muteEventSuggestionNotification;
   final String? androidNotificationToken;
@@ -17,7 +17,7 @@ final bool? isEmailVerified;
   // final List<String>
   //     preferredCreatives; // e.g., ["Concert", "Theatre", "Sport"]
   // final bool
-      // disableNewCreativeNotifications; // Receive notifications for new events
+  // disableNewCreativeNotifications; // Receive notifications for new events
   // final bool
   //     disableWorkVacancyNotifications; // Receive notifications for new events
   // final bool
@@ -27,7 +27,7 @@ final bool? isEmailVerified;
 
   UserSettingsGeneralModel({
     required this.disableChat,
-    // required this.privateAccount,
+    // required this.isShop,
     // required this.disableAdvice,
     // required this.hideAdvice,
     required this.disableBooking,
@@ -49,7 +49,7 @@ final bool? isEmailVerified;
   factory UserSettingsGeneralModel.fromDoc(DocumentSnapshot doc) {
     return UserSettingsGeneralModel(
       disableChat: doc['disableChat'],
-      // privateAccount: doc['privateAccount'],
+      // isShop: doc['isShop'],
       // disableAdvice: doc['disableAdvice'],
       // hideAdvice: doc['hideAdvice'],
       disableBooking: doc['disableBooking'],
@@ -73,7 +73,7 @@ final bool? isEmailVerified;
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return UserSettingsGeneralModel(
       disableChat: data['disableChat'],
-      // privateAccount: data['privateAccount'],
+      // isShop: data['isShop'],
       // disableAdvice: data['disableAdvice'],
       // hideAdvice: data['hideAdvice'],
       disableBooking: data['disableBooking'],

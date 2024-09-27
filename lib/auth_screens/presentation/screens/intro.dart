@@ -50,7 +50,7 @@ class _IntroState extends State<Intro> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1a1a1a),
+      backgroundColor: Colors.blue[900],
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: Container(
@@ -157,6 +157,7 @@ class _IntroState extends State<Intro> {
                       height: ResponsiveHelper.responsiveHeight(context, 30),
                     ),
                     BlueOutlineButton(
+                      color: Colors.white,
                       buttonText: 'Get Started',
                       onPressed: () {
                         Navigator.push(

@@ -106,10 +106,11 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (BuildContext context) {
-          return EventDeletedMessageWidget(
-            currentUserId: widget.currentUserId,
-            ticketOrder: ticketOrder,
-          );
+          return SizedBox.shrink();
+          //  EventDeletedMessageWidget(
+          //   currentUserId: widget.currentUserId,
+          //   ticketOrder: ticketOrder,
+          // );
         });
   }
 
@@ -127,15 +128,15 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         maximumColorCount: 20,
       );
 
-      _navigateToPage(
-          context,
-          PurchasedAttendingTicketScreen(
-            ticketOrder: ticketOrder,
-            event: _event,
-            currentUserId: widget.currentUserId,
-            justPurchased: '',
-            palette: _paletteGenerator,
-          ));
+      // _navigateToPage(
+      //     context,
+      //     PurchasedAttendingTicketScreen(
+      //       ticketOrder: ticketOrder,
+      //       event: _event,
+      //       currentUserId: widget.currentUserId,
+      //       justPurchased: '',
+      //       palette: _paletteGenerator,
+      //     ));
     }
   }
 
@@ -266,16 +267,16 @@ class _ActivityWidgetState extends State<ActivityWidget> {
           maximumColorCount: 20,
         );
 
-        _navigateToPage(
-          context,
-          EventInviteScreen(
-            currentUserId: widget.currentUserId,
-            event: _event,
-            invite: _invite,
-            palette: _paletteGenerator,
-            ticketOrder: _ticket,
-          ),
-        );
+        // _navigateToPage(
+        //   context,
+        //   EventInviteScreen(
+        //     currentUserId: widget.currentUserId,
+        //     event: _event,
+        //     invite: _invite,
+        //     palette: _paletteGenerator,
+        //     ticketOrder: _ticket,
+        //   ),
+        // );
       } else {
         _showBottomSheetErrorMessage('Event not found.',
             'This event might have been deleted or cancelled');
@@ -306,17 +307,17 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     Event? event = await DatabaseService.getUserEventWithId(
         postId, activity.helperFielId!);
     if (event != null) {
-      event.isPrivate
-          ? _showBottomSheetPrivateEventMessage()
-          : _navigateToPage(
-              context,
-              EventEnlargedScreen(
-                currentUserId: widget.currentUserId,
-                event: event,
-                type: event.type,
-                showPrivateEvent: true,
-              ),
-            );
+      // event.isPrivate
+      //     ? _showBottomSheetPrivateEventMessage()
+      //     : _navigateToPage(
+      //         context,
+      //         EventEnlargedScreen(
+      //           currentUserId: widget.currentUserId,
+      //           event: event,
+      //           type: event.type,
+      //           showPrivateEvent: true,
+      //         ),
+      //       );
     } else {
       _showBottomSheetErrorMessage('Event not found.',
           'This event might have been deleted or cancelled');
@@ -378,15 +379,15 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       return _showBottomSheetErrorMessage(
           'Affiliate not found.', 'This affiliate might have been deleted');
 
-    _navigateToPage(
-      context,
-      AffiliatePage(
-        currentUserId: widget.currentUserId,
-        isUser: true,
-        affiliate: affiliate,
-        fromActivity: true,
-      ),
-    );
+    // _navigateToPage(
+    //   context,
+    //   AffiliatePage(
+    //     currentUserId: widget.currentUserId,
+    //     isUser: true,
+    //     affiliate: affiliate,
+    //     fromActivity: true,
+    //   ),
+    // );
   }
 
   Future<void> _getTage(Activity activity) async {
@@ -721,9 +722,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               color: Colors.blue,
             ),
           )
-        : activity.type == NotificationActivityType.follow 
-        // &&
-        //         _provider.user!.privateAccount!
+        : activity.type == NotificationActivityType.follow
+            // &&
+            //         _provider.user!.isShop!
             ? _followRequestRespond(activity)
             : activity.type == NotificationActivityType.follow ||
                     activity.postImageUrl!.isEmpty
@@ -772,9 +773,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       height: ResponsiveHelper.responsiveHeight(context, 12.0),
       child: CircularButton(
         color: Colors.pink,
-        icon: Icon(Icons.favorite,
-            size: ResponsiveHelper.responsiveHeight(context, 15.0),
-            color: Colors.white),
+        icon: Icons.favorite,
         onPressed: () {},
       ),
     );

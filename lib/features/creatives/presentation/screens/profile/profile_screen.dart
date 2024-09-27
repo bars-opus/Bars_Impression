@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:bars/features/creatives/presentation/screens/no_followers.dart';
 import 'package:bars/features/creatives/presentation/screens/profile/edit_profile_professional.dart';
+import 'package:bars/features/creatives/presentation/screens/setup_brand.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
@@ -34,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool _isLoadingChat = false;
   bool _isLoadingEvents = true;
   late ScrollController _hideButtonController;
-  List<Event> _eventsList = [];
+  List<Post> _postsList = [];
   UserStoreModel? _profileUser;
   double coseTope = 10;
   late TabController _tabController;
@@ -56,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   bool _hasNext = true;
   late final _lastInviteDocument = <DocumentSnapshot>[];
-  late final _lastEventDocument = <DocumentSnapshot>[];
+  late final _lastPostDocument = <DocumentSnapshot>[];
 
   @override
   void initState() {
@@ -108,21 +109,20 @@ class _ProfileScreenState extends State<ProfileScreen>
     // companies.forEach((company) => provider.setCompanies(company));
 
     // // Add userPortfolio contact
-    // List<PortfolioContactModel> contacts = widget.userPortfolio.contacts;
-    // contacts.forEach((contact) => provider.setBookingContacts(contact));
+    List<PortfolioContactModel> contacts = userPortfolio.contacts;
+    contacts.forEach((contact) => provider.setBookingContacts(contact));
 
     // Add links to work
     List<PortfolioModel> links = userPortfolio.links;
     links.forEach((link) => provider.setLinksToWork(link));
 
-    // Add performance
-    // List<PortfolioModel> performances = userPortfolio.performances;
-    // performances
-    //     .forEach((performance) => provider.setPerformances(performance));
+    // Add services
+    List<PortfolioModel> services = userPortfolio.services;
+    services.forEach((service) => provider.setServices(service));
 
     // Add skills
-    List<PortfolioModel> skills = userPortfolio.skills;
-    skills.forEach((skill) => provider.setSkills(skill));
+    // List<PortfolioModel> skills = userPortfolio.skills;
+    // skills.forEach((skill) => provider.setServices(skill));
 
     // Add genre tags
     // List<PortfolioModel> genreTags = userPortfolio.genreTags;
@@ -177,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       // provider.company.clear();
       provider.bookingContacts.clear();
       provider.linksToWork.clear();
-      provider.performances.clear();
+      // provider.performances.clear();
       provider.skills.clear();
       provider.genreTages.clear();
       provider.collaborations.clear();
@@ -239,37 +239,44 @@ class _ProfileScreenState extends State<ProfileScreen>
   _nothing() {}
 
   Future<void> _fetchAndSetupUser() async {
-    // Fetch the user data using whatever method you need
-    var userSnapshot = await userProfessionalRef.doc(widget.userId).get();
-    // Check if the snapshot contains data and if the user has a private account
-    if (userSnapshot.exists) {
-      UserStoreModel user = UserStoreModel.fromDoc(userSnapshot);
-      // If the user has a private account, setup the follow request check
-      // if (user.privateAccount!) {
-      //   await _setupIsFollowRequest();
-      // }
-      // Set state with the new user data to update the UI
-      if (mounted) {
-        setState(() {
-          _profileUser = user;
-          _isFecthing = false;
-        });
-      }
-      var _provider = Provider.of<UserData>(context, listen: false);
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _clear(_provider);
-        _addLists(_provider, _profileUser!);
-        _setCurrency(_provider, _profileUser!);
+    var _provider = Provider.of<UserData>(context, listen: false);
+    if (mounted) {
+      setState(() {
+        _profileUser = _provider.userStore;
+        _isFecthing = false;
       });
-    } else {
-      // Handle the case where the user data does not exist
-      if (mounted) {
-        setState(() {
-          _userNotFound = true;
-          _isFecthing = false;
-        });
-      }
     }
+    // Fetch the user data using whatever method you need
+    // var userSnapshot = await userProfessionalRef.doc(widget.userId).get();
+    // // Check if the snapshot contains data and if the user has a private account
+    // if (userSnapshot.exists) {
+    //   UserStoreModel user = UserStoreModel.fromDoc(userSnapshot);
+    //   // If the user has a private account, setup the follow request check
+    //   // if (user.isShop!) {
+    //   //   await _setupIsFollowRequest();
+    //   // }
+    //   // Set state with the new user data to update the UI
+    //   if (mounted) {
+    //     setState(() {
+    //       _profileUser = user;
+    //       _isFecthing = false;
+    //     });
+    //   }
+    //   var _provider = Provider.of<UserData>(context, listen: false);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _clear(_provider);
+      _addLists(_provider, _profileUser!);
+      _setCurrency(_provider, _profileUser!);
+    });
+    // } else {
+    //   // Handle the case where the user data does not exist
+    //   if (mounted) {
+    //     setState(() {
+    //       _userNotFound = true;
+    //       _isFecthing = false;
+    //     });
+    //   }
+    // }
   }
 
   _setupIsFollowing() async {
@@ -381,35 +388,35 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
   }
 
-  Set<String> addedEventIds = Set<String>();
+  Set<String> addedPostIds = Set<String>();
 
   _loadMoreEvents() async {
     try {
-      Query eventFeedSnapShot = eventsRef
+      Query eventFeedSnapShot = postsRef
           .doc(widget.userId)
-          .collection('userEvents')
+          .collection('userPosts')
           .orderBy('timestamp', descending: true)
-          .startAfterDocument(_lastEventDocument.last)
+          .startAfterDocument(_lastPostDocument.last)
           .limit(limit);
       QuerySnapshot postFeedSnapShot = await eventFeedSnapShot.get();
 
-      List<Event> events =
-          postFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+      List<Post> posts =
+          postFeedSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
 
-      List<Event> moreEvents = [];
+      List<Post> morePosts = [];
 
-      for (var event in events) {
-        if (!addedEventIds.contains(event.id)) {
-          addedEventIds.add(event.id);
-          moreEvents.add(event);
+      for (var post in posts) {
+        if (!addedPostIds.contains(post.id)) {
+          addedPostIds.add(post.id!);
+          morePosts.add(post);
         }
       }
 
-      _lastEventDocument.addAll(postFeedSnapShot.docs);
+      _lastPostDocument.addAll(postFeedSnapShot.docs);
 
       if (mounted) {
         setState(() {
-          _eventsList.addAll(moreEvents);
+          _postsList.addAll(morePosts);
 
           _hasNext = postFeedSnapShot.docs.length == limit;
         });
@@ -627,7 +634,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _followUser(UserStoreModel user) async {
-    // user.privateAccount!
+    // user.isShop!
     //     ? DatabaseService.sendFollowRequest(
     //         currentUserId: widget.currentUserId,
     //         privateUser: user,
@@ -642,7 +649,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //   );
 
     if (mounted) {
-      // user.privateAccount!
+      // user.isShop!
       //     ? setState(() {
       //         _isFollowerResquested = true;
       //       })
@@ -656,7 +663,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Color(0xFFD38B41),
       content: Text(
-        // user.privateAccount!
+        // user.isShop!
         //     ? 'Follow request sent to ${user.userName!}'
         //     :
 
@@ -687,8 +694,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     bool isAuthor = currentUserId == user.userId;
     return UserStatistics(
       count: NumberFormat.compact().format(_followerCount),
-      countColor: Colors.white,
-      titleColor: Colors.white,
+      countColor: Colors.grey,
+      titleColor: Colors.grey,
       onPressed: () => _followerCount == 0
           ? navigateToPage(
               context,
@@ -762,34 +769,73 @@ class _ProfileScreenState extends State<ProfileScreen>
     // ]);
   }
 
-  _button(
-      String text, VoidCallback onPressed, double width, String borderRaduis) {
+  _callButton() {
+    return GestureDetector(
+      onTap: () {
+        _showBottomSheetContact(context, _profileUser!);
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.call_outlined,
+              size: ResponsiveHelper.responsiveHeight(context, 20),
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            'Call',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  _button(String text, VoidCallback onPressed, String borderRaduis) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: ResponsiveHelper.responsiveHeight(context, width),
+        margin: const EdgeInsets.all(20.0),
+        width: double.infinity,
         height: ResponsiveHelper.responsiveHeight(context, 33.0),
         decoration: BoxDecoration(
-          color: text.startsWith('Follow')
-              ? Colors.blue
-              : Colors.grey.withOpacity(.4),
-          borderRadius: borderRaduis.startsWith('All')
-              ? BorderRadius.circular(
-                  10,
-                )
-              : borderRaduis.startsWith('Left')
-                  ? BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      bottomLeft: Radius.circular(10.0),
-                    )
-                  : borderRaduis.startsWith('Right')
-                      ? BorderRadius.only(
-                          topRight: Radius.circular(10.0),
-                          bottomRight: Radius.circular(10.0),
-                        )
-                      : BorderRadius.circular(
-                          0,
-                        ),
+          color: Colors.blue,
+          // text.startsWith('Follow') ? Colors.blue : Colors.grey,
+          borderRadius: BorderRadius.circular(10),
+
+          // borderRadius: borderRaduis.startsWith('All')
+          //     ? BorderRadius.circular(
+          //         10,
+          //       )
+          //     : borderRaduis.startsWith('Left')
+          //         ? BorderRadius.only(
+          //             topLeft: Radius.circular(10.0),
+          //             bottomLeft: Radius.circular(10.0),
+          //           )
+          //         : borderRaduis.startsWith('Right')
+          //             ? BorderRadius.only(
+          //                 topRight: Radius.circular(10.0),
+          //                 bottomRight: Radius.circular(10.0),
+          //               )
+          //             : BorderRadius.circular(
+          //                 0,
+          //               ),
         ),
         child: Center(
           child: Padding(
@@ -798,9 +844,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               text,
               style: TextStyle(
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-                color:
-                    text.startsWith('loading...') ? Colors.blue : Colors.white,
-                fontWeight: _isFecthing ? FontWeight.normal : FontWeight.bold,
+                color: Colors.white,
+                // text.startsWith('loading...') ? Colors.blue : Colors.white,
+                // fontWeight: _isFecthing ? FontWeight.normal : FontWeight.bold,
               ),
             ),
           ),
@@ -897,16 +943,16 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  void _showModalBottomSheetAdd(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return CreateContent();
-      },
-    );
-  }
+  // void _showModalBottomSheetAdd(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Colors.transparent,
+  //     isScrollControlled: true,
+  //     builder: (BuildContext context) {
+  //       return CreateContent();
+  //     },
+  //   );
+  // }
 
   void _showBottomSheetNoPortolio(
       BuildContext context, UserStoreModel _user) async {
@@ -1062,123 +1108,130 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _chatButton(UserStoreModel user) {
+  // _chatButton() {
+  //   bool _isAuthor = _profileUser!.userId == widget.currentUserId;
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 0.0),
+  //     child: Column(
+  //       // mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         _button(
+  //             // _isLoading ? 'loading...' :
+  //             'Book', () async {
+  //           _showBottomSheetBookingCalendar(false);
+  //           // if (_isLoading) return;
+
+  //           // _isLoading = true;
+  //           // try {
+  //           //   UserStoreModel? _user =
+  //           //       await DatabaseService.getUserProfessionalWithId(
+  //           //     user.userId!,
+  //           //   );
+
+  //           //   if (_user != null) {
+  //           //     _user.professionalImageUrls.isEmpty && _user.skills.isEmpty
+  //           //         ? _showBottomSheetNoPortolio(context, _user)
+  //           //         : _user.noBooking
+  //           //             ? _showBottomSheetNoBooking(context, _user)
+  //           //             : navigateToPage(
+  //           //                 context,
+  //           //                 DiscographyWidget(
+  //           //                   currentUserId: widget.currentUserId,
+  //           //                   userIndex: 0,
+  //           //                   userPortfolio: _user,
+  //           //                 ),
+  //           //               );
+  //           //   } else {
+  //           //     _showBottomSheetErrorMessage(user.userId.toString());
+  //           //   }
+  //           // } catch (e) {
+  //           //   _showBottomSheetErrorMessage(e);
+  //           // } finally {
+  //           //   _isLoading = false;
+  //           // }
+  //         }, 'Left'),
+  //         const SizedBox(
+  //           width: 1,
+  //         ),
+  //         _button(
+  //             // _isAuthor
+  //             //     ? 'Advice'
+  //             //     : _isLoadingChat
+  //             //         ? 'loading...'
+  //             //         :
+
+  //             'Contact', () {
+  //           _showBottomSheetContact(context, _profileUser!);
+  //         }, 'Right'),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  _editProfile(UserStoreModel user) {
     bool _isAuthor = user.userId == widget.currentUserId;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _button(
-              // _isLoading ? 'loading...' :
-              'Book', () async {
-            _showBottomSheetBookingCalendar(false);
-            // if (_isLoading) return;
-
-            // _isLoading = true;
-            // try {
-            //   UserStoreModel? _user =
-            //       await DatabaseService.getUserProfessionalWithId(
-            //     user.userId!,
-            //   );
-
-            //   if (_user != null) {
-            //     _user.professionalImageUrls.isEmpty && _user.skills.isEmpty
-            //         ? _showBottomSheetNoPortolio(context, _user)
-            //         : _user.noBooking
-            //             ? _showBottomSheetNoBooking(context, _user)
-            //             : navigateToPage(
-            //                 context,
-            //                 DiscographyWidget(
-            //                   currentUserId: widget.currentUserId,
-            //                   userIndex: 0,
-            //                   userPortfolio: _user,
-            //                 ),
-            //               );
-            //   } else {
-            //     _showBottomSheetErrorMessage(user.userId.toString());
-            //   }
-            // } catch (e) {
-            //   _showBottomSheetErrorMessage(e);
-            // } finally {
-            //   _isLoading = false;
-            // }
-          }, 175, 'Left'),
-          const SizedBox(
-            width: 1,
-          ),
-          _button(
-              // _isAuthor
-              //     ? 'Advice'
-              //     : _isLoadingChat
-              //         ? 'loading...'
-              //         :
-
-              'Contact', () {
-            _showBottomSheetContact(context, user);
-          }, 175, 'Right'),
-        ],
-      ),
-    );
+    _isAuthor
+        ? _showBottomSheetEditProfile()
+        : user.storeLogomageUrl.isEmpty
+            ? () {}
+            : navigateToPage(
+                context,
+                ViewImage(
+                  imageUrl: user.storeLogomageUrl,
+                ),
+              );
   }
 
   _followContainer(UserStoreModel user) {
     bool _isAuthor = user.userId == widget.currentUserId;
     return Container(
-      color: Color(0xFF1a1a1a),
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorLight,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
             children: [
               SizedBox(
-                height: ResponsiveHelper.responsiveHeight(context, 80.0),
+                height: ResponsiveHelper.responsiveHeight(context, 40.0),
               ),
               Row(
                 children: [
                   GestureDetector(
-                    onTap: _isAuthor
-                        ? () {
-                            // navigateToPage(
-                            //     context,
-                            //     EditProfileScreen(
-                            //       user: user,
-                            //     ));
-                          }
-                        : user.profileImageUrl!.isEmpty
-                            ? () {}
-                            : () {
-                                navigateToPage(
-                                  context,
-                                  ViewImage(
-                                    imageUrl: user.profileImageUrl!,
-                                  ),
-                                );
-                              },
+                    onTap: () {
+                      _editProfile(user);
+                    },
                     child: Stack(
                       children: [
                         Hero(
                           tag: widget.user == null
                               ? 'container1' + user.userId.toString()
                               : 'container1' + widget.user!.userId.toString(),
-                          child: CircleAvatar(
-                            backgroundColor: Color(0xFF1a1a1a),
-                            radius: ResponsiveHelper.responsiveHeight(
-                                context, 40.0),
-                            backgroundImage: user.profileImageUrl!.isEmpty
-                                ? AssetImage(
-                                    'assets/images/user_placeholder.png',
-                                  ) as ImageProvider
-                                : CachedNetworkImageProvider(
-                                    user.profileImageUrl!, errorListener: (_) {
+                          child: user.storeLogomageUrl.isEmpty
+                              ? Icon(
+                                  Icons.store,
+                                  color: Colors.grey,
+                                  size: ResponsiveHelper.responsiveHeight(
+                                      context, 80),
+                                )
+                              : CircleAvatar(
+                                  backgroundColor: Color(0xFF1e4848),
+                                  radius: ResponsiveHelper.responsiveHeight(
+                                      context, 40.0),
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      user.storeLogomageUrl,
+                                      errorListener: (_) {
                                     return;
                                   }),
-                          ),
+                                ),
                         ),
                         _isAuthor
                             ? Positioned(
                                 bottom: 10,
-                                right: 0,
+                                right: 10,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
@@ -1208,7 +1261,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         NameText(
-                          color: Colors.white,
+                          color: Colors.black,
                           name: user.userName!
                               .toUpperCase()
                               .trim()
@@ -1222,7 +1275,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         // const SizedBox(
                         //   height: 5,
                         // ),
-                        // user.privateAccount!
+                        // user.isShop!
                         //     ? _isFollowing
                         //         ? _buildStatistics(user)
                         //         : SizedBox.shrink()
@@ -1232,7 +1285,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         new Material(
                           color: Colors.transparent,
                           child: Text(
-                            user.storeType!,
+                            user.storeType,
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: ResponsiveHelper.responsiveFontSize(
@@ -1246,38 +1299,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ],
               ),
-
-              const SizedBox(
-                height: 30,
-              ),
-              if (!_isAuthor)
-                _button(
-                    _isFollowing
-                        ? 'unFollow'
-                        : _isFollowerResquested
-                            ? 'Pending follow request'
-                            : 'Follow',
-                    _isFollowerResquested
-                        ? () {
-                            _requestFollowOrUnfollow(user);
-                          }
-                        : () {
-                            _followOrUnfollow(user);
-                          },
-                    350,
-                    'All'),
-              const SizedBox(
-                height: 5,
-              ),
-              // user.privateAccount!
-              //     ? _isFollowing
-              //         ? _chatButton(user)
-              //         : SizedBox.shrink()
-              // :
-              _chatButton(user),
-              const SizedBox(
-                height: 30,
-              ),
               GestureDetector(
                 onTap: () {
                   _showBottomSheetTermsAndConditions(user);
@@ -1290,13 +1311,44 @@ class _ProfileScreenState extends State<ProfileScreen>
                     style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 12),
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,
                   ),
                 ),
               ),
+
+              // const SizedBox(
+              //   height: 30,
+              // ),
+              // if (!_isAuthor)
+              //   _button(
+              //       _isFollowing
+              //           ? 'unFollow'
+              //           : _isFollowerResquested
+              //               ? 'Pending follow request'
+              //               : 'Follow',
+              //       _isFollowerResquested
+              //           ? () {
+              //               _requestFollowOrUnfollow(user);
+              //             }
+              //           : () {
+              //               _followOrUnfollow(user);
+              //             },
+              //       'All'),
+              // const SizedBox(
+              //   height: 5,
+              // ),
+              // // user.isShop!
+              // //     ? _isFollowing
+              // //         ? _chatButton(user)
+              // //         : SizedBox.shrink()
+              // // :
+              // _chatButton(user),
+              // const SizedBox(
+              //   height: 30,
+              // ),
             ],
           ),
         ),
@@ -1304,23 +1356,23 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _buildInvite() {
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              InviteModel invite = _inviteList[index];
-              return InviteContainerWidget(
-                invite: invite,
-              );
-            },
-            childCount: _inviteList.length,
-          ),
-        ),
-      ],
-    );
-  }
+  // _buildInvite() {
+  //   return CustomScrollView(
+  //     slivers: [
+  //       SliverList(
+  //         delegate: SliverChildBuilderDelegate(
+  //           (context, index) {
+  //             InviteModel invite = _inviteList[index];
+  //             return InviteContainerWidget(
+  //               invite: invite,
+  //             );
+  //           },
+  //           childCount: _inviteList.length,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   _loaindSchimmer() {
     return Container(
@@ -1328,13 +1380,18 @@ class _ProfileScreenState extends State<ProfileScreen>
           context,
           450,
         ),
-        child: ListView(
-            physics: const NeverScrollableScrollPhysics(),
-            children: List.generate(
-                10,
-                (index) => EventAndUserScimmerSkeleton(
-                      from: 'Event',
-                    ))));
+        child: EventAndUserScimmerSkeleton(
+          from: 'Posts',
+        )
+        // ListView(
+        //     physics: const NeverScrollableScrollPhysics(),
+        //     children: List.generate(
+        //         10,
+        //         (index) => EventAndUserScimmerSkeleton(
+        //               from: 'Event',
+        //             )))
+
+        );
   }
 
   void _showBottomSheetTermsAndConditions(UserStoreModel user) {
@@ -1363,7 +1420,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Bio',
+                          text: 'Overview',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         TextSpan(
@@ -1392,20 +1449,20 @@ class _ProfileScreenState extends State<ProfileScreen>
         mainAxisSpacing: 8.0,
         childAspectRatio: 1, // Adjust based on the aspect ratio of your items
       ),
-      itemCount: _eventsList.length,
+      itemCount: _postsList.length,
       itemBuilder: (context, index) {
-        Event event = _eventsList[index];
+        Post post = _postsList[index];
         return EventDisplayWidget(
           currentUserId: widget.currentUserId,
-          eventList: _eventsList,
-          event: event,
+          postList: _postsList,
+          post: post,
           pageIndex: 0,
           eventSnapshot: [],
           eventPagesOnly: true,
           liveCity: '',
           liveCountry: '',
           isFrom: '',
-          sortNumberOfDays: 0,
+          // sortNumberOfDays: 0,
         );
       },
     );
@@ -1416,9 +1473,9 @@ class _ProfileScreenState extends State<ProfileScreen>
       children: [
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
-            stream: eventsRef
+            stream: postsRef
                 .doc(widget.userId)
-                .collection('userEvents')
+                .collection('userPosts')
                 .orderBy('timestamp', descending: true)
                 .limit(10)
                 .snapshots(),
@@ -1431,21 +1488,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                 return Center(
                   child: NoContents(
                     icon: null,
-                    title: 'No events',
+                    title: 'No images',
                     subTitle: _isAuthor
-                        ? 'The events you create would appear here.'
-                        : '$userName hasn\'t created any events yet',
+                        ? 'The images of your cleint\'s work you upload would appear here.'
+                        : '$userName hasn\'t uploaded any client images',
                   ),
                 );
               }
 
-              List<Event> events =
-                  snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
+              List<Post> posts =
+                  snapshot.data!.docs.map((doc) => Post.fromDoc(doc)).toList();
 
-              if (!const DeepCollectionEquality().equals(_eventsList, events)) {
-                _eventsList = events;
-                _lastEventDocument.clear();
-                _lastEventDocument.addAll(snapshot.data!.docs);
+              if (!const DeepCollectionEquality().equals(_postsList, posts)) {
+                _postsList = posts;
+                _lastPostDocument.clear();
+                _lastPostDocument.addAll(snapshot.data!.docs);
               }
 
               return _buildEventGrid();
@@ -1509,66 +1566,62 @@ class _ProfileScreenState extends State<ProfileScreen>
                   //         seeMore: true,
                   //         edit: false,
                   //       )
-                  : from.startsWith('skills')
+                  : from.startsWith('services')
                       ? PortfolioWidget(
-                          portfolios: _provider.skills,
+                          portfolios: _provider.services,
                           seeMore: true,
                           edit: false,
                         )
-                      : from.startsWith('performance')
+                      // : from.startsWith('performance')
+                      //     ? PortfolioWidget(
+                      //         portfolios: _provider.performances,
+                      //         seeMore: true,
+                      //         edit: false,
+                      //       )
+                      : from.startsWith('awards')
                           ? PortfolioWidget(
-                              portfolios: _provider.performances,
+                              portfolios: _provider.awards,
                               seeMore: true,
                               edit: false,
                             )
-                          : from.startsWith('awards')
-                              ? PortfolioWidget(
-                                  portfolios: _provider.awards,
+                          : from.startsWith('work')
+                              ? PortfolioWidgetWorkLink(
+                                  portfolios: _provider.linksToWork,
                                   seeMore: true,
                                   edit: false,
                                 )
-                              : from.startsWith('work')
-                                  ? PortfolioWidgetWorkLink(
-                                      portfolios: _provider.linksToWork,
-                                      seeMore: true,
-                                      edit: false,
+                              : from.startsWith('price')
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(top: 30.0),
+                                      child: PriceRateWidget(
+                                        edit: false,
+                                        prices: _provider.priceRate,
+                                        seeMore: true,
+                                      ),
                                     )
-                                  : from.startsWith('price')
+                                  : from.startsWith('collaborations')
                                       ? Padding(
                                           padding:
                                               const EdgeInsets.only(top: 30.0),
-                                          child: PriceRateWidget(
+                                          child: PortfolioCollaborationWidget(
                                             edit: false,
-                                            prices: _provider.priceRate,
                                             seeMore: true,
+                                            collaborations:
+                                                _provider.collaborations,
                                           ),
                                         )
-                                      : from.startsWith('collaborations')
+                                      : from.startsWith('review')
                                           ? Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 30.0),
-                                              child:
-                                                  PortfolioCollaborationWidget(
-                                                edit: false,
-                                                seeMore: true,
-                                                collaborations:
-                                                    _provider.collaborations,
-                                              ),
+                                              child: _buildDisplayReviewList(
+                                                  context),
                                             )
-                                          : from.startsWith('review')
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 30.0),
-                                                  child:
-                                                      _buildDisplayReviewList(
-                                                          context),
-                                                )
-                                              : PortfolioWidget(
-                                                  portfolios: [],
-                                                  seeMore: true,
-                                                  edit: false,
-                                                ),
+                                          : PortfolioWidget(
+                                              portfolios: [],
+                                              seeMore: true,
+                                              edit: false,
+                                            ),
               const SizedBox(
                 height: 40,
               ),
@@ -1685,11 +1738,20 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  void _navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
   _inviteDisplay(bool _isAuthor, String userName) {
     var _provider = Provider.of<UserData>(
       context,
     );
-    bool _isCurrentUser = widget.currentUserId == _profileUser!.userId;
+    bool _isCurrentUser = _profileUser == null
+        ? false
+        : widget.currentUserId == _profileUser!.userId;
 
     return Material(
       color:
@@ -1704,21 +1766,24 @@ class _ProfileScreenState extends State<ProfileScreen>
         removeTop: true,
         child: ListView(
           children: [
-            Container(
-              height: ResponsiveHelper.responsiveFontSize(context, 500),
-              width: double.infinity,
-              child: PageView(
-                controller: _pageController2,
-                physics: AlwaysScrollableScrollPhysics(),
-                children: _provider.professionalImages
-                    .asMap()
-                    .entries
-                    .map<Widget>((entry) {
-                  var image = entry.value;
-                  return _professionalImageContainer(image, 'Max');
-                }).toList(),
+            const SizedBox(
+              height: 10,
+            ),
+            _button('Book', () {
+              _showBottomSheetBookingCalendar(false);
+            }, 'Right'),
+
+            const SizedBox(
+              height: 10,
+            ),
+            _callButton(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: Divider(
+                thickness: .5,
               ),
             ),
+
             Container(
               color: Theme.of(context).primaryColorLight,
               height: ResponsiveHelper.responsiveHeight(context, 150),
@@ -1747,8 +1812,31 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
             ),
+
+            Container(
+              height: ResponsiveHelper.responsiveFontSize(context, 500),
+              width: double.infinity,
+              child: PageView(
+                controller: _pageController2,
+                physics: AlwaysScrollableScrollPhysics(),
+                children: _provider.userStore!.professionalImageUrls
+                    .asMap()
+                    .entries
+                    .map<Widget>((entry) {
+                  var image = entry.value;
+                  return _professionalImageContainer(image, 'Max');
+                }).toList(),
+              ),
+            ),
             _divider('Reviews', 'review', false),
             if (!_isFecthingRatings) _buildDisplayReviewGrid(context),
+            _divider('Services', 'services',
+                _provider.services.length >= 4 ? true : false),
+            PortfolioWidget(
+              portfolios: _provider.services,
+              seeMore: false,
+              edit: false,
+            ),
             _divider('Price list', 'price',
                 _provider.priceRate.length >= 2 ? false : false),
             if (_provider.bookingPriceRate != null && !_isCurrentUser)
@@ -1776,30 +1864,76 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
             PriceRateWidget(
               edit: false,
-              prices: _provider.priceRate,
+              prices: _provider.userStore!.priceTags,
               seeMore: true,
               // currency: _provider,
             ),
-            _divider('Skills', 'skills',
-                _provider.skills.length >= 4 ? true : false),
-            PortfolioWidget(
-              portfolios: _provider.skills,
-              seeMore: false,
-              edit: false,
-            ),
-            _divider('Performance', 'performance',
-                _provider.performances.length >= 4 ? true : false),
-            PortfolioWidget(
-              portfolios: _provider.performances,
-              seeMore: false,
-              edit: false,
-            ),
+
+            // _divider('Performance', 'performance',
+            //     _provider.performances.length >= 4 ? true : false),
+            // PortfolioWidget(
+            //   portfolios: _provider.performances,
+            //   seeMore: false,
+            //   edit: false,
+            // ),
             _divider('Awards', 'awards',
-                _provider.awards.length >= 4 ? true : false),
+                _provider.userStore!.awards.length >= 4 ? true : false),
             PortfolioWidget(
               portfolios: _provider.awards,
               seeMore: false,
               edit: false,
+            ),
+
+            _divider('Website and Social media', 'website and Social media',
+                _provider.linksToWork.length >= 4 ? true : false),
+            PortfolioWidget(
+              portfolios: _provider.linksToWork,
+              seeMore: false,
+              edit: false,
+            ),
+
+            const SizedBox(
+              height: 100,
+            ),
+            GestureDetector(
+              onTap: () {
+                _navigateToPage(
+                    context,
+                    UserBarcode(
+                      profileImageUrl: _provider.userStore!.storeLogomageUrl,
+                      userDynamicLink: _provider.userStore!.dynamicLink,
+                      bio: _provider.userStore!.overview!,
+                      userName: _provider.userStore!.userName!,
+                      userId: _provider.userStore!.userId!,
+                    ));
+              },
+              child: Hero(
+                  tag: _provider.userStore!.userId,
+                  child: Icon(
+                    Icons.qr_code,
+                    color: Colors.blue,
+                    size: ResponsiveHelper.responsiveHeight(context, 30),
+                  )),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Center(
+              child: GestureDetector(
+                onTap: () {},
+                child: Text(
+                  'Share link.',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 50,
             ),
             // Expanded(
             //   child: _isLoadingEvents
@@ -1855,7 +1989,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           return [
             SliverAppBar(
               pinned: true,
-              backgroundColor: Color(0xFF1a1a1a),
+              backgroundColor: Theme.of(context).primaryColorLight,
               leading: IconButton(
                 icon: Icon(
                   size: ResponsiveHelper.responsiveHeight(context, 20.0),
@@ -1864,14 +1998,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                       : Platform.isIOS
                           ? Icons.arrow_back_ios
                           : Icons.arrow_back,
-                  color: Colors.white,
+                  color: Theme.of(context).secondaryHeaderColor,
                 ),
                 onPressed: () {
                   // HapticFeedback.mediumImpact();
                   _isAuthor
-                      ? _showModalBottomSheetAdd(
+                      ? _navigateToPage(
                           context,
-                        )
+                          Intro(
+                              // isEditting: false,
+                              // post: null,
+                              // isCompleted: false,
+                              // isDraft: false,
+                              )
+                          // CreateEventScreen(
+                          //   isEditting: false,
+                          //   post: null,
+                          //   // isCompleted: false,
+                          //   // isDraft: false,
+                          // ),
+
+                          )
                       : Navigator.pop(context);
                 },
               ),
@@ -1880,7 +2027,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   icon: Icon(
                     size: ResponsiveHelper.responsiveHeight(context, 25.0),
                     Icons.more_vert_rounded,
-                    color: Colors.white,
+                    color: Theme.of(context).secondaryHeaderColor,
                   ),
                   onPressed: () {
                     _showBottomSheet(context, user);
@@ -1889,16 +2036,12 @@ class _ProfileScreenState extends State<ProfileScreen>
               ],
               expandedHeight: ResponsiveHelper.responsiveHeight(
                 context,
-                420,
+                280,
               ),
               flexibleSpace: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Color(0xFF1a1a1a),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30.0),
-                    bottomRight: Radius.circular(30.0),
-                  ),
+                  color: Colors.transparent,
                 ),
                 child: FlexibleSpaceBar(
                   background: SafeArea(
@@ -1910,7 +2053,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 preferredSize: Size.fromHeight(kToolbarHeight),
                 child:
 
-                    //  user.privateAccount! && !_isAuthor && !_isFollowing
+                    //  user.isShop! && !_isAuthor && !_isFollowing
                     //     ? SizedBox.shrink()
                     //     :
 
@@ -1957,7 +2100,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           ];
         },
         body:
-            //  user.privateAccount! && !_isAuthor && !_isFollowing
+            //  user.isShop! && !_isAuthor && !_isFollowing
             //     ?
 
             //      Container(
@@ -1978,8 +2121,8 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: TabBarView(
             controller: _tabController,
             children: <Widget>[
-              _inviteDisplay(_isAuthor, user.userName!),
-              _eventDisplay(_isAuthor, user.userName!),
+              _inviteDisplay(_isAuthor, user.userName),
+              _eventDisplay(_isAuthor, user.userName),
             ],
           ),
         ),
@@ -2169,12 +2312,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ? GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
-                            navigateToPage(
-                              context,
-                              EditProfileProfessional(
-                                user: user,
-                              ),
-                            );
+                            _editProfile(user);
                           },
                           child: Icon(
                             Icons.edit_outlined,
@@ -2184,7 +2322,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                         )
                       : null,
-                  leading: user.profileImageUrl!.isEmpty
+                  leading: user.storeLogomageUrl.isEmpty
                       ? Icon(
                           Icons.account_circle_outlined,
                           size: 60,
@@ -2198,7 +2336,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             color: Theme.of(context).primaryColor,
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(
-                                  user.profileImageUrl!, errorListener: (_) {
+                                  user.storeLogomageUrl, errorListener: (_) {
                                 return;
                               }),
                               fit: BoxFit.cover,
@@ -2230,9 +2368,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                 _sortByWidget(
                   () {
                     _isAuthor
-                        ? _showModalBottomSheetAdd(
+                        ? _navigateToPage(
                             context,
-                          )
+                            CreateEventScreen(
+                              isEditting: false,
+                              post: null,
+                              // isCompleted: false,
+                              // isDraft: false,
+                            ))
                         : navigateToPage(
                             context,
                             SendToChats(
@@ -2241,7 +2384,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   Provider.of<UserData>(context, listen: false)
                                       .currentUserId!,
                               sendContentType: 'User',
-                              sendImageUrl: user.profileImageUrl!,
+                              sendImageUrl: user.storeLogomageUrl,
                               sendTitle: user.userName!,
                             ));
                   },
@@ -2326,7 +2469,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               bio: user.overview!,
                               userName: user.userName!,
                               userId: user.userId!,
-                              profileImageUrl: user.profileImageUrl!,
+                              profileImageUrl: user.storeLogomageUrl,
                             ));
                       },
                       Icons.qr_code,
@@ -2448,6 +2591,27 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  void _showBottomSheetEditProfile() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(
+                context, _provider.user!.isShop! ? 400 : 600),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            child: EditProfileScreen(
+              user: _provider.user!,
+            ));
+      },
+    );
+  }
+
   _displayScaffold() {
     UserStoreModel user = widget.user!;
     return
@@ -2466,7 +2630,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   mainProfileLoadingIdicator() {
     return Container(
-      color: Color(0xFF1a1a1a),
+      color: Color(0xFF1e4848),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

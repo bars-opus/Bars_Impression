@@ -102,10 +102,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveFontSize(context, 400),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: LoginScreenOptions(
+                from: 'Sign in',
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1a1a1a),
+      backgroundColor: Colors.blue[900],
       body: SafeArea(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -150,11 +175,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     SignUpButton(
                       buttonText: 'Sign in',
                       onPressed: () {
-                        _navigateToPage(
-                          LoginScreenOptions(
-                            from: 'Sign in',
-                          ),
-                        );
+                        _showBottomSheet();
+                        // _navigateToPage(
+                        //   LoginScreenOptions(
+                        //     from: 'Sign in',
+                        //   ),
+                        // );
                       },
                     ),
                     SizedBox(

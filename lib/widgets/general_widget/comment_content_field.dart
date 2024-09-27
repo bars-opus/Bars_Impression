@@ -50,10 +50,11 @@ class CommentContentField extends StatelessWidget {
                 color: controller.text.trim().length > 0
                     ? Colors.blue
                     : Colors.transparent,
-                icon: Icon(Icons.send,
-                    color: controller.text.trim().length > 0
-                        ? Colors.white
-                        : Colors.grey),
+                icon: Icons.send,
+                //  Icon(Icons.send,
+                //     color: controller.text.trim().length > 0
+                //         ? Colors.white
+                //         : Colors.grey),
                 onPressed: onSend),
           ),
         ),

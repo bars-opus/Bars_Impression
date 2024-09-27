@@ -54,7 +54,9 @@ class _EditstoreTypeState extends State<EditstoreType> {
     }
   }
 
-  _update() {
+  _update() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     batch.update(
@@ -72,38 +74,70 @@ class _EditstoreTypeState extends State<EditstoreType> {
     );
 
     try {
-      batch.commit();
-      _updateAuthorHive(_storeType);
+      await batch.commit();
+      await HiveUtils.updateUserLocation(
+        context,
+        _provider.userStore!.city,
+        _provider.userStore!.country,
+        _storeType,
+      );
+      // _updateAuthorHive(_storeType);
     } catch (error) {
       // Handle the error appropriately
     }
   }
 
-  _updateAuthorHive(String storeType) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  // _updateAuthorHive(String storeType) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  //   final accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
 
-    var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    // Create a new instance of AccountHolderAuthor with the updated name
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // name: _provider.user!.name,
-      bio: _provider.user!.bio,
-      disabledAccount: _provider.user!.disabledAccount,
-      dynamicLink: _provider.user!.dynamicLink,
-      lastActiveDate: _provider.user!.lastActiveDate,
-      storeType: storeType,
-      profileImageUrl: _provider.user!.profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
-      userName: _provider.user!.userName,
-      verified: _provider.user!.verified,
-      // privateAccount: _provider.user!.privateAccount,
-      disableChat: _provider.user!.disableChat,
-    );
+  //   // Create a new instance of AccountHolderAuthor with the updated name
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     isShop: _provider.user!.isShop,
+  //     // name: _provider.user!.name,
+  //     bio: _provider.user!.bio,
+  //     disabledAccount: _provider.user!.disabledAccount,
+  //     dynamicLink: _provider.user!.dynamicLink,
+  //     lastActiveDate: _provider.user!.lastActiveDate,
+  //     storeType: storeType,
+  //     profileImageUrl: _provider.user!.profileImageUrl,
+  //     reportConfirmed: _provider.user!.reportConfirmed,
+  //     userId: _provider.user!.userId,
+  //     userName: _provider.user!.userName,
+  //     verified: _provider.user!.verified,
+  //     // isShop: _provider.user!.isShop,
+  //     disableChat: _provider.user!.disableChat,
+  //   );
 
-    // Put the new object back into the box with the same key
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
+  //   var updatedUserStore = UserStoreModel(
+  //       userId: _provider.userStore!.userId,
+  //       userName: _provider.userStore!.userName,
+  //       storeLogomageUrl: _provider.userStore!.storeLogomageUrl,
+  //       storeType: storeType,
+  //       verified: _provider.userStore!.verified,
+  //       terms: _provider.userStore!.terms,
+  //       city: _provider.userStore!.city,
+  //       country: _provider.userStore!.country,
+  //       overview: _provider.userStore!.overview,
+  //       noBooking: _provider.userStore!.noBooking,
+  //       awards: _provider.userStore!.awards,
+  //       contacts: _provider.userStore!.contacts,
+  //       links: _provider.userStore!.links,
+  //       priceTags: _provider.userStore!.priceTags,
+  //       services: _provider.userStore!.services,
+  //       professionalImageUrls: _provider.userStore!.professionalImageUrls,
+  //       dynamicLink: _provider.userStore!.dynamicLink,
+  //       randomId: _provider.userStore!.randomId,
+  //       currency: _provider.userStore!.currency,
+  //       transferRecepientId: _provider.userStore!.transferRecepientId);
+
+  //   // Put the new object back into the box with the same key
+  //       accountUserStoreBox.put(updatedUserStore.userId, updatedUserStore);
+
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
 
   _unVerify() {
     WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -139,29 +173,29 @@ class _EditstoreTypeState extends State<EditstoreType> {
   }
 
   static const values = <String>[
-    "Artist",
-    "Band",
-    "Battle_Rapper",
-    "Blogger",
-    "Brand_Influencer",
-    'Caterers',
-    "Choire",
-    "Content_creator",
-    "Dancer",
-    'Decorator',
-    "DJ",
-    "Event_organiser",
-    "Graphic_Designer",
-    "Instrumentalist",
-    "Makeup_Artist",
-    "MC(Host)",
-    "Videographer",
-    "Photographer",
-    "Producer",
-    'Sound_and_Light',
-    "Record_Label",
-    "Video_Vixen",
-    "Fan",
+    "Salon",
+    "Barbershop",
+    "Spa",
+    // "Blogger",
+    // "Brand_Influencer",
+    // 'Caterers',
+    // "Choire",
+    // "Content_creator",
+    // "Dancer",
+    // 'Decorator',
+    // "DJ",
+    // "Event_organiser",
+    // "Graphic_Designer",
+    // "Instrumentalist",
+    // "Makeup_Salon",
+    // "MC(Host)",
+    // "Videographer",
+    // "Photographer",
+    // "Producer",
+    // 'Sound_and_Light',
+    // "Record_Label",
+    // "Video_Vixen",
+    // "Fan",
   ];
 
   Widget buildRadios() => Column(

@@ -9,13 +9,13 @@ import 'package:uuid/uuid.dart';
 
 class DiscographyWidget extends StatefulWidget {
   final String currentUserId;
-  final int userIndex;
+  // final int userIndex;
   final UserStoreModel userPortfolio;
 
   const DiscographyWidget({
     super.key,
     required this.currentUserId,
-    required this.userIndex,
+    // required this.userIndex,
     required this.userPortfolio,
   });
 
@@ -131,7 +131,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
       // provider.company.clear();
       provider.bookingContacts.clear();
       provider.linksToWork.clear();
-      provider.performances.clear();
+      // provider.performances.clear();
       provider.skills.clear();
       provider.genreTages.clear();
       provider.collaborations.clear();
@@ -233,8 +233,8 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     // companies.forEach((company) => provider.setCompanies(company));
 
     // // Add userPortfolio contact
-    // List<PortfolioContactModel> contacts = widget.userPortfolio.contacts;
-    // contacts.forEach((contact) => provider.setBookingContacts(contact));
+    List<PortfolioContactModel> contacts = widget.userPortfolio.contacts;
+    contacts.forEach((contact) => provider.setBookingContacts(contact));
 
     // Add links to work
     List<PortfolioModel> links = widget.userPortfolio.links;
@@ -246,8 +246,8 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     //     .forEach((performance) => provider.setPerformances(performance));
 
     // Add skills
-    List<PortfolioModel> skills = widget.userPortfolio.skills;
-    skills.forEach((skill) => provider.setSkills(skill));
+    // List<PortfolioModel> skills = widget.userPortfolio.skills;
+    // skills.forEach((skill) => provider.setSkills(skill));
 
     // Add genre tags
     // List<PortfolioModel> genreTags = widget.userPortfolio.genreTags;
@@ -347,13 +347,13 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     }
   }
 
-  void scrollToPost() {
-    _pageController2.animateToPage(
-      widget.userIndex,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.ease,
-    );
-  }
+  //  _scrollToPost() {
+  //   _pageController2.animateToPage(
+  //     widget.userIndex,
+  //     duration: Duration(milliseconds: 500),
+  //     curve: Curves.ease,
+  //   );
+  // }
 
   void _showBottomSheetErrorMessage(String from, Object e) {
     String error = e.toString();
@@ -1060,60 +1060,56 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                           seeMore: true,
                           edit: false,
                         )
-                      : from.startsWith('performance')
+                      // : from.startsWith('performance')
+                      //     ? PortfolioWidget(
+                      //         portfolios: _provider.performances,
+                      //         seeMore: true,
+                      //         edit: false,
+                      //       )
+                      : from.startsWith('awards')
                           ? PortfolioWidget(
-                              portfolios: _provider.performances,
+                              portfolios: _provider.awards,
                               seeMore: true,
                               edit: false,
                             )
-                          : from.startsWith('awards')
-                              ? PortfolioWidget(
-                                  portfolios: _provider.awards,
+                          : from.startsWith('work')
+                              ? PortfolioWidgetWorkLink(
+                                  portfolios: _provider.linksToWork,
                                   seeMore: true,
                                   edit: false,
                                 )
-                              : from.startsWith('work')
-                                  ? PortfolioWidgetWorkLink(
-                                      portfolios: _provider.linksToWork,
-                                      seeMore: true,
-                                      edit: false,
+                              : from.startsWith('price')
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(top: 30.0),
+                                      child: PriceRateWidget(
+                                        edit: false,
+                                        prices: _provider.priceRate,
+                                        seeMore: true,
+                                      ),
                                     )
-                                  : from.startsWith('price')
+                                  : from.startsWith('collaborations')
                                       ? Padding(
                                           padding:
                                               const EdgeInsets.only(top: 30.0),
-                                          child: PriceRateWidget(
+                                          child: PortfolioCollaborationWidget(
                                             edit: false,
-                                            prices: _provider.priceRate,
                                             seeMore: true,
+                                            collaborations:
+                                                _provider.collaborations,
                                           ),
                                         )
-                                      : from.startsWith('collaborations')
+                                      : from.startsWith('review')
                                           ? Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 30.0),
-                                              child:
-                                                  PortfolioCollaborationWidget(
-                                                edit: false,
-                                                seeMore: true,
-                                                collaborations:
-                                                    _provider.collaborations,
-                                              ),
+                                              child: _buildDisplayReviewList(
+                                                  context),
                                             )
-                                          : from.startsWith('review')
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 30.0),
-                                                  child:
-                                                      _buildDisplayReviewList(
-                                                          context),
-                                                )
-                                              : PortfolioWidget(
-                                                  portfolios: [],
-                                                  seeMore: true,
-                                                  edit: false,
-                                                ),
+                                          : PortfolioWidget(
+                                              portfolios: [],
+                                              seeMore: true,
+                                              edit: false,
+                                            ),
               const SizedBox(
                 height: 40,
               ),
@@ -1179,7 +1175,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(width: 10),
-            widget.userPortfolio.profileImageUrl.isEmpty
+            widget.userPortfolio.storeLogomageUrl.isEmpty
                 ? GestureDetector(
                     onTap: () {
                       _navigateToProfile();
@@ -1198,7 +1194,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       radius: 18.0,
                       backgroundColor: Colors.blue,
                       backgroundImage: CachedNetworkImageProvider(
-                          widget.userPortfolio.profileImageUrl),
+                          widget.userPortfolio.storeLogomageUrl),
                     ),
                   ),
             SizedBox(width: 10),
@@ -1446,7 +1442,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     var updatedLocationPreference = UserSettingsLoadingPreferenceModel(
       userId: _provider.userLocationPreference!.userId,
       city: _provider.userLocationPreference!.city,
-      continent: _provider.userLocationPreference!.continent,
+      // continent: _provider.userLocationPreference!.continent,
       country: _provider.userLocationPreference!.country,
       currency: _provider.currency,
       timestamp: _provider.userLocationPreference!.timestamp,
@@ -1793,7 +1789,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
               _navigateToPage(
                   context,
                   UserBarcode(
-                    profileImageUrl: widget.userPortfolio.profileImageUrl,
+                    profileImageUrl: widget.userPortfolio.storeLogomageUrl,
                     userDynamicLink: widget.userPortfolio.dynamicLink,
                     bio: widget.userPortfolio.overview,
                     userName: widget.userPortfolio.userName,
@@ -1948,13 +1944,13 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                 seeMore: false,
                 edit: false,
               ),
-              _divider('Performance', 'performance',
-                  _provider.performances.length >= 4 ? true : false),
-              PortfolioWidget(
-                portfolios: _provider.performances,
-                seeMore: false,
-                edit: false,
-              ),
+              // _divider('Performance', 'performance',
+              //     _provider.performances.length >= 4 ? true : false),
+              // PortfolioWidget(
+              //   portfolios: _provider.performances,
+              //   seeMore: false,
+              //   edit: false,
+              // ),
               _divider('Awards', 'awards',
                   _provider.awards.length >= 4 ? true : false),
               PortfolioWidget(

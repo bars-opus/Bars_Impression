@@ -19,7 +19,7 @@ class UserStoreModelAdapter extends TypeAdapter<UserStoreModel> {
     return UserStoreModel(
       userId: fields[0] as String,
       userName: fields[1] as String,
-      profileImageUrl: fields[2] as String,
+      storeLogomageUrl: fields[2] as String,
       storeType: fields[4] as String,
       verified: fields[3] as bool,
       terms: fields[6] as String,
@@ -28,29 +28,28 @@ class UserStoreModelAdapter extends TypeAdapter<UserStoreModel> {
       overview: fields[7] as String,
       noBooking: fields[8] as bool,
       awards: (fields[12] as List).cast<PortfolioModel>(),
-      contacts: (fields[19] as List).cast<PortfolioContactModel>(),
-      skills: (fields[13] as List).cast<PortfolioModel>(),
-      links: (fields[14] as List).cast<PortfolioModel>(),
-      services: (fields[15] as List).cast<PortfolioModel>(),
-      professionalImageUrls: (fields[16] as List).cast<String>(),
-      priceTags: (fields[17] as List).cast<PriceModel>(),
+      contacts: (fields[18] as List).cast<PortfolioContactModel>(),
+      links: (fields[13] as List).cast<PortfolioModel>(),
+      services: (fields[14] as List).cast<PortfolioModel>(),
+      professionalImageUrls: (fields[15] as List).cast<String>(),
+      priceTags: (fields[16] as List).cast<PriceModel>(),
       dynamicLink: fields[5] as String,
-      randomId: fields[18] as double,
+      randomId: fields[17] as double,
       currency: fields[11] as String,
-      transferRecepientId: fields[20] as String,
+      transferRecepientId: fields[19] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserStoreModel obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
       ..write(obj.userName)
       ..writeByte(2)
-      ..write(obj.profileImageUrl)
+      ..write(obj.storeLogomageUrl)
       ..writeByte(3)
       ..write(obj.verified)
       ..writeByte(4)
@@ -72,20 +71,18 @@ class UserStoreModelAdapter extends TypeAdapter<UserStoreModel> {
       ..writeByte(12)
       ..write(obj.awards)
       ..writeByte(13)
-      ..write(obj.skills)
-      ..writeByte(14)
       ..write(obj.links)
-      ..writeByte(15)
+      ..writeByte(14)
       ..write(obj.services)
-      ..writeByte(16)
+      ..writeByte(15)
       ..write(obj.professionalImageUrls)
-      ..writeByte(17)
+      ..writeByte(16)
       ..write(obj.priceTags)
-      ..writeByte(18)
+      ..writeByte(17)
       ..write(obj.randomId)
-      ..writeByte(19)
+      ..writeByte(18)
       ..write(obj.contacts)
-      ..writeByte(20)
+      ..writeByte(19)
       ..write(obj.transferRecepientId);
   }
 

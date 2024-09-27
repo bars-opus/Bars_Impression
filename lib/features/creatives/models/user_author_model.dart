@@ -27,10 +27,11 @@ class AccountHolderAuthor {
   final bool? reportConfirmed;
   @HiveField(9)
   final Timestamp? lastActiveDate;
-  // @HiveField(12)
-  // final bool? privateAccount;
+
     @HiveField(10)
   final bool? disableChat;
+    @HiveField(11)
+  final bool? isShop;
 
   AccountHolderAuthor({
     required this.userId,
@@ -44,7 +45,7 @@ class AccountHolderAuthor {
     required this.disabledAccount,
     required this.reportConfirmed,
     required this.lastActiveDate,
-    // required this.privateAccount,
+    required this.isShop,
      required this.disableChat,
   });
 
@@ -59,7 +60,7 @@ class AccountHolderAuthor {
       verified: doc['verified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       reportConfirmed: doc['reportConfirmed'] ?? false,
-      // privateAccount: doc['privateAccount'] ?? false,
+      isShop: doc['isShop'] ?? false,
             disableChat: doc['disableChat'] ?? false,
 
       
@@ -85,7 +86,7 @@ class AccountHolderAuthor {
       verified: data['verified'] ?? false,
       disabledAccount: data['disabledAccount'] ?? false,
       reportConfirmed: data['reportConfirmed'] ?? false,
-      // privateAccount: data['privateAccount'] ?? false,
+      isShop: data['isShop'] ?? false,
         disableChat: data['disableChat'] ?? false,
       
       // other fields...

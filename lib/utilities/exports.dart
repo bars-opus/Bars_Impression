@@ -408,3 +408,7 @@ export 'package:bars/features/events/affiliate/presentation/screens/user_tags.da
 export 'package:bars/features/events/affiliate/presentation/widgets/tag_widget.dart';
 export 'package:bars/features/events/affiliate/presentation/screens/tag_page.dart';
 export 'package:bars/general/docs/verify_info.dart';
+export 'package:bars/utilities/hive_util.dart';
+export 'package:bars/features/creatives/presentation/screens/discover_user.dart';
+export 'package:bars/features/events/all_posts.dart';
+export 'package:bars/features/events/event_management/models/comment_model.dart';

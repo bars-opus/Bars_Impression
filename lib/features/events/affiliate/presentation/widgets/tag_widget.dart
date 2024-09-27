@@ -115,16 +115,16 @@ class _TagWidgetState extends State<TagWidget> {
                   widget.currentTag.taggedParentAuthorId!,
                 );
 
-                if (event != null) {
-                  _navigateToPage(EventEnlargedScreen(
-                    currentUserId: widget.currentUserId,
-                    event: event,
-                    type: event.type,
-                    showPrivateEvent: true,
-                  ));
-                } else {
-                  _showBottomSheetErrorMessage('Failed to fetch event.');
-                }
+                // if (event != null) {
+                //   _navigateToPage(EventEnlargedScreen(
+                //     currentUserId: widget.currentUserId,
+                //     event: event,
+                //     type: event.type,
+                //     showPrivateEvent: true,
+                //   ));
+                // } else {
+                //   _showBottomSheetErrorMessage('Failed to fetch event.');
+                // }
               } catch (e) {
                 _showBottomSheetErrorMessage('Failed to fetch event');
               } finally {

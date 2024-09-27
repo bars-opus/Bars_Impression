@@ -21,8 +21,9 @@ class AlwaysWhiteButton extends StatelessWidget {
       width: ResponsiveHelper.responsiveWidth(context, buttonWidth),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
+          surfaceTintColor: Colors.transparent,
           backgroundColor: buttonColor,
-          elevation: 10.0,
+          elevation: 3.0,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
@@ -37,7 +38,7 @@ class AlwaysWhiteButton extends StatelessWidget {
             buttonText,
             style: TextStyle(
               color: textColor,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
             ),
           ),
         ),

@@ -38,7 +38,7 @@ class DatabaseService {
       'dynamicLink': '',
       'lastActiveDate': Timestamp.fromDate(DateTime.now()),
       // 'name': signedInHandler.displayName ?? name,
-      // 'privateAccount': false,
+      'isShop': false,
       'storeType': 'Fan',
       'profileImageUrl': '',
       'reportConfirmed': false,
@@ -51,7 +51,7 @@ class DatabaseService {
       'userId': signedInHandler.uid,
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'country': '',
-      'continent': '',
+      // 'continent': '',
       'city': '',
       'currency': '',
       'subaccountId': '',
@@ -61,7 +61,7 @@ class DatabaseService {
     batch.set(userGeneralSettingsRef, {
       'userId': signedInHandler.uid,
       'disableChat': false,
-      // 'privateAccount': false,
+      // 'isShop': false,
       // 'disableAdvice': false,
       // 'hideAdvice': false,
       'disableBooking': false,
@@ -1037,27 +1037,143 @@ class DatabaseService {
         author: author);
   }
 
-  static void likePost(
-      {required AccountHolderAuthor user,
-      required Post post,
-      required NotificationActivityType type}) {
-    DocumentReference postRef =
-        postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
-    postRef.get().then((doc) {
-      int likeCount = doc['likeCount'];
-      postRef.update({'likeCount': likeCount + 1});
-      likesRef.doc(post.id).collection('postLikes').doc(user.userId).set({
-        'uid': user.userId,
-      });
-      addActivityItem(
-          user: user,
-          post: post,
-          comment: null,
-          type: type,
-          event: null,
-          followerUser: null,
-          advicedUserId: '');
+  static void likePost({
+    required AccountHolderAuthor user,
+    required Post post,
+    // required NotificationActivityType type
+  }) {
+    likesRef.doc(post.id).collection('postLikes').doc(user.userId).set({
+      'uid': user.userId,
     });
+    addActivityItem(
+        user: user,
+        post: post,
+        comment: null,
+        type: NotificationActivityType.like,
+        event: null,
+        followerUser: null,
+        advicedUserId: '');
+    // DocumentReference postRef =
+    //     postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
+    // postRef.get().then((doc) {
+    //   int likeCount = doc['likeCount'];
+    //   postRef.update({'likeCount': likeCount + 1});
+    //   likesRef.doc(post.id).collection('postLikes').doc(user.userId).set({
+    //     'uid': user.userId,
+    //   });
+    //   addActivityItem(
+    //       user: user,
+    //       post: post,
+    //       comment: null,
+    //       type: NotificationActivityType.like,
+    //       event: null,
+    //       followerUser: null,
+    //       advicedUserId: '');
+    // });
+  }
+
+//  static Future<List<Post>> getSavePostVideo(String userId) async {
+//     QuerySnapshot userPostsSnapshot = await savedPostsRef
+//         .doc(userId)
+//         .collection('savedPosts')
+//         .orderBy('timestamp', descending: true)
+//         .get();
+//     List<Post> posts =
+//         userPostsSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+//     return posts;
+//   }
+
+//   static void savePostVideo({required String currentUserId, required Post post}) {
+//     savedPostsRef.doc(currentUserId).collection('savedPosts').doc(post.id).set({
+//       'postId': post.id,
+//       'imageUrl': post.imageUrl,
+//       'caption': post.caption,
+//       'artist': post.artist,
+//       'punch': post.punch,
+//       'hashTag': post.hashTag,
+//       'musicLink': post.musicLink,
+//       'likeCount': post.likeCount,
+//       'disLikeCount': post.disLikeCount,
+//       'authorId': post.authorId,
+//       'timestamp': post.timestamp,
+//     });
+//   }
+
+//   static void unSavePostVideo({required String currentUserId, required Post post}) {
+//     savedPostsRef
+//         .doc(currentUserId)
+//         .collection('savedPosts')
+//         .doc(post.id)
+//         .get()
+//         .then((doc) {
+//       if (doc.exists) {
+//         doc.reference.delete();
+//       }
+//     });
+//   }
+
+  //   static Future<bool> didSavedPost({required String currentUserId, required Post post}) async {
+  //   DocumentSnapshot userDoc = await savedPostsRef
+  //       .doc(currentUserId)
+  //       .collection('savedPosts')
+  //       .doc(post.id)
+  //       .get();
+  //   return userDoc.exists;
+  // }
+
+  static Stream<int> numLikes(String postId) {
+    return likesRef
+        .doc(postId)
+        .collection('postLikes')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numComments(String postId) {
+    return commentsRef
+        .doc(postId)
+        .collection('comments')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Future<bool> didLikePost(
+      {required String currentUserId, required Post post}) async {
+    DocumentSnapshot userDoc = await likesRef
+        .doc(post.id)
+        .collection('postLikes')
+        .doc(currentUserId)
+        .get();
+    return userDoc.exists;
+  }
+
+  static void unlikePost({required String currentUserId, required Post post}) {
+    likesRef
+        .doc(post.id)
+        .collection('postLikes')
+        .doc(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    // DocumentReference postRef =
+    //     postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
+    // postRef.get().then((doc) {
+    //   int likeCount = doc['likeCount'];
+    //   postRef.update({'likeCount': likeCount - 1});
+    //   likesRef
+    //       .doc(post.id)
+    //       .collection('postLikes')
+    //       .doc(currentUserId)
+    //       .get()
+    //       .then((doc) {
+    //     if (doc.exists) {
+    //       doc.reference.delete();
+    //     }
+    //   });
+    // });
   }
 
 //Event
@@ -1099,7 +1215,7 @@ class DatabaseService {
 
 // Edit draft
   // static Future<void> editEventDraft({
-  //   required String imageUrl,
+  //    String imageUrl,
   //   required String venue,
   //   required bool isVirtual,
   //   required bool isPrivate,
@@ -2174,115 +2290,226 @@ class DatabaseService {
 //
 //
 //create event
-  static Future<void> createEvent(Event event, AccountHolderAuthor author,
-      List<TaggedNotificationModel> taggedsers, String summary) async {
-    print(taggedsers.length);
+
+  static Future<void> createPost(Post post, String summary) async {
     // Create a toJson method inside Event class to serialize the object into a map
-    Map<String, dynamic> eventData = event.toJson();
+    Map<String, dynamic> postData = post.toJson();
 
     // Prepare the batch
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     // Add the event to 'eventsRef'
-    DocumentReference eventRef =
-        eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-    batch.set(eventRef, eventData);
+    DocumentReference postRef =
+        postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
+    batch.set(postRef, postData);
 
-    if (!event.isPrivate) {
-      // Add the event to 'allEventsRef'
-      DocumentReference allEventRef = allEventsRef.doc(event.id);
-      // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
-      batch.set(allEventRef, eventData);
+    DocumentReference allPostRef = allPostsRef.doc(post.id);
+    // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
+    batch.set(allPostRef, postData);
 
-      DocumentReference allEventsSummarydocRef =
-          allEventsSummaryRef.doc(event.id);
-      batch.set(
-          allEventsSummarydocRef,
-          ({
-            'summary': summary,
-            'eventId': event.id,
-          }));
-    }
+    DocumentReference allPostSummarydocRef = allPostsSummaryRef.doc(post.id);
+    batch.set(
+        allPostSummarydocRef,
+        ({
+          'summary': summary,
+          'postId': post.id,
+        }));
 
-    // Add the event to 'eventsChatRoomsRef'
-    DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
-    batch.set(chatRoomRef, {
-      'title': event.title,
-      'linkedEventId': event.id,
-      'imageUrl': event.imageUrl,
-      'report': event.report,
-      'reportConfirmed': event.reportConfirmed,
-      'isClossed': false,
-      'eventAuthorId': event.authorId,
-      'timestamp': event.timestamp,
-    });
-
-    // Add addUserTicketIdRef to the transaction
-    final userTicketIdDocRef = userTicketIdRef
-        .doc(event.authorId)
-        .collection('tickedIds')
-        .doc(event.id);
-
-    batch.set(userTicketIdDocRef, {
-      'eventId': event.id,
-      'lastMessage': '',
-      'isNew': false,
-      'isSeen': false,
-      'muteNotification': false,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-
-    final Map<String, dynamic> ticketOrderData = {
-      'orderId': event.id,
-      'eventAuthorId': event.authorId,
-      'eventId': event.id,
-      'validated': true,
-      'timestamp': FieldValue.serverTimestamp(),
-      'eventTimestamp': event.startDate,
-      'entranceId': event.id,
-      'eventImageUrl': event.imageUrl,
-      'isInvited': false,
-      'eventTitle': event.title,
-      'orderNumber': event.id,
-      'refundRequestStatus': '',
-      'idempotencyKey': '',
-      'tickets': [],
-      'total': 0,
-      'userOrderId': event.authorId,
-      'purchaseReferenceId': event.id,
-    };
-
-    final eventInviteDocRef = newEventTicketOrderRef
-        .doc(event.id)
-        .collection('ticketOrders')
-        .doc(event.authorId);
-
-    final userInviteDocRef = newUserTicketOrderRef
-        .doc(event.authorId)
-        .collection('ticketOrders')
-        .doc(event.id);
-
-    // Add addUserTicketIdRef to the transaction
-    await sendTaggedNotificaton(
-      batch: batch,
-      taggedUsers: taggedsers,
-      authorstoreType: author.storeType,
-      authorVerification: author.verified,
-    );
-
-    batch.set(eventInviteDocRef, ticketOrderData);
-    batch.set(userInviteDocRef, ticketOrderData);
-
-    final eventDraftRef = await eventsDraftRef
-        .doc(event.authorId)
-        .collection('events')
-        .doc(event.id);
-    batch.delete(eventDraftRef);
-    // Commit the batch
     await batch.commit();
+
+    // if (!event.isPrivate) {
+    //   // Add the event to 'allEventsRef'
+
+    // }
+
+    // // Add the event to 'eventsChatRoomsRef'
+    // DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
+    // batch.set(chatRoomRef, {
+    //   'title': event.title,
+    //   'linkedEventId': event.id,
+    //   'imageUrl': event.imageUrl,
+    //   'report': event.report,
+    //   'reportConfirmed': event.reportConfirmed,
+    //   'isClossed': false,
+    //   'eventAuthorId': event.authorId,
+    //   'timestamp': event.timestamp,
+    // });
+
+    // Add addUserTicketIdRef to the transaction
+    // final userTicketIdDocRef = userTicketIdRef
+    //     .doc(event.authorId)
+    //     .collection('tickedIds')
+    //     .doc(event.id);
+
+    // batch.set(userTicketIdDocRef, {
+    //   'eventId': event.id,
+    //   'lastMessage': '',
+    //   'isNew': false,
+    //   'isSeen': false,
+    //   'muteNotification': false,
+    //   'timestamp': FieldValue.serverTimestamp(),
+    // });
+
+    // final Map<String, dynamic> ticketOrderData = {
+    //   'orderId': event.id,
+    //   'eventAuthorId': event.authorId,
+    //   'eventId': event.id,
+    //   'validated': true,
+    //   'timestamp': FieldValue.serverTimestamp(),
+    //   'eventTimestamp': event.startDate,
+    //   'entranceId': event.id,
+    //   'eventImageUrl': event.imageUrl,
+    //   'isInvited': false,
+    //   'eventTitle': event.title,
+    //   'orderNumber': event.id,
+    //   'refundRequestStatus': '',
+    //   'idempotencyKey': '',
+    //   'tickets': [],
+    //   'total': 0,
+    //   'userOrderId': event.authorId,
+    //   'purchaseReferenceId': event.id,
+    // };
+
+    // final eventInviteDocRef = newEventTicketOrderRef
+    //     .doc(event.id)
+    //     .collection('ticketOrders')
+    //     .doc(event.authorId);
+
+    // final userInviteDocRef = newUserTicketOrderRef
+    //     .doc(event.authorId)
+    //     .collection('ticketOrders')
+    //     .doc(event.id);
+
+    // Add addUserTicketIdRef to the transaction
+    // await sendTaggedNotificaton(
+    //   batch: batch,
+    //   taggedUsers: taggedsers,
+    //   authorstoreType: author.storeType,
+    //   authorVerification: author.verified,
+    // );
+
+    // batch.set(eventInviteDocRef, ticketOrderData);
+    // batch.set(userInviteDocRef, ticketOrderData);
+
+    // final eventDraftRef = await eventsDraftRef
+    //     .doc(event.authorId)
+    //     .collection('events')
+    //     .doc(event.id);
+    // batch.delete(eventDraftRef);
+    // // Commit the batch
+    // await batch.commit();
 
     // Commit the batch
   }
+  // static Future<void> createEvent(Event event, AccountHolderAuthor author,
+  //     List<TaggedNotificationModel> taggedsers, String summary) async {
+  //   print(taggedsers.length);
+  //   // Create a toJson method inside Event class to serialize the object into a map
+  //   Map<String, dynamic> eventData = event.toJson();
+
+  //   // Prepare the batch
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
+
+  //   // Add the event to 'eventsRef'
+  //   DocumentReference eventRef =
+  //       eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
+  //   batch.set(eventRef, eventData);
+
+  //   if (!event.isPrivate) {
+  //     // Add the event to 'allEventsRef'
+  //     DocumentReference allEventRef = allEventsRef.doc(event.id);
+  //     // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
+  //     batch.set(allEventRef, eventData);
+
+  //     DocumentReference allEventsSummarydocRef =
+  //         allEventsSummaryRef.doc(event.id);
+  //     batch.set(
+  //         allEventsSummarydocRef,
+  //         ({
+  //           'summary': summary,
+  //           'eventId': event.id,
+  //         }));
+  //   }
+
+  //   // Add the event to 'eventsChatRoomsRef'
+  //   DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
+  //   batch.set(chatRoomRef, {
+  //     'title': event.title,
+  //     'linkedEventId': event.id,
+  //     'imageUrl': event.imageUrl,
+  //     'report': event.report,
+  //     'reportConfirmed': event.reportConfirmed,
+  //     'isClossed': false,
+  //     'eventAuthorId': event.authorId,
+  //     'timestamp': event.timestamp,
+  //   });
+
+  //   // Add addUserTicketIdRef to the transaction
+  //   final userTicketIdDocRef = userTicketIdRef
+  //       .doc(event.authorId)
+  //       .collection('tickedIds')
+  //       .doc(event.id);
+
+  //   batch.set(userTicketIdDocRef, {
+  //     'eventId': event.id,
+  //     'lastMessage': '',
+  //     'isNew': false,
+  //     'isSeen': false,
+  //     'muteNotification': false,
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //   });
+
+  //   final Map<String, dynamic> ticketOrderData = {
+  //     'orderId': event.id,
+  //     'eventAuthorId': event.authorId,
+  //     'eventId': event.id,
+  //     'validated': true,
+  //     'timestamp': FieldValue.serverTimestamp(),
+  //     'eventTimestamp': event.startDate,
+  //     'entranceId': event.id,
+  //     'eventImageUrl': event.imageUrl,
+  //     'isInvited': false,
+  //     'eventTitle': event.title,
+  //     'orderNumber': event.id,
+  //     'refundRequestStatus': '',
+  //     'idempotencyKey': '',
+  //     'tickets': [],
+  //     'total': 0,
+  //     'userOrderId': event.authorId,
+  //     'purchaseReferenceId': event.id,
+  //   };
+
+  //   final eventInviteDocRef = newEventTicketOrderRef
+  //       .doc(event.id)
+  //       .collection('ticketOrders')
+  //       .doc(event.authorId);
+
+  //   final userInviteDocRef = newUserTicketOrderRef
+  //       .doc(event.authorId)
+  //       .collection('ticketOrders')
+  //       .doc(event.id);
+
+  //   // Add addUserTicketIdRef to the transaction
+  //   await sendTaggedNotificaton(
+  //     batch: batch,
+  //     taggedUsers: taggedsers,
+  //     authorstoreType: author.storeType,
+  //     authorVerification: author.verified,
+  //   );
+
+  //   batch.set(eventInviteDocRef, ticketOrderData);
+  //   batch.set(userInviteDocRef, ticketOrderData);
+
+  //   final eventDraftRef = await eventsDraftRef
+  //       .doc(event.authorId)
+  //       .collection('events')
+  //       .doc(event.id);
+  //   batch.delete(eventDraftRef);
+  //   // Commit the batch
+  //   await batch.commit();
+
+  //   // Commit the batch
+  // }
 
   static Future<void> sendTaggedNotificaton({
     required WriteBatch batch,
@@ -2438,250 +2665,226 @@ class DatabaseService {
     }
   }
 
-  static Future<void> editEvent(Event event, String aiAnalysis, String summary,
-      String aiMarketingAdvice) async {
+  static Future<void> editPost(
+    Post post,
+  ) async {
     // Prepare the batch
     WriteBatch batch = FirebaseFirestore.instance.batch();
-    Map<String, dynamic> eventData = {
-      'title': event.title,
-      'overview': event.overview,
-      'aiAnalysis': aiAnalysis,
-      'aiMarketingAdvice': aiMarketingAdvice,
-      'theme': event.theme,
-      'startDate': event.startDate,
-      'address': event.address,
-      'contacts': event.contacts.map((contact) => contact.toString()),
-      'schedule': event.schedule.map((schedule) => schedule.toJson()).toList(),
-      'ticket': event.ticket.map((ticket) => ticket.toJson()).toList(),
-      'taggedPeople': event.taggedPeople
-          .map((taggedPeople) => taggedPeople.toJson())
-          .toList(),
-      'termsAndConditions': event.termsAndConditions,
-      'authorName': event.authorName,
-      'type': event.type,
-      'category': event.category,
-      'rate': event.rate,
-      'venue': event.venue,
-      'dressCode': event.dressCode,
-      'time': event.time,
-      'previousEvent': event.previousEvent,
-      'triller': event.triller,
-      'city': event.city,
-      'country': event.country,
-      'virtualVenue': event.virtualVenue,
-      'ticketSite': event.ticketSite,
-      'clossingDay': event.clossingDay,
+    Map<String, dynamic> postData = {
+      'caption': post.caption,
+      'hashTag': post.hashTag,
     };
 
     // Update the event in 'eventsRef'
-    DocumentReference eventRef =
-        eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-    batch.update(eventRef, eventData);
+    DocumentReference postRef =
+        postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
+    batch.update(postRef, postData);
+    DocumentReference allPostRef = allPostsRef.doc(post.id);
+    batch.update(allPostRef, postData);
 
-    // Update the event in 'allEventsRef'
-    if (!event.isPrivate) {
-      DocumentReference allEventRef = allEventsRef.doc(event.id);
-      batch.update(allEventRef, eventData);
+    await batch.commit();
 
-      if (summary.isNotEmpty) {
-        DocumentReference allEventsSummarydocRef =
-            allEventsSummaryRef.doc(event.id);
-        batch.update(
-            allEventsSummarydocRef,
-            ({
-              'summary': summary,
-            }));
-      }
-    }
+    // // Update the event in 'allEventsRef'
+    // if (!event.isPrivate) {
+    //   DocumentReference allEventRef = allEventsRef.doc(event.id);
+    //   batch.update(allEventRef, eventData);
 
-    // Update the event in 'eventsChatRoomsRef'
-    DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
-    batch.update(chatRoomRef, {
-      'title': event.title,
-      'timestamp': event.timestamp,
-    });
+    //   if (summary.isNotEmpty) {
+    //     DocumentReference allEventsSummarydocRef =
+    //         allEventsSummaryRef.doc(event.id);
+    //     batch.update(
+    //         allEventsSummarydocRef,
+    //         ({
+    //           'summary': summary,
+    //         }));
+    //   }
+    // }
 
-    // Get all event invites and process them in batches
-    const int batchSize = 500; // Firestore limit is 500 operations per batch
-    int operationCount = 0;
+    // // Update the event in 'eventsChatRoomsRef'
+    // DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
+    // batch.update(chatRoomRef, {
+    //   'title': event.title,
+    //   'timestamp': event.timestamp,
+    // });
 
-    Query query = newEventTicketOrderRef
-        .doc(event.id)
-        .collection('ticketOrders')
-        .orderBy(FieldPath.documentId)
-        .limit(batchSize);
+    // // Get all event invites and process them in batches
+    // const int batchSize = 500; // Firestore limit is 500 operations per batch
+    // int operationCount = 0;
 
-    DocumentSnapshot? lastDoc;
-    do {
-      if (lastDoc != null) {
-        query = query.startAfterDocument(lastDoc);
-      }
+    // Query query = newEventTicketOrderRef
+    //     .doc(event.id)
+    //     .collection('ticketOrders')
+    //     .orderBy(FieldPath.documentId)
+    //     .limit(batchSize);
 
-      QuerySnapshot querySnapshot = await query.get();
+    // DocumentSnapshot? lastDoc;
+    // do {
+    //   if (lastDoc != null) {
+    //     query = query.startAfterDocument(lastDoc);
+    //   }
 
-      if (querySnapshot.docs.isEmpty) {
-        break;
-      }
+    //   QuerySnapshot querySnapshot = await query.get();
 
-      for (var doc in querySnapshot.docs) {
-        String userId = doc.id;
+    //   if (querySnapshot.docs.isEmpty) {
+    //     break;
+    //   }
 
-        // Define references
-        DocumentReference userTicketOrderRef = newUserTicketOrderRef
-            .doc(userId)
-            .collection('ticketOrders')
-            .doc(event.id);
+    //   for (var doc in querySnapshot.docs) {
+    //     String userId = doc.id;
 
-        DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
-            .doc(event.id)
-            .collection('ticketOrders')
-            .doc(userId);
+    //     // Define references
+    //     DocumentReference userTicketOrderRef = newUserTicketOrderRef
+    //         .doc(userId)
+    //         .collection('ticketOrders')
+    //         .doc(event.id);
 
-        // Fetch user ticket data
-        // DocumentSnapshot userSnapshot = await userTicketOrderRef.get();
-        // if (userSnapshot.exists) {
-        //   Map<String, dynamic> userData =
-        //       userSnapshot.data() as Map<String, dynamic>;
-        //   List<dynamic> tickets = userData['tickets'];
+    //     DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
+    //         .doc(event.id)
+    //         .collection('ticketOrders')
+    //         .doc(userId);
 
-        //   // Update tickets
-        //   for (var ticket in tickets) {
-        //     for (var eventTicket in eventTickets) {
-        //       if (ticket['id'] == eventTicket.id) {
-        //         ticket['eventTicketDate'] = eventTicket.eventTicketDate;
-        //       }
-        //     }
-        //   }
+    //     // Fetch user ticket data
+    //     // DocumentSnapshot userSnapshot = await userTicketOrderRef.get();
+    //     // if (userSnapshot.exists) {
+    //     //   Map<String, dynamic> userData =
+    //     //       userSnapshot.data() as Map<String, dynamic>;
+    //     //   List<dynamic> tickets = userData['tickets'];
 
-        // Update batch
-        // batch.update(userTicketOrderRef, {'tickets': tickets});
-        // batch.update(newEventsTicketOrderRef, {'tickets': tickets});
-        // }
+    //     //   // Update tickets
+    //     //   for (var ticket in tickets) {
+    //     //     for (var eventTicket in eventTickets) {
+    //     //       if (ticket['id'] == eventTicket.id) {
+    //     //         ticket['eventTicketDate'] = eventTicket.eventTicketDate;
+    //     //       }
+    //     //     }
+    //     //   }
 
-        // Update event details
-        batch.update(userTicketOrderRef, {
-          'eventTimestamp': event.startDate,
-          'eventTitle': event.title,
-        });
-        batch.update(newEventsTicketOrderRef, {
-          'eventTimestamp': event.startDate,
-          'eventTitle': event.title,
-        });
+    //     // Update batch
+    //     // batch.update(userTicketOrderRef, {'tickets': tickets});
+    //     // batch.update(newEventsTicketOrderRef, {'tickets': tickets});
+    //     // }
 
-        operationCount += 4;
+    //     // Update event details
+    //     batch.update(userTicketOrderRef, {
+    //       'eventTimestamp': event.startDate,
+    //       'eventTitle': event.title,
+    //     });
+    //     batch.update(newEventsTicketOrderRef, {
+    //       'eventTimestamp': event.startDate,
+    //       'eventTitle': event.title,
+    //     });
 
-        // Add user activity if necessary
-        if (userId != event.authorId) {
-          DocumentReference userActivityRef =
-              activitiesRef.doc(userId).collection('userActivities').doc();
-          batch.set(userActivityRef, {
-            'helperFielId': event.authorId,
-            'authorId': event.authorId,
-            'postId': event.id,
-            'seen': false,
-            'type': 'eventUpdate',
-            'postImageUrl': event.imageUrl,
-            'comment':
-                'Certain information about this event have been modified',
-            'timestamp': Timestamp.fromDate(DateTime.now()),
-            'authorProfileImageUrl': '',
-            'authorName': 'Event informaiton updated',
-            'authorstoreType': event.authorId,
-            'authorVerification': false
-          });
-          operationCount++; // One operation for the user activity
-        }
+    //     operationCount += 4;
 
-        // Commit batch if limit is reached and start a new batch
-        if (operationCount >= batchSize) {
-          await batch.commit();
-          batch = FirebaseFirestore.instance.batch();
-          operationCount = 0;
-        }
-      }
+    //     // Add user activity if necessary
+    //     if (userId != event.authorId) {
+    //       DocumentReference userActivityRef =
+    //           activitiesRef.doc(userId).collection('userActivities').doc();
+    //       batch.set(userActivityRef, {
+    //         'helperFielId': event.authorId,
+    //         'authorId': event.authorId,
+    //         'postId': event.id,
+    //         'seen': false,
+    //         'type': 'eventUpdate',
+    //         'postImageUrl': event.imageUrl,
+    //         'comment':
+    //             'Certain information about this event have been modified',
+    //         'timestamp': Timestamp.fromDate(DateTime.now()),
+    //         'authorProfileImageUrl': '',
+    //         'authorName': 'Event informaiton updated',
+    //         'authorstoreType': event.authorId,
+    //         'authorVerification': false
+    //       });
+    //       operationCount++; // One operation for the user activity
+    //     }
 
-      // for (var doc in querySnapshot.docs) {
-      //   String userId = doc.id;
+    //     // Commit batch if limit is reached and start a new batch
+    //     if (operationCount >= batchSize) {
+    //       await batch.commit();
+    //       batch = FirebaseFirestore.instance.batch();
+    //       operationCount = 0;
+    //     }
+    //   }
 
-      //   // Update the user's invites
-      //   DocumentReference userTicketOrderRef = newUserTicketOrderRef
-      //       .doc(userId)
-      //       .collection('ticketOrders')
-      //       .doc(event.id);
-      //   batch.update(userTicketOrderRef, {
-      //     'eventTimestamp': event.startDate,
-      //     'eventTitle': event.title,
-      //   });
+    //   // for (var doc in querySnapshot.docs) {
+    //   //   String userId = doc.id;
 
-      //   // Update the event invites
-      //   DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
-      //       .doc(event.id)
-      //       .collection('ticketOrders')
-      //       .doc(userId);
-      //   batch.update(newEventsTicketOrderRef, {
-      //     'eventTimestamp': event.startDate,
-      //     'eventTitle': event.title,
-      //   });
+    //   //   // Update the user's invites
+    //   //   DocumentReference userTicketOrderRef = newUserTicketOrderRef
+    //   //       .doc(userId)
+    //   //       .collection('ticketOrders')
+    //   //       .doc(event.id);
+    //   //   batch.update(userTicketOrderRef, {
+    //   //     'eventTimestamp': event.startDate,
+    //   //     'eventTitle': event.title,
+    //   //   });
 
-      //   DocumentSnapshot userSnapshot = await userTicketOrderRef.get();
-      //   if (userSnapshot.exists) {
-      //     Map<String, dynamic> userData =
-      //         userSnapshot.data() as Map<String, dynamic>;
-      //     List<dynamic> tickets = userData['tickets'];
+    //   //   // Update the event invites
+    //   //   DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
+    //   //       .doc(event.id)
+    //   //       .collection('ticketOrders')
+    //   //       .doc(userId);
+    //   //   batch.update(newEventsTicketOrderRef, {
+    //   //     'eventTimestamp': event.startDate,
+    //   //     'eventTitle': event.title,
+    //   //   });
 
-      //     for (var ticket in tickets) {
-      //       for (var eventTicket in eventTickets) {
-      //         if (ticket['price'] == eventTicket.price &&
-      //             ticket['type'] == eventTicket.type &&
-      //             ticket['group'] == eventTicket.group) {
-      //           ticket['eventTicketDate'] = event.startDate;
-      //         }
-      //       }
-      //     }
+    //   //   DocumentSnapshot userSnapshot = await userTicketOrderRef.get();
+    //   //   if (userSnapshot.exists) {
+    //   //     Map<String, dynamic> userData =
+    //   //         userSnapshot.data() as Map<String, dynamic>;
+    //   //     List<dynamic> tickets = userData['tickets'];
 
-      //     batch.update(userTicketOrderRef, {'tickets': tickets});
-      //     batch.update(newEventsTicketOrderRef, {'tickets': tickets});
-      //   }
-      //   operationCount += 4; // Two operations for each invite
+    //   //     for (var ticket in tickets) {
+    //   //       for (var eventTicket in eventTickets) {
+    //   //         if (ticket['price'] == eventTicket.price &&
+    //   //             ticket['type'] == eventTicket.type &&
+    //   //             ticket['group'] == eventTicket.group) {
+    //   //           ticket['eventTicketDate'] = event.startDate;
+    //   //         }
+    //   //       }
+    //   //     }
 
-      //   // Check if user is the author and add user activity
-      // if (userId != event.authorId) {
-      //   DocumentReference userActivityRef =
-      //       activitiesRef.doc(userId).collection('userActivities').doc();
-      //   batch.set(userActivityRef, {
-      //     'helperFielId': event.authorId,
-      //     'authorId': event.authorId,
-      //     'postId': event.id,
-      //     'seen': false,
-      //     'type': 'eventUpdate',
-      //     'postImageUrl': event.imageUrl,
-      //     'comment':
-      //         'Certain information about this event have been modified',
-      //     'timestamp': Timestamp.fromDate(DateTime.now()),
-      //     'authorProfileImageUrl': '',
-      //     'authorName': 'Event informaiton updated',
-      //     'authorstoreType': event.authorId,
-      //     'authorVerification': false
-      //   });
-      //   operationCount++; // One operation for the user activity
-      // }
+    //   //     batch.update(userTicketOrderRef, {'tickets': tickets});
+    //   //     batch.update(newEventsTicketOrderRef, {'tickets': tickets});
+    //   //   }
+    //   //   operationCount += 4; // Two operations for each invite
 
-      //   // Commit batch if limit is reached and start a new batch
-      //   if (operationCount >= batchSize) {
-      //     await batch.commit();
-      //     batch = FirebaseFirestore.instance.batch();
-      //     operationCount = 0;
-      //   }
-      // }
+    //   //   // Check if user is the author and add user activity
+    //   // if (userId != event.authorId) {
+    //   //   DocumentReference userActivityRef =
+    //   //       activitiesRef.doc(userId).collection('userActivities').doc();
+    //   //   batch.set(userActivityRef, {
+    //   //     'helperFielId': event.authorId,
+    //   //     'authorId': event.authorId,
+    //   //     'postId': event.id,
+    //   //     'seen': false,
+    //   //     'type': 'eventUpdate',
+    //   //     'postImageUrl': event.imageUrl,
+    //   //     'comment':
+    //   //         'Certain information about this event have been modified',
+    //   //     'timestamp': Timestamp.fromDate(DateTime.now()),
+    //   //     'authorProfileImageUrl': '',
+    //   //     'authorName': 'Event informaiton updated',
+    //   //     'authorstoreType': event.authorId,
+    //   //     'authorVerification': false
+    //   //   });
+    //   //   operationCount++; // One operation for the user activity
+    //   // }
 
-      // Remember the last document processed
-      lastDoc = querySnapshot.docs.last;
-    } while (lastDoc != null);
+    //   //   // Commit batch if limit is reached and start a new batch
+    //   //   if (operationCount >= batchSize) {
+    //   //     await batch.commit();
+    //   //     batch = FirebaseFirestore.instance.batch();
+    //   //     operationCount = 0;
+    //   //   }
+    //   // }
+
+    //   // Remember the last document processed
+    //   lastDoc = querySnapshot.docs.last;
+    // } while (lastDoc != null);
 
     // Commit any remaining operations in the final batch
-    if (operationCount > 0) {
-      await batch.commit();
-    }
   }
 
   static Future<void> deleteEvent(
@@ -3774,12 +3977,12 @@ class DatabaseService {
     }
   }
 
-  static Future<Event?> getEventWithId(String eventId) async {
+  static Future<Post?> getPostWithId(String eventId) async {
     try {
-      DocumentSnapshot userDocSnapshot = await allEventsRef.doc(eventId).get();
+      DocumentSnapshot userDocSnapshot = await allPostsRef.doc(eventId).get();
 
       if (userDocSnapshot.exists) {
-        return Event.fromDoc(userDocSnapshot);
+        return Post.fromDoc(userDocSnapshot);
       } else {
         return null; // return null if document does not exist
       }
@@ -3900,90 +4103,90 @@ class DatabaseService {
     );
   }
 
-  static void commentOnPost({
-    required String currentUserId,
-    required Post post,
-    required AccountHolderAuthor user,
-    required String comment,
-    required NotificationActivityType type,
-    required String reportConfirmed,
-  }) async {
-    final batch = FirebaseFirestore.instance.batch();
-    final commentRef =
-        commentsRef.doc(post.id).collection('postComments').doc();
+  // static void commentOnPost({
+  //   required String currentUserId,
+  //   required Post post,
+  //   required AccountHolderAuthor user,
+  //   required String comment,
+  //   required NotificationActivityType type,
+  //   required String reportConfirmed,
+  // }) async {
+  //   final batch = FirebaseFirestore.instance.batch();
+  //   final commentRef =
+  //       commentsRef.doc(post.id).collection('postComments').doc();
 
-    batch.set(commentRef, {
-      'content': comment,
-      'authorId': currentUserId,
-      'authorProfileImageUrl': user.profileImageUrl,
-      'authorName': user.userName,
-      'authorstoreType': user.storeType,
-      'authorVerification': user.verified,
-      'timestamp': Timestamp.fromDate(DateTime.now()),
-      'report': '',
-      'reportConfirmed': reportConfirmed,
-    });
+  //   batch.set(commentRef, {
+  //     'content': comment,
+  //     'authorId': currentUserId,
+  //     'authorProfileImageUrl': user.profileImageUrl,
+  //     'authorName': user.userName,
+  //     'authorstoreType': user.storeType,
+  //     'authorVerification': user.verified,
+  //     'timestamp': Timestamp.fromDate(DateTime.now()),
+  //     'report': '',
+  //     'reportConfirmed': reportConfirmed,
+  //   });
 
-    try {
-      await batch.commit();
-      addActivityItem(
-        user: user,
-        post: post,
-        comment: comment,
-        type: type,
-        event: null,
-        followerUser: null,
-        advicedUserId: '',
-      );
-    } catch (e) {
-      // Handle the error appropriately (e.g., show an error message)
-      // print('Error commenting on post: $e');
-    }
-  }
+  //   try {
+  //     await batch.commit();
+  //     addActivityItem(
+  //       user: user,
+  //       post: post,
+  //       comment: comment,
+  //       type: type,
+  //       event: null,
+  //       followerUser: null,
+  //       advicedUserId: '',
+  //     );
+  //   } catch (e) {
+  //     // Handle the error appropriately (e.g., show an error message)
+  //     // print('Error commenting on post: $e');
+  //   }
+  // }
 
-  static void addCommentReply({
-    required String commentId,
-    required Post post,
-    required String comment,
-    // Reply reply,
-    required AccountHolderAuthor user,
-  }) {
-    commentsRef
-        .doc(post.id)
-        .collection('postComments')
-        .doc(commentId)
-        .collection('replies')
-        .add({
-      // 'id': reply.id,
-      'content': comment,
-      'authorId': user.userId,
-      'authorName': user.userName,
-      'authorstoreType': user.storeType,
-      'authorProfileImageUrl': user.profileImageUrl,
-      'authorVerification': user.verified,
-      'timestamp': Timestamp.fromDate(DateTime.now()),
-      'parentId': commentId,
-      'report': '',
-      'reportConfirmed': '',
-    });
-    addActivityItem(
-      user: user,
-      post: post,
-      comment: comment,
-      type: NotificationActivityType.comment,
-      event: null,
-      followerUser: null,
-      advicedUserId: '',
-    );
-  }
+  // static void addCommentReply({
+  //   required String commentId,
+  //   required Post post,
+  //   required String comment,
+  //   // Reply reply,
+  //   required AccountHolderAuthor user,
+  // }) {
+  //   commentsRef
+  //       .doc(post.id)
+  //       .collection('postComments')
+  //       .doc(commentId)
+  //       .collection('replies')
+  //       .add({
+  //     // 'id': reply.id,
+  //     'content': comment,
+  //     'authorId': user.userId,
+  //     'authorName': user.userName,
+  //     'authorstoreType': user.storeType,
+  //     'authorProfileImageUrl': user.profileImageUrl,
+  //     'authorVerification': user.verified,
+  //     'timestamp': Timestamp.fromDate(DateTime.now()),
+  //     'parentId': commentId,
+  //     'report': '',
+  //     'reportConfirmed': '',
+  //   });
+  //   addActivityItem(
+  //     user: user,
+  //     post: post,
+  //     comment: comment,
+  //     type: NotificationActivityType.comment,
+  //     event: null,
+  //     followerUser: null,
+  //     advicedUserId: '',
+  //   );
+  // }
 
-  static Stream<int> numComments(String? postId) {
-    return commentsRef
-        .doc(postId)
-        .collection('postComments')
-        .snapshots()
-        .map((documentSnapshot) => documentSnapshot.docs.length);
-  }
+  // static Stream<int> numComments(String? postId) {
+  //   return commentsRef
+  //       .doc(postId)
+  //       .collection('postComments')
+  //       .snapshots()
+  //       .map((documentSnapshot) => documentSnapshot.docs.length);
+  // }
 
   static void deleteCommentsReply({
     required String commentId,
@@ -5476,7 +5679,7 @@ class DatabaseService {
       required String ask,
       required AccountHolderAuthor user,
       required String reportConfirmed}) {
-    asksRef.doc(event.id).collection('eventAsks').add({
+    commentsRef.doc(event.id).collection('comments').add({
       'content': ask,
       'report': '',
       'mediaType': '',
@@ -5500,11 +5703,46 @@ class DatabaseService {
     );
   }
 
+  static void commentOnPost(
+      {required String currentUserId,
+      required Post post,
+      required String comment,
+      required AccountHolderAuthor user,
+      required String reportConfirmed}) {
+    commentsRef.doc(post.id).collection('comments').add({
+      'content': comment,
+      'report': '',
+      'mediaType': '',
+      'mediaUrl': '',
+      'authorName': user.userName,
+      'authorstoreType': user.storeType,
+      'authorProfileImageUrl': user.profileImageUrl,
+      'authorVerification': user.verified,
+      'reportConfirmed': reportConfirmed,
+      'authorId': currentUserId,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+    // String commonId = Uuid().v4();
+
+    addActivityItem(
+      user: user,
+      event: null, comment: comment, followerUser: null, post: post,
+      type: NotificationActivityType.ask, advicedUserId: '',
+      // ask: ask,
+      // commonId: commonId,
+    );
+  }
+
   static void deleteAsk(
       {required String currentUserId,
       required Event event,
       required Ask ask}) async {
-    asksRef.doc(event.id).collection('eventAsks').doc(ask.id).get().then((doc) {
+    commentsRef
+        .doc(event.id)
+        .collection('comments')
+        .doc(ask.id)
+        .get()
+        .then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
@@ -5515,7 +5753,7 @@ class DatabaseService {
     Ask ask,
     Event event,
   ) {
-    asksRef.doc(event.id).collection('eventAsks').doc(ask.id).update({
+    commentsRef.doc(event.id).collection('comments').doc(ask.id).update({
       'content': ask.content,
       'authorId': ask.authorId,
       'timestamp': ask.timestamp,
@@ -5718,34 +5956,39 @@ class DatabaseService {
   }
 
   static Stream<int> numRepliedAsks(String eventId, String askId) {
-    return asksRef
+    return commentsRef
         .doc(eventId)
-        .collection('eventAsks')
+        .collection('comments')
         .doc(askId)
         .collection('replies')
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  static void deleteAsks(
+  static void deleteComments(
       {required String currentUserId,
-      required Event event,
-      required Ask ask}) async {
-    asksRef.doc(event.id).collection('eventAsks').doc(ask.id).get().then((doc) {
+      required Post post,
+      required CommentModel comment}) async {
+    commentsRef
+        .doc(post.id)
+        .collection('comments')
+        .doc(comment.id)
+        .get()
+        .then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
     });
   }
 
-  static void deleteAskReply({
+  static void deleteCommentReply({
     required String askId,
     required String replyId,
-    required Event event,
+    required Post post,
   }) async {
-    asksRef
-        .doc(event.id)
-        .collection('eventAsks')
+    commentsRef
+        .doc(post.id)
+        .collection('comments')
         .doc(askId)
         .collection('replies')
         .doc(replyId)
@@ -5761,22 +6004,22 @@ class DatabaseService {
     String askId,
     String askContent,
     // String commentAu,
-    Event event,
+    Post post,
   ) {
-    asksRef.doc(event.id).collection('eventAsks').doc(askId).update({
+    commentsRef.doc(post.id).collection('comments').doc(askId).update({
       'content': askContent,
     });
   }
 
-  static void editAsksReply(
+  static void editCommentReply(
     String askId,
     String replyId,
     String askContent,
-    Event event,
+    Post post,
   ) {
-    asksRef
-        .doc(event.id)
-        .collection('eventAsks')
+    commentsRef
+        .doc(post.id)
+        .collection('comments')
         .doc(askId)
         .collection('replies')
         .doc(replyId)
@@ -5785,21 +6028,21 @@ class DatabaseService {
     });
   }
 
-  static void addAskReply({
+  static void addCommentReply({
     required String askId,
-    required Event event,
-    required String ask,
+    required Post post,
+    required String comment,
     // Reply reply,
     required AccountHolderAuthor user,
   }) {
-    asksRef
-        .doc(event.id)
-        .collection('eventAsks')
+    commentsRef
+        .doc(post.id)
+        .collection('comments')
         .doc(askId)
         .collection('replies')
         .add({
       // 'id': reply.id,
-      'content': ask,
+      'content': comment,
       'authorId': user.userId,
       'authorName': user.userName,
       'authorstoreType': user.storeType,

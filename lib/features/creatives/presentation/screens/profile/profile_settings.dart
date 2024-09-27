@@ -411,7 +411,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return EventDrafts(eventsList: eventsList);
+        return SizedBox.shrink();
+        // EventDrafts(eventsList: eventsList);
       },
     );
   }
@@ -553,44 +554,44 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   thickness: .2,
                   color: Colors.grey,
                 ),
-                IntroInfo(
-                  leadingIcon: Icons.request_quote_outlined,
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Refunds',
-                  onPressed: () {
-                    _navigateToPage(
-                      context,
-                      UserRefunds(
-                        currentUserId: widget.user.userId!,
-                      ),
-                    );
-                  },
-                  subTitle: "Refund for tickets.",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
-                Divider(
-                  thickness: .2,
-                  color: Colors.grey,
-                ),
-                IntroInfo(
-                  leadingIcon: Icons.attach_money,
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Affiliates',
-                  onPressed: () {
-                    _navigateToPage(
-                      context,
-                      UserAffilate(
-                        currentUserId: widget.user.userId!,
-                        eventId: '',
-                        marketingType: '',
-                        isUser: true,
-                        fromActivity: false,
-                      ),
-                    );
-                  },
-                  subTitle: "Your affiliate marketing.",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
+                // IntroInfo(
+                //   leadingIcon: Icons.request_quote_outlined,
+                //   titleColor: Theme.of(context).secondaryHeaderColor,
+                //   title: 'Refunds',
+                //   onPressed: () {
+                //     // _navigateToPage(
+                //     //   context,
+                //       // UserRefunds(
+                //       //   currentUserId: widget.user.userId!,
+                //       // ),
+                //     );
+                //   },
+                //   subTitle: "Refund for tickets.",
+                //   icon: Icons.arrow_forward_ios_outlined,
+                // ),
+                // Divider(
+                //   thickness: .2,
+                //   color: Colors.grey,
+                // ),
+                // IntroInfo(
+                //   leadingIcon: Icons.attach_money,
+                //   titleColor: Theme.of(context).secondaryHeaderColor,
+                //   title: 'Affiliates',
+                //   onPressed: () {
+                //     _navigateToPage(
+                //       context,
+                //       UserAffilate(
+                //         currentUserId: widget.user.userId!,
+                //         eventId: '',
+                //         marketingType: '',
+                //         isUser: true,
+                //         fromActivity: false,
+                //       ),
+                //     );
+                //   },
+                //   subTitle: "Your affiliate marketing.",
+                //   icon: Icons.arrow_forward_ios_outlined,
+                // ),
                 Divider(
                   thickness: .2,
                   color: Colors.grey,

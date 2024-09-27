@@ -362,16 +362,16 @@ class _HopeActionsState extends State<HopeActions> {
                             _provider.setFlorenceActive(
                                 _provider.florenceActive ? false : true);
 
-                            _userLocation.city!.isEmpty
-                                ? _showBottomEditLocation(context)
-                                : _navigateToPage(
-                                    context,
-                                    CreateEventScreen(
-                                      isEditting: false,
-                                      event: null,
-                                      isCompleted: false,
-                                      isDraft: false,
-                                    ));
+                            // _userLocation.city!.isEmpty
+                            //     ? _showBottomEditLocation(context)
+                            //     : _navigateToPage(
+                            //         context,
+                            //         CreateEventScreen(
+                            //           isEditting: false,
+                            //           event: null,
+                            //           isCompleted: false,
+                            //           isDraft: false,
+                            //         ));
                           }
                         : () {},
                     Icons.add,
@@ -482,13 +482,17 @@ class _HopeActionsState extends State<HopeActions> {
                     updateApp: widget.updateApp,
                     showUpdate: widget.showUpdate,
                   )
-                : _provider.florenceActionChoice == 'myTickets'
-                    ? TicketsSummary()
-                    : _provider.florenceActionChoice == 'eventsCreated'
-                        ? EventCreatedSummary()
-                        : _provider.florenceActionChoice == 'invites'
-                            ? InviteSummary()
-                            : _promptInput('Not sure what you want?');
+                // : _provider.florenceActionChoice == 'myTickets'
+                //     ? TicketsSummary()
+                    // :
+                    //  _provider.florenceActionChoice == 'eventsCreated'
+                    //     ? EventCreatedSummary()
+                    //     : 
+                        // _provider.florenceActionChoice == 'invites'
+                        //     ? InviteSummary()
+                            :
+                            
+                             _promptInput('Not sure what you want?');
   }
 
   @override

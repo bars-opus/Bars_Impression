@@ -829,7 +829,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                     child: FeatureInfoWidget(
                                       title: 'Account Information: ',
                                       subTitle:
-                                          'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fans.  Other account types such as artist, producer, cover art designer, music video director, DJ, battle rapper, photographer, dancer, video vixen, Makeup artist, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking information.',
+                                          'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fans.  Other account types such as Salon, producer, cover art designer, music video director, DJ, battle rapper, photographer, dancer, video vixen, Makeup Salon, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking information.',
                                       number: '2',
                                     ),
                                   ),

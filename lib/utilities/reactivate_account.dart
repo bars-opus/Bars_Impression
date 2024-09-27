@@ -59,6 +59,7 @@ class _ReActivateAccountState extends State<ReActivateAccount> {
       // name: _provider.user!.name,
       bio: _provider.user!.bio,
       disabledAccount: false,
+      isShop: _provider.user!.isShop,
       dynamicLink: _provider.user!.dynamicLink,
       lastActiveDate: _provider.user!.lastActiveDate,
       storeType: _provider.user!.storeType,
@@ -67,7 +68,7 @@ class _ReActivateAccountState extends State<ReActivateAccount> {
       userId: _provider.user!.userId,
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
-      // privateAccount: _provider.user!.privateAccount,
+      // isShop: _provider.user!.isShop,
       disableChat: _provider.user!.disableChat,
     );
 

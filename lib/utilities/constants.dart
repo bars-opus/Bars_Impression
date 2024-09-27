@@ -13,8 +13,18 @@ final allWorkRequestRef = _firestore.collection('all_workRequest');
 final usersAuthorRef = _firestore.collection('user_author');
 final usernamesRef = _firestore.collection('usernames');
 final updateAppRef = _firestore.collection('_updateApp');
-final postsRef = _firestore.collection('posts');
-final allPostsRef = _firestore.collection('allPosts');
+final postsRef = _firestore.collection('user_posts');
+final allPostsRef = _firestore.collection('all_Posts');
+final allPostsSummaryRef = _firestore.collection('all_PostsSummary');
+final commentsRef = _firestore.collection('comments');
+
+
+
+
+//
+
+///
+// final allPostsRef = _firestore.collection('allPosts');
 final testingRef = _firestore.collection('testing');
 final eventsRef = _firestore.collection('new_events');
 final eventsDraftRef = _firestore.collection('new_events_draft');
@@ -38,7 +48,7 @@ final feedsRef = _firestore.collection('feeds');
 final likesRef = _firestore.collection('likes');
 final thoughtsLikeRef = _firestore.collection('thoughtsLike');
 final disLikesRef = _firestore.collection('disLikes');
-final commentsRef = _firestore.collection('new_comments');
+// final commentsRef = _firestore.collection('new_comments');
 final userAdviceRef = _firestore.collection('new_userAdvice');
 final blogCommentsRef = _firestore.collection('blogComments');
 final thoughtsRef = _firestore.collection('thoughts');
@@ -53,9 +63,7 @@ final tokenRef = _firestore.collection('token');
 final newDonationToCreativesRef =
     _firestore.collection('new_donationToCreative');
 
-    
 final newBrandMatchingRef = _firestore.collection('new_brand_matching');
-
 
 final new_userBrandIfoRef = _firestore.collection('new_userBrandIfo');
 final newEventBrandMatchingRef =

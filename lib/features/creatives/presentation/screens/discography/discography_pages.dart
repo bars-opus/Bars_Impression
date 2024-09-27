@@ -199,11 +199,16 @@ class _DiscographyPagesState extends State<DiscographyPages> {
 
               final user = userList[index];
 
-              return DiscographyWidget(
-                currentUserId: widget.currentUserId,
-                userPortfolio: user,
-                userIndex: widget.userIndex,
-              );
+              return ProfileScreen(
+                  currentUserId: widget.currentUserId,
+                  userId: user.userId,
+                  user: user);
+
+              //  DiscographyWidget(
+              //   currentUserId: widget.currentUserId,
+              //   userPortfolio: user,
+              //   userIndex: widget.userIndex,
+              // );
             }),
         Positioned(
             bottom: 50,

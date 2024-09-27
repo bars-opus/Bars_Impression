@@ -4,8 +4,8 @@ import 'package:flutter/scheduler.dart';
 
 class EventDisplayWidget extends StatefulWidget {
   final String currentUserId; // ID of the current user
-  final Event event; // Event object containing event details
-  List<Event> eventList; // List of events
+  final Post post; // Event object containing event details
+  List<Post> postList; // List of events
   List<DocumentSnapshot>
       eventSnapshot; // List of event snapshots from Firestore
   final int pageIndex; // Page index for pagination
@@ -13,19 +13,19 @@ class EventDisplayWidget extends StatefulWidget {
       eventPagesOnly; // Flag to indicate if only event pages should be displayed
   final String liveCity; // User's live city
   final String liveCountry; // User's live country
-  final int sortNumberOfDays; // Number of days for sorting events
+  // final int sortNumberOfDays; // Number of days for sorting events
   final String isFrom; // Source identifier
 
   EventDisplayWidget({
     required this.currentUserId,
-    required this.event,
-    required this.eventList,
+    required this.post,
+    required this.postList,
     required this.eventSnapshot,
     required this.pageIndex,
     required this.eventPagesOnly,
     required this.liveCity,
     required this.liveCountry,
-    required this.sortNumberOfDays,
+    // required this.sortNumberOfDays,
     required this.isFrom,
   });
 
@@ -40,30 +40,30 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
   @override
   void initState() {
     super.initState();
-    _countDown();
+    // _countDown();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).ticketList.clear();
     });
   }
 
   /// Checks if the event has started or ended and updates the state accordingly.
-  void _countDown() async {
-    if (EventHasStarted.hasEventStarted(widget.event.startDate.toDate())) {
-      if (mounted) {
-        setState(() {
-          _eventHasStarted = true;
-        });
-      }
-    }
+  // void _countDown() async {
+  //   if (EventHasStarted.hasEventStarted(widget.event.startDate.toDate())) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _eventHasStarted = true;
+  //       });
+  //     }
+  //   }
 
-    if (EventHasStarted.hasEventEnded(widget.event.clossingDay.toDate())) {
-      if (mounted) {
-        setState(() {
-          _eventHasEnded = true;
-        });
-      }
-    }
-  }
+  //   if (EventHasStarted.hasEventEnded(widget.event.clossingDay.toDate())) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _eventHasEnded = true;
+  //       });
+  //     }
+  //   }
+  // }
 
   /// Builds a widget with a blur effect.
   Widget buildBlur({
@@ -99,20 +99,20 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
     //     widget.event.rate.trim().replaceAll('\n', ' ').split("|");
 
     /// Shows a bottom sheet with event actions.
-    void _showBottomSheet(BuildContext context) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext context) {
-          return EventBottomModalSheetActions(
-            event: widget.event,
-            currentUserId: widget.currentUserId,
-            eventHasEnded: _eventHasEnded,
-          );
-        },
-      );
-    }
+    // void _showBottomSheet(BuildContext context) {
+    //   showModalBottomSheet(
+    //     context: context,
+    //     isScrollControlled: true,
+    //     backgroundColor: Colors.transparent,
+    //     builder: (BuildContext context) {
+    //       return EventBottomModalSheetActions(
+    //         post: widget.post,
+    //         currentUserId: widget.currentUserId,
+    //         eventHasEnded: _eventHasEnded,
+    //       );
+    //     },
+    //   );
+    // }
 
     return GestureDetector(
       onTap: _isNavigating
@@ -121,7 +121,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
               _isNavigating = true;
 
               int eventIndex =
-                  widget.eventList.indexWhere((p) => p.id == widget.event.id);
+                  widget.postList.indexWhere((p) => p.id == widget.post.id);
               await Future.delayed(Duration(milliseconds: 300));
               Navigator.push(
                   context,
@@ -129,27 +129,27 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                       builder: (_) => widget.eventPagesOnly
                           ? EventPages(
                               types: 'All',
-                              event: widget.event,
+                              post: widget.post,
                               currentUserId: widget.currentUserId,
-                              eventList: widget.eventList,
+                              postList: widget.postList,
                               eventSnapshot: widget.eventSnapshot,
                               eventIndex: eventIndex,
                               liveCity: widget.liveCity,
                               liveCountry: widget.liveCountry,
-                              sortNumberOfDays: widget.sortNumberOfDays,
+                              // sortNumberOfDays: widget.sortNumberOfDays,
                               isFrom: widget.isFrom,
                             )
                           : EventPageView(
-                              event: widget.event,
+                              post: widget.post,
                               currentUserId: widget.currentUserId,
-                              eventList: widget.eventList,
+                              postList: widget.postList,
                               eventSnapshot: widget.eventSnapshot,
                               eventIndex: eventIndex,
                               pageIndex: widget.pageIndex,
                               key: ValueKey('EventPageView1'),
                               liveCity: widget.liveCity,
                               liveCountry: widget.liveCountry,
-                              sortNumberOfDays: widget.sortNumberOfDays,
+                              // sortNumberOfDays: widget.sortNumberOfDays,
                               isFrom: widget.isFrom,
                             )));
               _isNavigating = false;
@@ -160,14 +160,14 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
         decoration: BoxDecoration(
           color: Colors.blue,
           image: DecorationImage(
-            image: CachedNetworkImageProvider(widget.event.imageUrl,
+            image: CachedNetworkImageProvider(widget.post.imageUrl,
                 errorListener: (_) {
               return;
             }),
             fit: BoxFit.cover,
           ),
         ),
-        child: widget.event.report.isNotEmpty
+        child: widget.post.report.isNotEmpty
             ? Container(
                 height: 50,
                 width: 50,
@@ -230,7 +230,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
     //           _isNavigating = true;
 
     //           int eventIndex =
-    //               widget.eventList.indexWhere((p) => p.id == widget.event.id);
+    //               widget.postList.indexWhere((p) => p.id == widget.event.id);
     //           await Future.delayed(Duration(milliseconds: 300));
     //           Navigator.push(
     //               context,
@@ -240,7 +240,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
     //                           types: 'All',
     //                           event: widget.event,
     //                           currentUserId: widget.currentUserId,
-    //                           eventList: widget.eventList,
+    //                           postList: widget.postList,
     //                           eventSnapshot: widget.eventSnapshot,
     //                           eventIndex: eventIndex,
     //                           liveCity: widget.liveCity,
@@ -251,7 +251,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
     //                       : EventPageView(
     //                           event: widget.event,
     //                           currentUserId: widget.currentUserId,
-    //                           eventList: widget.eventList,
+    //                           postList: widget.postList,
     //                           eventSnapshot: widget.eventSnapshot,
     //                           eventIndex: eventIndex,
     //                           pageIndex: widget.pageIndex,

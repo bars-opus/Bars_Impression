@@ -130,7 +130,7 @@ class _SignpsScreenState extends State<SignpsScreen>
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
-            backgroundColor: Color(0xFF1a1a1a),
+            backgroundColor: Theme.of(context).cardColor,
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(
@@ -142,41 +142,46 @@ class _SignpsScreenState extends State<SignpsScreen>
                       key: _formKey,
                       child: AutofillGroup(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Container(
-                              width: 60.0,
-                              height: 60.0,
-                              child: Image.asset(
-                                'assets/images/bars.png',
-                              ),
+                            // Container(
+                            //   width: 60.0,
+                            //   height: 60.0,
+                            //   child: Image.asset(
+                            //     'assets/images/bars.png',
+                            //   ),
+                            // ),
+                            TicketPurchasingIcon(
+                              title: '',
                             ),
+                             const SizedBox(height: 50),
+                            // Transform(
+                            //   transform: Matrix4.translationValues(
+                            //       animation.value * width, 0.0, 0.0),
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.symmetric(
+                            //         horizontal: 30.0, vertical: 10.0),
+                            //     child: LoginField(
+                            //       controller: _nameController,
+                            //       hintText: 'Stage, brand, or nickname',
+                            //       labelText: 'name',
+                            //       onValidateText: (input) =>
+                            //           input!.trim().isEmpty
+                            //               ? 'Please enter a name'
+                            //               : input.length < 2
+                            //                   ? 'username is too short'
+                            //                   : input.length > 24
+                            //                       ? 'username is too long'
+                            //                       : null,
+                            //       icon: Icons.person_2_outlined,
+                            //     ),
+                            //   ),
+                            // ),
+                           
                             Transform(
                               transform: Matrix4.translationValues(
                                   animation.value * width, 0.0, 0.0),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0, vertical: 10.0),
-                                child: LoginField(
-                                  controller: _nameController,
-                                  hintText: 'Stage, brand, or nickname',
-                                  labelText: 'name',
-                                  onValidateText: (input) =>
-                                      input!.trim().isEmpty
-                                          ? 'Please enter a name'
-                                          : input.length < 2
-                                              ? 'username is too short'
-                                              : input.length > 24
-                                                  ? 'username is too long'
-                                                  : null,
-                                  icon: Icons.person_2_outlined,
-                                ),
-                              ),
-                            ),
-                            Transform(
-                              transform: Matrix4.translationValues(
-                                  delayedAnimation.value * width, 0.0, 0.0),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 30.0, vertical: 10.0),
@@ -194,7 +199,7 @@ class _SignpsScreenState extends State<SignpsScreen>
                             ),
                             Transform(
                               transform: Matrix4.translationValues(
-                                  muchDelayedAnimation.value * width, 0.0, 0.0),
+                                  delayedAnimation.value * width, 0.0, 0.0),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 30.0, vertical: 10.0),
@@ -216,13 +221,16 @@ class _SignpsScreenState extends State<SignpsScreen>
                                             : Icons.visibility,
                                         size: ResponsiveHelper.responsiveHeight(
                                             context, 20.0),
-                                        color: Colors.grey,
+                                        color: _isHidden
+                                            ? Colors.grey
+                                            : Theme.of(context)
+                                                .secondaryHeaderColor,
                                       ),
                                       onPressed: _toggleVisibility),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 40.0),
+                            const SizedBox(height: 50),
                             AnimatedContainer(
                               duration: Duration(milliseconds: 300),
                               height: _isLoading
@@ -245,15 +253,15 @@ class _SignpsScreenState extends State<SignpsScreen>
                                         buttonColor: Colors.white,
                                       ),
                                     ),
-                                    const SizedBox(height: 20),
-                                    LoginBackButton(),
-                                    const SizedBox(height: 80.0),
+                                    const SizedBox(height: 50),
+                                    // LoginBackButton(),
+                                    // const SizedBox(height: 80.0),
                                     GestureDetector(
                                       onTap: () => Navigator.pushNamed(
                                           context, Password.id),
                                       child: Text('Forgot Password?',
                                           style: TextStyle(
-                                            color: Colors.blueGrey,
+                                            color: Colors.blue,
                                             fontSize: ResponsiveHelper
                                                 .responsiveFontSize(
                                                     context, 12.0),

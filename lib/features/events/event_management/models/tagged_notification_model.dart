@@ -4,7 +4,7 @@ class TaggedNotificationModel {
   String id;
   final String taggedParentTitle; // tagged person taggedParentTitle
   final String
-      role; // the role of the tagged person either a special guess, an artist, a sponsor or stc.
+      role; // the role of the tagged person either a special guess, an Salon, a sponsor or stc.
   final String taggedType; // either its a crew tagged, or a guess or a sponsor.
   final bool
       verifiedTag; // if the tagged is verified by the tagged person or not

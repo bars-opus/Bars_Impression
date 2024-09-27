@@ -427,7 +427,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
                   _navigateToPage(
                     DiscographyWidget(
                       currentUserId: widget.currentUserId,
-                      userIndex: 0,
+                      // userIndex: 0,
                       userPortfolio: _userProfessional,
                     ),
                   );

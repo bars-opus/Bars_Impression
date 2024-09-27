@@ -151,6 +151,7 @@ class UsernameService {
 
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
+      isShop: _provider.user!.isShop,
       // name: _provider.name,
       // bio: _provider.user!.bio,
       disabledAccount: false,
@@ -158,7 +159,7 @@ class UsernameService {
       bio: _provider.user?.bio ?? '',
       dynamicLink: dynamicLink,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      storeType: _provider.profrilehandle,
+      storeType: _provider.storeType,
       profileImageUrl: _provider.user?.profileImageUrl ?? '',
       // storeType: _provider.profrilehandle,
       // profileImageUrl: _provider.user!.profileImageUrl,
@@ -166,7 +167,7 @@ class UsernameService {
       userId: _provider.currentUserId,
       userName: userName,
       verified: false,
-      // privateAccount: false,
+      // isShop: false,
       disableChat: false,
     );
 
@@ -180,7 +181,7 @@ class UsernameService {
 
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    var updatedAccountAuthor = AccountHolderAuthor(
+    var updatedAccountAuthor = AccountHolderAuthor(isShop: _provider.user!.isShop,
       // name: _provider.user!.name,
       bio: _provider.user!.bio,
       disabledAccount: _provider.user!.disabledAccount,
@@ -192,7 +193,7 @@ class UsernameService {
       userId: _provider.user!.userId,
       userName: userName,
       verified: _provider.user!.verified,
-      // privateAccount: _provider.user!.privateAccount,
+      // isShop: _provider.user!.isShop,
       disableChat: _provider.user!.disableChat,
     );
 

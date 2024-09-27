@@ -134,11 +134,12 @@ class _SearchTicketState extends State<SearchTicket> {
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 2.0),
-                                      child: EventsFeedAttendingWidget(
-                                        ticketOrder: ticketOrder,
-                                        currentUserId: widget.currentUserId,
-                                        ticketList: [],
-                                      ),
+                                      child: SizedBox.shrink()
+                                      //  EventsFeedAttendingWidget(
+                                      //   ticketOrder: ticketOrder,
+                                      //   currentUserId: widget.currentUserId,
+                                      //   ticketList: [],
+                                      // ),
                                     );
                                   },
                                   childCount: snapshot.data!.docs.length,

@@ -25,7 +25,7 @@ class WelcomeInfo extends StatelessWidget {
       children: [
         Icon(
           icon,
-          color: Colors.grey,
+          color: Colors.white,
           size: ResponsiveHelper.responsiveHeight(context, 30),
         ),
         Container(
@@ -41,14 +41,14 @@ class WelcomeInfo extends StatelessWidget {
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 20.0),
-                        color: Colors.white,
+                        color: Colors.lightBlueAccent[200],
                       )),
                   TextSpan(
                     text: subTitle,
                     style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 14.0),
-                      color: Colors.grey,
+                      color: Colors.white,
                     ),
                   ),
                   if (showMore)
@@ -57,7 +57,7 @@ class WelcomeInfo extends StatelessWidget {
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 12.0),
-                        color: Colors.blue,
+                        color: Colors.lightBlueAccent[200],
                       ),
                     ),
                 ],

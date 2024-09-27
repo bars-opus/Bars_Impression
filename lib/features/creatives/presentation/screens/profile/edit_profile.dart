@@ -1,5 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -21,8 +22,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String _userName = '';
   String _bio = '';
   bool _isLoading = false;
-  bool _isLoadingBooking = false;
-  bool _isLoadingBrandInfo = false;
+  // bool _isLoadingBooking = false;
+  // bool _isLoadingBrandInfo = false;
 
   @override
   void initState() {
@@ -30,6 +31,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _name = widget.user.userName!;
     _userName = widget.user.userName!;
     _bio = widget.user.bio!;
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      var _provider = Provider.of<UserData>(context, listen: false);
+      _provider.setIsLoading(false);
+    });
   }
 
   _handleImageFromGallery() async {
@@ -263,8 +268,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       userId: _provider.user!.userId,
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
-      // privateAccount: _provider.user!.privateAccount,
-      disableChat: _provider.user!.disableChat,
+      // isShop: _provider.user!.isShop,
+      disableChat: _provider.user!.disableChat, isShop: _provider.user!.isShop,
     );
 
     // Put the new object back into the box with the same key
@@ -296,31 +301,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  _changeUserNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Username',
-          style: TextStyle(
-            color: Theme.of(context).secondaryHeaderColor,
-            fontSize: ResponsiveHelper.responsiveFontSize(context, 10.0),
-          ),
-        ),
-        DummyTextField(
-          onPressed: () {
-            _navigateToPage(
-              context,
-              EditProfileName(
-                user: widget.user,
-              ),
-            );
-          },
-          text: _userName.toUpperCase(),
-        ),
-      ],
-    );
-  }
+  // _changeUserNameField() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'Username',
+  //         style: TextStyle(
+  //           color: Theme.of(context).secondaryHeaderColor,
+  //           fontSize: ResponsiveHelper.responsiveFontSize(context, 10.0),
+  //         ),
+  //       ),
+  //       DummyTextField(
+  //         onPressed: () {
+  //           _navigateToPage(
+  //             context,
+  //             EditProfileName(
+  //               user: widget.user,
+  //             ),
+  //           );
+  //         },
+  //         text: _userName.toUpperCase(),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   _stageNameAndBioFields() {
     return Column(
@@ -335,17 +340,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           onSavedText: (input) => _name = input,
           enableBorder: false,
         ),
-        EditProfileTextField(
-          padding: 0,
-          enableBorder: false,
-          labelText: 'bio',
-          hintText: 'A piece of short information about yourself',
-          initialValue: _bio,
-          onSavedText: (input) => _bio = input,
-          onValidateText: (input) => input!.trim().length > 700
-              ? 'Please, enter a bio of fewer than 700 characters.'
-              : null,
-        ),
+        // EditProfileTextField(
+        //   padding: 0,
+        //   enableBorder: false,
+        //   labelText: 'bio',
+        //   hintText: 'A piece of short information about yourself',
+        //   initialValue: _bio,
+        //   onSavedText: (input) => _bio = input,
+        //   onValidateText: (input) => input!.trim().length > 700
+        //       ? 'Please, enter a bio of fewer than 700 characters.'
+        //       : null,
+        // ),
       ],
     );
   }
@@ -440,6 +445,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _navigateToPage(
                         context,
                         EditProfileSelectLocation(
+                          notFromEditProfile: true,
                           user: _user,
                         ),
                       );
@@ -452,141 +458,152 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  _editPageOptionWidget() {
-    var _provider = Provider.of<UserData>(context, listen: false);
-
-    final UserSettingsLoadingPreferenceModel _user =
-        _provider.userLocationPreference!;
-    var _divider = Divider(
+ var _divider = Divider(
       thickness: .2,
       color: Colors.grey,
     );
+    
+  _editPageOptionWidget() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _provider2 = Provider.of<UserData>(
+      context,
+    );
+
+    final UserSettingsLoadingPreferenceModel _user =
+        _provider.userLocationPreference!;
+   
     return Column(
       children: [
-        IntroInfo(
-          leadingIcon: Icons.person_outline,
-          titleColor: Theme.of(context).secondaryHeaderColor,
-          title: 'Account Type',
-          onPressed: () {
-            _navigateToPage(
-              context,
-              EditstoreType(
-                user: widget.user,
-              ),
-            );
-          },
-          subTitle: "",
-          icon: Icons.arrow_forward_ios_outlined,
-        ),
-        _divider,
-        IntroInfo(
-          leadingIcon: Icons.location_on_outlined,
-          titleColor: Theme.of(context).secondaryHeaderColor,
-          title: 'Change location',
-          onPressed: () {
-            _navigateToPage(
-              context,
-              EditProfileSelectLocation(
-                user: _user,
-              ),
-            );
-          },
-          subTitle: "",
-          icon: Icons.arrow_forward_ios_outlined,
-        ),
-        _divider,
-        _isLoadingBooking
-            ? _loadingPortfolio(true, () {})
-            : IntroInfo(
-                leadingIcon: Icons.work_outline_sharp,
-                titleColor: Theme.of(context).secondaryHeaderColor,
-                title: 'Booking portfolio',
-                onPressed: _user.city!.isEmpty
-                    ? () {
-                        _showBottomSheetNoCity();
-                      }
-                    : () async {
-                        if (_isLoadingBooking) return;
-                        _isLoadingBooking = true;
-
-                        try {
-                          UserStoreModel? user =
-                              await DatabaseService.getUserProfessionalWithId(
-                            widget.user.userId!,
-                          );
-
-                          if (user != null) {
-                            _navigateToPage(
-                              context,
-                              EditProfileProfessional(
-                                user: user,
-                              ),
-                            );
-                          } else {
-                            _showBottomSheetErrorMessage(
-                                'Failed to fetch booking data.');
-                          }
-                        } catch (e) {
-                          _showBottomSheetErrorMessage(
-                              'Failed to fetch booking data.');
-                        } finally {
-                          _isLoadingBooking = false;
+        // IntroInfo(
+        //   leadingIcon: Icons.person_outline,
+        //   titleColor: Theme.of(context).secondaryHeaderColor,
+        //   title: 'Account Type',
+        //   onPressed: () {
+        //     _navigateToPage(
+        //       context,
+        //       EditstoreType(
+        //         user: widget.user,
+        //       ),
+        //     );
+        //   },
+        //   subTitle: "",
+        //   icon: Icons.arrow_forward_ios_outlined,
+        // ),
+        // _divider,
+        if (!widget.user.isShop!)
+          IntroInfo(
+            leadingIcon: Icons.location_on_outlined,
+            titleColor: Theme.of(context).secondaryHeaderColor,
+            title: 'Change location',
+            onPressed: () {
+              Navigator.pop(context);
+              _navigateToPage(
+                context,
+                EditProfileSelectLocation(
+                  user: _user,
+                ),
+              );
+            },
+            subTitle: "",
+            icon: Icons.arrow_forward_ios_outlined,
+          ),
+        if (!widget.user.isShop!) _divider,
+        if (widget.user.isShop!)
+          _provider2.isLoading
+              ? _loadingPortfolio(true, () {})
+              : IntroInfo(
+                  leadingIcon: Icons.store_mall_directory_outlined,
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Shop ',
+                  onPressed: _user.city!.isEmpty
+                      ? () {
+                          Navigator.pop(context);
+                          _showBottomSheetNoCity();
                         }
-                      },
-                subTitle: "",
-                icon: Icons.arrow_forward_ios_outlined,
-              ),
-        _divider,
-        _isLoadingBrandInfo
-            ? _loadingPortfolio(true, () {})
-            : _loadingPortfolio(
-                false,
-                _provider.brandMatching != null
-                    ? () {
-                        _navigateToPage(
+                      : () async {
+                          Navigator.pop(context);
+                          // if (_provider.isLoading) return;
+                          // _provider.setIsLoading(true);
+
+                          // try {
+                          //   UserStoreModel? user =
+                          //       await DatabaseService.getUserProfessionalWithId(
+                          //     widget.user.userId!,
+                          //   );
+
+                          //   if (user != null) {
+                          _navigateToPage(
                             context,
-                            HopeIntroductionScreen(
-                              isIntro: false,
-                            ));
-                      }
-                    : () async {
-                        if (_isLoadingBrandInfo) return;
-                        _isLoadingBrandInfo = true;
-
-                        try {
-                          BrandMatchingModel? brandMatching =
-                              await DatabaseService.getUserBrandInfoWithId(
-                            _provider.currentUserId!,
+                            EditProfileProfessional(
+                              user: _provider.userStore!,
+                            ),
                           );
-
-                          if (brandMatching != null) {
-                            _provider.setBrandMatching(brandMatching);
-                            _navigateToPage(
-                                context,
-                                HopeIntroductionScreen(
-                                  isIntro: true,
-                                ));
-                          } else {
-                            _navigateToPage(
-                                context,
-                                HopeIntroductionScreen(
-                                  isIntro: false,
-                                ));
-                          }
-                        } catch (e) {
-                          _showBottomSheetErrorMessage(
-                              'Failed to fetch brand data.');
-                        } finally {
-                          _isLoadingBrandInfo = false;
-                        }
-                      },
-              ),
+                          //   } else {
+                          //     _showBottomSheetErrorMessage(
+                          //         'Failed to fetch booking data.');
+                          //   }
+                          // } catch (e) {
+                          //   _showBottomSheetErrorMessage(
+                          //       'Failed to fetch booking data.');
+                          // } finally {
+                          //   _provider.setIsLoading(false);
+                          // }
+                        },
+                  subTitle: "",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
         _divider,
+        // _isLoadingBrandInfo
+        //     ? _loadingPortfolio(true, () {})
+        //     : _loadingPortfolio(
+        //         false,
+        //         _provider.brandMatching != null
+        //             ? () {
+        //                 _navigateToPage(
+        //                     context,
+        //                     HopeIntroductionScreen(
+        //                       isIntro: false,
+        //                     ));
+        //               }
+        //             : () async {
+        //                 if (_isLoadingBrandInfo) return;
+        //                 _isLoadingBrandInfo = true;
+
+        //                 try {
+        //                   BrandMatchingModel? brandMatching =
+        //                       await DatabaseService.getUserBrandInfoWithId(
+        //                     _provider.currentUserId!,
+        //                   );
+
+        //                   if (brandMatching != null) {
+        //                     _provider.setBrandMatching(brandMatching);
+        //                     _navigateToPage(
+        //                         context,
+        //                         HopeIntroductionScreen(
+        //                           isIntro: true,
+        //                         ));
+        //                   } else {
+        //                     _navigateToPage(
+        //                         context,
+        //                         HopeIntroductionScreen(
+        //                           isIntro: false,
+        //                         ));
+        //                   }
+        //                 } catch (e) {
+        //                   _showBottomSheetErrorMessage(
+        //                       'Failed to fetch brand data.');
+        //                 } finally {
+        //                   _isLoadingBrandInfo = false;
+        //                 }
+        //               },
+        //       ),
+        // _divider,
         IntroInfo(
           leadingIcon: Icons.settings_outlined,
           titleColor: Theme.of(context).secondaryHeaderColor,
           title: 'Account settings',
           onPressed: () {
+            Navigator.pop(context);
             _navigateToPage(
               context,
               ProfileSettings(
@@ -619,7 +636,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Text('Suggestion Box',
                 style: TextStyle(
                   color: Colors.blue,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                 ))));
   }
 
@@ -633,17 +650,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ? SchimmerSkeleton(
                 schimmerWidget: CircleAvatar(
                     backgroundColor: Theme.of(context).primaryColorLight,
-                    radius: ResponsiveHelper.responsiveHeight(context, 80.0),
+                    radius: ResponsiveHelper.responsiveHeight(context, 50.0),
                     backgroundImage: _displayProfileImage()),
               )
             : Hero(
                 tag: 'container1' + widget.user.userId.toString(),
                 child: GestureDetector(
                   onTap: _handleImageFromGallery,
-                  child: CircleAvatar(
-                      backgroundColor: Theme.of(context).primaryColorLight,
-                      radius: ResponsiveHelper.responsiveHeight(context, 80.0),
-                      backgroundImage: _displayProfileImage()),
+                  child: Icon(
+                    Icons.account_circle,
+                    color: Colors.grey,
+                    size: ResponsiveHelper.responsiveHeight(context, 80),
+                  ),
                 ),
               ),
         OutlinedButton(
@@ -660,66 +678,80 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         ),
+        const SizedBox(
+          height: 30.0,
+        ),
+        // Divider(
+        //   thickness: .2,
+        //   color: Colors.grey,
+        // ),
+        // Column(
+        //   children: [
+        //     // _changeUserNameField(),
+        //     _stageNameAndBioFields(),
+        //   ],
+        // ),
+        _stageNameAndBioFields(),
       ],
     );
   }
 
-  _validateTextToxicity() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.setIsLoading(true);
+  // _validateTextToxicity() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   _provider.setIsLoading(true);
 
-    TextModerator moderator = TextModerator();
+  //   TextModerator moderator = TextModerator();
 
-    // Define the texts to be checked
-    List<String> textsToCheck = [_bio, _name];
+  //   // Define the texts to be checked
+  //   List<String> textsToCheck = [_bio, _name];
 
-    // Set a threshold for toxicity that is appropriate for your app
-    const double toxicityThreshold = 0.7;
-    bool allTextsValid = true;
+  //   // Set a threshold for toxicity that is appropriate for your app
+  //   const double toxicityThreshold = 0.7;
+  //   bool allTextsValid = true;
 
-    for (String text in textsToCheck) {
-      if (text.isEmpty) {
-        // Handle the case where the text is empty
-        _provider.setIsLoading(false);
-        _submit();
-        // mySnackBar(context, 'Text cannot be empty.');
-        allTextsValid = false;
-        break; // Exit loop as there is an empty text
-      }
+  //   for (String text in textsToCheck) {
+  //     if (text.isEmpty) {
+  //       // Handle the case where the text is empty
+  //       _provider.setIsLoading(false);
+  //       _submit();
+  //       // mySnackBar(context, 'Text cannot be empty.');
+  //       allTextsValid = false;
+  //       break; // Exit loop as there is an empty text
+  //     }
 
-      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+  //     Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
 
-      // Check if the API call was successful
-      if (analysisResult != null) {
-        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
-            ['summaryScore']['value'];
+  //     // Check if the API call was successful
+  //     if (analysisResult != null) {
+  //       double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+  //           ['summaryScore']['value'];
 
-        if (toxicityScore >= toxicityThreshold) {
-          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
-          mySnackBarModeration(context,
-              'Your bio, stagename or username contains inappropriate statements. Please review');
-          _provider.setIsLoading(false);
+  //       if (toxicityScore >= toxicityThreshold) {
+  //         // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+  //         mySnackBarModeration(context,
+  //             'Your bio, stagename or username contains inappropriate statements. Please review');
+  //         _provider.setIsLoading(false);
 
-          allTextsValid = false;
-          break; // Exit loop as we already found inappropriate content
-        }
-      } else {
-        // Handle the case where the API call failed
-        _provider.setIsLoading(false);
-        mySnackBar(context, 'Try again.');
-        allTextsValid = false;
-        break; // Exit loop as there was an API error
-      }
-    }
+  //         allTextsValid = false;
+  //         break; // Exit loop as we already found inappropriate content
+  //       }
+  //     } else {
+  //       // Handle the case where the API call failed
+  //       _provider.setIsLoading(false);
+  //       mySnackBar(context, 'Try again.');
+  //       allTextsValid = false;
+  //       break; // Exit loop as there was an API error
+  //     }
+  //   }
 
-    // Animate to the next page if all texts are valid
-    if (allTextsValid) {
-      _provider.setIsLoading(false);
+  //   // Animate to the next page if all texts are valid
+  //   if (allTextsValid) {
+  //     _provider.setIsLoading(false);
 
-      _submit();
-      // animateToPage(1);
-    }
-  }
+  //     _submit();
+  //     // animateToPage(1);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -728,152 +760,132 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final UserSettingsLoadingPreferenceModel? _user =
         _provider.userLocationPreference;
 
-    return EditProfileScaffold(
-      title: 'Edit Profile',
-      action:
-
-          // _name == widget.user.name &&
-
-          _bio == widget.user.bio
-              ? null
-              : _isLoading
-                  ? Padding(
-                      padding: const EdgeInsets.only(
-                        right: 20.0,
-                      ),
-                      child: SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.blue,
-                          ),
-                          strokeWidth:
-                              ResponsiveHelper.responsiveFontSize(context, 2.0),
-                        ),
-                      ),
-                    )
-                  : Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8.0, bottom: 20),
-                        child: MiniCircularProgressButton(
-                            dontShowShadow: true,
-                            color: Colors.blue,
-                            text: 'Save',
-                            onPressed: () {}),
-                      ),
-                    ),
-      widget: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            // _isLoading ? LinearProgress() : const SizedBox.shrink(),
-            Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    _profileImageWidget(),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-
-                    Divider(
-                      thickness: .2,
-                      color: Colors.grey,
-                    ),
-                    Column(
-                      children: [
-                        _changeUserNameField(),
-                        _stageNameAndBioFields(),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    if (_user != null) _editPageOptionWidget(),
-                    // _isLoading || _provider.isLoading
-                    //     ? Padding(
-                    //         padding: const EdgeInsets.only(top: 30.0),
-                    //         child: CircularProgress(
-                    //           isMini: true,
-                    //           indicatorColor: Colors.blue,
-                    //         ))
-                    //     : Padding(
-                    //         padding: const EdgeInsets.only(top: 50.0),
-                    //         child: AlwaysWhiteButton(
-                    //           buttonText: 'Save',
-                    //           onPressed: () {
-                    //             _validateTextToxicity();
-                    //             // _submit();
-                    //           },
-                    //           buttonColor: Colors.blue,
-                    //         ),
-                    //       ),
-                    const SizedBox(height: 40),
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToPage(
-                            context,
-                            UserBarcode(
-                              profileImageUrl: widget.user.profileImageUrl!,
-                              userDynamicLink: widget.user.dynamicLink!,
-                              bio: widget.user.bio!,
-                              userName: widget.user.userName!,
-                              userId: widget.user.userId!,
-                            ));
-                      },
-                      child: Hero(
-                          tag: widget.user.userId!,
-                          child: Icon(
-                            Icons.qr_code,
-                            color: Colors.blue,
-                            size:
-                                ResponsiveHelper.responsiveHeight(context, 30),
-                          )),
-                    ),
-                    const SizedBox(
-                      height: 50.0,
-                    ),
-                    _closeWidget(),
-                    const SizedBox(
-                      height: 50.0,
-                    ),
-                  ],
-                )),
-            _suggestionWidget(),
-            const SizedBox(
-              height: 10.0,
+    return ListView(children: [
+      Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(
+              Icons.close,
+              color: Colors.grey,
+              size: ResponsiveHelper.responsiveHeight(context, 30),
             ),
-            GestureDetector(
-              onTap: () {
-                _navigateToPage(
-                    context,
-                    CompainAnIssue(
-                      parentContentId: widget.user.userId!,
-                      authorId: widget.user.userId!,
-                      complainContentId: widget.user.userId!,
-                      complainType: 'Account',
-                      parentContentAuthorId: widget.user.userId!,
-                    ));
-              },
-              child: Text(
-                'Complain an issue.',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                ),
-                textAlign: TextAlign.start,
-              ),
-            ),
-            const SizedBox(height: 30),
-          ],
+          ),
         ),
       ),
-    );
+      // EditProfileScaffold(
+      //   title: 'Edit Profile',
+      //   action:
+
+      // _name == widget.user.name &&
+
+      _bio == widget.user.bio
+          ? SizedBox()
+          : _isLoading
+              ? Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20.0,
+                  ),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
+                      ),
+                      strokeWidth:
+                          ResponsiveHelper.responsiveFontSize(context, 2.0),
+                    ),
+                  ),
+                )
+              : Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0, bottom: 20),
+                    child: MiniCircularProgressButton(
+                        dontShowShadow: true,
+                        color: Colors.blue,
+                        text: 'Save',
+                        onPressed: () {}),
+                  ),
+                ),
+      Form(
+        key: _formKey,
+        child: Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Column(
+              children: [
+                // const SizedBox(
+                //   height: 20.0,
+                // ),
+                if (!widget.user.isShop!) _profileImageWidget(),
+                if (!widget.user.isShop!)
+                  const SizedBox(
+                    height: 40,
+                  ),
+                if (_user != null) _editPageOptionWidget(),
+                // const SizedBox(height: 40),
+                // GestureDetector(
+                //   onTap: () {
+                //     _navigateToPage(
+                //         context,
+                //         UserBarcode(
+                //           profileImageUrl: widget.user.profileImageUrl!,
+                //           userDynamicLink: widget.user.dynamicLink!,
+                //           bio: widget.user.bio!,
+                //           userName: widget.user.userName!,
+                //           userId: widget.user.userId!,
+                //         ));
+                //   },
+                //   child: Hero(
+                //       tag: widget.user.userId!,
+                //       child: Icon(
+                //         Icons.qr_code,
+                //         color: Colors.blue,
+                //         size:
+                //             ResponsiveHelper.responsiveHeight(context, 30),
+                //       )),
+                // ),
+                // const SizedBox(
+                //   height: 50.0,
+                // ),
+                // _closeWidget(),
+                const SizedBox(
+                  height: 50.0,
+                ),
+                _suggestionWidget(),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _navigateToPage(
+                        context,
+                        CompainAnIssue(
+                          parentContentId: widget.user.userId!,
+                          authorId: widget.user.userId!,
+                          complainContentId: widget.user.userId!,
+                          complainType: 'Account',
+                          parentContentAuthorId: widget.user.userId!,
+                        ));
+                  },
+                  child: Text(
+                    'Complain an issue.',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+                const SizedBox(height: 30),
+              ],
+            )),
+      ),
+    ]);
   }
 }

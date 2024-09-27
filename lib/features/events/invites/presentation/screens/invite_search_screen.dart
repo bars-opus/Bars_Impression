@@ -578,7 +578,9 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                     curve: Curves.easeOutBack,
                     child: CircularButton(
                         color: Colors.white,
-                        icon: Icon(Icons.send, color: widget.paletteColor),
+                        icon: Icons.send,
+
+                        // Icon(Icons.send, color: widget.paletteColor),
                         onPressed: () {
                           _confirmInvitation();
                         }),
@@ -600,12 +602,14 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                           curve: Curves.easeOutBack,
                           child: CircularButton(
                               color: widget.paletteColor,
-                              icon: Icon(
-                                Icons.send,
-                                color: Colors.white,
-                                size: ResponsiveHelper.responsiveHeight(
-                                    context, 25.0),
-                              ),
+                              icon: Icons.send,
+
+                              // Icon(
+                              //   Icons.send,
+                              //   color: Colors.white,
+                              //   size: ResponsiveHelper.responsiveHeight(
+                              //       context, 25.0),
+                              // ),
                               onPressed: () {
                                 _confirmInvitation();
                               }),

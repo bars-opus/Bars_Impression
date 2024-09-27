@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/utilities/image_handler.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -37,6 +38,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   final _tagNameController = TextEditingController();
   String _selectedNameToAdd = '';
   String _profileImage = '';
+
+  // File? _storeImage;
 
   final FocusNode _nameSearchfocusNode = FocusNode();
   final _roleController = TextEditingController();
@@ -78,22 +81,21 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     // List<PortfolioCompanyModel> companies = widget.user.company;
     // companies.forEach((company) => _provider.setCompanies(company));
 
-    // // Add user contact
-    // List<PortfolioContactModel> contacts = widget.user.contacts;
-    // contacts.forEach((contact) => _provider.setBookingContacts(contact));
+    // Add user contact
+    List<PortfolioContactModel> contacts = widget.user.contacts;
+    contacts.forEach((contact) => _provider.setBookingContacts(contact));
 
     // Add links to work
     List<PortfolioModel> links = widget.user.links;
     links.forEach((link) => _provider.setLinksToWork(link));
 
     // // Add performance
-    // List<PortfolioModel> performances = widget.user.performances;
-    // performances
-    //     .forEach((performance) => _provider.setPerformances(performance));
+    List<PortfolioModel> services = widget.user.services;
+    services.forEach((services) => _provider.setServices(services));
 
     // Add skills
-    List<PortfolioModel> skills = widget.user.skills;
-    skills.forEach((skill) => _provider.setSkills(skill));
+    // List<PortfolioModel> skills = widget.user.skills;
+    // skills.forEach((skill) => _provider.setSkills(skill));
 
     // Add genre tags
     // List<PortfolioModel> genreTags = widget.user.genreTags;
@@ -144,7 +146,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     // _provider.company.clear();
     _provider.bookingContacts.clear();
     _provider.linksToWork.clear();
-    _provider.performances.clear();
+    _provider.services.clear();
     _provider.skills.clear();
     _provider.genreTages.clear();
     _provider.collaborations.clear();
@@ -188,15 +190,18 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       );
 
       // adds ticket to ticket list
-      from.startsWith('Performance')
-          ? _provider.setPerformances(portfolio)
-          : from.startsWith('Award')
-              ? _provider.setAwards(portfolio)
-              : from.startsWith('Skills')
-                  ? _provider.setSkills(portfolio)
-                  : from.startsWith('Works')
-                      ? _provider.setLinksToWork(portfolio)
-                      : _provider.setPerformances(portfolio);
+      // from.startsWith('Performance')
+      //     ? _provider.setPerformances(portfolio)
+      //     :
+      from.startsWith('Award')
+          ? _provider.setAwards(portfolio)
+          : from.startsWith('Skills')
+              ? _provider.setSkills(portfolio)
+              : from.startsWith('Links')
+                  ? _provider.setLinksToWork(portfolio)
+                  : from.startsWith('Services')
+                      ? _provider.setServices(portfolio)
+                      : _provider.setServices(portfolio);
       _nameController.clear();
       _linkController.clear();
     }
@@ -306,7 +311,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             ? _selectedNameToAdd
             : _collaboratedPersonNameContrller.text.trim(),
         externalProfileLink: _collaboratedPersonLinkController.text.trim(),
-        internalProfileLink: _provider.artist,
+        internalProfileLink: _provider.Salon,
         role: _roleController.text,
         profileImageUrl: _profileImage,
       );
@@ -314,7 +319,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       // adds ticket to ticket list
       _provider.setCollaboratedPeople(portfolio);
 
-      // _provider.setArtist('');
+      // _provider.setSalon('');
       _selectedNameToAdd = '';
       _profileImage = '';
       _roleController.clear();
@@ -420,51 +425,85 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
       _provider.setProfessionalImages(professionalImageUrls);
 
+      UserStoreModel _userStore = UserStoreModel(
+          userId: _provider.userStore!.userId,
+          userName: _provider.name,
+          storeLogomageUrl: '',
+          storeType: _provider.storeType,
+          verified: _provider.userStore!.verified,
+          terms: _provider.termAndConditions,
+          city: _provider.city,
+          country: _provider.country,
+          overview: _provider.overview,
+          noBooking: _provider.noBooking,
+          awards: _provider.awards,
+          contacts: _provider.bookingContacts,
+          links: _provider.linksToWork,
+          priceTags: _provider.priceRate,
+          services: _provider.services,
+          professionalImageUrls: _provider.professionalImages,
+          dynamicLink: _provider.userStore!.dynamicLink,
+          randomId: _provider.userStore!.randomId,
+          currency: _provider.currency,
+          transferRecepientId: _provider.userStore!.transferRecepientId);
+
       try {
         await retry(() => userProfessionalRef.doc(widget.user.userId).update({
               'awards':
                   _provider.awards.map((awards) => awards.toJson()).toList(),
-              'collaborations': _provider.collaborations
-                  .map((collaborations) => collaborations.toJson())
-                  .toList(),
+              // 'collaborations': _provider.collaborations
+              //     .map((collaborations) => collaborations.toJson())
+              //     .toList(),
               // 'company':
               //     _provider.company.map((company) => company.toJson()).toList(),
               'contacts': _provider.bookingContacts
                   .map((bookingContacts) => bookingContacts.toJson())
                   .toList(),
-              'genreTags': [],
+              // 'genreTags': [],
               'links': _provider.linksToWork
                   .map((linksToWork) => linksToWork.toJson())
                   .toList(),
               'noBooking': false,
               'overview': _provider.overview,
-              'performances': _provider.performances
-                  .map((performances) => performances.toJson())
+              'services': _provider.services
+                  .map((services) => services.toJson())
                   .toList(),
               'priceTags': _provider.priceRate
                   .map((priceRate) => priceRate.toJson())
                   .toList(),
               'professionalImageUrls': _provider.professionalImages,
-              'skills':
-                  _provider.skills.map((skills) => skills.toJson()).toList(),
-              'subAccountType': [],
+              // 'skills':
+              //     _provider.skills.map((skills) => skills.toJson()).toList(),
+              // 'subAccountType': [],
               'terms': _provider.termAndConditions,
               'currency': _provider.currency,
             }));
+
+        await HiveUtils.updateUserLocation(
+          context,
+          _provider.userStore!.city,
+          _provider.userStore!.country,
+          _provider.userStore!.storeType,
+        );
+
+        _provider.setUserStore(_userStore);
+
         DocumentSnapshot doc =
             await userProfessionalRef.doc(widget.user.userId).get();
 
         // Assuming 'Event' is a class that can be constructed from a Firestore document
         UserStoreModel updatedUser = UserStoreModel.fromDoc(doc);
+        _provider.setUserStore(updatedUser);
         Navigator.pop(context);
-        _navigateToPage(
-          context,
-          DiscographyWidget(
-            currentUserId: widget.user.userId,
-            userIndex: 0,
-            userPortfolio: updatedUser,
-          ),
-        );
+        // Navigator.pop(context);
+        // _navigateToPage(
+        //   context,
+        //   DiscographyWidget(
+        //     currentUserId: widget.user.userId,
+        //     userIndex: 0,
+        //     userPortfolio: updatedUser,
+        //   ),
+        // );
         mySnackBar(context, 'Saved successfully.');
       } catch (e) {
         _showBottomSheetErrorMessage('', e);
@@ -1460,7 +1499,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
         onPressed: () {
-          _provider.setArtist(user.userId!);
+          _provider.setSalon(user.userId!);
 
           if (mounted) {
             setState(() {
@@ -1986,12 +2025,12 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           edit: true,
         );
         break;
-      case 'works':
-        _onPressed = () =>
-            _showBottomTaggedPeopleRole(label, label, _provider.performances);
-        _widget = PortfolioWidget(
-            portfolios: _provider.performances, seeMore: false, edit: true);
-        break;
+      // case 'Links':
+      //   _onPressed = () =>
+      //       _showBottomTaggedPeopleRole(label, label, _provider.linksToWork);
+      //   _widget = PortfolioWidget(
+      //       portfolios: _provider.linksToWork, seeMore: false, edit: true);
+      //   break;
       // case 'companies':
       //   _onPressed = () => _showBottomCompany(_provider.company);
       //   _widget = PortfolioCompanyWidget(
@@ -2004,10 +2043,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             PortfolioWidget(portfolios: portfolios, seeMore: false, edit: true);
         break;
       default:
-        _onPressed = () =>
-            _showBottomTaggedPeopleRole(label, label, _provider.performances);
+        _onPressed =
+            () => _showBottomTaggedPeopleRole(label, label, _provider.services);
         _widget = PortfolioWidget(
-            portfolios: _provider.performances, seeMore: false, edit: true);
+            portfolios: _provider.services, seeMore: false, edit: true);
     }
 
     return Column(
@@ -2087,18 +2126,101 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     );
   }
 
+  var _divider = Divider(
+    thickness: .2,
+    color: Colors.grey,
+  );
+
+  _handleImageFromGallery() {
+    ImageHandler.handleImageFromGallery(context
+        // Submit the image file
+        // _submitProfileImage(file);
+        );
+  }
+
+  _profileImageWidget() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+    var _provider2 = Provider.of<UserData>(context, listen: false);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _provider.isLoading || _provider.isLoading2
+            ? SchimmerSkeleton(
+                schimmerWidget: CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  radius: ResponsiveHelper.responsiveHeight(context, 50.0),
+                  backgroundImage: ImageHandler.displayProfileImage(
+                    _provider2.userStore!.storeLogomageUrl,
+                    _provider.profileImage,
+                  ),
+                ),
+              )
+            : Hero(
+                tag: 'container1' + widget.user.userId.toString(),
+                child: GestureDetector(
+                  onTap: _handleImageFromGallery,
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColorLight,
+                    radius: ResponsiveHelper.responsiveHeight(context, 50.0),
+                    backgroundImage: ImageHandler.displayProfileImage(
+                      _provider2.userStore!.storeLogomageUrl,
+                      _provider.profileImage,
+                    ),
+                  ),
+                ),
+              ),
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.transparent,
+            side: BorderSide(width: 1.0, color: Colors.transparent),
+          ),
+          onPressed: _handleImageFromGallery,
+          child: Text(
+            'Set shop logo',
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 30.0,
+        ),
+        // Divider(
+        //   thickness: .2,
+        //   color: Colors.grey,
+        // ),
+        // Column(
+        //   children: [
+        //     // _changeUserNameField(),
+        //     _stageNameAndBioFields(),
+        //   ],
+        // ),
+        // _stageNameAndBioFields(),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(
       context,
     );
 
+    final UserSettingsLoadingPreferenceModel _userLocation =
+        _provider.userLocationPreference!;
+
     bool _imageFileNull = _provider.professionalImageFile1 != null &&
         _provider.professionalImageFile2 != null &&
         _provider.professionalImageFile3 != null;
     bool imageUrlIsEmpty = _provider.professionalImages.isEmpty;
     bool _portfolioIsEmpty =
-        _provider.skills.isEmpty || _provider.linksToWork.isEmpty;
+        // _provider.skills.isEmpty ||
+        _provider.linksToWork.isEmpty;
+
     return EditProfileScaffold(
       title: '',
       widget: Form(
@@ -2107,14 +2229,85 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              EditProfileInfo(
-                editTitle: 'Booking\nportfolio',
-                info:
-                    'Provide your professional information to facilitate easy connections and recommendations from other users. Make sure to carefully read the instructions under each text field before filling out the forms.',
-                icon: Icons.work,
+              // EditProfileInfo(
+              //   editTitle: 'Booking\nportfolio',
+              //   info:
+              //       'Provide your professional information to facilitate easy connections and recommendations from other users. Make sure to carefully read the instructions under each text field before filling out the forms.',
+              //   icon: Icons.work,
+              // ),
+
+              _profileImageWidget(),
+              const SizedBox(
+                height: 30,
               ),
+              _divider,
+              IntroInfo(
+                leadingIcon: Icons.person_outline,
+                titleColor: Theme.of(context).secondaryHeaderColor,
+                title: 'Account Type',
+                onPressed: () {
+                  _navigateToPage(
+                    context,
+                    EditstoreType(
+                      user: _provider.user!,
+                    ),
+                  );
+                },
+                subTitle: "",
+                icon: Icons.arrow_forward_ios_outlined,
+              ),
+              _divider,
+              IntroInfo(
+                leadingIcon: Icons.location_on_outlined,
+                titleColor: Theme.of(context).secondaryHeaderColor,
+                title: 'Change location',
+                onPressed: () {
+                  _navigateToPage(
+                    context,
+                    EditProfileSelectLocation(
+                      user: _userLocation,
+                    ),
+                  );
+                },
+                subTitle: "",
+                icon: Icons.arrow_forward_ios_outlined,
+              ),
+              _divider,
+              IntroInfo(
+                leadingIcon: Icons.location_on_outlined,
+                titleColor: Theme.of(context).secondaryHeaderColor,
+                title: 'Add Currency',
+                onPressed: () {
+                  // Navigator.pop(context);
+                  _showCurrencyPicker();
+                },
+                subTitle: "",
+                icon: Icons.arrow_forward_ios_outlined,
+              ),
+              //  PickOptionWidget(
+              //   title: 'Add Currency',
+              //   onPressed: () {
+              //     _showCurrencyPicker();
+              //   },
+              //   dropDown: false,
+              // ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              // if (_provider.currency.isNotEmpty)
+              //   Padding(
+              //     padding: const EdgeInsets.only(left: 50.0),
+              //     child: Align(
+              //       alignment: Alignment.topLeft,
+              //       child: Text(
+              //         _provider.currency,
+              //         style: Theme.of(context).textTheme.bodySmall,
+              //       ),
+              //     ),
+              //   ),
+              _divider,
               const SizedBox(
                 height: 30,
               ),
@@ -2143,68 +2336,56 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               //     'companies',
               //     [],
               //     _provider.company.length),
+              // _addPotfolio(
+              //     'Skills',
+              //     'Please list your skills in your field of work, whether it\'s as a musician, producer, video director, or any other relevant account type. Skills can include dancing, singing, and any other relevant abilities.',
+              //     'portfolio',
+              //     _provider.skills,
+              //     _provider.skills.length),
+              // SizedBox(
+              //   height: 10,
+              // ),
               _addPotfolio(
-                  'Skills',
-                  'Please list your skills in your field of work, whether it\'s as a musician, producer, video director, or any other relevant account type. Skills can include dancing, singing, and any other relevant abilities.',
+                  'Services',
+                  'Please provide up to six of your best services. These can include music services, dance services, art exhibitions, or any other noteworthy showcases relevant to your creative field.',
                   'portfolio',
-                  _provider.skills,
-                  _provider.skills.length),
-              SizedBox(
-                height: 10,
-              ),
-              _addPotfolio(
-                  'Performances',
-                  'Please provide up to six of your best performances. These can include music performances, dance performances, art exhibitions, or any other noteworthy showcases relevant to your creative field.',
-                  'portfolio',
-                  _provider.performances,
-                  _provider.performances.length),
+                  _provider.services,
+                  _provider.services.length),
               _addPotfolio(
                   'Awards',
                   'Please provide up to six of the most prestigious awards you have won in your creative field. These can include any notable accolades or recognitions you have received for your work.',
                   'portfolio',
                   _provider.awards,
                   _provider.awards.length),
-              _addPotfolio(
-                  'Works',
-                  'Showcase your work and allow others to see the visual representation of your artistic creations. This will provide an opportunity for people to gain a better understanding of the quality and style of your work.',
-                  'portfolio',
-                  _provider.linksToWork,
-                  _provider.linksToWork.length),
-              _addPotfolio(
-                  'Collaborations',
-                  'Please provide up to six examples of your best collaborations. These can include notable projects or partnerships where you have worked alongside other talented individuals or organizations.',
-                  'collaborations',
-                  [],
-                  _provider.collaborations.length),
+
+              // _addPotfolio(
+              //     'Collaborations',
+              //     'Please provide up to six examples of your best collaborations. These can include notable projects or partnerships where you have worked alongside other talented individuals or organizations.',
+              //     'collaborations',
+              //     [],
+              //     _provider.collaborations.length),
               _addPotfolio(
                   'Contacts',
                   'Please provide up to four contacts for your management team. These contact details will allow individuals to reach out and book you for collaborations and business opportunities.',
                   'contacts',
                   [],
                   _provider.bookingContacts.length),
-              PickOptionWidget(
-                title: 'Add Currency',
-                onPressed: () {
-                  _showCurrencyPicker();
-                },
-                dropDown: false,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                _provider.currency,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(
-                height: 30,
-              ),
+
+              // const SizedBox(
+              //   height: 30,
+              // ),
               _addPotfolio(
                   'Prices',
-                  'Please provide your price list and rates for collaborations, exhibitions, and performances. This will allow potential clients and collaborators to have a clear understanding of your pricing structure and make informed decisions when considering working with you.',
+                  'Please provide your price list and rates for collaborations, exhibitions, and services. This will allow potential clients and collaborators to have a clear understanding of your pricing structure and make informed decisions when considering working with you.',
                   'price',
                   [],
                   _provider.priceRate.length),
+              _addPotfolio(
+                  'Links',
+                  'Showcase your work and allow others to see the visual representation of your Salonic creations. This will provide an opportunity for people to gain a better understanding of the quality and style of your work.',
+                  'portfolio',
+                  _provider.linksToWork,
+                  _provider.linksToWork.length),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

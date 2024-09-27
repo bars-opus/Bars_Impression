@@ -9,9 +9,9 @@ class DiscoverCategoryWidget extends StatefulWidget {
   final List<DocumentSnapshot> postsSnapshot;
   final String locationCategory; //city, country, continent
   final String type; //event type or storeType type
-  final String typeSpecific; // artist, producer or festivals, others
+  final String typeSpecific; // Salon, producer or festivals, others
   final int pageIndex; //
-  final String currentUserId; // artist, producer or festivals, others
+  final String currentUserId; // Salon, producer or festivals, others
   final VoidCallback loadMoreSeeAll;
   final String isFrom;
   final int sortNumberOfDays;
@@ -54,28 +54,28 @@ class _DiscoverCategoryWidgetState extends State<DiscoverCategoryWidget> {
     }
   }
 
-  _sliverListEvent() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          Event event = widget.eventsList[index];
-          return EventDisplayWidget(
-            currentUserId: widget.currentUserId,
-            event: event,
-            eventList: widget.eventsList,
-            eventSnapshot: widget.eventsSnapshot,
-            pageIndex: widget.pageIndex,
-            eventPagesOnly: false,
-            liveCity: '',
-            liveCountry: '',
-            isFrom: widget.isFrom,
-            sortNumberOfDays: widget.sortNumberOfDays,
-          );
-        },
-        childCount: widget.eventsList.length,
-      ),
-    );
-  }
+  // _sliverListEvent() {
+  //   return SliverList(
+  //     delegate: SliverChildBuilderDelegate(
+  //       (context, index) {
+  //         Post post = widget.eventsList[index];
+  //         return EventDisplayWidget(
+  //           currentUserId: widget.currentUserId,
+  //           post: event,
+  //           eventList: widget.eventsList,
+  //           eventSnapshot: widget.eventsSnapshot,
+  //           pageIndex: widget.pageIndex,
+  //           eventPagesOnly: false,
+  //           liveCity: '',
+  //           liveCountry: '',
+  //           isFrom: widget.isFrom,
+  //           sortNumberOfDays: widget.sortNumberOfDays,
+  //         );
+  //       },
+  //       childCount: widget.eventsList.length,
+  //     ),
+  //   );
+  // }
 
   _sliverListUser() {
     return SliverList(
@@ -107,20 +107,26 @@ class _DiscoverCategoryWidgetState extends State<DiscoverCategoryWidget> {
             borderRadius: BorderRadius.circular(10)),
         child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: widget.type.startsWith('User')
-                ? CustomScrollView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    slivers: [_sliverListUser()],
-                  )
-                : widget.type.startsWith('Following')
-                    ? CustomScrollView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        slivers: [_sliverListEvent()],
-                      )
-                    : CustomScrollView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        slivers: [_sliverListEvent()],
-                      )),
+            child: CustomScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              slivers: [_sliverListUser()],
+            )
+            // widget.type.startsWith('User')
+            //     ? CustomScrollView(
+            //         physics: const NeverScrollableScrollPhysics(),
+            //         slivers: [_sliverListUser()],
+            //       )
+            //     : widget.type.startsWith('Following')
+            //         ? CustomScrollView(
+            //             physics: const NeverScrollableScrollPhysics(),
+            //             slivers: [_sliverListEvent()],
+            //           )
+            //         : CustomScrollView(
+            //             physics: const NeverScrollableScrollPhysics(),
+            //             slivers: [_sliverListEvent()],
+            //           )
+
+            ),
       ),
     );
   }

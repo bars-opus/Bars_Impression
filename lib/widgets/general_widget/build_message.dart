@@ -366,20 +366,22 @@ class _SlidableMessageState extends State<SlidableMessage>
                   color: textColor,
                 ),
               ),
-              onTap: message.sendContent!.type.startsWith('Event')
+              onTap: 
+              
+              message.sendContent!.type.startsWith('Post')
                   ? () async {
                       _isLoading = true;
                       try {
-                        Event? event = await DatabaseService.getEventWithId(
+                        Post? post = await DatabaseService.getPostWithId(
                             message.sendContent!.id);
 
-                        if (event != null) {
+                        if (post != null) {
                           _navigateToPage(
                               context,
                               EventEnlargedScreen(
                                 currentUserId: widget.currentUserId,
-                                event: event,
-                                type: event.type,
+                                post: post,
+                                type: post.storeType,
                                 showPrivateEvent: true,
                               ));
                         } else {

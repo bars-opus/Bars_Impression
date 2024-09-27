@@ -2,8 +2,8 @@ import 'package:bars/utilities/exports.dart';
 
 class OnCalendarEventList extends StatelessWidget {
   final List<Event> events;
- final List<Event> eventList;
- final List<DocumentSnapshot> eventSnapshot;
+  final List<Event> eventList;
+  final List<DocumentSnapshot> eventSnapshot;
   final String currentUserId;
 
   OnCalendarEventList({
@@ -21,23 +21,24 @@ class OnCalendarEventList extends StatelessWidget {
     return Container(
       height: height.toDouble(),
       width: width.toDouble(),
-     
       child: ListView.builder(
         itemCount: events.length,
         itemBuilder: (BuildContext context, int index) {
           Event event = events[index];
-          return EventDisplayWidget(
-            currentUserId: currentUserId,
-            event: event,
-            eventList: eventList,
-            pageIndex: 0,
-            eventSnapshot: eventSnapshot,
-            eventPagesOnly: true,
-            liveCity: '',
-            liveCountry: '',
-            sortNumberOfDays: 0,
-            isFrom: '',
-          );
+          return SizedBox.shrink();
+
+          // EventDisplayWidget(
+          //   currentUserId: currentUserId,
+          //   event: event,
+          //   eventList: eventList,
+          //   pageIndex: 0,
+          //   eventSnapshot: eventSnapshot,
+          //   eventPagesOnly: true,
+          //   liveCity: '',
+          //   liveCountry: '',
+          //   sortNumberOfDays: 0,
+          //   isFrom: '',
+          // );
         },
       ),
     );

@@ -11,7 +11,7 @@ class DisplayCreateImage extends StatelessWidget {
     var _provider = Provider.of<UserData>(
       context,
     );
-    File? _imgeFile = isEvent ? _provider.eventImage : _provider.postImage;
+    File? _imgeFile = isEvent ? _provider.profileImage : _provider.postImage;
     if (_provider.imageUrl.isNotEmpty) {
       return Container(
           height: double.infinity,

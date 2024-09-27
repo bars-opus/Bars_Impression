@@ -204,7 +204,7 @@ class _UserBottomModalSheetActionsState
                               Provider.of<UserData>(context, listen: false)
                                   .currentUserId!,
                           sendContentType: 'User',
-                          sendImageUrl: widget.user.profileImageUrl,
+                          sendImageUrl: widget.user.storeLogomageUrl,
                           sendTitle: widget.user.userName,
                         ));
                   },
@@ -292,7 +292,7 @@ class _UserBottomModalSheetActionsState
                           bio: widget.user.overview,
                           userName: widget.user.userName,
                           userId: widget.user.userId,
-                          profileImageUrl: widget.user.profileImageUrl,
+                          profileImageUrl: widget.user.storeLogomageUrl,
                         ));
                   },
                   Icons.qr_code,

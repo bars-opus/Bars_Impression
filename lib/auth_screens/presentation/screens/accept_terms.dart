@@ -52,6 +52,33 @@ class _AcceptTermsState extends State<AcceptTerms>
     });
   }
 
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveFontSize(context, 400),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: LoginScreenOptions(
+                from: 'Register',
+              ),
+
+            
+            ),
+          );
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -60,7 +87,7 @@ class _AcceptTermsState extends State<AcceptTerms>
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
-            backgroundColor: Color(0xFF1a1a1a),
+            backgroundColor: Colors.blue[900],
             body: SingleChildScrollView(
               child: Container(
                 width: width,
@@ -83,7 +110,7 @@ class _AcceptTermsState extends State<AcceptTerms>
                                 'Terms of Use.',
                                 style: TextStyle(
                                   fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 40.0),
+                                      context, 30.0),
                                   color: Colors.white,
                                 ),
                               ),
@@ -118,20 +145,20 @@ class _AcceptTermsState extends State<AcceptTerms>
                                       children: [
                                         TextSpan(
                                             text:
-                                                'These Terms of Use govern your use of Bars Impression and provide information about the Bars Impression Service, outlined below. When you create a Bars Impression account or use Bars Impression, you agree to these terms. The Bars Impression Service is a product of Bars Opus, Ltd. These Terms of Use, therefore, constitute an agreement between you and Bars Opus, Ltd. By using or accessing Bars Impression Services, you agree to these Terms, as updated from time to time in accordance with Section 11 below. Bars Impression provides a wide range of services as part of the Bars Impression Services. We may ask you to review and accept supplemental terms that apply to your interaction with a service. To the extent those supplemental terms conflict with these Terms, the supplemental terms associated with the app, product, or service shall govern your use of such service...',
+                                                'These Terms of Use govern your use of Bars Impression and provide information about the Bars Impression Service, outlined below. When you create a Bars Impression account or use Bars Impression, you agree to these terms. The Bars Impression Service is a product of Bars Opus, Ltd. These Terms of Use, therefore, constitute an agreement between you and Bars Opus, Ltd. By using or accessing Bars Impression Services, you agree to these Terms, as updated from time to time in accordance with Section 11 below. Bars Impression provides a wide range of services as part of the Bars Impression Services. We may ask you to review and accept supplemental terms that apply to your interaction with a service...',
                                             style: TextStyle(
                                               fontSize: ResponsiveHelper
                                                   .responsiveFontSize(
                                                       context, 14.0),
-                                              color: Colors.grey[400],
+                                              color: Colors.white,
                                             )),
                                         TextSpan(
-                                          text: 'more.',
+                                          text: ' more.',
                                           style: TextStyle(
                                             fontSize: ResponsiveHelper
                                                 .responsiveFontSize(
                                                     context, 14.0),
-                                            color: Colors.blueGrey,
+                                            color: Colors.teal[200],
                                           ),
                                         ),
                                       ],
@@ -151,13 +178,14 @@ class _AcceptTermsState extends State<AcceptTerms>
                                   textColor: Colors.black,
                                   buttonText: 'Accept',
                                   onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => LoginScreenOptions(
-                                            from: 'Register',
-                                          ),
-                                        ));
+                                    _showBottomSheet();
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //       builder: (_) => LoginScreenOptions(
+                                    //         from: 'Register',
+                                    //       ),
+                                    //     ));
                                   },
                                   buttonColor: Colors.white,
                                 ),
@@ -170,11 +198,11 @@ class _AcceptTermsState extends State<AcceptTerms>
                             ),
                             GestureDetector(
                               onTap: () async {
-              if (!await launchUrl(Uri.parse('https://www.barsopus.com/privacy'))) {
-                throw 'Could not launch link';
-              }
-                                
-                                
+                                if (!await launchUrl(Uri.parse(
+                                    'https://www.barsopus.com/privacy'))) {
+                                  throw 'Could not launch link';
+                                }
+
                                 // Navigator.push(
                                 //     context,
                                 //     MaterialPageRoute(
@@ -187,7 +215,7 @@ class _AcceptTermsState extends State<AcceptTerms>
                               child: Text(
                                 'Privacy',
                                 style: TextStyle(
-                                  color: Colors.blueGrey,
+                                  color: Colors.white,
                                   fontSize: ResponsiveHelper.responsiveFontSize(
                                       context, 14.0),
                                 ),

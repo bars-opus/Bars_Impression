@@ -293,8 +293,8 @@ $preparedData
           _buildGreetingText(context, provider),
           _sizedBox,
           _buildUpdateInfo(),
-          const SizedBox(height: 2),
-          _buildAffiliateNote(),
+          // const SizedBox(height: 2),
+          // _buildAffiliateNote(),
           _sizedBox,
           _notificationCount(),
           ActivitySummaryWidget(activities: _activities),
@@ -347,14 +347,14 @@ $preparedData
     );
   }
 
-// Builds the affiliate note widget
-  Widget _buildAffiliateNote() {
-    return MiniAffiliateNote(
-      updateNote: 'Congratulations, you have one or more affiliate deals.',
-      showinfo: widget.showAffiliateNote,
-      displayMiniUpdate: widget.updateApp.displayMiniUpdate!,
-    );
-  }
+// // Builds the affiliate note widget
+//   Widget _buildAffiliateNote() {
+//     return MiniAffiliateNote(
+//       updateNote: 'Congratulations, you have one or more affiliate deals.',
+//       showinfo: widget.showAffiliateNote,
+//       displayMiniUpdate: widget.updateApp.displayMiniUpdate!,
+//     );
+//   }
 
 // Displays the analysis text using Markdown
   Widget _buildAnalysisText(BuildContext context, String analysisText) {

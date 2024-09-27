@@ -94,39 +94,39 @@ class _ChatsState extends State<Chats>
   bool get wantKeepAlive => true;
   final _physycsNotifier = ValueNotifier<bool>(false);
 
-  void _showModalBottomSheetAdd(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return CreateContent();
-      },
-    );
-  }
+  // void _showModalBottomSheetAdd(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Colors.transparent,
+  //     isScrollControlled: true,
+  //     builder: (BuildContext context) {
+  //       return CreateContent();
+  //     },
+  //   );
+  // }
 
-  _addContentWidget() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 2.0, 2.0, 2.0),
-      child: GestureDetector(
-        onTap: () {
-          _showModalBottomSheetAdd(
-            context,
-          );
-        },
-        child: Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(shape: BoxShape.circle),
-          child: Icon(
-            size: ResponsiveHelper.responsiveHeight(context, 25),
-            Icons.add,
-            color: Theme.of(context).secondaryHeaderColor,
-          ),
-        ),
-      ),
-    );
-  }
+  // _addContentWidget() {
+  //   return Padding(
+  //     padding: const EdgeInsets.fromLTRB(0.0, 2.0, 2.0, 2.0),
+  //     child: GestureDetector(
+  //       onTap: () {
+  //         _showModalBottomSheetAdd(
+  //           context,
+  //         );
+  //       },
+  //       child: Container(
+  //         height: 50,
+  //         width: 50,
+  //         decoration: BoxDecoration(shape: BoxShape.circle),
+  //         child: Icon(
+  //           size: ResponsiveHelper.responsiveHeight(context, 25),
+  //           Icons.add,
+  //           color: Theme.of(context).secondaryHeaderColor,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
@@ -200,15 +200,16 @@ class _ChatsState extends State<Chats>
                           ResponsiveHelper.responsiveFontSize(context, 30.0),
                       fontWeight: FontWeight.bold)),
             ),
-            Container(
-              width: 120,
-              child: Row(
-                children: [
-                  _addContentWidget(),
-                  _notificationWidget(),
-                ],
-              ),
-            ),
+            _notificationWidget(),
+            // Container(
+            //   width: 120,
+            //   child: Row(
+            //     children: [
+            //       // _addContentWidget(),
+            //       _notificationWidget(),
+            //     ],
+            //   ),
+            // ),
           ],
         ));
   }

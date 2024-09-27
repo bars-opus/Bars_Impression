@@ -165,7 +165,7 @@ class _RequestWidgetState extends State<RequestWidget> {
                             context,
                             DiscographyWidget(
                               currentUserId: _currentUserId!,
-                              userIndex: 0,
+                              // userIndex: 0,
                               userPortfolio: _user,
                             ),
                           );

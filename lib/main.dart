@@ -34,7 +34,9 @@ Future<void> main() async {
   Hive.registerAdapter(UserSettingsLoadingPreferenceModelAdapter());
   Hive.registerAdapter(UserStoreModelAdapter());
   Hive.registerAdapter(PortfolioModelAdapter());
-  // Hive.registerAdapter(PriceModelAdapter());
+  Hive.registerAdapter(PriceModelAdapter());
+    Hive.registerAdapter(PortfolioContactModelAdapter());
+
 
   await Hive.openBox<ChatMessage>('chatMessages');
   await Hive.openBox<Chat>('chats');
@@ -42,7 +44,6 @@ Future<void> main() async {
   await Hive.openBox<TicketIdModel>('ticketIds');
   await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
   await Hive.openBox<AccountHolderAuthor>('currentUser');
-  await Hive.openBox<UserStoreModel>('accountUserStore');
   await Hive.openBox<UserStoreModel>('accountUserStore');
 
   await Hive.openBox<UserSettingsLoadingPreferenceModel>(

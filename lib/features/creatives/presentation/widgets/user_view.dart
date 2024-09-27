@@ -106,7 +106,7 @@ class _UserViewState extends State<UserView> {
             currentUserId: widget.currentUserId,
             sendContentType: 'User',
             sendContentId: widget.userProfessional.userId,
-            sendImageUrl: widget.userProfessional.profileImageUrl,
+            sendImageUrl: widget.userProfessional.storeLogomageUrl,
             sendTitle: widget.userProfessional.userName,
           ),
         );
@@ -139,9 +139,12 @@ class _UserViewState extends State<UserView> {
                       )));
         },
         child: Container(
+          margin: EdgeInsets.all(10),
+          padding: EdgeInsets.all(10),
+          height: ResponsiveHelper.responsiveHeight(context, 300),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Theme.of(context).primaryColorLight,
+            borderRadius: BorderRadius.circular(20),
+            color: Theme.of(context).cardColor,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
@@ -149,7 +152,7 @@ class _UserViewState extends State<UserView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                widget.userProfessional.profileImageUrl.isEmpty
+                widget.userProfessional.storeLogomageUrl.isEmpty
                     ? const Icon(
                         Icons.account_circle,
                         size: 50.0,
@@ -159,7 +162,7 @@ class _UserViewState extends State<UserView> {
                         radius: 25.0,
                         backgroundColor: Colors.blue,
                         backgroundImage: CachedNetworkImageProvider(
-                            widget.userProfessional.profileImageUrl,
+                            widget.userProfessional.storeLogomageUrl,
                             errorListener: (_) {
                           return;
                         }),
@@ -185,21 +188,21 @@ class _UserViewState extends State<UserView> {
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      RichText(
-                        textScaler: MediaQuery.of(context).textScaler,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(text: "Skills: ", style: textStyle),
-                            TextSpan(
-                              text: widget.userProfessional.skills
-                                  .map((skills) => skills.name)
-                                  .join(', '),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            )
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      // RichText(
+                      //   textScaler: MediaQuery.of(context).textScaler,
+                      //   text: TextSpan(
+                      //     children: [
+                      //       TextSpan(text: "Skills: ", style: textStyle),
+                      //       TextSpan(
+                      //         text: widget.userProfessional.skills
+                      //             .map((skills) => skills.name)
+                      //             .join(', '),
+                      //         style: Theme.of(context).textTheme.bodySmall,
+                      //       )
+                      //     ],
+                      //   ),
+                      //   overflow: TextOverflow.ellipsis,
+                      // ),
                       // RichText(
                       //   textScaler: MediaQuery.of(context).textScaler,
                       //   text: TextSpan(

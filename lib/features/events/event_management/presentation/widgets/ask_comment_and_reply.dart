@@ -1,17 +1,18 @@
 import 'package:bars/utilities/exports.dart';
 
 class DisplayAskAndReply extends StatefulWidget {
-  final Event event;
-  final Ask ask;
+  final Post post;
+  final CommentModel comment;
 
-  const DisplayAskAndReply({super.key, required this.event, required this.ask});
+  const DisplayAskAndReply(
+      {super.key, required this.post, required this.comment});
 
   @override
   State<DisplayAskAndReply> createState() => _DisplayAskAndReplyState();
 }
 
 class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
-  late Future<List<Ask>> _repliesFuture;
+  late Future<List<CommentModel>> _repliesFuture;
   final TextEditingController _commentController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   String _editedComment = '';
@@ -39,48 +40,48 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
     }
   }
 
-  Future<List<Ask>> _initData() async {
-    final QuerySnapshot querySnapshot = await asksRef
-        .doc(widget.event.id)
-        .collection('eventAsks')
-        .doc(widget.ask.id)
+  Future<List<CommentModel>> _initData() async {
+    final QuerySnapshot querySnapshot = await commentsRef
+        .doc(widget.post.id)
+        .collection('comments')
+        .doc(widget.comment.id)
         .collection('replies')
         .limit(3)
         .orderBy('timestamp', descending: true)
         .get();
-    return querySnapshot.docs.map((doc) => Ask.fromDoc(doc)).toList();
+    return querySnapshot.docs.map((doc) => CommentModel.fromDoc(doc)).toList();
   }
 
   _flushbar() {
     return mySnackBar(context, ' successful');
   }
 
-  _deleteComment(Ask? reply) async {
+  _deleteComment(CommentModel? reply) async {
     final _provider = Provider.of<UserData>(context, listen: false);
     HapticFeedback.heavyImpact();
     reply == null
-        ? DatabaseService.deleteAsks(
+        ? DatabaseService.deleteComments(
             currentUserId: _provider.currentUserId!,
-            ask: widget.ask,
-            event: widget.event)
-        : DatabaseService.deleteAskReply(
-            event: widget.event, askId: widget.ask.id, replyId: reply.id);
+            comment: widget.comment,
+            post: widget.post)
+        : DatabaseService.deleteCommentReply(
+            post: widget.post, askId: widget.comment.id, replyId: reply.id);
     Navigator.pop(context);
     Navigator.pop(context);
   }
 
-  _editCommentMethod(Ask? reply) {
+  _editCommentMethod(CommentModel? reply) {
     reply == null
         ? DatabaseService.editAsks(
-            widget.ask.id,
+            widget.comment.id,
             _editedComment,
-            widget.event,
+            widget.post,
           )
-        : DatabaseService.editAsksReply(
-            widget.ask.id,
+        : DatabaseService.editCommentReply(
+            widget.comment.id,
             reply.id,
             _editedComment,
-            widget.event,
+            widget.post,
           );
     _commentController.clear();
     Navigator.pop(context);
@@ -102,21 +103,21 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
             onSend: () {
               HapticFeedback.mediumImpact();
               if (_commentController.text.trim().isNotEmpty) {
-                DatabaseService.addAskReply(
-                  event: widget.event,
-                  ask: _commentController.text,
+                DatabaseService.addCommentReply(
+                  post: widget.post,
+                  comment: _commentController.text,
                   user: _provider.user!,
-                  askId: widget.ask.id,
+                  askId: widget.comment.id,
                 );
                 _commentController.clear();
               }
             },
-            hintText: 'reply to ${widget.ask.content}',
+            hintText: 'reply to ${widget.comment.content}',
           );
         });
   }
 
-  void _showBottomSheetEditComment(Ask ask, Ask? reply) {
+  void _showBottomSheetEditComment(CommentModel ask, CommentModel? reply) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -144,7 +145,7 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
   }
 
   void _showBottomSheetSeeAllReplies(bool autoFocus) {
-    bool isPostAuthor = widget.event.authorId == widget.ask.authorId;
+    bool isPostAuthor = widget.post.authorId == widget.comment.authorId;
 
     showModalBottomSheet(
       context: context,
@@ -171,14 +172,14 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                     Authorview(
                       isreplyWidget: true,
                       showReply: false,
-                      report: widget.ask.report,
-                      content: widget.ask.content,
-                      timestamp: widget.ask.timestamp,
-                      authorId: widget.ask.authorId,
-                      storeType: widget.ask.authorstoreType,
-                      profileImageUrl: widget.ask.authorProfileImageUrl,
-                      verified: widget.ask.authorVerification,
-                      userName: widget.ask.authorName,
+                      report: widget.comment.report,
+                      content: widget.comment.content,
+                      timestamp: widget.comment.timestamp,
+                      authorId: widget.comment.authorId,
+                      storeType: widget.comment.authorstoreType,
+                      profileImageUrl: widget.comment.authorProfileImageUrl,
+                      verified: widget.comment.authorVerification,
+                      userName: widget.comment.authorName,
                       from: 'Comment',
                       onPressedReport: () {},
                       onPressedReply: () {},
@@ -190,10 +191,10 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                       thickness: 1,
                     ),
                     StreamBuilder(
-                      stream: asksRef
-                          .doc(widget.event.id)
-                          .collection('eventAsks')
-                          .doc(widget.ask.id)
+                      stream: commentsRef
+                          .doc(widget.post.id)
+                          .collection('comments')
+                          .doc(widget.comment.id)
                           .collection('replies')
                           .orderBy('timestamp', descending: true)
                           .snapshots(),
@@ -215,8 +216,8 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                             SliverList(
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) {
-                                  Ask reply =
-                                      Ask.fromDoc(snapshot.data.docs[index]);
+                                  CommentModel reply = CommentModel.fromDoc(
+                                      snapshot.data.docs[index]);
                                   return Padding(
                                     padding: const EdgeInsets.only(left: 30.0),
                                     child: _replyWidget(reply),
@@ -255,10 +256,10 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
-    bool isAuthor = _provider.currentUserId == widget.ask.authorId;
-    bool isPostAuthor = widget.event.authorId == widget.ask.authorId;
+    bool isAuthor = _provider.currentUserId == widget.comment.authorId;
+    bool isPostAuthor = widget.post.authorId == widget.comment.authorId;
 
-    return FutureBuilder<List<Ask>>(
+    return FutureBuilder<List<CommentModel>>(
       future: _repliesFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -286,26 +287,26 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                   showSeeAllReplies: replies.length < 4 ? false : true,
                   isPostAuthor: isPostAuthor,
                   replyCount: replies.length,
-                  report: widget.ask.report,
-                  content: widget.ask.content,
-                  timestamp: widget.ask.timestamp,
-                  authorId: widget.ask.authorId,
-                  storeType: widget.ask.authorstoreType,
-                  profileImageUrl: widget.ask.authorProfileImageUrl,
-                  verified: widget.ask.authorVerification,
-                  userName: widget.ask.authorName,
+                  report: widget.comment.report,
+                  content: widget.comment.content,
+                  timestamp: widget.comment.timestamp,
+                  authorId: widget.comment.authorId,
+                  storeType: widget.comment.authorstoreType,
+                  profileImageUrl: widget.comment.authorProfileImageUrl,
+                  verified: widget.comment.authorVerification,
+                  userName: widget.comment.authorName,
                   from: 'Comment',
                   onPressedReport: isAuthor
                       ? () {
-                          _showBottomSheetEditComment(widget.ask, null);
+                          _showBottomSheetEditComment(widget.comment, null);
                         }
                       : () {
                           _navigateToPage(
                             context,
                             ReportContentPage(
-                              parentContentId: widget.event.id,
-                              repotedAuthorId: widget.event.authorId,
-                              contentId: widget.ask.id,
+                              parentContentId: widget.post.id,
+                              repotedAuthorId: widget.post.authorId,
+                              contentId: widget.comment.id,
                               contentType: 'vibe',
                             ),
                           );
@@ -326,10 +327,10 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
     );
   }
 
-  _replyWidget(Ask reply) {
+  _replyWidget(CommentModel reply) {
     var _provider = Provider.of<UserData>(context, listen: false);
-    bool isAuthor = _provider.currentUserId == widget.ask.authorId;
-    bool isPostAuthor = widget.event.authorId == widget.ask.authorId;
+    bool isAuthor = _provider.currentUserId == widget.comment.authorId;
+    bool isPostAuthor = widget.post.authorId == widget.comment.authorId;
 
     return Authorview(
       isreplyWidget: true,
@@ -351,9 +352,9 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
               _navigateToPage(
                 context,
                 ReportContentPage(
-                  parentContentId: widget.event.id,
-                  repotedAuthorId: widget.event.authorId,
-                  contentId: widget.ask.id,
+                  parentContentId: widget.post.id,
+                  repotedAuthorId: widget.post.authorId,
+                  contentId: widget.comment.id,
                   contentType: 'vibe',
                 ),
               );
@@ -365,7 +366,7 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
     );
   }
 
-  List<Widget> _buildChildren(List<Ask> replies) {
+  List<Widget> _buildChildren(List<CommentModel> replies) {
     return replies.map((reply) {
       return Padding(
           padding: const EdgeInsets.only(left: 60.0),

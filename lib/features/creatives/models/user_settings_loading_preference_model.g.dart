@@ -20,34 +20,31 @@ class UserSettingsLoadingPreferenceModelAdapter
     return UserSettingsLoadingPreferenceModel(
       city: fields[0] as String?,
       country: fields[1] as String?,
-      continent: fields[2] as String?,
-      userId: fields[4] as String?,
-      currency: fields[3] as String?,
-      timestamp: fields[5] as Timestamp?,
-      subaccountId: fields[6] as String?,
-      transferRecepientId: fields[8] as String?,
+      userId: fields[3] as String?,
+      currency: fields[2] as String?,
+      timestamp: fields[4] as Timestamp?,
+      subaccountId: fields[5] as String?,
+      transferRecepientId: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserSettingsLoadingPreferenceModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.city)
       ..writeByte(1)
       ..write(obj.country)
       ..writeByte(2)
-      ..write(obj.continent)
-      ..writeByte(3)
       ..write(obj.currency)
-      ..writeByte(4)
+      ..writeByte(3)
       ..write(obj.userId)
-      ..writeByte(5)
+      ..writeByte(4)
       ..write(obj.timestamp)
-      ..writeByte(6)
+      ..writeByte(5)
       ..write(obj.subaccountId)
-      ..writeByte(8)
+      ..writeByte(6)
       ..write(obj.transferRecepientId);
   }
 

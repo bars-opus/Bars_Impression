@@ -554,7 +554,7 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                     curve: Curves.easeOutBack,
                     child: CircularButton(
                         color: Colors.white,
-                        icon: Icon(Icons.send, color: widget.paletteColor),
+                        icon: Icons.send,
                         onPressed: () {
                           _confirmInvitation();
                         }),
@@ -576,12 +576,7 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                           curve: Curves.easeOutBack,
                           child: CircularButton(
                               color: widget.paletteColor,
-                              icon: Icon(
-                                Icons.send,
-                                color: Colors.white,
-                                size: ResponsiveHelper.responsiveHeight(
-                                    context, 25.0),
-                              ),
+                              icon: Icons.send,
                               onPressed: () {
                                 _confirmInvitation();
                               }),

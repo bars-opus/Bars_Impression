@@ -29,14 +29,14 @@ class _ViewSentContentState extends State<ViewSentContent> {
     return _paletteGenerator;
   }
 
-  _ticketOrderDeleted(String currentUserId, TicketOrderModel ticketOrder) {
-    return Scaffold(
-      body: EventDeletedMessageWidget(
-        currentUserId: currentUserId,
-        ticketOrder: ticketOrder,
-      ),
-    );
-  }
+  // _ticketOrderDeleted(String currentUserId, TicketOrderModel ticketOrder) {
+  //   return Scaffold(
+  //     body: EventDeletedMessageWidget(
+  //       currentUserId: currentUserId,
+  //       ticketOrder: ticketOrder,
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -65,78 +65,82 @@ class _ViewSentContentState extends State<ViewSentContent> {
                       )),
                     );
                   }
-                  Event _event = snapshot.data;
+                  Post _post = snapshot.data;
 
-                  return EventEnlargedScreen(
+                  return 
+                  EventEnlargedScreen(
                     currentUserId: _provider.currentUserId!,
-                    event: _event,
-                    type: _event.type,
+                    post: _post,
+                    type: _post.storeType,
                     palette: null,
                     showPrivateEvent: true,
                     // marketedAffiliateId: widget.affiliateId,
                   );
                 })
-            : widget.contentType.startsWith('InviteRecieved')
-                ? FutureBuilder<List<dynamic>>(
-                    future: Future.wait([
-                      DatabaseService.getUserEventWithId(
-                          widget.contentId, widget.eventAuthorId),
-                      DatabaseService.getEventIviteWithId(
-                          _provider.currentUserId!, widget.contentId),
-                      DatabaseService.getTicketWithId(
-                          widget.contentId, _provider.currentUserId!),
-                    ]),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<dynamic>> snapshot) {
-                      if (!snapshot.hasData) {
-                        return Container(
-                          width: width,
-                          height: height,
-                          color: Colors.black,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.blue,
-                            ),
-                          ),
-                        );
-                      }
+            : 
+            
+            // widget.contentType.startsWith('InviteRecieved')
+            //     ? FutureBuilder<List<dynamic>>(
+            //         future: Future.wait([
+            //           DatabaseService.getUserEventWithId(
+            //               widget.contentId, widget.eventAuthorId),
+            //           DatabaseService.getEventIviteWithId(
+            //               _provider.currentUserId!, widget.contentId),
+            //           DatabaseService.getTicketWithId(
+            //               widget.contentId, _provider.currentUserId!),
+            //         ]),
+            //         builder: (BuildContext context,
+            //             AsyncSnapshot<List<dynamic>> snapshot) {
+            //           if (!snapshot.hasData) {
+            //             return Container(
+            //               width: width,
+            //               height: height,
+            //               color: Colors.black,
+            //               child: Center(
+            //                 child: CircularProgressIndicator(
+            //                   color: Colors.blue,
+            //                 ),
+            //               ),
+            //             );
+            //           }
 
-                      Event _event = snapshot.data![0];
-                      InviteModel _invite = snapshot.data![1];
+            //           Event _event = snapshot.data![0];
+            //           InviteModel _invite = snapshot.data![1];
 
-                      TicketOrderModel? _ticket = snapshot.data![2];
+            //           TicketOrderModel? _ticket = snapshot.data![2];
 
-                      return FutureBuilder<PaletteGenerator>(
-                        future: _generatePalette(_event.imageUrl),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<PaletteGenerator> paletteSnapshot) {
-                          if (!paletteSnapshot.hasData) {
-                            return Container(
-                              width: width,
-                              height: height,
-                              color: Colors.black,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            );
-                          }
+            //           return FutureBuilder<PaletteGenerator>(
+            //             future: _generatePalette(_event.imageUrl),
+            //             builder: (BuildContext context,
+            //                 AsyncSnapshot<PaletteGenerator> paletteSnapshot) {
+            //               if (!paletteSnapshot.hasData) {
+            //                 return Container(
+            //                   width: width,
+            //                   height: height,
+            //                   color: Colors.black,
+            //                   child: Center(
+            //                     child: CircularProgressIndicator(
+            //                       color: Colors.blue,
+            //                     ),
+            //                   ),
+            //                 );
+            //               }
 
-                          PaletteGenerator _palette = paletteSnapshot.data!;
+            //               PaletteGenerator _palette = paletteSnapshot.data!;
 
-                          return EventInviteScreen(
-                            currentUserId: _provider.currentUserId!,
-                            event: _event,
-                            invite: _invite,
-                            palette: _palette,
-                            ticketOrder: _ticket,
-                          );
-                        },
-                      );
-                    },
-                  )
-                : widget.contentType.startsWith('message')
+            //               return EventInviteScreen(
+            //                 currentUserId: _provider.currentUserId!,
+            //                 event: _event,
+            //                 invite: _invite,
+            //                 palette: _palette,
+            //                 ticketOrder: _ticket,
+            //               );
+            //             },
+            //           );
+            //         },
+            //       )
+                // : 
+                widget.contentType.startsWith('message')
                     ? FutureBuilder<List<dynamic>>(
                         future: Future.wait([
                           DatabaseService.getUserChatWithId(
@@ -228,95 +232,99 @@ class _ViewSentContentState extends State<ViewSentContent> {
                               );
                             },
                           )
-                        : widget.contentType.startsWith('refundProcessed')
-                            ? FutureBuilder<List<dynamic>>(
-                                future: Future.wait([
-                                  DatabaseService.getUserTicketOrderWithId(
-                                    widget.contentId,
-                                    _provider.currentUserId!,
-                                  ),
-                                  DatabaseService.getUserEventWithId(
-                                      widget.contentId, widget.eventAuthorId),
-                                ]),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<List<dynamic>> snapshot) {
-                                  if (!snapshot.hasData ||
-                                      snapshot.data![0] == null ||
-                                      snapshot.data![1] == null) {
-                                    return Container(
-                                      width: width,
-                                      height: height,
-                                      color: Colors.black,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    );
-                                  }
+                        : 
+                        
+                        // widget.contentType.startsWith('refundProcessed')
+                        //     ? FutureBuilder<List<dynamic>>(
+                        //         future: Future.wait([
+                        //           DatabaseService.getUserTicketOrderWithId(
+                        //             widget.contentId,
+                        //             _provider.currentUserId!,
+                        //           ),
+                        //           DatabaseService.getUserEventWithId(
+                        //               widget.contentId, widget.eventAuthorId),
+                        //         ]),
+                        //         builder: (BuildContext context,
+                        //             AsyncSnapshot<List<dynamic>> snapshot) {
+                        //           if (!snapshot.hasData ||
+                        //               snapshot.data![0] == null ||
+                        //               snapshot.data![1] == null) {
+                        //             return Container(
+                        //               width: width,
+                        //               height: height,
+                        //               color: Colors.black,
+                        //               child: Center(
+                        //                 child: CircularProgressIndicator(
+                        //                   color: Colors.blue,
+                        //                 ),
+                        //               ),
+                        //             );
+                        //           }
 
-                                  TicketOrderModel _ticketOrder =
-                                      snapshot.data![0];
-                                  Event? event = snapshot.data![1];
-                                  // RefundModel? newRefund;
+                        //           TicketOrderModel _ticketOrder =
+                        //               snapshot.data![0];
+                        //           Event? event = snapshot.data![1];
+                        //           // RefundModel? newRefund;
 
-                                  return FutureBuilder<PaletteGenerator>(
-                                    future: _generatePalette(event!.imageUrl),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<PaletteGenerator>
-                                            paletteSnapshot) {
-                                      if (!paletteSnapshot.hasData) {
-                                        return Container(
-                                          width: width,
-                                          height: height,
-                                          color: Colors.black,
-                                          child: Center(
-                                            child: CircularProgressIndicator(
-                                              color: Colors.blue,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                      PaletteGenerator _palette =
-                                          paletteSnapshot.data!;
-                                      return PurchasedAttendingTicketScreen(
-                                        ticketOrder: _ticketOrder,
-                                        event: event,
-                                        currentUserId: _provider.currentUserId!,
-                                        justPurchased: '',
-                                        palette: _palette,
-                                      );
-                                    },
-                                  );
-                                },
-                              )
-                            : widget.contentType.startsWith('eventDeleted')
-                                ? FutureBuilder(
-                                    future: DatabaseService
-                                        .getUserTicketOrderWithId(
-                                      widget.contentId,
-                                      _provider.currentUserId!,
-                                    ),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot snapshot) {
-                                      if (!snapshot.hasData) {
-                                        return Container(
-                                          width: width,
-                                          height: height,
-                                          color: Colors.black,
-                                          child: Center(
-                                              child: CircularProgressIndicator(
-                                            color: Colors.blue,
-                                          )),
-                                        );
-                                      }
-                                      TicketOrderModel _ticketOrder =
-                                          snapshot.data;
+                        //           return FutureBuilder<PaletteGenerator>(
+                        //             future: _generatePalette(event!.imageUrl),
+                        //             builder: (BuildContext context,
+                        //                 AsyncSnapshot<PaletteGenerator>
+                        //                     paletteSnapshot) {
+                        //               if (!paletteSnapshot.hasData) {
+                        //                 return Container(
+                        //                   width: width,
+                        //                   height: height,
+                        //                   color: Colors.black,
+                        //                   child: Center(
+                        //                     child: CircularProgressIndicator(
+                        //                       color: Colors.blue,
+                        //                     ),
+                        //                   ),
+                        //                 );
+                        //               }
+                        //               PaletteGenerator _palette =
+                        //                   paletteSnapshot.data!;
+                        //               return PurchasedAttendingTicketScreen(
+                        //                 ticketOrder: _ticketOrder,
+                        //                 event: event,
+                        //                 currentUserId: _provider.currentUserId!,
+                        //                 justPurchased: '',
+                        //                 palette: _palette,
+                        //               );
+                        //             },
+                        //           );
+                        //         },
+                        //       )
+                            // :
+                            //  widget.contentType.startsWith('eventDeleted')
+                            //     ? FutureBuilder(
+                            //         future: DatabaseService
+                            //             .getUserTicketOrderWithId(
+                            //           widget.contentId,
+                            //           _provider.currentUserId!,
+                            //         ),
+                            //         builder: (BuildContext context,
+                            //             AsyncSnapshot snapshot) {
+                            //           if (!snapshot.hasData) {
+                            //             return Container(
+                            //               width: width,
+                            //               height: height,
+                            //               color: Colors.black,
+                            //               child: Center(
+                            //                   child: CircularProgressIndicator(
+                            //                 color: Colors.blue,
+                            //               )),
+                            //             );
+                            //           }
+                            //           TicketOrderModel _ticketOrder =
+                            //               snapshot.data;
 
-                                      return _ticketOrderDeleted(
-                                          _provider.currentUserId!,
-                                          _ticketOrder);
-                                    })
-                                : const SizedBox.shrink());
+                            //           return _ticketOrderDeleted(
+                            //               _provider.currentUserId!,
+                            //               _ticketOrder);
+                            //         })
+                                // :
+                                 const SizedBox.shrink());
   }
 }
