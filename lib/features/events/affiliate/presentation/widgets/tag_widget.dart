@@ -36,6 +36,7 @@ class _TagWidgetState extends State<TagWidget> {
           _provider.user!.profileHandle,
           _provider.user!.verified,
           _provider.user!.userName,
+          _provider.user!.profileImageUrl,
         );
       }
 
@@ -63,7 +64,7 @@ class _TagWidgetState extends State<TagWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          buttonText: 'Delete',
+          buttonText: isDeleting ? 'Delete' : 'Verify',
           onPressed: () async {
             Navigator.pop(context);
             await _deleteOrConfirm(context, isDeleting);
@@ -305,8 +306,8 @@ class _TagWidgetState extends State<TagWidget> {
             // ),
 
             Divider(
-              thickness: .2,
-            ),
+                // thickness: .2,
+                ),
           ],
         ),
       ),

@@ -442,6 +442,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         context,
                         EditProfileSelectLocation(
                           user: _user,
+                          notFromEditProfile: true,
                         ),
                       );
                     },

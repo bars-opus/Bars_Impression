@@ -721,7 +721,8 @@ async function calculateOrganizerShare(eventData) {
     const netAmountCollected = totalAmountCollected - totalAffiliateAmount;
 
     // Compute the commission and organizer's share
-    const commissionRate = 0.10;
+    const commissionRate = 0.01;
+    // const commissionRate = 0.10;
     const commission = netAmountCollected * commissionRate;
     const organizerShare = netAmountCollected - commission;
 

@@ -141,13 +141,11 @@ class _RefundWidgetState extends State<RefundWidget> {
             Divider(
               thickness: .2,
             ),
-
             _payoutWidget(
               'Request \ndate',
               MyDateFormat.toDate(
                   widget.currentRefund.approvedTimestamp.toDate()),
             ),
-
             if (widget.currentRefund.expectedDate.isNotEmpty) Divider(),
             if (widget.currentRefund.expectedDate.isNotEmpty)
               _payoutWidget(
@@ -163,7 +161,6 @@ class _RefundWidgetState extends State<RefundWidget> {
               'Request\nReason',
               widget.currentRefund.reason,
             ),
-           
             Divider(
               thickness: .2,
             ),

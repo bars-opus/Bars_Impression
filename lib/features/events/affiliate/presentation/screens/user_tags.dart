@@ -333,10 +333,10 @@ class _UserTagsState extends State<UserTags>
                           ? Expanded(
                               child: Center(
                               child: NoContents(
-                                icon: (Icons.attach_money),
-                                title: 'No tags,',
+                                icon: MdiIcons.vectorLink,
+                                title: 'No tags',
                                 subTitle:
-                                    'All your tags data would be displayed here.',
+                                    'All the events or collborations you have been tagged in would be displayed here for you to verify.',
                               ),
                             ))
                           : Expanded(

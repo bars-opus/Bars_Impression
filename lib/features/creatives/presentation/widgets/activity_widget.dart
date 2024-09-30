@@ -541,7 +541,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               : activity.type == NotificationActivityType.donation
                   ? Icons.payment
                   : activity.type == NotificationActivityType.tag
-                      ? Icons.link
+                      ? MdiIcons.vectorLink
                       : Icons.event_outlined,
           color: Theme.of(context).primaryColorLight,
         ),

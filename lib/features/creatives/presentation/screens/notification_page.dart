@@ -412,7 +412,7 @@ class _NotificationPageState extends State<NotificationPage>
                       await Future.delayed(Duration(milliseconds: 300));
                       _sort(NotificationActivityType.tag);
                     },
-                    Icons.link,
+                    MdiIcons.vectorLink,
                     'Tags',
                   ),
                   _sortByWidget(

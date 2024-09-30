@@ -126,13 +126,16 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
     });
   }
 
-
-
   void checkAndUpdateValidationState(bool isValidated) {
+    setState(() {
+      _isScanning = false; // Scanning is complete, hide the indicator.
+      _isValidated = isValidated; // Update the validation state.
+    });
     if (mounted) {
-      setState(() {
-        _isScanning = false; // Scanning is complete, hide the indicator.
-        _isValidated = isValidated; // Update the validation state.
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {
+          _isScanning = false; // Hide the loading indicator
+        });
       });
     }
   }
@@ -278,6 +281,13 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
     );
   }
 
+  void _navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Color _palleteColor = widget.palette == null
@@ -302,12 +312,15 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
       color: Colors.red,
     );
 
-    void _navigateToPage(BuildContext context, Widget page) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => page),
-      );
-    }
+    double totalPrice = widget.ticketOrder.tickets.fold(
+        0.0, (double sum, TicketPurchasedModel ticket) => sum + ticket.price);
+
+    // double processingFee = calculateProcessingFee(totalPrice);
+
+    double processingFee =
+        ProcessingFeeCalculator.calculateProcessingFee(totalPrice);
+
+    double finalPrice = totalPrice + processingFee;
 
     return new Material(
       color: Colors.transparent,
@@ -535,11 +548,35 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
-                        lable: 'Total',
+                        lable: 'Ticket price',
                         value: widget.event.isFree
                             ? 'Free'
                             : '${widget.currency} ${widget.ticket.price.toString()}',
                       ),
+                      if (!widget.event.isCashPayment)
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      if (!widget.event.isCashPayment)
+                        SalesReceiptWidget(
+                          width: 110,
+                          isRefunded: _isRefunded,
+                          lable: 'Processing fee:',
+                          value: widget.event.isFree
+                              ? 'Free'
+                              : '${widget.currency} ${processingFee.toString()}',
+                        ),
+                      if (!widget.event.isCashPayment)
+                        SalesReceiptWidget(
+                          width: 110,
+                          isRefunded: _isRefunded,
+                          lable: widget.ticketOrder.tickets.length > 1
+                              ? 'Total ticket order'
+                              : 'Total',
+                          value: widget.event.isFree
+                              ? 'Free'
+                              : '${widget.currency} ${finalPrice.toString()}',
+                        ),
                       if (widget.event.isCashPayment)
                         Center(
                           child: Text(

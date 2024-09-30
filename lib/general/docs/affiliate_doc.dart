@@ -192,7 +192,12 @@ class AffiliateDoc extends StatelessWidget {
                 ),
                 TextSpan(
                   text:
-                      "\n\nNeither would event organizer or affiliates incase of event cancellation or deletion.",
+                      "\n\nNeither event organizers nor affiliates will be paid in the case of cancellation or deletion of the event.",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextSpan(
+                  text:
+                      "\n\nThe affiliate deal must be accepted at least 2 days before the event date.\n",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextSpan(

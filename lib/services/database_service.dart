@@ -3091,6 +3091,7 @@ class DatabaseService {
     authorProfileHandle,
     authorVerification,
     authorUserName,
+     authorProfileImage,
   ) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
@@ -3119,7 +3120,7 @@ class DatabaseService {
           ? 'Tag confirmed by ${authorUserName} as a ${tag.role} person in ${tag.taggedParentTitle}'
           : 'Tag confirmed by ${authorUserName} as ${tag.role} in ${tag.taggedParentTitle}',
       'timestamp': Timestamp.fromDate(DateTime.now()),
-      'authorProfileImageUrl': '',
+      'authorProfileImageUrl': authorProfileImage,
       'authorName': 'Tag confirmed',
       'authorProfileHandle': authorProfileHandle,
       'authorVerification': authorVerification,
@@ -4251,6 +4252,11 @@ class DatabaseService {
   static Stream<int> numUerAffiliates(
     String userId,
   ) {
+    final now = DateTime.now();
+
+    final currentDate = DateTime(now.year, now.month, now.day);
+    final endDate = currentDate.add(Duration(days: 2));
+
     if (userId.isEmpty || userId.trim() == '') {
       print("Error: userIdId is null or empty.");
       // Return an empty stream or handle the error as appropriate for your app
@@ -4260,6 +4266,7 @@ class DatabaseService {
         .doc(userId)
         .collection('affiliateMarketers')
         .where('answer', isEqualTo: '')
+        .where('eventClossingDay', isGreaterThanOrEqualTo: endDate)
         .get()
         .then((querySnapshot) {
       if (querySnapshot.size > 0) {
@@ -5055,6 +5062,41 @@ class DatabaseService {
       'authorVerification': user.verified,
     });
   }
+
+  static Future<void> saveProcessingFee({
+    required String ticketOrderId,
+    required double processingFee,
+  }) async {
+    DateTime now = DateTime.now();
+    String year = now.year.toString();
+    String month = now.month.toString().padLeft(2, '0');
+    DocumentReference ticketDocRef =
+        processingFeesRef.doc(year).collection(month).doc(ticketOrderId);
+    DocumentSnapshot ticketDocSnapshot = await ticketDocRef.get();
+    if (!ticketDocSnapshot.exists) {
+      await ticketDocRef.set({
+        'processingFee': processingFee,
+        'timestamp': now,
+      });
+    } else {
+      // print('TicketOrderId $ticketOrderId already exists.');
+    }
+  }
+
+  // Future<double> calculateMonthlyProcessingFees(
+  //     String year, String month) async {
+  //   CollectionReference monthRef =
+  //       processingFeesRef.doc(year).collection(month);
+
+  //   QuerySnapshot snapshot = await monthRef.get();
+
+  //   double totalProcessingFees = snapshot.docs.fold(0.0, (sum, doc) {
+  //     double fee = doc['processingFee'] ?? 0.0;
+  //     return sum + fee;
+  //   });
+
+  //   return totalProcessingFees;
+  // }
 
   static Future<void> addOrganizerToAttendeeMarketing({
     required String userId,

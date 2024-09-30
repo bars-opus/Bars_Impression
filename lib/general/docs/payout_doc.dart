@@ -48,7 +48,7 @@ class PayoutDoc extends StatelessWidget {
                   ),
                   TextSpan(
                     text:
-                        '\n\nWe understand that you are ready to receive the payouts for your ticket sales. It is important for you to have a clear understanding of how the payout system functions. While most payouts are instant, occasional network issues and other factors may contribute to slight delays in the payout. Typically, payouts are processed within 3 days after your request. Please note that Bars Impression applies a 10% commission on the payment amount to cover maintenance and other operational costs associated with managing the event process.',
+                        '\n\nWe understand that you are ready to receive the payouts for your ticket sales. It is important for you to have a clear understanding of how the payout system functions. While most payouts are instant, occasional network issues and other factors may contribute to slight delays in the payout. Typically, payouts are processed within 3 days after your request. Please note that Bars Impression applies a 1% commission on the payment amount to cover maintenance and other operational costs associated with managing the event process.',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   TextSpan(

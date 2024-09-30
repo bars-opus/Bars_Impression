@@ -57,6 +57,16 @@ class _PurchasedAttendingTicketScreenState
   _addAttendeeToOrganizerMrk(event) async {
     var _provider = Provider.of<UserData>(context, listen: false);
     try {
+      double totalPrice = _provider.ticketList
+          .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
+
+      double processingFee =
+          ProcessingFeeCalculator.calculateProcessingFee(totalPrice);
+
+      DatabaseService.saveProcessingFee(
+          ticketOrderId: widget.ticketOrder.orderId,
+          processingFee: processingFee);
+
       if (!widget.event.isPrivate)
         await DatabaseService.addOrganizerToAttendeeMarketing(
             userId: widget.currentUserId, eventAuthorId: widget.event.authorId);

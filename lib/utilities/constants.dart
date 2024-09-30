@@ -56,6 +56,9 @@ final newDonationToCreativesRef =
     
 final newBrandMatchingRef = _firestore.collection('new_brand_matching');
 
+final processingFeesRef = _firestore.collection('processingFees');
+
+
 
 final new_userBrandIfoRef = _firestore.collection('new_userBrandIfo');
 final newEventBrandMatchingRef =

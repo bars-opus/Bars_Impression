@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 27 : 27;
+  final int _updateAppVersion = Platform.isIOS ? 28 : 28;
   String notificationMsg = '';
   // bool _isFecthing = true;
 
@@ -2476,74 +2476,75 @@ class HomeScreenState extends State<HomeScreen> {
                                 // affiliateId: '',
                               ),
                             )
-                          :  contentType.endsWith('tag')
-                          ? _navigateToPage(
-                              context,
-                              ViewSentContent(
-                                contentId: contentId,
-                                contentType: 'tag',
-                                eventAuthorId: '',
-                                // affiliateId: '',
-                              ),
-                            )
-                          : contentType.endsWith('eventRoom') 
+                          : contentType.endsWith('tag')
                               ? _navigateToPage(
                                   context,
                                   ViewSentContent(
                                     contentId: contentId,
-                                    contentType: 'eventRoom',
+                                    contentType: 'tag',
                                     eventAuthorId: '',
                                     // affiliateId: '',
                                   ),
                                 )
-                              : contentType.endsWith('eventDeleted')
+                              : contentType.endsWith('eventRoom')
                                   ? _navigateToPage(
                                       context,
                                       ViewSentContent(
                                         contentId: contentId,
-                                        contentType: 'eventDeleted',
+                                        contentType: 'eventRoom',
                                         eventAuthorId: '',
                                         // affiliateId: '',
                                       ),
                                     )
-                                  : contentType.endsWith('refundProcessed')
+                                  : contentType.endsWith('eventDeleted')
                                       ? _navigateToPage(
                                           context,
                                           ViewSentContent(
                                             contentId: contentId,
-                                            contentType: 'refundProcessed',
-                                            eventAuthorId: eventAuthorId!,
+                                            contentType: 'eventDeleted',
+                                            eventAuthorId: '',
                                             // affiliateId: '',
                                           ),
                                         )
-                                      : _navigateToPage(
-                                          context,
-                                          ViewSentContent(
-                                            contentId: contentId,
-                                            contentType: contentType.endsWith(
-                                                    'FundsDistributed')
-                                                ? 'Event'
-                                                : contentType.endsWith(
-                                                        'newEventInNearYou')
+                                      : contentType.endsWith('refundProcessed')
+                                          ? _navigateToPage(
+                                              context,
+                                              ViewSentContent(
+                                                contentId: contentId,
+                                                contentType: 'refundProcessed',
+                                                eventAuthorId: eventAuthorId!,
+                                                // affiliateId: '',
+                                              ),
+                                            )
+                                          : _navigateToPage(
+                                              context,
+                                              ViewSentContent(
+                                                contentId: contentId,
+                                                contentType: contentType
+                                                        .endsWith(
+                                                            'FundsDistributed')
                                                     ? 'Event'
                                                     : contentType.endsWith(
-                                                            'eventUpdate')
+                                                            'newEventInNearYou')
                                                         ? 'Event'
                                                         : contentType.endsWith(
-                                                                'eventReminder')
+                                                                'eventUpdate')
                                                             ? 'Event'
                                                             : contentType.endsWith(
-                                                                    'refundRequested')
+                                                                    'eventReminder')
                                                                 ? 'Event'
                                                                 : contentType
-                                                                        .startsWith(
-                                                                            'inviteRecieved')
-                                                                    ? 'InviteRecieved'
-                                                                    : '',
-                                            // affiliateId: '',
-                                            eventAuthorId: eventAuthorId!,
-                                          ),
-                                        );
+                                                                        .endsWith(
+                                                                            'refundRequested')
+                                                                    ? 'Event'
+                                                                    : contentType
+                                                                            .startsWith('inviteRecieved')
+                                                                        ? 'InviteRecieved'
+                                                                        : '',
+                                                // affiliateId: '',
+                                                eventAuthorId: eventAuthorId!,
+                                              ),
+                                            );
         }
         // }
       }

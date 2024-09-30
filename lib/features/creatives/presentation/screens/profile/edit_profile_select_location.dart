@@ -462,7 +462,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                             color: Theme.of(context).cardColor.withOpacity(.6),
                             borderRadius: BorderRadius.circular(5)),
                         child: DummyTextField(
-                          icon: Icons.location_on_outlined,
+                          icon: Icons.edit_outlined,
                           onPressed: () {
                             _showBottomSheetCountry(context, 'userName');
                           },
@@ -473,7 +473,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                               : _provider.city,
                         ),
                       ),
-                    ],
+                    ],  
                   ),
                   const SizedBox(
                     height: 30,

@@ -73,7 +73,9 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
       }
 
       // Ensure you collect the percentage charge properly
-      final percentageCharge = 10; // Replace with your method/logic
+      final percentageCharge = 1; // Replace with your method/logic
+
+      // final percentageCharge = 10; // Replace with your method/logic
 
       final subaccountData = {
         'business_name': _bussinessNameController.text.trim(),
@@ -182,7 +184,6 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     }
   }
 
-
   _updateAuthorHive(
     String subacccountId,
     String transferRecepient,
@@ -257,10 +258,8 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
       throw Exception('Failed to load banks from Paystack');
     }
   }
-  
 
   _selectBank() {
-    
     return ShakeTransition(
       curve: Curves.easeOutBack,
       duration: const Duration(seconds: 2),
@@ -403,8 +402,6 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
 
     double _progress =
         _pageController2.hasClients ? _pageController2.page ?? 0 : 0;
-
-
 
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),

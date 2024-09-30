@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen>
                                       !EmailValidator.validate(email.trim())
                                   ? 'Please enter your email'
                                   : null,
-                              icon: Icons.email,
+                              icon: Icons.email_outlined,
                             ),
                           ),
                         ),
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   : input.length > 24
                                       ? 'Password is too long'
                                       : null,
-                              icon: Icons.email,
+                              icon: Icons.lock_outline,
                               suffixIcon: IconButton(
                                   icon: Icon(
                                     _isHidden

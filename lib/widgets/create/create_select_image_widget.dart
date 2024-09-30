@@ -73,11 +73,24 @@ class CreateSelectImageWidget extends StatelessWidget {
                 child: ShakeTransition(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: CreateInfoWidget(
-                      isEditting: isEditting,
-                      feature: feature,
-                      featureInfo: featureInfo,
-                      selectImageInfo: selectImageInfo,
+                    child: Column(
+                      children: [
+                        CreateInfoWidget(
+                          isEditting: isEditting,
+                          feature: feature,
+                          featureInfo: featureInfo,
+                          selectImageInfo: selectImageInfo,
+                        ),
+                        Text(
+                          'Learn more...',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      ],
                     ),
                   ),
                 ),

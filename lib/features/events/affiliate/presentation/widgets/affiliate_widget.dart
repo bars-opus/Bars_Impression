@@ -33,8 +33,11 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
   }
 
   void _hasEventEnded() {
-    if (EventHasStarted.hasEventEnded(
-        widget.affiliate.eventClossingDay.toDate())) {
+    final now = widget.affiliate.eventClossingDay.toDate();
+    final currentDate = DateTime(now.year, now.month, now.day);
+    final endDate = currentDate.subtract(Duration(days: 2));
+    print(endDate.toString());
+    if (EventHasStarted.hasEventEnded(endDate)) {
       if (mounted) {
         setState(() {
           _eventHasEnded = true;
@@ -940,25 +943,27 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                             indicatorColor: Colors.blue,
                           ),
                         )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _acceptRejectButton('Accept', () {
-                              widget.affiliate.termsAndCondition.isNotEmpty
-                                  ? _showBottomSheetDoc(true)
-                                  : _showBottomSheetAcceptReject(
-                                      context,
-                                      true,
-                                    );
-                            }, false),
-                            _acceptRejectButton('Reject', () {
-                              _showBottomSheetAcceptReject(
-                                context,
-                                false,
-                              );
-                            }, false),
-                          ],
-                        ),
+                      : _eventHasEnded
+                          ? SizedBox.shrink()
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _acceptRejectButton('Accept', () {
+                                  widget.affiliate.termsAndCondition.isNotEmpty
+                                      ? _showBottomSheetDoc(true)
+                                      : _showBottomSheetAcceptReject(
+                                          context,
+                                          true,
+                                        );
+                                }, false),
+                                _acceptRejectButton('Reject', () {
+                                  _showBottomSheetAcceptReject(
+                                    context,
+                                    false,
+                                  );
+                                }, false),
+                              ],
+                            ),
               IconButton(
                   onPressed: () {
                     _showBottomSheetComfirmDelete(context);

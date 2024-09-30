@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/widgets/animation/shake_transition.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

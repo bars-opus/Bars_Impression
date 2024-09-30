@@ -752,6 +752,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
+        UserData _provider = Provider.of<UserData>(context, listen: false);
+
         return Container(
             height: ResponsiveHelper.responsiveHeight(context, 700),
             decoration: BoxDecoration(
@@ -770,7 +772,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: title,
+                          text: !_provider.isFree && title == 'Free event'
+                              ? 'Paid event'
+                              : title,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         TextSpan(
@@ -808,6 +812,21 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                 context, 14)),
                       ),
                     ),
+                  if (title == 'Free event')
+                    if (!_provider.isFree)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showBottomSheetPricing();
+                        },
+                        child: Text(
+                          "Read more",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14)),
+                        ),
+                      ),
                   const SizedBox(height: 60),
                 ],
               ),
@@ -839,6 +858,205 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
+  void _showBottomSheetPricing() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 680),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: PricingDoc());
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetRefund(bool isRefund, bool fromNoAffiliate) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: isRefund
+                  ? RefundDoc(
+                      refundOnPressed: () {},
+                      isRefunding: false,
+                    )
+                  : AffiliateDoc(
+                      isAffiliated: false,
+                      isOganiser: true,
+                      affiliateOnPressed: () {
+                        // Navigator.pop(context);
+                        // _provider.setAffiliateComission(5);
+                        // _showBottomSheetCreateAffiliate();
+                      },
+                    ));
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetValidatorDoc() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: ValidatorDoc(),
+          );
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetEvidence() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: EventEvidenceDoc(
+                refundOnPressed: () {},
+                // isRefunding: false,
+              ));
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetLearnMore() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    bool isGhanaian = _provider.userLocationPreference!.country == 'Ghana' ||
+        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 300),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        'Docs.',
+                        style: TextStyle(
+                          color: Theme.of(context).secondaryHeaderColor,
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 12.0),
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        _showBottomSheetValidatorDoc();
+                      },
+                      child: Center(
+                        child: Text(
+                          '\nTicket validation.',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14.0),
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ),
+                    if (isGhanaian)
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheetRefund(true, false);
+                        },
+                        child: Center(
+                          child: Text(
+                            '\nTicket refund.',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14.0),
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                      ),
+                    if (isGhanaian)
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheetEvidence();
+                        },
+                        child: Center(
+                          child: Text(
+                            '\nEvent evidence.',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14.0),
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                      ),
+                    if (isGhanaian)
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheetPricing();
+                        },
+                        child: Center(
+                          child: Text(
+                            '\nPricing.',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14.0),
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                      ),
+                  ]));
+        });
+      },
+    );
+  }
+
   _buildSettingOptions(UserData _provider) {
     List<Widget> options = [];
     options.add(const SizedBox(height: 30));
@@ -848,8 +1066,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         'Free event',
         _provider.isFree
             ? 'This is a free event with no ticket or gate fee.(Change back to paid)'
-            : 'This is a paid event with a ticket or gate fee. (Change to free)',
-        '',
+            : 'This is a paid event with a ticket or gate fee. (Change to free). Tap learn more to see pricing',
+        _provider.isFree ? '' : 'Lean more about our pricing.',
         _provider.isFree,
         _provider.setIsFree,
       ));
@@ -3331,13 +3549,13 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       children: [
         // Displays the event image.
         DisplayCreateImage(isEvent: true),
-        // if (widget.isCompleted)
-        //   _completed() // Shows completed state if the event is finished.
-        // else
-        if (_provider.eventImage == null && !widget.isEditting)
+        if (widget.isCompleted)
+          _completed() // Shows completed state if the event is finished.
+        else if (_provider.eventImage == null && !widget.isEditting)
           // Prompts the user to select an image if none is set and not editing.
           CreateSelectImageWidget(
             onPressed: () {
+              _showBottomSheetLearnMore();
               // Placeholder for image selection logic.
             },
             isEditting: widget.isEditting,

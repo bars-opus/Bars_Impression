@@ -129,7 +129,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 2.0.2',
+        applicationVersion: 'Version 2.2.1',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -145,7 +145,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                        text: "Version Release Date: May 2024\n",
+                        text: "Version Release Date: September 2024\n",
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 14.0),
@@ -596,7 +596,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   color: Colors.grey,
                 ),
                 IntroInfo(
-                  leadingIcon: Icons.link,
+                  leadingIcon: MdiIcons.vectorLink,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Tags',
                   onPressed: () {

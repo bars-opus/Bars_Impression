@@ -326,10 +326,8 @@ class _TicketGroupState extends State<TicketGroup> {
     var transactionId =
         verificationResult.data['transactionData']['id'].toString();
     // Reference to the Firestore collection where event invites are stored
-    CollectionReference eventInviteCollection = FirebaseFirestore.instance
-        .collection('newEventTicketOrder')
-        .doc(widget.event!.id)
-        .collection('eventInvite');
+    CollectionReference eventInviteCollection =
+        newEventTicketOrderRef.doc(widget.event!.id).collection('ticketOrders');
 
     // Query for the existing ticket
     QuerySnapshot ticketRecordSnapshot = await eventInviteCollection
@@ -386,53 +384,60 @@ class _TicketGroupState extends State<TicketGroup> {
   void _initiatePayment(BuildContext context) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    // try {
-    // Assuming you have the email and amount to charge
-    // int price = 3;
-    double totalPrice = _provider.ticketList
-        .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
-    String email = FirebaseAuth.instance.currentUser!.email!;
-    //  "supportbarsopus@gmail.com"; // User's email
-    int amount = totalPrice.toInt(); // Amount in kobo
+    try {
+      // Assuming you have the email and amount to charge
+      // int price = 3;
+      double totalPrice = _provider.ticketList
+          .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
+      double processingFee =
+          ProcessingFeeCalculator.calculateProcessingFee(totalPrice);
 
-    final HttpsCallable callable = FirebaseFunctions.instance
-        .httpsCallable('initiatePaystackMobileMoneyPayment');
+      // double processingFee = calculateProcessingFee(totalPrice);
 
-    // Call the function to initiate the payment
-    final HttpsCallableResult result = await callable.call(<String, dynamic>{
-      'email': email,
-      'amount': amount * 100, // Assuming this is the correct amount in kobo
-      'subaccount': widget.event!.subaccountId,
-      'bearer': 'split',
-      'callback_url': widget.event!.dynamicLink,
-      'reference': _getReference(),
-    });
+      double finalPrice = totalPrice + processingFee;
 
-    // Extract the authorization URL from the results
-    final String authorizationUrl = result.data['authorizationUrl'];
-    final bool success = result.data['success'];
-    final String reference = result.data['reference'];
+      String email = FirebaseAuth.instance.currentUser!.email!;
+      //  "supportbarsopus@gmail.com"; // User's email
+      int amount = finalPrice.toInt(); // Amount in kobo
 
-    // Navigate to the payment screen with the authorization URL
-    if (success) {
-      await navigateToPaymentScreen(
-          context, authorizationUrl, reference, amount);
-    } else {
-      // Handle error
-      _showBottomSheetErrorMessage(
-          context, 'Failed to initiate payment\n${result.toString()}');
+      final HttpsCallable callable = FirebaseFunctions.instance
+          .httpsCallable('initiatePaystackMobileMoneyPayment');
+
+      // Call the function to initiate the payment
+      final HttpsCallableResult result = await callable.call(<String, dynamic>{
+        'email': email,
+        'amount': amount * 100, // Assuming this is the correct amount in kobo
+        'subaccount': widget.event!.subaccountId,
+        'bearer': 'split',
+        'callback_url': widget.event!.dynamicLink,
+        'reference': _getReference(),
+      });
+
+      // Extract the authorization URL from the results
+      final String authorizationUrl = result.data['authorizationUrl'];
+      final bool success = result.data['success'];
+      final String reference = result.data['reference'];
+
+      // Navigate to the payment screen with the authorization URL
+      if (success) {
+        await navigateToPaymentScreen(
+            context, authorizationUrl, reference, amount);
+      } else {
+        // Handle error
+        _showBottomSheetErrorMessage(
+            context, 'Failed to initiate payment\n${result.toString()}');
+      }
+      // await navigateToPaymentScreen(context, authorizationUrl);
+    } catch (e) {
+      // Handle errors, such as showing an error message to the user
+      // String error = e.toString();
+      // String result = error.contains(']')
+      //     ? error.substring(error.lastIndexOf(']') + 1)
+      //     : error;
+
+      Navigator.pop(context);
+      _showBottomSheetErrorMessage(context, 'Failed to initiate payment');
     }
-    // await navigateToPaymentScreen(context, authorizationUrl);
-    // } catch (e) {
-    //   // Handle errors, such as showing an error message to the user
-    //   String error = e.toString();
-    //   String result = error.contains(']')
-    //       ? error.substring(error.lastIndexOf(']') + 1)
-    //       : error;
-
-    //   Navigator.pop(context);
-    //   _showBottomSheetErrorMessage(context, 'Failed to initiate payment');
-    // }
   }
 
   String _getReference() {
@@ -591,24 +596,12 @@ class _TicketGroupState extends State<TicketGroup> {
   _eventOnTicketAndPurchaseButton() {
     return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-              color: Theme.of(context).primaryColorLight.withOpacity(.6),
-              borderRadius: BorderRadius.circular(10)),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: EventOnTicketWidget(
-              event: widget.event!,
-              currentUserId: widget.currentUserId,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Divider(
-          thickness: .2,
-        ),
+        // const SizedBox(
+        //   height: 20,
+        // ),
+        // Divider(
+        //   thickness: .2,
+        // ),
         const SizedBox(
           height: 40,
         ),
@@ -627,7 +620,64 @@ class _TicketGroupState extends State<TicketGroup> {
             buttonColor: Colors.blue,
           ),
         ),
+        const SizedBox(
+          height: 40,
+        ),
       ],
+    );
+  }
+
+  // double calculateProcessingFee(double totalPrice) {
+  //   if (totalPrice < 100) {
+  //     return 5.0;
+  //   } else if (totalPrice < 500) {
+  //     return 10.0;
+  //   } else if (totalPrice < 1000) {
+  //     return 20.0;
+  //   } else if (totalPrice < 1500) {
+  //     return 30.0;
+  //   } else if (totalPrice < 2000) {
+  //     return 40.0;
+  //   } else if (totalPrice < 2500) {
+  //     return 50.0;
+  //   } else if (totalPrice < 3000) {
+  //     return 100.0;
+  //   } else if (totalPrice < 4000) {
+  //     return 150.0;
+  //   } else if (totalPrice < 5000) {
+  //     return 200.0;
+  //   } else if (totalPrice < 6000) {
+  //     return 250.0;
+  //   } else if (totalPrice < 7000) {
+  //     return 300.0;
+  //   } else if (totalPrice < 8000) {
+  //     return 350.0;
+  //   } else if (totalPrice < 9000) {
+  //     return 400.0;
+  //   } else if (totalPrice < 10000) {
+  //     return 450.0;
+  //   } else {
+  //     return 500.0; // Example for prices 10,000 and above
+  //   }
+  // }
+
+  _payoutWidget(String lable, String value) {
+    return ShakeTransition(
+      // axis: Axis.vertical,
+      curve: Curves.linearToEaseOut,
+      offset: -140,
+      duration: const Duration(seconds: 2),
+      child: SalesReceiptWidget(
+        isRefunded: false,
+        lable: lable,
+        value: value,
+      ),
+    );
+  }
+
+  _divider() {
+    return Divider(
+      thickness: .5,
     );
   }
 
@@ -638,6 +688,13 @@ class _TicketGroupState extends State<TicketGroup> {
 
     double totalPrice = _provider.ticketList
         .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
+
+    // double processingFee = calculateProcessingFee(totalPrice);
+
+    double processingFee =
+        ProcessingFeeCalculator.calculateProcessingFee(totalPrice);
+
+    double finalPrice = totalPrice + processingFee;
 
     final List<String> currencyPartition =
         widget.event!.rate.trim().replaceAll('\n', ' ').split("|");
@@ -682,7 +739,7 @@ class _TicketGroupState extends State<TicketGroup> {
                                     Theme.of(context).textTheme.displayMedium,
                               ),
                               TextSpan(
-                                text: totalPrice.toString(),
+                                text: finalPrice.toString(),
                                 style: Theme.of(context).textTheme.titleLarge,
                               )
                             ],
@@ -700,44 +757,91 @@ class _TicketGroupState extends State<TicketGroup> {
                 const SizedBox(
                   height: 10,
                 ),
-                Divider(
-                  thickness: .2,
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: RichText(
-                    textScaler: MediaQuery.of(context).textScaler,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Currency:   ",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: currencyPartition.length > 1
-                              ? " ${currencyPartition[0]}\n"
-                              : '',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text: "Total:            ",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: totalPrice.toString(),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        )
-                      ],
+
+                Container(
+                  decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).primaryColorLight.withOpacity(.6),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: EventOnTicketWidget(
+                      event: widget.event!,
+                      currentUserId: widget.currentUserId,
                     ),
-                    textAlign: TextAlign.start,
                   ),
                 ),
+                const SizedBox(
+                  height: 40,
+                ),
+                _divider(),
+                _payoutWidget(
+                  'Currency',
+                  currencyPartition.length > 1
+                      ? " ${currencyPartition[0]}"
+                      : '',
+                ),
+                _divider(),
+                _payoutWidget(
+                  _provider.ticketList.length > 1
+                      ? 'Price\nof tickets'
+                      : 'Ticket price',
+                  totalPrice.toString(),
+                ),
+                _divider(),
+                _payoutWidget(
+                  'Processing fee:',
+                  processingFee.toString(),
+                ),
+                _divider(),
+                _payoutWidget(
+                  'Total:',
+                  finalPrice.toString(),
+                ),
+                _divider(),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: RichText(
+                //     textScaler: MediaQuery.of(context).textScaler,
+                //     text: TextSpan(
+                //       children: [
+                //         TextSpan(
+                //           text: "Currency:   ",
+                //           style: Theme.of(context).textTheme.bodyMedium,
+                //         ),
+                //         TextSpan(
+                //           text: currencyPartition.length > 1
+                //               ? " ${currencyPartition[0]}\n"
+                //               : '',
+                //           style: Theme.of(context).textTheme.bodyLarge,
+                //         ),
+                //         TextSpan(
+                //           text: "Total:            ",
+                //           style: Theme.of(context).textTheme.bodyMedium,
+                //         ),
+                //         TextSpan(
+                //           text: totalPrice.toString(),
+                //           style: Theme.of(context).textTheme.bodyLarge,
+                //         ),
+                //         TextSpan(
+                //           text: "\nProcessing fee:            ",
+                //           style: Theme.of(context).textTheme.bodyMedium,
+                //         ),
+                //         TextSpan(
+                //           text: processingFee.toString(),
+                //           style: Theme.of(context).textTheme.bodyLarge,
+                //         )
+                //       ],
+                //     ),
+                //     textAlign: TextAlign.start,
+                //   ),
+                // ),
                 Divider(
                   thickness: .2,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                // const SizedBox(
+                //   height: 20,
+                // ),
                 _eventOnTicketAndPurchaseButton(),
               ],
             ),
