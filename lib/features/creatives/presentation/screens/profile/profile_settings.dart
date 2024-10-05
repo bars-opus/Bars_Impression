@@ -145,7 +145,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                        text: "Version Release Date: September 2024\n",
+                        text: "Version Release Date: October 2024\n",
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 14.0),

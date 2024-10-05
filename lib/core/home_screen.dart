@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 28 : 28;
+  final int _updateAppVersion = Platform.isIOS ? 29 : 29;
   String notificationMsg = '';
   // bool _isFecthing = true;
 
