@@ -482,26 +482,26 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   //                 height: 10,
   //               ),
   //             if (crew.isNotEmpty)
-  //               Container(
-  //                 padding: EdgeInsets.all(
-  //                     ResponsiveHelper.responsiveWidth(context, 2)),
-  //                 width: double.infinity,
-  //                 decoration: BoxDecoration(
-  //                   borderRadius: BorderRadius.only(
-  //                     topLeft: Radius.circular(10.0),
-  //                     bottomLeft: Radius.circular(10.0),
-  //                   ),
-  //                 ),
-  //                 child: ShedulePeopleHorizontal(
-  //                   event: widget.event,
-  //                   edit: false,
-  //                   from: '',
-  //                   schedulepeople: crew,
-  //                   currentUserId: widget.currentUserId, fromDetails: true,
-  //                   isSponsor: false,
-  //                   // isSponsor: false,
-  //                 ),
-  //               ),
+                // Container(
+                //   padding: EdgeInsets.all(
+                //       ResponsiveHelper.responsiveWidth(context, 2)),
+                //   width: double.infinity,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.only(
+                //       topLeft: Radius.circular(10.0),
+                //       bottomLeft: Radius.circular(10.0),
+                //     ),
+                //   ),
+                //   child: ShedulePeopleHorizontal(
+                //     event: widget.event,
+                //     edit: false,
+                //     from: '',
+                //     schedulepeople: crew,
+                //     currentUserId: widget.currentUserId, fromDetails: true,
+                //     isSponsor: false,
+                //     // isSponsor: false,
+                //   ),
+                // ),
   //             if (crew.isNotEmpty)
   //               const SizedBox(
   //                 height: 40,
@@ -2979,11 +2979,11 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               //     ? SizedBox.shrink()
               //     :
 
-              //      EventTaggedPeople(
-              //         event: widget.event,
-              //         isSponsor: false,
-              //         showTagsOnImage: true,
-              //       )
+                  //  EventTaggedPeople(
+                  //     event: widget.event,
+                  //     isSponsor: false,
+                  //     showTagsOnImage: true,
+                  //   )
             ),
           ),
           _displayReportWarning

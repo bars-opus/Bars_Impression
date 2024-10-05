@@ -32,9 +32,9 @@ Future<void> main() async {
   Hive.registerAdapter(TicketIdModelAdapter());
   Hive.registerAdapter(AccountHolderAuthorAdapter());
   Hive.registerAdapter(UserSettingsLoadingPreferenceModelAdapter());
-  Hive.registerAdapter(UserStoreModelAdapter());
+  // Hive.registerAdapter(UserStoreModelAdapter());
   Hive.registerAdapter(PortfolioModelAdapter());
-  Hive.registerAdapter(PriceModelAdapter());
+  // Hive.registerAdapter(PriceModelAdapter());
     Hive.registerAdapter(PortfolioContactModelAdapter());
 
 
@@ -44,7 +44,7 @@ Future<void> main() async {
   await Hive.openBox<TicketIdModel>('ticketIds');
   await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
   await Hive.openBox<AccountHolderAuthor>('currentUser');
-  await Hive.openBox<UserStoreModel>('accountUserStore');
+  // await Hive.openBox<UserStoreModel>('accountUserStore');
 
   await Hive.openBox<UserSettingsLoadingPreferenceModel>(
       'accountLocationPreference');

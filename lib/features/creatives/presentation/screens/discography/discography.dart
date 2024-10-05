@@ -259,8 +259,8 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     // collaborations
     //     .forEach((collaboration) => provider.setCollaborations(collaboration));
     // // Add price
-    List<PriceModel> priceTags = widget.userPortfolio.priceTags;
-    priceTags.forEach((priceTags) => provider.setPriceRate(priceTags));
+    // List<PriceModel> priceTags = widget.userPortfolio.priceTags;
+    // priceTags.forEach((priceTags) => provider.setPriceRate(priceTags));
 
     // Add professional image urls
     List<String> imageUrls = widget.userPortfolio.professionalImageUrls;
@@ -1275,7 +1275,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
         return BookingCalendar(
           currentUserId: widget.currentUserId,
           bookingUser: widget.userPortfolio,
-          prices: widget.userPortfolio.priceTags,
+          // prices: widget.userPortfolio.priceTags,
           fromPrice: fromPrice,
         );
       },

@@ -53,7 +53,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1a1a1a),
+      backgroundColor: Color(0xFF013e9d),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,

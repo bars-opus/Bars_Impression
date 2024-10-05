@@ -9,20 +9,20 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  int _index = 0;
-  List imgList = [
-    'assets/images/1.png',
-    'assets/images/2.png',
-    'assets/images/3.png',
-  ];
+  // int _index = 0;
+  // List imgList = [
+  //   'assets/images/1.png',
+  //   'assets/images/2.png',
+  //   'assets/images/3.png',
+  // ];
 
-  List<Page> map<Page>(List list, Function handler) {
-    List<Page> result = [];
-    for (var i = 0; i < list.length; i++) {
-      result.add(handler(i, list[i]));
-    }
-    return result;
-  }
+  // List<Page> map<Page>(List list, Function handler) {
+  //   List<Page> result = [];
+  //   for (var i = 0; i < list.length; i++) {
+  //     result.add(handler(i, list[i]));
+  //   }
+  //   return result;
+  // }
 
   PageController _pageController = PageController(
     initialPage: 0,
@@ -31,25 +31,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Duration(seconds: 5), (Timer timer) {
-      if (_index < 2) {
-        _index++;
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            _index,
-            duration: Duration(milliseconds: 2000),
-            curve: Curves.easeInOut,
-          );
-        }
-      } else {
-        _index = 0;
-        if (_pageController.hasClients) {
-          _pageController.jumpToPage(
-            _index,
-          );
-        }
-      }
-    });
+    // Timer.periodic(Duration(seconds: 5), (Timer timer) {
+    //   if (_index < 2) {
+    //     _index++;
+    //     if (_pageController.hasClients) {
+    //       _pageController.animateToPage(
+    //         _index,
+    //         duration: Duration(milliseconds: 2000),
+    //         curve: Curves.easeInOut,
+    //       );
+    //     }
+    //   } else {
+    //     _index = 0;
+    //     if (_pageController.hasClients) {
+    //       _pageController.jumpToPage(
+    //         _index,
+    //       );
+    //     }
+    //   }
+    // });
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setIsLoading(false);
     });
@@ -87,7 +87,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Color(0xFF1a1a1a),
+        color: Color(0xFF013e9d),
       ),
       child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -130,7 +130,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[900],
+      backgroundColor: Color(0xFF013e9d),
       body: SafeArea(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -144,32 +144,46 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
+                    AnimatedCircle(
+                      size: 30,
+                      stroke: 2,
+                      animateSize: true,
+                      animateShape: true,
+                      firstColor: Colors.white,
+                    ),
                     Container(
-                      width: ResponsiveHelper.responsiveWidth(context, 200),
-                      height: ResponsiveHelper.responsiveWidth(context, 200),
-                      child: PageView(
-                          controller: _pageController,
-                          allowImplicitScrolling: true,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          onPageChanged: (int index) {
-                            setState(() {
-                              _index = index;
-                            });
-                          },
-                          children: [
-                            ShakeTransition(
-                              axis: Axis.vertical,
-                              child: _imageContainer(
-                                'assets/images/1.png',
-                              ),
-                            ),
-                            _imageContainer(
-                              'assets/images/2.png',
-                            ),
-                            _imageContainer(
-                              'assets/images/3.png',
-                            ),
-                          ]),
+                      width: ResponsiveHelper.responsiveWidth(context, 100),
+                      height: ResponsiveHelper.responsiveWidth(context, 100),
+                      child: ShakeTransition(
+                        axis: Axis.vertical,
+                        child: _imageContainer(
+                          'assets/images/welcome.png',
+                        ),
+                      ),
+
+                      // PageView(
+                      //     controller: _pageController,
+                      //     allowImplicitScrolling: true,
+                      //     physics: AlwaysScrollableScrollPhysics(),
+                      //     onPageChanged: (int index) {
+                      //       setState(() {
+                      //         _index = index;
+                      //       });
+                      //     },
+                      //     children: [
+                      //       ShakeTransition(
+                      //         axis: Axis.vertical,
+                      //         child: _imageContainer(
+                      //           'assets/images/1.png',
+                      //         ),
+                      //       ),
+                      //       _imageContainer(
+                      //         'assets/images/2.png',
+                      //       ),
+                      //       _imageContainer(
+                      //         'assets/images/3.png',
+                      //       ),
+                      //     ]),
                     ),
                     SizedBox(height: 20),
                     SignUpButton(

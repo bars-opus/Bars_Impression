@@ -6,7 +6,10 @@ class ContentFieldBlack extends StatelessWidget {
   String labelText = '';
   String hintText = '';
   final Function(String) onSavedText;
+  final Function(String)? onChanged;
   final Function onValidateText;
+  final TextInputType textInputType;
+
   final bool onlyBlack;
 
   ContentFieldBlack({
@@ -16,6 +19,8 @@ class ContentFieldBlack extends StatelessWidget {
     required this.hintText,
     required this.labelText,
     this.onlyBlack = true,
+    this.onChanged,
+    this.textInputType = TextInputType.multiline,
   });
 
   @override
@@ -24,7 +29,8 @@ class ContentFieldBlack extends StatelessWidget {
         padding: const EdgeInsets.all(5.0),
         child: Container(
           child: TextFormField(
-            keyboardType: TextInputType.multiline,
+            keyboardType: textInputType,
+            // TextInputType.multiline,
             maxLines: null,
             cursorColor: Colors.blue,
             textCapitalization: TextCapitalization.sentences,
@@ -56,7 +62,7 @@ class ContentFieldBlack extends StatelessWidget {
                 enabledBorder: new UnderlineInputBorder(
                     borderSide: new BorderSide(color: Colors.grey))),
             validator: (string) => onValidateText(string),
-            onChanged: onSavedText,
+            onChanged: onChanged == null ? onSavedText : onChanged,
             onSaved: (_) => onSavedText,
           ),
         ));

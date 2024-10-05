@@ -2,6 +2,7 @@ import 'package:bars/utilities/exports.dart';
 import 'package:bars/utilities/image_handler.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:hive/hive.dart';
 
 class EditProfileProfessional extends StatefulWidget {
   final UserStoreModel user;
@@ -78,8 +79,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     awards.forEach((award) => _provider.setAwards(award));
 
     // // Add user companies
-    // List<PortfolioCompanyModel> companies = widget.user.company;
-    // companies.forEach((company) => _provider.setCompanies(company));
+    List<AppointmentSlotModel> appointments = widget.user.appointmentSlots;
+    appointments
+        .forEach((appointment) => _provider.setAppointmentSlots(appointment));
 
     // Add user contact
     List<PortfolioContactModel> contacts = widget.user.contacts;
@@ -108,8 +110,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     //     .forEach((collaboration) => _provider.setCollaborations(collaboration));
 
     // Add price
-    List<PriceModel> priceTags = widget.user.priceTags;
-    priceTags.forEach((priceTags) => _provider.setPriceRate(priceTags));
+    // List<PriceModel> priceTags = widget.user.priceTags;
+    // priceTags.forEach((priceTags) => _provider.setPriceRate(priceTags));
 
     // Add professional image urls
     List<String> imageUrls = widget.user.professionalImageUrls;
@@ -360,6 +362,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
   _submit() async {
     if (_formKey.currentState!.validate() & !_isLoading) {
+      // final accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
+
       _formKey.currentState!.save();
       var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -426,40 +430,41 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       _provider.setProfessionalImages(professionalImageUrls);
 
       UserStoreModel _userStore = UserStoreModel(
-          userId: _provider.userStore!.userId,
-          userName: _provider.name,
-          storeLogomageUrl: '',
-          storeType: _provider.storeType,
-          verified: _provider.userStore!.verified,
-          terms: _provider.termAndConditions,
-          city: _provider.city,
-          country: _provider.country,
-          overview: _provider.overview,
-          noBooking: _provider.noBooking,
-          awards: _provider.awards,
-          contacts: _provider.bookingContacts,
-          links: _provider.linksToWork,
-          priceTags: _provider.priceRate,
-          services: _provider.services,
-          professionalImageUrls: _provider.professionalImages,
-          dynamicLink: _provider.userStore!.dynamicLink,
-          randomId: _provider.userStore!.randomId,
-          currency: _provider.currency,
-          transferRecepientId: _provider.userStore!.transferRecepientId);
+        userId: widget.user.userId,
+        userName: _provider.name,
+        storeLogomageUrl: '',
+        storeType: _provider.storeType,
+        verified: _provider.userStore!.verified,
+        terms: _provider.termAndConditions,
+        city: _provider.city,
+        country: _provider.country,
+        overview: _provider.overview,
+        accountType: _provider.accountType,
+        noBooking: _provider.noBooking,
+        awards: _provider.awards,
+        contacts: _provider.bookingContacts,
+        links: _provider.linksToWork,
+        // priceTags: _provider.priceRate,
+        services: _provider.services,
+        professionalImageUrls: _provider.professionalImages,
+        dynamicLink: _provider.userStore!.dynamicLink,
+        randomId: _provider.userStore!.randomId,
+        currency: _provider.currency,
+        transferRecepientId: _provider.userStore!.transferRecepientId,
+        maxCapacity: _provider.userStore!.maxCapacity ?? 0,
+        amenities: _provider.userStore!.amenities,
+        averageRating: _provider.userStore!.averageRating ?? 0,
+        openingHours: _provider.openingHours,
+        appointmentSlots: _provider.appointmentSlots,
+      );
 
       try {
         await retry(() => userProfessionalRef.doc(widget.user.userId).update({
               'awards':
                   _provider.awards.map((awards) => awards.toJson()).toList(),
-              // 'collaborations': _provider.collaborations
-              //     .map((collaborations) => collaborations.toJson())
-              //     .toList(),
-              // 'company':
-              //     _provider.company.map((company) => company.toJson()).toList(),
               'contacts': _provider.bookingContacts
                   .map((bookingContacts) => bookingContacts.toJson())
                   .toList(),
-              // 'genreTags': [],
               'links': _provider.linksToWork
                   .map((linksToWork) => linksToWork.toJson())
                   .toList(),
@@ -468,13 +473,16 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               'services': _provider.services
                   .map((services) => services.toJson())
                   .toList(),
-              'priceTags': _provider.priceRate
-                  .map((priceRate) => priceRate.toJson())
+              'appointmentSlots': _provider.appointmentSlots
+                  .map((appointmentSlots) => appointmentSlots.toJson())
                   .toList(),
+              'openingHours': _provider.openingHours.map((key, value) {
+                return MapEntry(key, {
+                  'start': value.start.toIso8601String(),
+                  'end': value.end.toIso8601String(),
+                });
+              }),
               'professionalImageUrls': _provider.professionalImages,
-              // 'skills':
-              //     _provider.skills.map((skills) => skills.toJson()).toList(),
-              // 'subAccountType': [],
               'terms': _provider.termAndConditions,
               'currency': _provider.currency,
             }));
@@ -486,7 +494,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           _provider.userStore!.storeType,
         );
 
-        _provider.setUserStore(_userStore);
+        // _provider.setUserStore(_userStore);
 
         DocumentSnapshot doc =
             await userProfessionalRef.doc(widget.user.userId).get();
@@ -494,6 +502,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         // Assuming 'Event' is a class that can be constructed from a Firestore document
         UserStoreModel updatedUser = UserStoreModel.fromDoc(doc);
         _provider.setUserStore(updatedUser);
+
+        // accountUserStoreBox.put(_userStore.userId, _userStore);
         Navigator.pop(context);
         // Navigator.pop(context);
         // _navigateToPage(
@@ -1497,7 +1507,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         storeType: user.storeType!,
         // company: user.company!,
         profileImageUrl: user.profileImageUrl!,
-        bio: user.bio!,
+        bio: '',
         onPressed: () {
           _provider.setSalon(user.userId!);
 
@@ -2117,7 +2127,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       showCurrencyName: true,
       showCurrencyCode: true,
       onSelect: (Currency currency) {
-        print(currency.code.toString());
+        // print(currency.code.toString());
         _provider.setCurrency('${currency.name} | ${currency.code}');
       },
       favorite: _provider.userLocationPreference!.country == 'Ghana'
@@ -2132,7 +2142,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   );
 
   _handleImageFromGallery() {
-    ImageHandler.handleImageFromGallery(context
+    ImageHandler.handleImageFromGallery(context, true
         // Submit the image file
         // _submitProfileImage(file);
         );
@@ -2153,8 +2163,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                   backgroundColor: Theme.of(context).primaryColorLight,
                   radius: ResponsiveHelper.responsiveHeight(context, 50.0),
                   backgroundImage: ImageHandler.displayProfileImage(
-                    _provider2.userStore!.storeLogomageUrl,
-                    _provider.profileImage,
+                    widget.user.storeLogomageUrl,
+                    _provider.logoImage,
                   ),
                 ),
               )
@@ -2166,8 +2176,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                     backgroundColor: Theme.of(context).primaryColorLight,
                     radius: ResponsiveHelper.responsiveHeight(context, 50.0),
                     backgroundImage: ImageHandler.displayProfileImage(
-                      _provider2.userStore!.storeLogomageUrl,
-                      _provider.profileImage,
+                      widget.user.storeLogomageUrl,
+                      _provider.logoImage,
                     ),
                   ),
                 ),
@@ -2204,6 +2214,361 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     );
   }
 
+  void _showBottomSheetEditOpeningHours() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              padding: const EdgeInsets.all(12),
+              child: EditOpeningHours(
+                openingHours: _provider.openingHours,
+              )),
+        );
+      },
+    );
+  }
+
+  List<WorkersModel> dummyWorkers = [
+    WorkersModel(
+      id: '1',
+      name: 'Alice Johnson',
+      role: ['Hair Stylist', 'Color Specialist'],
+      services: ['Haircut', 'Hair Stylist', 'Hair Coloring', 'Blow Dry'],
+      profileImageUrl: 'https://example.com/images/alice.jpg',
+    ),
+    WorkersModel(
+      id: '2',
+      name: 'Bob Smith',
+      role: ['Massage Therapist', 'Wellness Coach'],
+      services: ['Swedish Massage', 'x', 'Deep Tissue Massage', 'Aromatherapy'],
+      profileImageUrl: 'https://example.com/images/bob.jpg',
+    ),
+  ];
+
+  void _showBottomSheetAddApointments() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              padding: const EdgeInsets.all(12),
+              child: EditApointmentSlot(
+                openingHours: _provider.openingHours,
+                // services: ['Hair Stylist', 'Wellness Coach'],
+                workers: dummyWorkers,
+              )),
+        );
+      },
+    );
+  }
+
+  _logoToOpeningSection() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
+    final UserSettingsLoadingPreferenceModel _userLocation =
+        _provider.userLocationPreference!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(children: [
+        _profileImageWidget(),
+        const SizedBox(
+          height: 30,
+        ),
+        _divider,
+        IntroInfo(
+          leadingIcon: Icons.person_outline,
+          titleColor: Theme.of(context).secondaryHeaderColor,
+          title: 'Account Type',
+          onPressed: () {
+            _navigateToPage(
+              context,
+              EditstoreType(
+                user: _provider.user!,
+              ),
+            );
+          },
+          subTitle: "",
+          icon: Icons.arrow_forward_ios_outlined,
+        ),
+        _divider,
+        IntroInfo(
+          leadingIcon: Icons.location_on_outlined,
+          titleColor: Theme.of(context).secondaryHeaderColor,
+          title: 'Change location',
+          onPressed: () {
+            _navigateToPage(
+              context,
+              EditProfileSelectLocation(
+                user: _userLocation,
+              ),
+            );
+          },
+          subTitle: "",
+          icon: Icons.arrow_forward_ios_outlined,
+        ),
+        _divider,
+        IntroInfo(
+          leadingIcon: Icons.location_on_outlined,
+          titleColor: Theme.of(context).secondaryHeaderColor,
+          title: 'Add Currency',
+          onPressed: () {
+            // Navigator.pop(context);
+            _showCurrencyPicker();
+          },
+          subTitle: "",
+          icon: Icons.arrow_forward_ios_outlined,
+        ),
+        _divider,
+        const SizedBox(
+          height: 30,
+        ),
+        EditProfileTextField(
+          enableBorder: false,
+          labelText: 'Overview',
+          hintText: "  Highlight key points",
+          initialValue: widget.user.overview,
+          onValidateText: (input) =>
+              input!.trim().length < 1 ? 'Not less than a word' : null,
+          onSavedText: (input) => _provider.setOverview(input),
+        ),
+        Text(
+          "Provide a broad perspective of your creativity, usually highlighting key points or essential information without going into specific details.",
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+          ),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        PickOptionWidget(
+          title: 'Change Opening hours',
+          onPressed: () {
+            _showBottomSheetEditOpeningHours();
+          },
+          dropDown: false,
+        ),
+        OpeninHoursWidget(
+          openingHours: _provider.openingHours.isEmpty
+              ? {
+                  "Monday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                  "Tuesday":
+                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                  "Wednesday":
+                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                  "Thursday":
+                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                  "Friday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                  "Saturday":
+                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                  "Sunday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                }
+              : _provider.openingHours,
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+      ]),
+    );
+  }
+
+  _appointmentServiceSection() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: PickOptionWidget(
+          title: 'Add apoinment slots',
+          onPressed: () {
+            _showBottomSheetAddApointments();
+          },
+          dropDown: false,
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      Container(
+        color: Theme.of(context).cardColor,
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: TicketGroup(
+          appointmentSlots: _provider.appointmentSlots,
+          edit: true,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Text(
+          "Provide a broad perspective of your creativity, usually highlighting key points or essential information without going into specific details.",
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+          ),
+        ),
+      ),
+      const SizedBox(
+        height: 30,
+      ),
+    ]);
+  }
+
+  _imageSection() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
+    bool _imageFileNull = _provider.professionalImageFile1 != null &&
+        _provider.professionalImageFile2 != null &&
+        _provider.professionalImageFile3 != null;
+    bool imageUrlIsEmpty = _provider.professionalImages.isEmpty;
+    bool _portfolioIsEmpty =
+        // _provider.skills.isEmpty ||
+        _provider.linksToWork.isEmpty;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(children: [
+        _addPotfolio(
+            'Awards',
+            'Please provide up to six of the most prestigious awards you have won in your creative field. These can include any notable accolades or recognitions you have received for your work.',
+            'portfolio',
+            _provider.awards,
+            _provider.awards.length),
+
+        // _addPotfolio(
+        //     'Collaborations',
+        //     'Please provide up to six examples of your best collaborations. These can include notable projects or partnerships where you have worked alongside other talented individuals or organizations.',
+        //     'collaborations',
+        //     [],
+        //     _provider.collaborations.length),
+        _addPotfolio(
+            'Contacts',
+            'Please provide up to four contacts for your management team. These contact details will allow individuals to reach out and book you for collaborations and business opportunities.',
+            'contacts',
+            [],
+            _provider.bookingContacts.length),
+
+        // const SizedBox(
+        //   height: 30,
+        // ),
+        // _addPotfolio(
+        //     'Prices',
+        //     'Please provide your price list and rates for collaborations, exhibitions, and services. This will allow potential clients and collaborators to have a clear understanding of your pricing structure and make informed decisions when considering working with you.',
+        //     'price',
+        //     [],
+        //     _provider.priceRate.length),
+        _addPotfolio(
+            'Links',
+            'Showcase your work and allow others to see the visual representation of your Salonic creations. This will provide an opportunity for people to gain a better understanding of the quality and style of your work.',
+            'portfolio',
+            _provider.linksToWork,
+            _provider.linksToWork.length),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            GestureDetector(
+              onTap: () => _handleImage('one'),
+              child: _displayPostImage(
+                'one',
+              ),
+            ),
+            GestureDetector(
+              onTap: () => _handleImage('two'),
+              child: _displayPostImage('two'),
+            ),
+            GestureDetector(
+              onTap: () => _handleImage('three'),
+              child: _displayPostImage('three'),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        _isLoadingImage
+            ? LinearProgress()
+            : Text(
+                "Kindly include three professional images on the booking page. These images will provide other users with a clearer insight into the individual they will be engaging with.",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ),
+              ),
+        const SizedBox(
+          height: 30,
+        ),
+        EditProfileTextField(
+          enableBorder: false,
+          labelText: 'Terms and conditions',
+          hintText: " optional (terms and conditions)",
+          initialValue: widget.user.terms,
+          onValidateText: (input) => null,
+          onSavedText: (input) => _provider.setTermsAndConditions(input),
+        ),
+        Text(
+          '(Optional) To ensure transparency and clarify expectations, it is essential for users to include a section for \'Terms and Conditions\' on their booking page. This will outline the agreed-upon terms, conditions, and obligations that both parties must adhere to throughout the booking process.',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+          ),
+        ),
+        const SizedBox(
+          height: 70,
+        ),
+        _isLoading || _provider.isLoading
+            ? CircularProgress(
+                isMini: true,
+                indicatorColor: Colors.blue,
+              )
+            : !_portfolioIsEmpty
+                ? imageUrlIsEmpty || _imageFileNull
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 20.0, bottom: 40),
+                          child: AlwaysWhiteButton(
+                            buttonText: 'Save',
+                            onPressed: () {
+                              _submit();
+                            },
+
+                            // _validateTextToxicity,
+                            //  _submit,
+                            buttonColor: Colors.blue,
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink()
+                : SizedBox.shrink(),
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(
@@ -2225,246 +2590,17 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       title: '',
       widget: Form(
         key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // EditProfileInfo(
-              //   editTitle: 'Booking\nportfolio',
-              //   info:
-              //       'Provide your professional information to facilitate easy connections and recommendations from other users. Make sure to carefully read the instructions under each text field before filling out the forms.',
-              //   icon: Icons.work,
-              // ),
-
-              _profileImageWidget(),
-              const SizedBox(
-                height: 30,
-              ),
-              _divider,
-              IntroInfo(
-                leadingIcon: Icons.person_outline,
-                titleColor: Theme.of(context).secondaryHeaderColor,
-                title: 'Account Type',
-                onPressed: () {
-                  _navigateToPage(
-                    context,
-                    EditstoreType(
-                      user: _provider.user!,
-                    ),
-                  );
-                },
-                subTitle: "",
-                icon: Icons.arrow_forward_ios_outlined,
-              ),
-              _divider,
-              IntroInfo(
-                leadingIcon: Icons.location_on_outlined,
-                titleColor: Theme.of(context).secondaryHeaderColor,
-                title: 'Change location',
-                onPressed: () {
-                  _navigateToPage(
-                    context,
-                    EditProfileSelectLocation(
-                      user: _userLocation,
-                    ),
-                  );
-                },
-                subTitle: "",
-                icon: Icons.arrow_forward_ios_outlined,
-              ),
-              _divider,
-              IntroInfo(
-                leadingIcon: Icons.location_on_outlined,
-                titleColor: Theme.of(context).secondaryHeaderColor,
-                title: 'Add Currency',
-                onPressed: () {
-                  // Navigator.pop(context);
-                  _showCurrencyPicker();
-                },
-                subTitle: "",
-                icon: Icons.arrow_forward_ios_outlined,
-              ),
-              //  PickOptionWidget(
-              //   title: 'Add Currency',
-              //   onPressed: () {
-              //     _showCurrencyPicker();
-              //   },
-              //   dropDown: false,
-              // ),
-              // const SizedBox(
-              //   height: 10,
-              // ),
-              // if (_provider.currency.isNotEmpty)
-              //   Padding(
-              //     padding: const EdgeInsets.only(left: 50.0),
-              //     child: Align(
-              //       alignment: Alignment.topLeft,
-              //       child: Text(
-              //         _provider.currency,
-              //         style: Theme.of(context).textTheme.bodySmall,
-              //       ),
-              //     ),
-              //   ),
-              _divider,
-              const SizedBox(
-                height: 30,
-              ),
-              EditProfileTextField(
-                enableBorder: false,
-                labelText: 'Overview',
-                hintText: "  Highlight key points",
-                initialValue: widget.user.overview,
-                onValidateText: (input) =>
-                    input!.trim().length < 1 ? 'Not less than a word' : null,
-                onSavedText: (input) => _provider.setOverview(input),
-              ),
-              Text(
-                "Provide a broad perspective of your creativity, usually highlighting key points or essential information without going into specific details.",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              // _addPotfolio(
-              //     'Companies',
-              //     'Please provide the name and any other necessary information about the companies you work with or for. As a creative, this can be a record labels, media houses, event houses, or any other relevant organizations.',
-              //     'companies',
-              //     [],
-              //     _provider.company.length),
-              // _addPotfolio(
-              //     'Skills',
-              //     'Please list your skills in your field of work, whether it\'s as a musician, producer, video director, or any other relevant account type. Skills can include dancing, singing, and any other relevant abilities.',
-              //     'portfolio',
-              //     _provider.skills,
-              //     _provider.skills.length),
-              // SizedBox(
-              //   height: 10,
-              // ),
-              _addPotfolio(
-                  'Services',
-                  'Please provide up to six of your best services. These can include music services, dance services, art exhibitions, or any other noteworthy showcases relevant to your creative field.',
-                  'portfolio',
-                  _provider.services,
-                  _provider.services.length),
-              _addPotfolio(
-                  'Awards',
-                  'Please provide up to six of the most prestigious awards you have won in your creative field. These can include any notable accolades or recognitions you have received for your work.',
-                  'portfolio',
-                  _provider.awards,
-                  _provider.awards.length),
-
-              // _addPotfolio(
-              //     'Collaborations',
-              //     'Please provide up to six examples of your best collaborations. These can include notable projects or partnerships where you have worked alongside other talented individuals or organizations.',
-              //     'collaborations',
-              //     [],
-              //     _provider.collaborations.length),
-              _addPotfolio(
-                  'Contacts',
-                  'Please provide up to four contacts for your management team. These contact details will allow individuals to reach out and book you for collaborations and business opportunities.',
-                  'contacts',
-                  [],
-                  _provider.bookingContacts.length),
-
-              // const SizedBox(
-              //   height: 30,
-              // ),
-              _addPotfolio(
-                  'Prices',
-                  'Please provide your price list and rates for collaborations, exhibitions, and services. This will allow potential clients and collaborators to have a clear understanding of your pricing structure and make informed decisions when considering working with you.',
-                  'price',
-                  [],
-                  _provider.priceRate.length),
-              _addPotfolio(
-                  'Links',
-                  'Showcase your work and allow others to see the visual representation of your Salonic creations. This will provide an opportunity for people to gain a better understanding of the quality and style of your work.',
-                  'portfolio',
-                  _provider.linksToWork,
-                  _provider.linksToWork.length),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () => _handleImage('one'),
-                    child: _displayPostImage(
-                      'one',
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _handleImage('two'),
-                    child: _displayPostImage('two'),
-                  ),
-                  GestureDetector(
-                    onTap: () => _handleImage('three'),
-                    child: _displayPostImage('three'),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              _isLoadingImage
-                  ? LinearProgress()
-                  : Text(
-                      "Kindly include three professional images on the booking page. These images will provide other users with a clearer insight into the individual they will be engaging with.",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
-                      ),
-                    ),
-              const SizedBox(
-                height: 30,
-              ),
-              EditProfileTextField(
-                enableBorder: false,
-                labelText: 'Terms and conditions',
-                hintText: " optional (terms and conditions)",
-                initialValue: widget.user.terms,
-                onValidateText: (input) => null,
-                onSavedText: (input) => _provider.setTermsAndConditions(input),
-              ),
-              Text(
-                '(Optional) To ensure transparency and clarify expectations, it is essential for users to include a section for \'Terms and Conditions\' on their booking page. This will outline the agreed-upon terms, conditions, and obligations that both parties must adhere to throughout the booking process.',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                ),
-              ),
-              const SizedBox(
-                height: 70,
-              ),
-              _isLoading || _provider.isLoading
-                  ? CircularProgress(
-                      isMini: true,
-                      indicatorColor: Colors.blue,
-                    )
-                  : !_portfolioIsEmpty
-                      ? !imageUrlIsEmpty || _imageFileNull
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20.0, bottom: 40),
-                                child: AlwaysWhiteButton(
-                                  buttonText: 'Save',
-                                  onPressed: _validateTextToxicity,
-                                  //  _submit,
-                                  buttonColor: Colors.blue,
-                                ),
-                              ),
-                            )
-                          : SizedBox.shrink()
-                      : SizedBox.shrink(),
-              const SizedBox(
-                height: 70,
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _logoToOpeningSection(),
+            _appointmentServiceSection(),
+            _imageSection(),
+            const SizedBox(
+              height: 70,
+            ),
+          ],
         ),
       ),
     );

@@ -23,6 +23,25 @@ class StorageService {
     return downloadUrl;
   }
 
+  static Future<String> uploadSotreLogo(
+      // String url,
+      String userId,
+      File imageFile) async {
+    // String? photoId = Uuid().v4();
+    File? image = await compressImage(userId, imageFile);
+
+    // if (url.isNotEmpty) {
+    //   RegExp exp = RegExp(r'userProfile_(.*).jpg');
+    //   photoId = exp.firstMatch(url)![1];
+    // }
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    UploadTask uploadTask = storageRef
+        .child('images/logos/$currentUserId/soreLogos_$userId.jpg')
+        .putFile(image!);
+    String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+    return downloadUrl;
+  }
+
   static Future<String> uploadUserprofessionalPicture1(
       String url, File imageFile) async {
     String? photoId = Uuid().v4();

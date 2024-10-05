@@ -5,7 +5,7 @@
 // Displayed Data: Dates and times of confirmed bookings.
 // Purpose: To keep track of when events are scheduled and avoid double-booking.
 
-import 'package:bars/features/creatives/models/price_order_model.dart';
+import 'package:bars/features/creatives/models/Price_order_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookingModel {
@@ -20,7 +20,7 @@ class BookingModel {
   String description;
   String specialRequirements;
   String answer;
-  PriceModel priceRate;
+  PriceModel? priceRate;
   bool isFinalPaymentMade;
   bool isdownPaymentMade;
   // final String serviceStatus;
@@ -144,7 +144,7 @@ class BookingModel {
       'answer': answer,
       'isdownPaymentMade': isdownPaymentMade,
       'reNogotiate': reNogotiate,
-      'priceRate': priceRate.toJson(),
+      'priceRate': priceRate!.toJson(),
       'isFinalPaymentMade': isFinalPaymentMade,
       'timestamp': timestamp,
       'startTime': startTime,

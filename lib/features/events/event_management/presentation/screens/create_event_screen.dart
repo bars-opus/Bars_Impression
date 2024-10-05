@@ -54,8 +54,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
 // Text editing controllers
 //   final _addressSearchController = TextEditingController();
-//   final _ticketTypeController = TextEditingController();
-//   final _tagNameController = TextEditingController();
+  // final _ticketTypeController = TextEditingController();
+  // final _tagNameController = TextEditingController();
 //   final _priceController = TextEditingController();
 //   final _schedulePerfomerController = TextEditingController();
 //   final _contactController = TextEditingController();
@@ -1173,13 +1173,13 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 //             onTap: () {
 //               FocusScope.of(context).unfocus();
 //             },
-//             child: Container(
-//               height: ResponsiveHelper.responsiveHeight(context, 700),
-//               decoration: BoxDecoration(
-//                   color: Theme.of(context).cardColor,
-//                   borderRadius: BorderRadius.circular(30)),
-//               padding: const EdgeInsets.all(12),
-//               child: Scaffold(
+            // child: Container(
+            //   height: ResponsiveHelper.responsiveHeight(context, 700),
+            //   decoration: BoxDecoration(
+            //       color: Theme.of(context).cardColor,
+            //       borderRadius: BorderRadius.circular(30)),
+            //   padding: const EdgeInsets.all(12),
+            //   child: Scaffold(
 //                 backgroundColor: Colors.transparent,
 //                 body: ListView(
 //                   children: [

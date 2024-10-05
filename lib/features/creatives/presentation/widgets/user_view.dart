@@ -76,7 +76,7 @@ class _UserViewState extends State<UserView> {
         return BookingCalendar(
           currentUserId: widget.currentUserId,
           bookingUser: widget.userProfessional,
-          prices: widget.userProfessional.priceTags,
+          // prices: widget.userProfessional.priceTags,
         );
       },
     );

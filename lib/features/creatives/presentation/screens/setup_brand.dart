@@ -16,12 +16,13 @@ class _SetUpBrandState extends State<SetUpBrand> {
   String _userName = '';
   File? _profileImage;
   String _storeType = '';
+  String _accountType = '';
   String selectedValue = '';
   String query = "";
   late TextEditingController _namecontroller;
   late PageController _pageController;
   int _index = 0;
-  final _bioTextController = TextEditingController();
+  // final _bioTextController = TextEditingController();
   final UsernameService _usernameService = UsernameService();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
@@ -35,9 +36,12 @@ class _SetUpBrandState extends State<SetUpBrand> {
       text: _userName,
     );
     _namecontroller.addListener(_oninputChanged);
-    _bioTextController.addListener(_oninputChanged);
+    // _bioTextController.addListener(_oninputChanged);
 
     selectedValue = _storeType.isEmpty ? '' : _storeType;
+
+    selectedValue = _accountType.isEmpty ? '' : _accountType;
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       var _provider = Provider.of<UserData>(context, listen: false);
       _provider.setIsLoading(false);
@@ -49,8 +53,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   void _oninputChanged() {
-    if (_namecontroller.text.trim().isNotEmpty ||
-        _bioTextController.text.trim().isNotEmpty) {
+    if (_namecontroller.text.trim().isNotEmpty
+        // ||
+        //     _bioTextController.text.trim().isNotEmpty
+
+        ) {
       _isTypingNotifier.value = true;
     } else {
       _isTypingNotifier.value = false;
@@ -75,7 +82,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   @override
   void dispose() {
     _namecontroller.dispose();
-    _bioTextController.dispose();
+    // _bioTextController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -113,122 +120,155 @@ class _SetUpBrandState extends State<SetUpBrand> {
     return FileImage(_profileImage!);
   }
 
+  // Future<void> changeUsername(
+  //     String oldUsername, String newUsername, String userId) async {
+  //   final _firestore = FirebaseFirestore.instance;
+
+  //   try {
+  //     await _firestore.runTransaction((transaction) async {
+  //       DocumentSnapshot oldUsernameDoc = await transaction
+  //           .get(_firestore.collection('usernames').doc(oldUsername));
+
+  //       if (!oldUsernameDoc.exists) {
+  //         throw Exception('Old $oldUsername does not exist $newUsername');
+  //       }
+
+  //       DocumentSnapshot newUsernameDoc = await transaction
+  //           .get(_firestore.collection('usernames').doc(newUsername));
+  //       bool isTaken = await DatabaseService.isUsernameTaken(newUsername);
+
+  //       if (isTaken || newUsernameDoc.exists) {
+  //         throw Exception(
+  //             'The username you entered is already taken. Please choose a different username.');
+  //       }
+
+  //       // Create the new username document
+  //       DocumentReference newUsernameRef =
+  //           _firestore.collection('usernames').doc(newUsername.toUpperCase());
+  //       transaction.set(newUsernameRef, oldUsernameDoc.data());
+  //       transaction.update(
+  //         usersAuthorRef.doc(userId),
+  //         {
+  //           'userName': newUsername.toUpperCase(),
+  //         },
+  //       );
+
+  //       transaction.update(
+  //         userProfessionalRef.doc(userId),
+  //         {
+  //           'userName': newUsername.toUpperCase(),
+  //         },
+  //       );
+
+  //       // Delete the old username document
+  //       DocumentReference oldUsernameRef =
+  //           _firestore.collection('usernames').doc(oldUsername);
+  //       transaction.delete(oldUsernameRef);
+
+  //       _updateAuthorHive(newUsername.toUpperCase());
+  //       // Update the global user object
+  //       Provider.of<UserData>(context, listen: false)
+  //           .setChangeUserName(newUsername.toUpperCase());
+  //       animateToPage(1);
+  //       // widget.user.userName = newUsername;
+  //     });
+  //   } catch (e) {
+  //     // Rethrow the caught exception to handle it in the _validate method
+  //     throw e;
+  //   }
+  // }
+
   Future<void> changeUsername(
-      String oldUsername, String newUsername, String userId) async {
-    final _firestore = FirebaseFirestore.instance;
+    // BuildContext context,
+    // String oldUsername,
+    String newUsername,
+    // String userId,
+    //  bool isSetUp
+    // PageController? pageController
+  ) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersAuthorRef.doc(_provider.currentUserId),
+      {
+        'userName': newUsername,
+      },
+    );
 
     try {
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot oldUsernameDoc = await transaction
-            .get(_firestore.collection('usernames').doc(oldUsername));
+      await batch.commit();
 
-        if (!oldUsernameDoc.exists) {
-          throw Exception('Old $oldUsername does not exist $newUsername');
-        }
-
-        DocumentSnapshot newUsernameDoc = await transaction
-            .get(_firestore.collection('usernames').doc(newUsername));
-        bool isTaken = await DatabaseService.isUsernameTaken(newUsername);
-
-        if (isTaken || newUsernameDoc.exists) {
-          throw Exception(
-              'The username you entered is already taken. Please choose a different username.');
-        }
-
-        // Create the new username document
-        DocumentReference newUsernameRef =
-            _firestore.collection('usernames').doc(newUsername.toUpperCase());
-        transaction.set(newUsernameRef, oldUsernameDoc.data());
-        transaction.update(
-          usersAuthorRef.doc(userId),
-          {
-            'userName': newUsername.toUpperCase(),
-          },
-        );
-
-        transaction.update(
-          userProfessionalRef.doc(userId),
-          {
-            'userName': newUsername.toUpperCase(),
-          },
-        );
-
-        // Delete the old username document
-        DocumentReference oldUsernameRef =
-            _firestore.collection('usernames').doc(oldUsername);
-        transaction.delete(oldUsernameRef);
-
-        _updateAuthorHive(newUsername.toUpperCase());
-        // Update the global user object
-        Provider.of<UserData>(context, listen: false)
-            .setChangeUserName(newUsername.toUpperCase());
-        animateToPage(1);
-        // widget.user.userName = newUsername;
-      });
+      await HiveUtils.updateAuthorHive(context, newUsername, '', '',
+          _provider.storeType, _provider.accountType);
+      animateToPage(1);
+      _provider.setIsLoading(false);
     } catch (e) {
-      // Rethrow the caught exception to handle it in the _validate method
-      throw e;
+      _provider.setIsLoading(false);
+      mySnackBar(context, e.toString());
     }
   }
 
-  _updateAuthorHive(String userName) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  // _updateAuthorHive(String userName) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   // Create a new instance of AccountHolderAuthor with the updated name
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     // name: _provider.name,
+  //     // bio: '',
+  //     disabledAccount: false,
+  //     // isShop: _provider.user!.isShop,
+  //     dynamicLink: '',
+  //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
+  //     storeType: '',
+  //     profileImageUrl: '',
+  //     reportConfirmed: false,
+  //     userId: _provider.currentUserId,
+  //     userName: userName,
+  //     verified: false,
+  //     // isShop: false,
+  //     disableChat: false, accountType: _provider.accountType,
+  //   );
+  //   // Put the new object back into the box with the same key
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
+
+  // _updateAuthorProfiHandleHive(String storeType, String link) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   // Create a new instance of AccountHolderAuthor with the updated name
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     // name: _provider.name,
+  //     // isShop: _provider.user!.isShop,
+  //     accountType: _provider.accountType,
+  //     // bio: '',
+  //     disabledAccount: false,
+  //     dynamicLink: link,
+  //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
+  //     storeType: storeType,
+  //     profileImageUrl: '',
+  //     reportConfirmed: false,
+  //     userId: _provider.currentUserId,
+  //     userName: _provider.changeNewUserName,
+  //     verified: false,
+  //     // isShop: false,
+  //     disableChat: false,
+  //   );
+  //   // Put the new object back into the box with the same key
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
+
+  _updateAuthorBioAndImgeUrlHive(String profileImageUrl, String link) {
+    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
     var _provider = Provider.of<UserData>(context, listen: false);
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
       // name: _provider.name,
-      bio: '',
-      disabledAccount: false,
-      isShop: _provider.user!.isShop,
-      dynamicLink: '',
-      lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      storeType: '',
-      profileImageUrl: '',
-      reportConfirmed: false,
-      userId: _provider.currentUserId,
-      userName: userName,
-      verified: false,
-      // isShop: false,
-      disableChat: false,
-    );
-    // Put the new object back into the box with the same key
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
-
-  _updateAuthorProfiHandleHive(String storeType, String link) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
-    var _provider = Provider.of<UserData>(context, listen: false);
-    // Create a new instance of AccountHolderAuthor with the updated name
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // name: _provider.name,
-      isShop: _provider.user!.isShop,
-      bio: '',
-      disabledAccount: false,
-      dynamicLink: link,
-      lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      storeType: storeType,
-      profileImageUrl: '',
-      reportConfirmed: false,
-      userId: _provider.currentUserId,
-      userName: _provider.changeNewUserName,
-      verified: false,
-      // isShop: false,
-      disableChat: false,
-    );
-    // Put the new object back into the box with the same key
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
-
-  _updateAuthorBioAndImgeUrlHive(
-      String bio, String profileImageUrl, String link) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
-    var _provider = Provider.of<UserData>(context, listen: false);
-    // Create a new instance of AccountHolderAuthor with the updated name
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // name: _provider.name,
-      bio: bio,
-      isShop: _provider.user!.isShop,
+      // bio: bio,
+      // isShop: _provider.user!.isShop,
+      accountType: _provider.accountType,
       disabledAccount: false,
       dynamicLink: link,
       lastActiveDate: Timestamp.fromDate(DateTime.now()),
@@ -248,66 +288,72 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   _validateTextToxicityBio(AccountHolderAuthor user) async {
-    animateToPage(1);
+    // animateToPage(1);
+    _submitProfileImage(user);
     // var _provider = Provider.of<UserData>(context, listen: false);
-    TextModerator moderator = TextModerator();
-    // Define the texts to be checked
-    List<String> textsToCheck = [_bioTextController.text.trim()];
-    // Set a threshold for toxicity that is appropriate for your app
-    const double toxicityThreshold = 0.7;
-    bool allTextsValid = true;
-    for (String text in textsToCheck) {
-      if (text.isEmpty) {
-        // Handle the case where the text is empty
-        _submitProfileImage(user);
-        allTextsValid = false;
-        break; // Exit loop as there is an empty text
-      }
-      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
-      // Check if the API call was successful
-      if (analysisResult != null) {
-        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
-            ['summaryScore']['value'];
-        if (toxicityScore >= toxicityThreshold) {
-          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
-          mySnackBarModeration(context,
-              'Your bio,contains inappropriate content. Please review');
-          allTextsValid = false;
-          animateBack();
-          break; // Exit loop as we already found inappropriate content
-        }
-      } else {
-        // Handle the case where the API call failed
-        mySnackBar(context, 'Try again.');
-        animateBack();
-        allTextsValid = false;
-        break; // Exit loop as there was an API error
-      }
-    }
-    // Animate to the next page if all texts are valid
-    if (allTextsValid) {
-      _submitProfileImage(user); // animateToPage(1);
-    }
+    // TextModerator moderator = TextModerator();
+    // // Define the texts to be checked
+    // List<String> textsToCheck = [_bioTextController.text.trim()];
+    // // Set a threshold for toxicity that is appropriate for your app
+    // const double toxicityThreshold = 0.7;
+    // bool allTextsValid = true;
+    // for (String text in textsToCheck) {
+    //   if (text.isEmpty) {
+    //     // Handle the case where the text is empty
+    //     _submitProfileImage(user);
+    //     allTextsValid = false;
+    //     break; // Exit loop as there is an empty text
+    //   }
+    //   Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+    //   // Check if the API call was successful
+    //   if (analysisResult != null) {
+    //     double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+    //         ['summaryScore']['value'];
+    //     if (toxicityScore >= toxicityThreshold) {
+    //       // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+    //       mySnackBarModeration(context,
+    //           'Your bio,contains inappropriate content. Please review');
+    //       allTextsValid = false;
+    //       animateBack();
+    //       break; // Exit loop as we already found inappropriate content
+    //     }
+    //   } else {
+    //     // Handle the case where the API call failed
+    //     mySnackBar(context, 'Try again.');
+    //     animateBack();
+    //     allTextsValid = false;
+    //     break; // Exit loop as there was an API error
+    //   }
+    // }
+    // // Animate to the next page if all texts are valid
+    // if (allTextsValid) {
+    //   _submitProfileImage(user); // animateToPage(1);
+    // }
   }
 
   _validate(BuildContext context) async {
-    var _changeUserName =
-        Provider.of<UserData>(context, listen: false).changeNewUserName;
+    // var _changeUserName =
+    //     Provider.of<UserData>(context, listen: false).changeNewUserName;
     final form = _formKey.currentState;
     if (form!.validate()) {
       form.save();
       // Check if the username has changed
-      if (_changeUserName == _namecontroller.text.trim()) {
-        Navigator.pop(context);
-      } else {
-        try {
-          // var currentUser = Provider.of<UserData>(context, listen: false).user;
-          await _usernameService.validateTextToxicity(
-              context, _changeUserName, _namecontroller, true, _pageController);
-          // _validateTextToxicity(_changeUserName);
-        } catch (e) {
-          mySnackBar(context, e.toString());
+      // if (_changeUserName == _namecontroller.text.trim()) {
+      //   Navigator.pop(context);
+      // }
+      // else {
+      try {
+        // var currentUser = Provider.of<UserData>(context, listen: false).user;
+        bool validated = await _usernameService.validateTextToxicity(
+            context, _namecontroller.text.trim(), _pageController);
+
+        if (validated) {
+          changeUsername(_namecontroller.text.trim());
         }
+        // _validateTextToxicity(_changeUserName);
+      } catch (e) {
+        mySnackBar(context, e.toString());
+        // }
       }
     }
   }
@@ -316,6 +362,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     var _provider = Provider.of<UserData>(context, listen: false);
     String currentUserId = _provider.currentUserId!;
     if (_formKey.currentState!.validate() && !_provider.isLoading) {
+      animateToPage(1);
       _provider.setIsLoading(true);
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
@@ -331,38 +378,48 @@ class _SetUpBrandState extends State<SetUpBrand> {
       }
 
       String profileImageUrl = _profileImageUrl;
-      String bio = _bioTextController.text.trim().replaceAll('\n', ' ');
+      // String bio = _bioTextController.text.trim().replaceAll('\n', ' ');
 
       try {
-        String link = await DatabaseService.myDynamicLink(
-          profileImageUrl,
-          _provider.changeNewUserName.isEmpty
-              ? _namecontroller.text.toUpperCase()
-              : _provider.changeNewUserName.toUpperCase(),
-          bio,
-          'https://www.barsopus.com/user_$currentUserId',
-        );
+        String link = '';
+
+        // await DatabaseService.myDynamicLink(
+        //   profileImageUrl,
+        //   _provider.changeNewUserName.isEmpty
+        //       ? _namecontroller.text.toUpperCase()
+        //       : _provider.changeNewUserName.toUpperCase(),
+        //   '',
+        //   'https://www.barsopus.com/user_$currentUserId',
+        // );
         WriteBatch batch = FirebaseFirestore.instance.batch();
         batch.update(
           usersAuthorRef.doc(currentUserId),
           {
             'dynamicLink': link,
             'profileImageUrl': profileImageUrl,
-            'bio': bio,
+            // 'bio': bio,
           },
         );
 
-        batch.update(
-          userProfessionalRef.doc(currentUserId),
-          {
-            'dynamicLink': link,
-            'profileImageUrl': profileImageUrl,
-            'bio': bio,
-          },
+        // batch.update(
+        //   userProfessionalRef.doc(currentUserId),
+        //   {
+        //     'dynamicLink': link,
+        //     'profileImageUrl': profileImageUrl,
+        //     // 'bio': bio,
+        //   },
+        // );
+        await batch.commit();
+        HiveUtils.updateAuthorHive(
+          context,
+          _provider.user!.userName!,
+          _profileImageUrl,
+          '',
+          _provider.storeType,
+          _provider.accountType,
         );
-        batch.commit();
-        _updateAuthorBioAndImgeUrlHive(bio, profileImageUrl, link);
-        _bioTextController.clear();
+        // _updateAuthorBioAndImgeUrlHive(profileImageUrl, link);
+        // _bioTextController.clear();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => ConfigPage()),
             (Route<dynamic> route) => false);
@@ -429,53 +486,120 @@ class _SetUpBrandState extends State<SetUpBrand> {
       batch.commit();
       _provider.setstoreType(_storeType);
       animateToPage(1);
-      _updateAuthorProfiHandleHive(_storeType, link);
+      // _updateAuthorProfiHandleHive(_storeType, link);
     } catch (e) {
       _showBottomSheetErrorMessage();
     }
     _provider.setIsLoading(false);
   }
 
-  static const values = <String>[
+  _submitAccountType() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    _provider.setIsLoading(true);
+    String currentUserId = _provider.currentUserId!;
+    if (_accountType.isEmpty) {
+      _accountType = 'Client';
+    }
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersAuthorRef.doc(currentUserId),
+      {
+        'accountType': _accountType,
+      },
+    );
+
+    batch.update(
+      userProfessionalRef.doc(currentUserId),
+      {
+        'accountType': _accountType,
+      },
+    );
+
+    try {
+      await batch.commit();
+      // await HiveUtils.updateUserStore(
+      //     context,
+      //     _provider.userStore!.storeLogomageUrl,
+      //     _provider.storeType,
+      //     _accountType);
+      await HiveUtils.updateAuthorHive(
+          context,
+          _provider.user!.userName!,
+          _provider.user!.profileImageUrl!,
+          _provider.user!.dynamicLink!,
+          _provider.storeType,
+          _accountType);
+      _provider.setAccountType(_accountType);
+      _provider.setIsLoading(false);
+      if (_accountType == 'Shop') Navigator.pop(context);
+      animateToPage(1);
+
+      // _updateAuthorProfiHandleHive(_accountType, _provider.user!.dynamicLink!);
+    } catch (e) {
+      _provider.setIsLoading(false);
+      _showBottomSheetErrorMessage();
+    }
+  }
+
+  _updateStore() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    _provider.setIsLoading(true);
+    String currentUserId = _provider.currentUserId!;
+
+    if (_storeType.isEmpty) {
+      _storeType = 'Shop';
+    }
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersAuthorRef.doc(currentUserId),
+      {
+        'storeType': _storeType,
+      },
+    );
+    batch.update(
+      userProfessionalRef.doc(currentUserId),
+      {
+        'storeType': _storeType,
+      },
+    );
+
+    try {
+      await batch.commit();
+      // await HiveUtils.updateUserStore(
+      //     context, '', _storeType, _provider.accountType);
+      await HiveUtils.updateAuthorHive(context, _provider.user!.userName!, '',
+          _provider.user!.dynamicLink!, _storeType, _provider.accountType);
+      _provider.setstoreType(_storeType);
+      _provider.setIsLoading(false);
+      // animateToPage(1);
+      // _updateAuthorHive(_storeType);
+    } catch (error) {
+      _provider.setIsLoading(false);
+      _showBottomSheetErrorMessage();
+      // Handle the error appropriately
+    }
+  }
+
+  static const storeType = <String>[
     "Salon",
     "Barbershop",
     "Spa",
-    // "Blogger",
-    // "Brand_Influencer",
-    // 'Caterers',
-    // "Choire",
-    // "Content_creator",
-    // "Dancer",
-    // 'Decorator',
-    // "DJ",
-    // "Event_organiser",
-    // "Graphic_Designer",
-    // "Instrumentalist",
-    // "Makeup_Salon",
-    // "MC(Host)",
-    // "Videographer",
-    // "Photographer",
-    // "Producer",
-    // 'Sound_and_Light',
-    // "Record_Label",
-    // "Video_Vixen",
-    // "Fan",
   ];
 
-  Widget buildRadios() => Theme(
+  Widget buildRadios(BuildContext context) => Theme(
         data: Theme.of(context).copyWith(
-          unselectedWidgetColor: Colors.black,
+          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
         ),
         child: Column(
-            children: values.map((value) {
-          var _provider = Provider.of<UserData>(context, listen: false);
-
+            children: storeType.map((value) {
           final selected = this.selectedValue == value;
-          final color = selected
-              ? Colors.blue
-              : _provider.int2 == 2
-                  ? Colors.black
-                  : Colors.white;
+          final color =
+              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
           return RadioListTile<String>(
             value: value,
@@ -493,12 +617,93 @@ class _SetUpBrandState extends State<SetUpBrand> {
             onChanged: (value) => setState(
               () {
                 _storeType = this.selectedValue = value!;
-                _submitstoreType();
+                _updateStore();
+
+                _submitAccountType();
+
+                // _submitstoreType();
               },
             ),
           );
         }).toList()),
       );
+
+  static const accountType = <String>[
+    "Client",
+    "Shop",
+    "Worker",
+  ];
+
+  Widget buildAccountTypeRadios() => Theme(
+        data: Theme.of(context).copyWith(
+          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
+        ),
+        child: Column(
+            children: accountType.map((value) {
+          var _provider = Provider.of<UserData>(context, listen: false);
+
+          final selected = this.selectedValue == value;
+          final color =
+              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
+
+          return RadioListTile<String>(
+            value: value,
+            groupValue: selectedValue,
+            title: Text(
+              value,
+              style: TextStyle(
+                  color: color,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  fontWeight: this.selectedValue == value
+                      ? FontWeight.bold
+                      : FontWeight.normal),
+            ),
+            activeColor: Colors.blue,
+            onChanged: (value) => setState(
+              () {
+                _accountType = this.selectedValue = value!;
+                // _submitAccountType();
+                _accountType == 'Shop'
+                    ? _showBottomSheetStoreType(context)
+                    : _submitAccountType();
+              },
+            ),
+          );
+        }).toList()),
+      );
+
+  void _showBottomSheetStoreType(BuildContext context) {
+    // bool _isAuthor = user.userId == widget.currentUserId;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 600),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2),
+            child: MyBottomModelSheetAction(
+              actions: [
+                Icon(
+                  size: ResponsiveHelper.responsiveHeight(context, 25),
+                  Icons.horizontal_rule,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                _selectStoreype(context),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   animateBack() {
     FocusScope.of(context).unfocus();
@@ -815,7 +1020,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                             : SizedBox(height: 50),
                       _directionWidget(
                           'Select username',
-                          'Choose a username for your brand. If you\'re a music creative, it can be your stage name. Remember, all usernames are converted to uppercase.',
+                          'Please enter a username. If you are setting up a shop, do not use your shop name for this field. Instead, enter a username. You will receive materials later to provide your shop information.',
                           false,
                           _provider.int2 == 1),
                       const SizedBox(height: 40),
@@ -832,7 +1037,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                             inputColor: Colors.black,
                             notLogin: true,
                             controller: _namecontroller,
-                            hintText: 'A unique name to be identified with',
+                            hintText: 'A username to be identified with',
                             labelText: 'Username',
                             onValidateText: (input) {
                               if (input!.trim().length < 1) {
@@ -901,11 +1106,50 @@ class _SetUpBrandState extends State<SetUpBrand> {
               ),
             _directionWidget(
               'Select Account Type',
-              'Choose an account type that allows other users to easily identify you for business purposes. You can select only one account type at a time.',
+              'Please select an account type that best represents your role. This will help other users easily identify you for business purposes. You can select only one account type at a time.',
               true,
               _provider.int2 == 2,
             ),
-            buildRadios(),
+            buildAccountTypeRadios(),
+            const SizedBox(
+              height: 50.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _selectStoreype(BuildContext context) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_provider.isLoading)
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: CircularProgress(
+                    isMini: true,
+                    indicatorColor: Colors.blue,
+                  ),
+                ),
+              ),
+            _directionWidget(
+              'Select Account Type',
+              '',
+              false,
+              _provider.int2 == 2,
+            ),
+            buildRadios(context),
             const SizedBox(
               height: 50.0,
             ),
@@ -948,14 +1192,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
                             alignment: Alignment.centerRight,
                             child: MiniCircularProgressButton(
                               color: Colors.blue,
-                              text: _bioTextController.text.isNotEmpty ||
-                                      _profileImage != null
-                                  ? 'Save'
-                                  : 'Skip',
-                              onPressed: _bioTextController.text
-                                          .trim()
-                                          .isNotEmpty ||
-                                      _profileImage != null
+                              text: _profileImage != null ? 'Save' : 'Skip',
+                              onPressed: _profileImage != null
                                   ? () {
                                       _validateTextToxicityBio(user);
                                     }
@@ -969,8 +1207,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
                             ))
                         : SizedBox(),
                     _directionWidget(
-                      'Set photo and bio',
-                      'Choose a brand picture that represents your identity. Utilize the bio text field to share more about yourself, allowing others to get to know you better.',
+                      'Set photo',
+                      'If you are setting up a shop, do not upload your shop logo here. Instead, upload your personal photo as the owner of the shop. You will receive materials later to provide your shop information.',
                       false,
                       _provider.int2 == 3,
                     ),
@@ -1118,16 +1356,16 @@ class _SetUpBrandState extends State<SetUpBrand> {
     );
   }
 
-  _animatedContainerWrapper(bool value, Widget child) {
-    return IgnorePointer(
-      ignoring: !value,
-      child: AnimatedOpacity(
-          opacity: value ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 1300),
-          curve: Curves.easeInOut,
-          child: child),
-    );
-  }
+  // _animatedContainerWrapper(bool value, Widget child) {
+  //   return IgnorePointer(
+  //     ignoring: !value,
+  //     child: AnimatedOpacity(
+  //         opacity: value ? 1.0 : 0.0,
+  //         duration: Duration(milliseconds: 1300),
+  //         curve: Curves.easeInOut,
+  //         child: child),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

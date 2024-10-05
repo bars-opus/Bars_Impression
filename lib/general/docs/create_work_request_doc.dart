@@ -143,7 +143,7 @@ class CreateWorkRequestDoc extends StatelessWidget {
                       UserBarcode(
                         profileImageUrl: _user!.profileImageUrl!,
                         userDynamicLink: _user.dynamicLink!,
-                        bio: _user.bio!,
+                        bio:'',
                         userName: _user.userName!,
                         userId: _user.userId!,
                       ));

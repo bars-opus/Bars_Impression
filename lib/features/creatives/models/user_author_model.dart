@@ -3,50 +3,56 @@ import 'package:hive_flutter/hive_flutter.dart';
 part 'user_author_model.g.dart';
 
 @HiveType(typeId: 7) // Use unique IDs for different classes
-
 class AccountHolderAuthor {
   @HiveField(0)
   final String? userId;
+
   @HiveField(1)
   final String? userName;
+
   @HiveField(2)
   final String? profileImageUrl;
+
   @HiveField(3)
   final bool? verified;
+
   @HiveField(4)
   final String? storeType;
+
   @HiveField(5)
-  // final String? name;
-  // @HiveField(6)
-  final String? bio;
-  @HiveField(6)
   final String? dynamicLink;
-  @HiveField(7)
+
+  @HiveField(6)
   final bool? disabledAccount;
-  @HiveField(8)
+
+  @HiveField(7)
   final bool? reportConfirmed;
-  @HiveField(9)
+
+  @HiveField(8)
   final Timestamp? lastActiveDate;
 
-    @HiveField(10)
+  @HiveField(9)
   final bool? disableChat;
-    @HiveField(11)
-  final bool? isShop;
+
+  // @HiveField(10)
+  // final bool? isShop;
+
+  @HiveField(10)
+  final String? accountType;
 
   AccountHolderAuthor({
     required this.userId,
     required this.userName,
     required this.profileImageUrl,
-    required this.bio,
     required this.storeType,
     required this.verified,
-    // required this.name,
+    required this.accountType,
     required this.dynamicLink,
     required this.disabledAccount,
     required this.reportConfirmed,
     required this.lastActiveDate,
-    required this.isShop,
-     required this.disableChat,
+    // required this.isShop,
+    required this.disableChat,
   });
 
   factory AccountHolderAuthor.fromDoc(DocumentSnapshot doc) {
@@ -54,17 +60,14 @@ class AccountHolderAuthor {
       userId: doc.id,
       userName: doc['userName'] ?? '',
       profileImageUrl: doc['profileImageUrl'],
-      bio: doc['bio'] ?? '',
       storeType: doc['storeType'] ?? 'Fan',
       dynamicLink: doc['dynamicLink'] ?? '',
       verified: doc['verified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       reportConfirmed: doc['reportConfirmed'] ?? false,
-      isShop: doc['isShop'] ?? false,
-            disableChat: doc['disableChat'] ?? false,
-
-      
-      // name: doc['name'] ?? '',
+      // isShop: doc['isShop'] ?? false,
+      disableChat: doc['disableChat'] ?? false,
+      accountType: doc['accountType'] ?? '',
       lastActiveDate:
           doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
     );
@@ -74,23 +77,18 @@ class AccountHolderAuthor {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return AccountHolderAuthor(
       userId: doc.id,
-      // name: data['name'] ?? '',
+      accountType: data['accountType'] ?? 'Client',
       dynamicLink: data['dynamicLink'] ?? '',
       lastActiveDate:
-          doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
-
+          data['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
       userName: data['userName'] ?? '',
       profileImageUrl: data['profileImageUrl'],
-      bio: data['bio'] ?? '',
-      storeType: data['storeType'] ?? 'Fan',
+      storeType: data['storeType'] ?? '',
       verified: data['verified'] ?? false,
       disabledAccount: data['disabledAccount'] ?? false,
       reportConfirmed: data['reportConfirmed'] ?? false,
-      isShop: data['isShop'] ?? false,
-        disableChat: data['disableChat'] ?? false,
-      
-      // other fields...
+      // isShop: data['isShop'] ?? false,
+      disableChat: data['disableChat'] ?? false,
     );
   }
 }
-

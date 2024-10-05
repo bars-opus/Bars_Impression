@@ -87,7 +87,7 @@ class _AcceptTermsState extends State<AcceptTerms>
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
-            backgroundColor: Colors.blue[900],
+            backgroundColor: Color(0xFF013e9d),
             body: SingleChildScrollView(
               child: Container(
                 width: width,

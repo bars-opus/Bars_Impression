@@ -5,12 +5,14 @@ class AnimatedCircle extends StatefulWidget {
   final bool animateShape;
   final int size;
   final int stroke;
+  final Color firstColor;
 
   AnimatedCircle({
     this.animateSize = false,
     this.animateShape = false,
     this.size = 100,
     this.stroke = 5,
+    this.firstColor = Colors.red,
   });
 
   @override
@@ -32,7 +34,8 @@ class _AnimatedCircleState extends State<AnimatedCircle>
       vsync: this,
     )..repeat(reverse: true);
 
-    _colorAnimation = ColorTween(begin: Colors.blue, end: Colors.red).animate(
+    _colorAnimation =
+        ColorTween(begin: widget.firstColor, end: Colors.blue).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
@@ -40,8 +43,8 @@ class _AnimatedCircleState extends State<AnimatedCircle>
     );
 
     _shapeAnimation = BorderRadiusTween(
-      begin: BorderRadius.circular(0),
-      end: BorderRadius.circular(50),
+      begin: BorderRadius.circular(50),
+      end: BorderRadius.circular(0),
     ).animate(
       CurvedAnimation(
         parent: _controller,

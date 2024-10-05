@@ -37,7 +37,7 @@ class UserData extends ChangeNotifier {
   late String _email;
   late String _storeType;
   late String _dressCode;
-  late String _previousEvent;
+  late String currentVisitors;
   late ChatMessage? _replyChatMessage;
   late EventRoomMessageModel? _replyEventRoomMessage;
   late String _messageAuthorId;
@@ -83,13 +83,19 @@ class UserData extends ChangeNotifier {
   late int _creatIconIndex;
   late bool _creatIconIsSelected;
 
+  late int? _averageRating;
+  late int? _maxCapacity;
+  late List<String> _amenities;
+  late Map<String, DateTimeRange> _openingHours;
+  late List<AppointmentSlotModel> _appointmentSlots;
+
 // event variables
   List<TaggedEventPeopleModel> _taggedEventPeople = [];
   List<SchedulePeopleModel> _schedulePerson = [];
   List<TicketModel> _ticketList = [];
   late String _title;
   late String _theme;
-  late String _host;
+  // late int _currentVisitors;
   late String _venue;
   late String _address;
   late String _type;
@@ -129,13 +135,13 @@ class UserData extends ChangeNotifier {
   late List<TicketModel> _ticketListDraft = [];
   late String _titleDraft;
   late String _themeDraft;
-  late String _hostDraft;
+  // late String _currentVisitorsDraft;
   late String _venueDraft;
   late String _addressDraft;
   late String _typeDraft;
-  late String _previousEventDraft;
+  late String currentVisitorsDraft;
 
-  late String _categoryDraft;
+  late String _accountType;
   late String _subCategoryDraft;
   late String _eventIdDraft;
   late Timestamp _startDateDraft;
@@ -186,6 +192,8 @@ class UserData extends ChangeNotifier {
   late bool _enlargeEndBarcode;
   late File? _postImage;
   late File? _profileImage;
+
+  late File? _logoImage;
   late File? _messageImage;
   late PriceModel? _bookingPriceRate;
   late File? _image;
@@ -211,7 +219,7 @@ class UserData extends ChangeNotifier {
     _musicLink = '';
     hashTagg = '';
     _punchline = '';
-    _host = '';
+    // _currentVisitors = 0;
     _venue = '';
     _address = '';
     _type = '';
@@ -219,7 +227,7 @@ class UserData extends ChangeNotifier {
     _subCategory = '';
     _eventTermsAndConditions = '';
     _dressCode = '';
-    _previousEvent = '';
+    currentVisitors = '';
     _eventId = '';
     _city = '';
     _country = '';
@@ -303,6 +311,7 @@ class UserData extends ChangeNotifier {
     _workRequestisEvent = false;
     _postImage = null;
     _profileImage = null;
+    _logoImage = null;
     _messageImage = null;
     _bookingPriceRate = null;
     _image = null;
@@ -346,12 +355,12 @@ class UserData extends ChangeNotifier {
     _ticketListDraft = [];
     _titleDraft = '';
     _themeDraft = '';
-    _hostDraft = '';
+    // _currentVisitorsDraft = '';
     _venueDraft = '';
     _addressDraft = '';
     _typeDraft = '';
-    _previousEventDraft = '';
-    _categoryDraft = '';
+    currentVisitorsDraft = '';
+    _accountType = '';
     _subCategoryDraft = '';
     _eventIdDraft = '';
     _startDateDraft = Timestamp.now();
@@ -387,6 +396,12 @@ class UserData extends ChangeNotifier {
     _isFreeDraft = false;
     _isCashPaymentDraft = false;
     _isExternalTicketPaymentDraft = false;
+
+    _averageRating = null;
+    _maxCapacity = null;
+    _amenities = [];
+    _openingHours = {};
+    _appointmentSlots = [];
   }
 
   // Getters
@@ -397,13 +412,13 @@ class UserData extends ChangeNotifier {
   List<TicketModel> get ticketListDraft => _ticketListDraft;
   String get titleDraft => _titleDraft;
   String get themeDraft => _themeDraft;
-  String get hostDraft => _hostDraft;
+  // String get currentVisitorsDraft => _currentVisitorsDraft;
   String get venueDraft => _venueDraft;
   String get addressDraft => _addressDraft;
   String get typeDraft => _typeDraft;
-  String get previousEventDraft => _previousEventDraft;
+  String get previousEventDraft => currentVisitorsDraft;
 
-  String get categoryDraft => _categoryDraft;
+  String get accountType => _accountType;
   String get subCategoryDraft => _subCategoryDraft;
   String get eventId => _eventId;
   Timestamp get startDateDraft => _startDateDraft;
@@ -455,7 +470,6 @@ class UserData extends ChangeNotifier {
   String get musicLink => _musicLink;
   String get hashTagTagg => hashTagg;
   String get punchline => _punchline;
-  String get host => _host;
   String get venue => _venue;
   String get address => _address;
   String get type => _type;
@@ -472,7 +486,7 @@ class UserData extends ChangeNotifier {
   String get clossingDate => _clossingDate;
   String get ticketNames => _ticketNames;
   String get dressCode => _dressCode;
-  String get previousEvent => _previousEvent;
+  String get previousEvent => currentVisitors;
   String get dj => _eventId;
   Timestamp get startDate => _startDate;
   Timestamp get sheduleDateTemp => _sheduleDateTemp;
@@ -543,6 +557,10 @@ class UserData extends ChangeNotifier {
   File? get messageImage => _messageImage;
   PriceModel? get bookingPriceRate => _bookingPriceRate;
   File? get profileImage => _profileImage;
+ File? get logoImage => _logoImage;
+
+
+  
   File? get professionalImageFile1 => _professionalImageFile1;
   File? get professionalImageFile2 => _professionalImageFile2;
   File? get professionalImageFile3 => _professionalImageFile3;
@@ -550,6 +568,13 @@ class UserData extends ChangeNotifier {
   PickedFile? get videoFile1 => _videoFile1;
   AccountHolderAuthor? get user => _user;
   UserStoreModel? get userStore => _userStore;
+
+  List<String> get amenities => _amenities;
+  int? get maxCapacity => _maxCapacity;
+  int? get averageRating => _averageRating;
+  Map<String, DateTimeRange> get openingHours => _openingHours;
+
+  List<AppointmentSlotModel> get appointmentSlots => _appointmentSlots;
 
   UserSettingsGeneralModel? get userGeneraSentenceser => _userGeneraSentence;
   UserSettingsLoadingPreferenceModel? get userLocationPreference =>
@@ -633,8 +658,28 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setHost(String host) {
-    _host = host;
+  void setAverageRating(int? averageRating) {
+    _averageRating = averageRating;
+    notifyListeners();
+  }
+
+  void setMaxCapacity(int? maxCapacity) {
+    _maxCapacity = maxCapacity;
+    notifyListeners();
+  }
+
+  void setAmenities(List<String> amenities) {
+    _amenities = amenities;
+    notifyListeners();
+  }
+
+  void setAppointmentSlots(AppointmentSlotModel appointmentSlots) {
+    _appointmentSlots.add(appointmentSlots);
+    notifyListeners();
+  }
+
+  void setOpeningHours(Map<String, DateTimeRange> openingHours) {
+    _openingHours = openingHours;
     notifyListeners();
   }
 
@@ -669,7 +714,7 @@ class UserData extends ChangeNotifier {
   }
 
   void setPreviousEvent(String previousEvent) {
-    _previousEvent = previousEvent;
+    currentVisitors = previousEvent;
     notifyListeners();
   }
 
@@ -953,6 +998,13 @@ class UserData extends ChangeNotifier {
     _profileImage = profileImage;
     notifyListeners();
   }
+
+  void setLogoImage(File? logoImage) {
+    _logoImage = logoImage;
+    notifyListeners();
+  }
+
+  
 
   void setImage(File? image) {
     _image = image;
@@ -1317,10 +1369,10 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setHostDraft(String host) {
-    _hostDraft = host;
-    notifyListeners();
-  }
+  // void setHostDraft(String currentVisitors) {
+  //   _currentVisitorsDraft = currentVisitors;
+  //   notifyListeners();
+  // }
 
   void setVenueDraft(String venue) {
     _venueDraft = venue;
@@ -1338,12 +1390,12 @@ class UserData extends ChangeNotifier {
   }
 
   void setPreviousEventDraftDraft(String previousEventDraft) {
-    _previousEventDraft = previousEventDraft;
+    currentVisitorsDraft = previousEventDraft;
     notifyListeners();
   }
 
-  void setCategoryDraft(String category) {
-    _categoryDraft = category;
+  void setAccountType(String accountType) {
+    _accountType = accountType;
     notifyListeners();
   }
 

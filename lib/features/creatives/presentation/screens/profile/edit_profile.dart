@@ -1,12 +1,16 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/utilities/image_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final AccountHolderAuthor user;
+  final UserStoreModel userStore;
+
   EditProfileScreen({
     required this.user,
+    required this.userStore,
   });
 
   @override
@@ -15,7 +19,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  File? _profileImage;
+  // File? _profileImage;
   String _newProfileImageUrl = '';
 
   String _name = '';
@@ -30,71 +34,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     _name = widget.user.userName!;
     _userName = widget.user.userName!;
-    _bio = widget.user.bio!;
+    // _bio = widget.user.bio!;
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       var _provider = Provider.of<UserData>(context, listen: false);
       _provider.setIsLoading(false);
     });
   }
 
-  _handleImageFromGallery() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-
-    final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
-    if (file == null) return;
-    try {
-      // ignore: unnecessary_null_comparison
-      _provider.setIsLoading(true);
-      bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
-          context, file as File);
-
-      if (isHarmful) {
-        mySnackBarModeration(context,
-            'Harmful content detected. Please choose a different image. Please review');
-        _provider.setIsLoading(false);
-      } else {
-        _submitProfileImage(file);
-        // if (mounted) {
-        //   setState(() {
-        // // _provider.setIsLoading(false);
-        // _profileImage = file;
-        //   });
-        // }
-      }
-    } catch (e) {
-      setState(() {
-        _provider.setIsLoading(false);
-        _profileImage = null;
-      });
-      mySnackBar(context,
-          'An error occured\nCheck your internet connection and try again.');
-    }
-  }
-
-  Future<File> _cropImage(File imageFile) async {
-    File? croppedImage = await ImageCropper().cropImage(
-      sourcePath: imageFile.path,
-      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
-    );
-    return croppedImage!;
-  }
-
-  _displayProfileImage() {
-    if (_profileImage == null) {
-      if (widget.user.profileImageUrl!.isEmpty) {
-        return AssetImage(
-          'assets/images/user_placeholder2.png',
+  _handleImageFromGallery() {
+    ImageHandler.handleImageFromGallery(context, false
+        // Submit the image file
+        // _submitProfileImage(file);
         );
-      } else {
-        return CachedNetworkImageProvider(widget.user.profileImageUrl!,
-            errorListener: (_) {
-          return;
-        });
-      }
-    } else {
-      return FileImage(_profileImage!);
-    }
   }
+  // _handleImageFromGallery() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+
+  //   final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
+  //   if (file == null) return;
+  //   try {
+  //     // ignore: unnecessary_null_comparison
+  //     _provider.setIsLoading(true);
+  //     bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
+  //         context, file as File);
+
+  //     if (isHarmful) {
+  //       mySnackBarModeration(context,
+  //           'Harmful content detected. Please choose a different image. Please review');
+  //       _provider.setIsLoading(false);
+  //     } else {
+  //       _submitProfileImage(file);
+  //       // if (mounted) {
+  //       //   setState(() {
+  //       // // _provider.setIsLoading(false);
+  //       // _profileImage = file;
+  //       //   });
+  //       // }
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       _provider.setIsLoading(false);
+  //       _profileImage = null;
+  //     });
+  //     mySnackBar(context,
+  //         'An error occured\nCheck your internet connection and try again.');
+  //   }
+  // }
+
+  // Future<File> _cropImage(File imageFile) async {
+  //   File? croppedImage = await ImageCropper().cropImage(
+  //     sourcePath: imageFile.path,
+  //     aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
+  //   );
+  //   return croppedImage!;
+  // }
+
+  // _displayProfileImage() {
+  //   if (_profileImage == null) {
+  //     if (widget.user.profileImageUrl!.isEmpty) {
+  //       return AssetImage(
+  //         'assets/images/user_placeholder2.png',
+  //       );
+  //     } else {
+  //       return CachedNetworkImageProvider(widget.user.profileImageUrl!,
+  //           errorListener: (_) {
+  //         return;
+  //       });
+  //     }
+  //   } else {
+  //     return FileImage(_profileImage!);
+  //   }
+  // }
 
   _flushBar(String title, String subTitle) {
     return mySnackBar(context, '$title\n$subTitle');
@@ -156,7 +166,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           batch.commit();
         } catch (error) {}
 
-        _updateAuthorHive(name, bio, _profileImageUrl, dynamicLink);
+        _updateAuthorHive(
+          name,
+          bio,
+          _profileImageUrl,
+        );
 
         Navigator.pop(context);
         _flushBar(
@@ -177,80 +191,80 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  _submitProfileImage(File? profileImage) async {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // _submitProfileImage(File? profileImage) async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    if (!_isLoading) {
-      // setState(() {
-      //   _isLoading = true;
-      // });
+  //   if (!_isLoading) {
+  //     // setState(() {
+  //     //   _isLoading = true;
+  //     // });
 
-      String _profileImageUrl = '';
+  //     String _profileImageUrl = '';
 
-      if (profileImage == null) {
-        _profileImageUrl = widget.user.profileImageUrl!;
-      } else {
-        _profileImageUrl = await StorageService.uploadUserProfileImage(
-          //  widget.user.profileImageUrl!,
-          widget.user.userId!,
-          profileImage,
-        );
-      }
+  //     if (profileImage == null) {
+  //       _profileImageUrl = widget.user.profileImageUrl!;
+  //     } else {
+  //       _profileImageUrl = await StorageService.uploadUserProfileImage(
+  //         //  widget.user.profileImageUrl!,
+  //         widget.user.userId!,
+  //         profileImage,
+  //       );
+  //     }
 
-      // String name = widget.user.name!.trim().replaceAll('\n', ' ');
-      // String bio = widget.user.bio!.trim().replaceAll('\n', ' ');
-      String dynamicLink = await DatabaseService.myDynamicLink(
-        _profileImageUrl,
-        widget.user.userName!,
-        widget.user.bio!,
-        'https://www.barsopus.com/user_${_provider.currentUserId}',
-      );
+  //     // String name = widget.user.name!.trim().replaceAll('\n', ' ');
+  //     // String bio = widget.user.bio!.trim().replaceAll('\n', ' ');
+  //     String dynamicLink = '';
 
-      try {
-        WriteBatch batch = FirebaseFirestore.instance.batch();
-        batch.update(
-          usersAuthorRef.doc(widget.user.userId),
-          {
-            // 'name': name,
-            'profileImageUrl': _profileImageUrl,
-            // 'bio': bio,
-            // 'dynamicLink': dynamicLink,
-          },
-        );
+  //     // await DatabaseService.myDynamicLink(
+  //     //   _profileImageUrl,
+  //     //   widget.user.userName!,
+  //     //   '',
+  //     //   'https://www.barsopus.com/user_${_provider.currentUserId}',
+  //     // );
 
-        batch.update(
-          userProfessionalRef.doc(widget.user.userId),
-          {
-            'profileImageUrl': _profileImageUrl,
-            'dynamicLink': dynamicLink,
-          },
-        );
+  //     try {
+  //       WriteBatch batch = FirebaseFirestore.instance.batch();
+  //       batch.update(
+  //         usersAuthorRef.doc(widget.user.userId),
+  //         {
+  //           // 'name': name,
+  //           'profileImageUrl': _profileImageUrl,
+  //           // 'bio': bio,
+  //           // 'dynamicLink': dynamicLink,
+  //         },
+  //       );
 
-        try {
-          batch.commit();
-        } catch (error) {}
+  //       batch.update(
+  //         userProfessionalRef.doc(widget.user.userId),
+  //         {
+  //           // 'profileImageUrl': _profileImageUrl,
+  //           'dynamicLink': dynamicLink,
+  //         },
+  //       );
 
-        _updateAuthorHive(widget.user.userName!, widget.user.bio!,
-            _profileImageUrl, dynamicLink);
-      } catch (e) {
-        _showBottomSheetErrorMessage('Failed change profile picture');
+  //       try {
+  //         batch.commit();
+  //       } catch (error) {}
 
-        // _flushBar(
-        //   'Error',
-        //   "result.toString()",
-        // );
-      }
-      setState(() {
-        _newProfileImageUrl = _profileImageUrl;
+  // _updateAuthorHive(widget.user.userName!, _profileImageUrl, dynamicLink);
+  //     } catch (e) {
+  //       _showBottomSheetErrorMessage('Failed change profile picture');
 
-        _profileImage = profileImage;
-        _provider.setIsLoading(false);
-      });
-    }
-  }
+  //       // _flushBar(
+  //       //   'Error',
+  //       //   "result.toString()",
+  //       // );
+  //     }
+  //     setState(() {
+  //       _newProfileImageUrl = _profileImageUrl;
 
-  _updateAuthorHive(
-      String name, String bio, String profileImageUrl, String link) {
+  //       _profileImage = profileImage;
+  //       _provider.setIsLoading(false);
+  //     });
+  //   }
+  // }
+
+  _updateAuthorHive(String name, String profileImageUrl, String link) {
     final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -258,7 +272,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
       // name: name,
-      bio: bio,
+      // bio: bio,
+      accountType: _provider.user!.accountType,
       disabledAccount: _provider.user!.disabledAccount,
       dynamicLink: link,
       lastActiveDate: _provider.user!.lastActiveDate,
@@ -269,7 +284,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
       // isShop: _provider.user!.isShop,
-      disableChat: _provider.user!.disableChat, isShop: _provider.user!.isShop,
+      disableChat: _provider.user!.disableChat,
+      //  isShop: _provider.user!.isShop,
     );
 
     // Put the new object back into the box with the same key
@@ -458,11 +474,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
- var _divider = Divider(
-      thickness: .2,
-      color: Colors.grey,
-    );
-    
+  var _divider = Divider(
+    thickness: .2,
+    color: Colors.grey,
+  );
+
   _editPageOptionWidget() {
     var _provider = Provider.of<UserData>(context, listen: false);
     var _provider2 = Provider.of<UserData>(
@@ -471,26 +487,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final UserSettingsLoadingPreferenceModel _user =
         _provider.userLocationPreference!;
-   
+
     return Column(
       children: [
-        // IntroInfo(
-        //   leadingIcon: Icons.person_outline,
-        //   titleColor: Theme.of(context).secondaryHeaderColor,
-        //   title: 'Account Type',
-        //   onPressed: () {
-        //     _navigateToPage(
-        //       context,
-        //       EditstoreType(
-        //         user: widget.user,
-        //       ),
-        //     );
-        //   },
-        //   subTitle: "",
-        //   icon: Icons.arrow_forward_ios_outlined,
-        // ),
-        // _divider,
-        if (!widget.user.isShop!)
+        if (_provider2.user!.accountType != 'Shop')
+          IntroInfo(
+            leadingIcon: Icons.person_outline,
+            titleColor: Theme.of(context).secondaryHeaderColor,
+            title: 'Account Type',
+            onPressed: () {
+              _navigateToPage(
+                context,
+                EditstoreType(
+                  user: widget.user,
+                ),
+              );
+            },
+            subTitle: "",
+            icon: Icons.arrow_forward_ios_outlined,
+          ),
+        if (_provider2.user!.accountType != 'Shop') _divider,
+        if (_provider2.user!.accountType != 'Shop')
           IntroInfo(
             leadingIcon: Icons.location_on_outlined,
             titleColor: Theme.of(context).secondaryHeaderColor,
@@ -507,8 +524,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             subTitle: "",
             icon: Icons.arrow_forward_ios_outlined,
           ),
-        if (!widget.user.isShop!) _divider,
-        if (widget.user.isShop!)
+        if (_provider2.user!.accountType == 'Shop') _divider,
+        if (_provider2.user!.accountType == 'Shop')
           _provider2.isLoading
               ? _loadingPortfolio(true, () {})
               : IntroInfo(
@@ -535,7 +552,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           _navigateToPage(
                             context,
                             EditProfileProfessional(
-                              user: _provider.userStore!,
+                              user: widget.userStore,
                             ),
                           );
                           //   } else {
@@ -649,21 +666,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _provider.isLoading
             ? SchimmerSkeleton(
                 schimmerWidget: CircleAvatar(
-                    backgroundColor: Theme.of(context).primaryColorLight,
-                    radius: ResponsiveHelper.responsiveHeight(context, 50.0),
-                    backgroundImage: _displayProfileImage()),
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  radius: ResponsiveHelper.responsiveHeight(context, 50.0),
+                  backgroundImage: ImageHandler.displayProfileImage(
+                    _provider.user!.profileImageUrl,
+                    _provider.profileImage,
+                  ),
+                ),
               )
             : Hero(
                 tag: 'container1' + widget.user.userId.toString(),
                 child: GestureDetector(
                   onTap: _handleImageFromGallery,
-                  child: Icon(
-                    Icons.account_circle,
-                    color: Colors.grey,
-                    size: ResponsiveHelper.responsiveHeight(context, 80),
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColorLight,
+                    radius: ResponsiveHelper.responsiveHeight(context, 50.0),
+                    backgroundImage: ImageHandler.displayProfileImage(
+                      _provider.user!.profileImageUrl,
+                      _provider.profileImage,
+                    ),
                   ),
                 ),
               ),
+        //  Hero(
+        //     tag: 'container1' + widget.user.userId.toString(),
+        //     child: GestureDetector(
+        //       onTap: _handleImageFromGallery,
+        //       child: Icon(
+        //         Icons.account_circle,
+        //         color: Colors.grey,
+        //         size: ResponsiveHelper.responsiveHeight(context, 80),
+        //       ),
+        //     ),
+        //   ),
         OutlinedButton(
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.transparent,
@@ -757,6 +792,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
+    var _provider2 = Provider.of<UserData>(
+      context,
+    );
+
     final UserSettingsLoadingPreferenceModel? _user =
         _provider.userLocationPreference;
 
@@ -781,37 +820,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       // _name == widget.user.name &&
 
-      _bio == widget.user.bio
-          ? SizedBox()
-          : _isLoading
-              ? Padding(
-                  padding: const EdgeInsets.only(
-                    right: 20.0,
+      // _bio == widget.user.bio
+      //     ? SizedBox()
+      //     :
+
+      _isLoading
+          ? Padding(
+              padding: const EdgeInsets.only(
+                right: 20.0,
+              ),
+              child: SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                  valueColor: new AlwaysStoppedAnimation<Color>(
+                    Colors.blue,
                   ),
-                  child: SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                        Colors.blue,
-                      ),
-                      strokeWidth:
-                          ResponsiveHelper.responsiveFontSize(context, 2.0),
-                    ),
-                  ),
-                )
-              : Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0, bottom: 20),
-                    child: MiniCircularProgressButton(
-                        dontShowShadow: true,
-                        color: Colors.blue,
-                        text: 'Save',
-                        onPressed: () {}),
-                  ),
+                  strokeWidth:
+                      ResponsiveHelper.responsiveFontSize(context, 2.0),
                 ),
+              ),
+            )
+          : Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0, bottom: 20),
+                child: MiniCircularProgressButton(
+                    dontShowShadow: true,
+                    color: Colors.blue,
+                    text: 'Save',
+                    onPressed: () {}),
+              ),
+            ),
       Form(
         key: _formKey,
         child: Padding(
@@ -821,8 +862,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 // const SizedBox(
                 //   height: 20.0,
                 // ),
-                if (!widget.user.isShop!) _profileImageWidget(),
-                if (!widget.user.isShop!)
+                if (_provider2.user!.accountType != 'Shop')
+                  _profileImageWidget(),
+                if (_provider2.user!.accountType == 'Shop')
                   const SizedBox(
                     height: 40,
                   ),

@@ -15,13 +15,17 @@ class EditstoreType extends StatefulWidget {
 class _EditstoreTypeState extends State<EditstoreType> {
   final _formKey = GlobalKey<FormState>();
   String _storeType = '';
-  String selectedValue = '';
+  String _accountType = '';
+  String selectedStoreValue = '';
+  String selectedAccountValue = '';
 
   @override
   void initState() {
     super.initState();
     _storeType = widget.user.storeType!;
-    selectedValue = _storeType.isEmpty ? values.last : _storeType;
+    _accountType = widget.user.accountType!;
+    selectedStoreValue = _storeType.isEmpty ? values.last : _storeType;
+    selectedAccountValue = _accountType.isEmpty ? values.last : _accountType;
   }
 
   void _showBottomSheetErrorMessage() {
@@ -42,20 +46,55 @@ class _EditstoreTypeState extends State<EditstoreType> {
     );
   }
 
-  _submit() async {
-    if (_storeType.isEmpty) {
-      _storeType = 'Fan';
+  _updateAccountType() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    if (_accountType.isEmpty) {
+      _accountType = 'Client';
     }
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersAuthorRef.doc(widget.user.userId),
+      {
+        'accountType': _accountType,
+      },
+    );
+
+    batch.update(
+      userProfessionalRef.doc(widget.user.userId),
+      {
+        'accountType': _accountType,
+      },
+    );
+
     try {
-      // widget.user.verified! ? _update() : _unVerify();
-      _update();
-    } catch (e) {
-      _showBottomSheetErrorMessage();
+      await batch.commit();
+      // await HiveUtils.updateUserStore(
+      //     context,
+      //     _provider.userStore!.storeLogomageUrl,
+      //     _provider.userStore!.storeType,
+      //     _accountType);
+      await HiveUtils.updateAuthorHive(
+          context,
+          _provider.user!.userName!,
+          _provider.user!.profileImageUrl!,
+          _provider.user!.dynamicLink!,
+          _provider.user!.storeType!,
+          _accountType);
+      // _updateAuthorHive(_storeType);
+    } catch (error) {
+      // Handle the error appropriately
     }
   }
 
-  _update() async {
+  _updateStore() async {
     var _provider = Provider.of<UserData>(context, listen: false);
+
+    if (_storeType.isEmpty) {
+      _storeType = 'Shop';
+    }
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
@@ -65,7 +104,6 @@ class _EditstoreTypeState extends State<EditstoreType> {
         'storeType': _storeType,
       },
     );
-
     batch.update(
       userProfessionalRef.doc(widget.user.userId),
       {
@@ -75,12 +113,18 @@ class _EditstoreTypeState extends State<EditstoreType> {
 
     try {
       await batch.commit();
-      await HiveUtils.updateUserLocation(
-        context,
-        _provider.userStore!.city,
-        _provider.userStore!.country,
-        _storeType,
-      );
+      // await HiveUtils.updateUserStore(
+      //     context,
+      //     _provider.userStore!.storeLogomageUrl,
+      //     _storeType,
+      //     _provider.userStore!.accountType!);
+      await HiveUtils.updateAuthorHive(
+          context,
+          _provider.user!.userName!,
+          _provider.user!.profileImageUrl!,
+          _provider.user!.dynamicLink!,
+          _storeType,
+          _provider.user!.accountType!);
       // _updateAuthorHive(_storeType);
     } catch (error) {
       // Handle the error appropriately
@@ -198,9 +242,9 @@ class _EditstoreTypeState extends State<EditstoreType> {
     // "Fan",
   ];
 
-  Widget buildRadios() => Column(
+  Widget buildRadios(BuildContext context) => Column(
           children: values.map((value) {
-        final selected = this.selectedValue == value;
+        final selected = this.selectedStoreValue == value;
         final color =
             selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
@@ -210,21 +254,22 @@ class _EditstoreTypeState extends State<EditstoreType> {
                   Theme.of(context).secondaryHeaderColor)),
           child: RadioListTile<String>(
             value: value,
-            groupValue: selectedValue,
+            groupValue: selectedStoreValue,
             title: Text(
               value,
               style: TextStyle(
                   color: color,
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  fontWeight: this.selectedValue == value
+                  fontWeight: this.selectedStoreValue == value
                       ? FontWeight.bold
                       : FontWeight.normal),
             ),
             activeColor: Colors.blue,
             onChanged: (value) => setState(
               () {
-                _storeType = this.selectedValue = value!;
-                _submit();
+                _storeType = this.selectedStoreValue = value!;
+                Navigator.pop(context);
+                _updateStore();
               },
             ),
           ),
@@ -235,6 +280,78 @@ class _EditstoreTypeState extends State<EditstoreType> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
+  _selectStoreype(BuildContext context) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_provider.isLoading)
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: CircularProgress(
+                    isMini: true,
+                    indicatorColor: Colors.blue,
+                  ),
+                ),
+              ),
+            // _directionWidget(
+            //   'Select Account Type',
+            //   '',
+            //   false,
+            //   _provider.int2 == 2,
+            // ),
+            buildRadios(context),
+            const SizedBox(
+              height: 50.0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBottomSheetStoreType(BuildContext context) {
+    // bool _isAuthor = user.userId == widget.currentUserId;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 600),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2),
+            child: MyBottomModelSheetAction(
+              actions: [
+                Icon(
+                  size: ResponsiveHelper.responsiveHeight(context, 25),
+                  Icons.horizontal_rule,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                _selectStoreype(context),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -256,6 +373,48 @@ class _EditstoreTypeState extends State<EditstoreType> {
       },
     );
   }
+
+  static const accountType = <String>[
+    "Client",
+    "Shop",
+    "Worker",
+  ];
+
+  Widget buildAccountTypeRadios() => Theme(
+        data: Theme.of(context).copyWith(
+          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
+        ),
+        child: Column(
+            children: accountType.map((value) {
+          var _provider = Provider.of<UserData>(context, listen: false);
+
+          final selected = this.selectedAccountValue == value;
+          final color =
+              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
+
+          return RadioListTile<String>(
+            value: value,
+            groupValue: selectedAccountValue,
+            title: Text(
+              value,
+              style: TextStyle(
+                  color: color,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  fontWeight: this.selectedAccountValue == value
+                      ? FontWeight.bold
+                      : FontWeight.normal),
+            ),
+            activeColor: Colors.blue,
+            onChanged: (value) => setState(
+              () {
+                _accountType = this.selectedAccountValue = value!;
+                _updateAccountType();
+                if (_accountType == 'Shop') _showBottomSheetStoreType(context);
+              },
+            ),
+          );
+        }).toList()),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +452,7 @@ class _EditstoreTypeState extends State<EditstoreType> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Column(
-                            children: <Widget>[buildRadios()],
+                            children: <Widget>[buildAccountTypeRadios()],
                           )
                         ],
                       ),

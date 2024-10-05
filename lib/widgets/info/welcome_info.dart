@@ -41,7 +41,7 @@ class WelcomeInfo extends StatelessWidget {
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 20.0),
-                        color: Colors.lightBlueAccent[200],
+                        color: Colors.white,
                       )),
                   TextSpan(
                     text: subTitle,
@@ -57,7 +57,7 @@ class WelcomeInfo extends StatelessWidget {
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 12.0),
-                        color: Colors.lightBlueAccent[200],
+                        color: Colors.grey,
                       ),
                     ),
                 ],

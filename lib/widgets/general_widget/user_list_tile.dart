@@ -81,15 +81,15 @@ class UserListTile extends StatelessWidget {
                         ResponsiveHelper.responsiveFontSize(context, 12.0),
                     color: Colors.blue,
                   )),
-              Text(
-                user.bio!,
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-                  color: Colors.grey,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              // Text(
+              //   user.bio!,
+              //   style: TextStyle(
+              //     fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              //     color: Colors.grey,
+              //   ),
+              //   maxLines: 2,
+              //   overflow: TextOverflow.ellipsis,
+              // ),
               SizedBox(
                 height: 10.0,
               ),

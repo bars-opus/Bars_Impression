@@ -1,7 +1,5 @@
 import 'dart:ui';
-import 'package:bars/features/creatives/presentation/screens/no_followers.dart';
-import 'package:bars/features/creatives/presentation/screens/profile/edit_profile_professional.dart';
-import 'package:bars/features/creatives/presentation/screens/setup_brand.dart';
+
 import 'package:bars/utilities/exports.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/scheduler.dart';
@@ -134,8 +132,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     // collaborations
     //     .forEach((collaboration) => provider.setCollaborations(collaboration));
     // // Add price
-    List<PriceModel> priceTags = userPortfolio.priceTags;
-    priceTags.forEach((priceTags) => provider.setPriceRate(priceTags));
+    // List<PriceModel> priceTags = userPortfolio.priceTags;
+    // priceTags.forEach((priceTags) => provider.setPriceRate(priceTags));
 
     // Add professional image urls
     List<String> imageUrls = userPortfolio.professionalImageUrls;
@@ -240,43 +238,43 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Future<void> _fetchAndSetupUser() async {
     var _provider = Provider.of<UserData>(context, listen: false);
-    if (mounted) {
-      setState(() {
-        _profileUser = _provider.userStore;
-        _isFecthing = false;
-      });
-    }
-    // Fetch the user data using whatever method you need
-    // var userSnapshot = await userProfessionalRef.doc(widget.userId).get();
-    // // Check if the snapshot contains data and if the user has a private account
-    // if (userSnapshot.exists) {
-    //   UserStoreModel user = UserStoreModel.fromDoc(userSnapshot);
-    //   // If the user has a private account, setup the follow request check
-    //   // if (user.isShop!) {
-    //   //   await _setupIsFollowRequest();
-    //   // }
-    //   // Set state with the new user data to update the UI
-    //   if (mounted) {
-    //     setState(() {
-    //       _profileUser = user;
-    //       _isFecthing = false;
-    //     });
-    //   }
-    //   var _provider = Provider.of<UserData>(context, listen: false);
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _clear(_provider);
-      _addLists(_provider, _profileUser!);
-      _setCurrency(_provider, _profileUser!);
-    });
-    // } else {
-    //   // Handle the case where the user data does not exist
-    //   if (mounted) {
-    //     setState(() {
-    //       _userNotFound = true;
-    //       _isFecthing = false;
-    //     });
-    //   }
+    // if (mounted) {
+    //   setState(() {
+    //     _profileUser = _provider.userStore;
+    //     _isFecthing = false;
+    //   });
     // }
+    // Fetch the user data using whatever method you need
+    var userSnapshot = await userProfessionalRef.doc(widget.userId).get();
+    // Check if the snapshot contains data and if the user has a private account
+    if (userSnapshot.exists) {
+      UserStoreModel user = UserStoreModel.fromDoc(userSnapshot);
+      // If the user has a private account, setup the follow request check
+      // if (user.isShop!) {
+      //   await _setupIsFollowRequest();
+      // }
+      // Set state with the new user data to update the UI
+      if (mounted) {
+        setState(() {
+          _profileUser = user;
+          _isFecthing = false;
+        });
+      }
+      //   var _provider = Provider.of<UserData>(context, listen: false);
+      // SchedulerBinding.instance.addPostFrameCallback((_) {
+      //   _clear(_provider);
+      //   _addLists(_provider, _profileUser!);
+      //   _setCurrency(_provider, _profileUser!);
+      // });
+    } else {
+      // Handle the case where the user data does not exist
+      if (mounted) {
+        setState(() {
+          _userNotFound = true;
+          _isFecthing = false;
+        });
+      }
+    }
   }
 
   _setupIsFollowing() async {
@@ -1101,7 +1099,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         return BookingCalendar(
           currentUserId: widget.currentUserId,
           bookingUser: _profileUser!,
-          prices: _profileUser!.priceTags,
+          // prices: _profileUser!.priceTags,
           fromPrice: fromPrice,
         );
       },
@@ -1262,11 +1260,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                       children: [
                         NameText(
                           color: Colors.black,
-                          name: user.userName!
+                          name: user.userName
                               .toUpperCase()
                               .trim()
                               .replaceAll('\n', ' '),
-                          verified: user.verified!,
+                          verified: user.verified,
                         ),
                         // const SizedBox(
                         //   height: 20,
@@ -1745,7 +1743,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _inviteDisplay(bool _isAuthor, String userName) {
+  _inviteDisplay(bool _isAuthor, UserStoreModel user) {
     var _provider = Provider.of<UserData>(
       context,
     );
@@ -1777,13 +1775,44 @@ class _ProfileScreenState extends State<ProfileScreen>
               height: 10,
             ),
             _callButton(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Divider(
-                thickness: .5,
-              ),
+
+            _divider('Services', 'services',
+                user.services.length >= 4 ? true : false),
+            PortfolioWidget(
+              portfolios: user.services,
+              seeMore: false,
+              edit: false,
             ),
 
+            Container(
+              height: ResponsiveHelper.responsiveFontSize(context, 500),
+              width: double.infinity,
+              child: PageView(
+                controller: _pageController2,
+                physics: AlwaysScrollableScrollPhysics(),
+                children: user.professionalImageUrls
+                    .asMap()
+                    .entries
+                    .map<Widget>((entry) {
+                  var image = entry.value;
+                  return _professionalImageContainer(image, 'Max');
+                }).toList(),
+              ),
+            ),
+            _divider('Opening hours', 'opening', false),
+            OpeninHoursWidget(
+              openingHours: {
+                "Monday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                "Tuesday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                "Wednesday":
+                    DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                "Thursday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                "Friday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                "Saturday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+                "Sunday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
+              },
+            ),
+            _divider('Ratings', 'ratings', false),
             Container(
               color: Theme.of(context).primaryColorLight,
               height: ResponsiveHelper.responsiveHeight(context, 150),
@@ -1812,34 +1841,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
             ),
-
-            Container(
-              height: ResponsiveHelper.responsiveFontSize(context, 500),
-              width: double.infinity,
-              child: PageView(
-                controller: _pageController2,
-                physics: AlwaysScrollableScrollPhysics(),
-                children: _provider.userStore!.professionalImageUrls
-                    .asMap()
-                    .entries
-                    .map<Widget>((entry) {
-                  var image = entry.value;
-                  return _professionalImageContainer(image, 'Max');
-                }).toList(),
-              ),
-            ),
             _divider('Reviews', 'review', false),
             if (!_isFecthingRatings) _buildDisplayReviewGrid(context),
-            _divider('Services', 'services',
-                _provider.services.length >= 4 ? true : false),
-            PortfolioWidget(
-              portfolios: _provider.services,
-              seeMore: false,
-              edit: false,
-            ),
-            _divider('Price list', 'price',
-                _provider.priceRate.length >= 2 ? false : false),
-            if (_provider.bookingPriceRate != null && !_isCurrentUser)
+
+            _divider('Price list and service', 'price', false),
+            if (_provider.appointmentSlots.isNotEmpty && !_isCurrentUser)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1862,12 +1868,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ],
               ),
-            PriceRateWidget(
-              edit: false,
-              prices: _provider.userStore!.priceTags,
-              seeMore: true,
-              // currency: _provider,
+            Container(
+              color: Theme.of(context).cardColor,
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TicketGroup(
+                fromProfile: true,
+                appointmentSlots: user.appointmentSlots,
+                edit: false,
+              ),
             ),
+            // PriceRateWidget(
+            //   edit: false,
+            //   prices: _provider.userStore!.priceTags,
+            //   seeMore: true,
+            //   // currency: _provider,
+            // ),
 
             // _divider('Performance', 'performance',
             //     _provider.performances.length >= 4 ? true : false),
@@ -1876,18 +1891,18 @@ class _ProfileScreenState extends State<ProfileScreen>
             //   seeMore: false,
             //   edit: false,
             // ),
-            _divider('Awards', 'awards',
-                _provider.userStore!.awards.length >= 4 ? true : false),
+            _divider(
+                'Awards', 'awards', user.awards.length >= 4 ? true : false),
             PortfolioWidget(
-              portfolios: _provider.awards,
+              portfolios: user.awards,
               seeMore: false,
               edit: false,
             ),
 
             _divider('Website and Social media', 'website and Social media',
-                _provider.linksToWork.length >= 4 ? true : false),
+                user.links.length >= 4 ? true : false),
             PortfolioWidget(
-              portfolios: _provider.linksToWork,
+              portfolios: user.links,
               seeMore: false,
               edit: false,
             ),
@@ -1900,15 +1915,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                 _navigateToPage(
                     context,
                     UserBarcode(
-                      profileImageUrl: _provider.userStore!.storeLogomageUrl,
-                      userDynamicLink: _provider.userStore!.dynamicLink,
-                      bio: _provider.userStore!.overview!,
-                      userName: _provider.userStore!.userName!,
-                      userId: _provider.userStore!.userId!,
+                      profileImageUrl: user.storeLogomageUrl,
+                      userDynamicLink: user.dynamicLink,
+                      bio: user.overview,
+                      userName: user.userName,
+                      userId: user.userId,
                     ));
               },
               child: Hero(
-                  tag: _provider.userStore!.userId,
+                  tag: user.userId,
                   child: Icon(
                     Icons.qr_code,
                     color: Colors.blue,
@@ -2005,7 +2020,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   _isAuthor
                       ? _navigateToPage(
                           context,
-                          Intro(
+                          SetUpBrand(
                               // isEditting: false,
                               // post: null,
                               // isCompleted: false,
@@ -2121,7 +2136,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: TabBarView(
             controller: _tabController,
             children: <Widget>[
-              _inviteDisplay(_isAuthor, user.userName),
+              _inviteDisplay(_isAuthor, user),
               _eventDisplay(_isAuthor, user.userName),
             ],
           ),
@@ -2599,15 +2614,22 @@ class _ProfileScreenState extends State<ProfileScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return Container(
-            height: ResponsiveHelper.responsiveHeight(
-                context, _provider.user!.isShop! ? 400 : 600),
-            decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-                borderRadius: BorderRadius.circular(30)),
-            child: EditProfileScreen(
-              user: _provider.user!,
-            ));
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+              height: ResponsiveHelper.responsiveHeight(
+                  context, _provider.user!.accountType == 'Sop' ? 400 : 600),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(30)),
+              child: EditProfileScreen(
+                user: _provider.user!,
+                userStore: _profileUser!,
+              )),
+        );
       },
     );
   }
@@ -2630,7 +2652,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   mainProfileLoadingIdicator() {
     return Container(
-      color: Color(0xFF1e4848),
+      color: Colors.transparent,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -2702,11 +2724,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
-    var _provider = Provider.of<UserData>(context);
+    // var _provider = Provider.of<UserData>(context);
     super.build(context);
     return widget.user == null
-        ? _provider.user != null && widget.userId == widget.currentUserId
-            ? _scaffold(context, _provider.userStore!)
+        ? _profileUser != null && widget.userId == widget.currentUserId
+            ? _scaffold(context, _profileUser!)
             : _fetchedUser()
         : _displayScaffold();
   }

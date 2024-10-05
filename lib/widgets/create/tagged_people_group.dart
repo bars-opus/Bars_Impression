@@ -2,17 +2,17 @@ import 'package:bars/utilities/exports.dart';
 
 // ignore: must_be_immutable
 class TaggedPeopleGroup extends StatelessWidget {
-  List<TaggedEventPeopleModel> groupTaggedEventPeopleGroup;
+  List<WorkersModel> workers;
   final bool canBeEdited;
 
   TaggedPeopleGroup({
-    required this.groupTaggedEventPeopleGroup,
+    required this.workers,
     required this.canBeEdited,
   });
 
   void _removeTaggedEventPeople(
     BuildContext context,
-    TaggedEventPeopleModel removingTaggedEventPeople,
+    WorkersModel removingTaggedEventPeople,
   ) {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.taggedEventPeople.removeWhere(
@@ -61,8 +61,8 @@ class TaggedPeopleGroup extends StatelessWidget {
     );
   }
 
-  _display(BuildContext context, TaggedEventPeopleModel taggedPerson) {
-    String imageUrl = taggedPerson.profileImageUrl ?? '';
+  _display(BuildContext context, WorkersModel worker) {
+    String imageUrl = worker.profileImageUrl ?? '';
     return ListTile(
       leading: imageUrl.isEmpty
           ? Icon(
@@ -74,7 +74,7 @@ class TaggedPeopleGroup extends StatelessWidget {
               radius: 18, // Adjust the radius as needed
               backgroundColor: Colors.blue,
 
-              backgroundImage: NetworkImage(taggedPerson.profileImageUrl!),
+              backgroundImage: NetworkImage(worker.profileImageUrl!),
             ),
       trailing: canBeEdited
           ? IconButton(
@@ -85,7 +85,7 @@ class TaggedPeopleGroup extends StatelessWidget {
               onPressed: () {
                 _removeTaggedEventPeople(
                   context,
-                  taggedPerson,
+                  worker,
                 );
               })
           : Container(
@@ -93,47 +93,46 @@ class TaggedPeopleGroup extends StatelessWidget {
               height: ResponsiveHelper.responsiveFontSize(context, 30),
               child: Row(
                 children: [
-                  if (taggedPerson.verifiedTag)
-                    GestureDetector(
-                      onTap: () => _verifyInfo(context, taggedPerson.name),
-                      child: Icon(
-                        Icons.check_circle_sharp,
-                        color: Colors.green,
-                        size: ResponsiveHelper.responsiveHeight(context, 15),
-                      ),
+                  // if (worker.verifiedTag)
+                  GestureDetector(
+                    onTap: () => _verifyInfo(context, worker.name),
+                    child: Icon(
+                      Icons.check_circle_sharp,
+                      color: Colors.green,
+                      size: ResponsiveHelper.responsiveHeight(context, 15),
                     ),
+                  ),
                   Icon(
-                    taggedPerson.internalProfileLink!.isEmpty
-                        ? Icons.link
-                        : Icons.arrow_forward_ios_outlined,
+                    // taggedPerson.internalProfileLink!.isEmpty
+                    //     ? Icons.link
+                    //     :
+                    Icons.arrow_forward_ios_outlined,
                     color: Colors.black,
-                    size: taggedPerson.internalProfileLink!.isEmpty ? 25 : 15,
+                    size: 25,
                   ),
                 ],
               ),
             ),
       onTap: () {
         HapticFeedback.lightImpact();
-        taggedPerson.internalProfileLink!.isEmpty
-            ? _showBottomTaggedPersonExternalLink(
-                context, taggedPerson.externalProfileLink!)
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfileScreen(
-                          user: null,
-                          currentUserId:
-                              Provider.of<UserData>(context, listen: false)
-                                  .currentUserId!,
-                          userId: taggedPerson.internalProfileLink!,
-                        )));
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ProfileScreen(
+                      user: null,
+                      currentUserId:
+                          Provider.of<UserData>(context, listen: false)
+                              .currentUserId!,
+                      userId: worker.id,
+                    )));
       },
       title: RichText(
         textScaler: MediaQuery.of(context).textScaler,
         text: TextSpan(
           children: [
             TextSpan(
-              text: taggedPerson.name,
+              text: worker.name,
               style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
                   color: Colors.black,
@@ -152,10 +151,7 @@ class TaggedPeopleGroup extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                    text: taggedPerson.taggedType.startsWith('Sponsor') ||
-                            taggedPerson.taggedType.startsWith('Partner')
-                        ? ''
-                        : "${taggedPerson.taggedType}:  ${taggedPerson.role}",
+                    text: '',
                     style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 12.0),
@@ -175,74 +171,27 @@ class TaggedPeopleGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<TaggedEventPeopleModel> groupTaggedEventPeopleGroups =
-        groupTaggedEventPeopleGroup;
-    Map<String, List<TaggedEventPeopleModel>> taggedByGroup = {};
-    for (TaggedEventPeopleModel groupTaggedEventPeopleGroup
-        in groupTaggedEventPeopleGroups) {
-      if (!taggedByGroup.containsKey(groupTaggedEventPeopleGroup.role)) {
-        taggedByGroup[groupTaggedEventPeopleGroup.role] = [];
-      }
-      taggedByGroup[groupTaggedEventPeopleGroup.role]!
-          .add(groupTaggedEventPeopleGroup);
-    }
-    final width = MediaQuery.of(context).size.width;
-    return Container(
-      height: width * 5,
-      width: width - 40,
-      child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: taggedByGroup.length,
-        itemBuilder: (BuildContext context, int groupIndex) {
-          // Get the group name and tickets for the current index
-          String groupName = taggedByGroup.keys.elementAt(groupIndex);
-          List<TaggedEventPeopleModel> taggedGroup =
-              taggedByGroup.values.elementAt(groupIndex);
+    // List<WorkersModel> newworkers =
+    //     workers;
+    // Map<String, List<WorkersModel>> taggedByGroup = {};
+    // for (WorkersModel workers
+    //     in workerss) {
+    //   if (!taggedByGroup.containsKey(workers.role)) {
+    //     taggedByGroup[workers.role] = [];
+    //   }
+    //   taggedByGroup[workers.role]!
+    //       .add(workers);
+    // }
+    // final width = MediaQuery.of(context).size.width;
+    return ListView.builder(
+      // scrollDirection: Axis.horizontal,
+      itemCount: workers.length,
+      itemBuilder: (context, index) {
+        // bool isSelected = _selectedIndex == index;
+        var worker = workers[index];
 
-          // Create a sublist of widgets for each ticket in the group
-          List<Widget> taggedPeoplwWidgets = taggedGroup
-              .map((taggedPerson) => Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: _display(context, taggedPerson),
-                  ))
-              .toList();
-
-          // Return a Card widget for the group, containing a ListView of the tickets
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      groupName.toUpperCase(),
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(10)),
-                    child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: taggedPeoplwWidgets.length,
-                      itemBuilder:
-                          (BuildContext context, int taggedPeopleIndex) {
-                        return taggedPeoplwWidgets[taggedPeopleIndex];
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+        return _display(context, worker);
+      },
     );
   }
 }

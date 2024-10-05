@@ -186,7 +186,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         Hive.box<UserSettingsLoadingPreferenceModel>(
             'accountLocationPreference');
 
-    final accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
+    // final accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
 
     return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -202,14 +202,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
             /// Check if the Hive box is not empty
             if (accountAuthorbox.isNotEmpty &&
-                accountLocationPreferenceBox.isNotEmpty &&
-                accountUserStoreBox.isNotEmpty) {
+                accountLocationPreferenceBox.isNotEmpty
+                //  &&
+                // accountUserStoreBox.isNotEmpty
+                ) {
               /// Fetch the data from the Hive box
               AccountHolderAuthor? _user = accountAuthorbox.getAt(0);
               UserSettingsLoadingPreferenceModel? _setting =
                   accountLocationPreferenceBox.getAt(0);
 
-              UserStoreModel? _userStore = accountUserStoreBox.getAt(0);
+              // UserStoreModel? _userStore = accountUserStoreBox.getAt(0);
 
               SchedulerBinding.instance.addPostFrameCallback((_) {
                 if (_provider.user == null || _provider.user != _user) {
@@ -219,10 +221,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     _provider.userLocationPreference != _setting) {
                   _provider.setUserLocationPreference(_setting!);
                 }
-                if (_provider.userStore == null ||
-                    _provider.userStore != _userStore) {
-                  _provider.setUserStore(_userStore!);
-                }
+                // if (_provider.userStore == null ||
+                //     _provider.userStore != _userStore) {
+                //   _provider.setUserStore(_userStore!);
+                // }
                 if (!_provider.isLoading) {
                   _provider.setIsLoading(false);
                 }
@@ -231,8 +233,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               /// Then return the appropriate widget
               return _user!.userName == null ||
                       _user.userName!.isEmpty ||
-                      _user.storeType == null ||
-                      _user.storeType!.isEmpty
+                      _user.accountType == null ||
+                      _user.accountType!.isEmpty
                   ? AuthCreateUserCredentials()
                   : _user.disabledAccount!
                       ? ReActivateAccount(user: _user)
@@ -243,7 +245,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   DatabaseService.getUserWithId(snapshot.data!.uid),
                   DatabaseService.getUserLocationSettingWithId(
                       snapshot.data!.uid),
-                  DatabaseService.getUserStoreWithId(snapshot.data!.uid),
+                  // DatabaseService.getUserStoreWithId(snapshot.data!.uid),
                 ]),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<dynamic>> snapshot) {
@@ -273,8 +275,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   UserSettingsLoadingPreferenceModel _setting =
                       snapshot.data![1] as UserSettingsLoadingPreferenceModel;
 
-                  UserStoreModel _userStore =
-                      snapshot.data![2] as UserStoreModel;
+                  // UserStoreModel _userStore =
+                  //     snapshot.data![2] as UserStoreModel;
 
                   SchedulerBinding.instance.addPostFrameCallback((_) {
                     if (_provider.user == null || _provider.user != _user) {
@@ -288,17 +290,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           _setting.userId, _setting);
                     }
 
-                    if (_provider.userStore == null ||
-                        _provider.userStore != _userStore) {
-                      _provider.setUserStore(_userStore);
-                      accountUserStoreBox.put(_userStore.userId, _userStore);
-                    }
+                    // if (_provider.userStore == null ||
+                    //     _provider.userStore != _userStore) {
+                    //   _provider.setUserStore(_userStore);
+                    //   accountUserStoreBox.put(_userStore.userId, _userStore);
+                    // }
                   });
 
                   if (_user.userName == null ||
                       _user.userName!.isEmpty ||
-                      _user.storeType == null ||
-                      _user.storeType!.isEmpty) {
+                      _user.accountType == null ||
+                      _user.accountType!.isEmpty) {
                     return AuthCreateUserCredentials();
                   }
 

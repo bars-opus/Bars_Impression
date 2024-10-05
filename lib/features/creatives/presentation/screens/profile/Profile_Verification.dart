@@ -868,7 +868,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                                               .isNotEmpty &&
                                                           widget.user.userName!
                                                               .isNotEmpty &&
-                                                          widget.user.bio!
+                                                          ''
                                                               .isNotEmpty
                                                       ? animateToPage()
                                                       : _showSelectImageDialog2();

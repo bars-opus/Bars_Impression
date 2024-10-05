@@ -6,13 +6,13 @@ import 'package:uuid/uuid.dart';
 
 class BookingCalendar extends StatefulWidget {
   final String currentUserId;
-  final List<PriceModel> prices;
+  // final List<PriceModel> prices;
   final UserStoreModel bookingUser;
   final bool fromPrice;
 
   BookingCalendar({
     required this.currentUserId,
-    required this.prices,
+    // required this.prices,
     required this.bookingUser,
     this.fromPrice = false,
   });
@@ -378,7 +378,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
       location: _provider.address,
       description: _descriptionController.text.trim(),
       answer: '',
-      priceRate: _provider.bookingPriceRate!,
+      priceRate: null,
       // messages: [],
       isFinalPaymentMade: false,
       // reason: _bookingReasonController.text.trim(),
@@ -862,24 +862,25 @@ class _BookingCalendarState extends State<BookingCalendar> {
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: ShakeTransition(
             child: Text(
-              _isAuthor
-                  ? 'You have not been booked on this date'
-                  : '${widget.bookingUser.userName} has been booked for this day. You can still create a booking request for this date or select another day.',
+              // _isAuthor
+              //     ? 'You have not been booked on this date'
+              //     :
+              '${widget.bookingUser.userName} has been booked for this day. You can still create a booking request for this date or select another day.',
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
           ),
         ),
         const SizedBox(height: 20),
-        if (!_isAuthor)
-          EventBottomButton(
-            buttonColor: Colors.blue,
-            buttonText: 'Book',
-            onPressed: () {
-              Navigator.pop(context);
-              _SelectPriceOptions(context);
-            },
-          ),
+        // if (!_isAuthor)
+        EventBottomButton(
+          buttonColor: Colors.blue,
+          buttonText: 'Book',
+          onPressed: () {
+            Navigator.pop(context);
+            _SelectPriceOptions(context);
+          },
+        ),
       ],
     );
   }
@@ -899,7 +900,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
           );
           return Container(
             height: ResponsiveHelper.responsiveHeight(
-                context, widget.bookingUser.priceTags.isEmpty ? 300 : 700),
+                context,  700),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
@@ -907,32 +908,29 @@ class _BookingCalendarState extends State<BookingCalendar> {
               padding: const EdgeInsets.all(20.0),
               child: ListView(
                 children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
                   TicketPurchasingIcon(
                     title: '',
                   ),
-                  _provider.bookingPriceRate != null
-                      ? Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 30.0),
-                            child: MiniCircularProgressButton(
-                                color: Colors.blue,
-                                text: 'Continue',
-                                onPressed: () {
-                                  _showBottomSheetBook(context);
-                                }),
-                          ),
-                        )
-                      : SizedBox(
-                          height: 10,
-                        ),
+                  if (_provider.bookingPriceRate != null)
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 30.0),
+                        child: MiniCircularProgressButton(
+                            color: Colors.blue,
+                            text: 'Continue',
+                            onPressed: () {
+                              _showBottomSheetBook(context);
+                            }),
+                      ),
+                    ),
                   DonationHeaderWidget(
-                    title: 'Book',
-                    iconColor: Colors.blue,
-                    icon: Icons.calendar_month,
+                    title: 'select service',
+                    iconColor: Colors.grey,
+                    icon: FontAwesomeIcons.scissors,
                     disableBottomPadding: true,
                   ),
                   if (_provider.bookingPriceRate != null)
@@ -943,12 +941,16 @@ class _BookingCalendarState extends State<BookingCalendar> {
                       ),
                     ),
                   const SizedBox(height: 20),
-                  PriceRateWidget(
-                    //  widget.bookingUser.currency,
-                    prices: widget.bookingUser.priceTags,
-                    edit: false,
-                    seeMore: false,
+                  TicketGroup(
+                    appointmentSlots: _provider.appointmentSlots,
+                    // edit: true,
                   ),
+                  // PriceRateWidget(
+                  //   //  widget.bookingUser.currency,
+                  //   prices: widget.bookingUser.priceTags,
+                  //   edit: false,
+                  //   seeMore: false,
+                  // ),
                   const SizedBox(height: 40),
                   GestureDetector(
                     onTap: () {
@@ -988,23 +990,26 @@ class _BookingCalendarState extends State<BookingCalendar> {
   }
 
   _SelectPriceOptions(BuildContext context) {
-    return widget.bookingUser.priceTags.isEmpty
-        ? showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.black.withOpacity(.6),
-            builder: (BuildContext context) {
-              return Container(
-                  height: ResponsiveHelper.responsiveHeight(context, 350),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: _BookingNotSetUp()));
-            })
-        : widget.fromPrice
+    return 
+    
+    // widget.bookingUser.priceTags.isEmpty
+    //     ? showModalBottomSheet(
+    //         context: context,
+    //         isScrollControlled: true,
+    //         backgroundColor: Colors.black.withOpacity(.6),
+    //         builder: (BuildContext context) {
+    //           return Container(
+    //               height: ResponsiveHelper.responsiveHeight(context, 350),
+    //               width: double.infinity,
+    //               decoration: BoxDecoration(
+    //                   color: Theme.of(context).cardColor,
+    //                   borderRadius: BorderRadius.circular(30)),
+    //               child: Padding(
+    //                   padding: const EdgeInsets.all(20.0),
+    //                   child: _BookingNotSetUp()));
+    //         })
+    //     :
+         widget.fromPrice
             ? _showBottomSheetBook(context)
             : _bookingPrice(context);
   }

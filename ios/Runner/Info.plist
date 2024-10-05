@@ -1,112 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>Bars Impression</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.270470269823-sud89kgbe7qsmasq3rb1tcqgn0sj95fg</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>Bundle Id</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.bars-Opus.florence</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<string>NO</string>
-	<key>FirebaseDynamicLinksCustomDomains</key>
-	<array>
-		<string>https://links.barsopus.com/barsImpression/</string>
-	</array>
-	<key>FlutterDeepLinkingEnabled</key>
-	<true/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>comgooglemaps</string>
-		<string>baidumap</string>
-		<string>iosamap</string>
-		<string>waze</string>
-		<string>yandexmaps</string>
-		<string>yandexnavi</string>
-		<string>citymapper</string>
-	</array>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
-		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>Florence</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(MARKETING_VERSION)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.270470269823-sud89kgbe7qsmasq3rb1tcqgn0sj95fg</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>Bundle Id</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.bars-Opus.florence</string>
+				</array>
+			</dict>
+		</array>
+		<key>CFBundleVersion</key>
+		<string>$(CURRENT_PROJECT_VERSION)</string>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<string>NO</string>
+		<key>FirebaseDynamicLinksCustomDomains</key>
+		<array>
+			<string>https://links.barsopus.com/barsImpression/</string>
+		</array>
+		<key>FlutterDeepLinkingEnabled</key>
 		<true/>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>comgooglemaps</string>
+			<string>baidumap</string>
+			<string>iosamap</string>
+			<string>waze</string>
+			<string>yandexmaps</string>
+			<string>yandexnavi</string>
+			<string>citymapper</string>
+		</array>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
+			<key>NSAllowsArbitraryLoadsInWebContent</key>
+			<true/>
+		</dict>
+		<key>NSCameraUsageDescription</key>
+		<string>Share photos, create events and change profile pictures</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>To help us suggest events and creatives living in your city for you</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>To help us suggest events and creatives living in your city for you</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs access to location when open.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Share photos, create events and change profile pictures</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+			<string>remote-notification</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIStatusBarHidden</key>
+		<false/>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+		<key>io.flutter.embedded_views_preview</key>
+		<string>YES</string>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>GMSApiKey</key>
+		<string>AIzaSyBzHyTS-J9Ge8ohh8A1fZANeLqQbGHcGQY</string>
 	</dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Share photos, create events and change profile pictures</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>To help us suggest events and creatives living in your city for you</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>To help us suggest events and creatives living in your city for you</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Share photos, create events and change profile pictures</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>remote-notification</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UIStatusBarHidden</key>
-	<false/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>io.flutter.embedded_views_preview</key>
-	<string>YES</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>GMSApiKey</key>
-    <string>AIzaSyBzHyTS-J9Ge8ohh8A1fZANeLqQbGHcGQY</string>
-</dict>
 </plist>

@@ -32,6 +32,7 @@ class ImageSafetyHandler {
       }
     } catch (e) {
       _provider.setIsLoading2(false);
+      _provider.setIsLoading(false);
       mySnackBar(context, 'Image not selected');
     }
   }

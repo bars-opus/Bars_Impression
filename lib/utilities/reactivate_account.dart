@@ -57,9 +57,10 @@ class _ReActivateAccountState extends State<ReActivateAccount> {
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
       // name: _provider.user!.name,
-      bio: _provider.user!.bio,
+      // bio: _provider.user!.bio,
+      accountType: _provider.accountType,
       disabledAccount: false,
-      isShop: _provider.user!.isShop,
+      // isShop: _provider.user!.isShop,
       dynamicLink: _provider.user!.dynamicLink,
       lastActiveDate: _provider.user!.lastActiveDate,
       storeType: _provider.user!.storeType,

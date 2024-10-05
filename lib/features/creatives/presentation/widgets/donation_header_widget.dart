@@ -10,7 +10,7 @@ class DonationHeaderWidget extends StatelessWidget {
       required this.title,
       required this.iconColor,
       required this.icon,
-      this.disableBottomPadding = false} );
+      this.disableBottomPadding = false});
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +28,13 @@ class DonationHeaderWidget extends StatelessWidget {
         Center(
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
-        if(!disableBottomPadding)
-        SizedBox(
-          height: 30,
-        ),
+        if (!disableBottomPadding)
+          SizedBox(
+            height: 30,
+          ),
       ],
     );
   }

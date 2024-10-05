@@ -75,10 +75,10 @@ class UserBarcode extends StatelessWidget {
                           radius:
                               ResponsiveHelper.responsiveHeight(context, 18.0),
                           backgroundColor: Colors.blue,
-                          backgroundImage:
-                              CachedNetworkImageProvider(profileImageUrl,   errorListener: (_) {
-                                  return;
-                                }),
+                          backgroundImage: CachedNetworkImageProvider(
+                              profileImageUrl, errorListener: (_) {
+                            return;
+                          }),
                         ),
                   title: Text(
                     userName,

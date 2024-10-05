@@ -32,14 +32,14 @@ class DatabaseService {
     double randomId = Random().nextDouble();
 
     batch.set(userAuthorRef, {
-      'bio': '',
+      'accountType': 'Client',
       'disableChat': false,
       'disabledAccount': false,
       'dynamicLink': '',
       'lastActiveDate': Timestamp.fromDate(DateTime.now()),
       // 'name': signedInHandler.displayName ?? name,
-      'isShop': false,
-      'storeType': 'Fan',
+      // 'isShop': false,
+      'storeType': '',
       'profileImageUrl': '',
       'reportConfirmed': false,
       'userId': signedInHandler.uid,
@@ -82,8 +82,9 @@ class DatabaseService {
 
     batch.set(usersProfessionalRef, {
       'userId': signedInHandler.uid,
+      'accountType': 'Client',
       'userName': '',
-      'profileImageUrl': '',
+      'storeLogomageUrl': '',
       'storeType': 'Fan',
       'dynamicLink': '',
       'currency': '',
@@ -93,24 +94,23 @@ class DatabaseService {
       'overview': '',
       'city': '',
       'country': '',
-      // 'continent': '',
       'noBooking': false,
-      // 'company': [],
-      // 'collaborations': [],
-      // 'performances': [],
       'awards': [],
       'contacts': [],
       'skills': [],
       'links': [],
       'services': [],
       'professionalImageUrls': [],
-      // 'subAccountTyp .e': [],
-      'priceTags': [],
-      // 'disableAdvice': false,
-      // 'hideAdvice': false,
-      'improvemenSuggestion': '',
+      // 'priceTags': [],
+      'improvementSuggestion': '',
       'showOnExplorePage': true,
       'transferRecepientId': '',
+      'averageRating': 0,
+      'currentVisitors': 0,
+      'maxCapacity': 0,
+      'amenities': [],
+      'openingHours': {},
+      'appointmentSlots': [],
     });
 
     batch.set(usersRatingdocRef, {
@@ -131,7 +131,7 @@ class DatabaseService {
       // 'name': user.name,
       'userName': user.userName,
       'profileImageUrl': user.profileImageUrl!,
-      'bio': user.bio,
+      // 'bio': user.bio,
       'storeType': user.storeType!,
     });
   }
@@ -1721,10 +1721,10 @@ class DatabaseService {
     // }
 
     // Update category
-    if (provider.categoryDraft != category) {
-      eventData['category'] = category;
-      provider.setCategoryDraft(category);
-    }
+    // if (provider.categoryDraft != category) {
+    //   eventData['category'] = category;
+    //   provider.setCategoryDraft(category);
+    // }
     // if (isDraft) {
     //   if (event!.category != category) {
     //     if (provider.categoryDraft != category) {

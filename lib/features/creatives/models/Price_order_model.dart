@@ -2,8 +2,6 @@ import 'package:hive/hive.dart';
 
 import 'package:bars/utilities/exports.dart';
 
-part 'price_order_model.g.dart';
-
 @HiveType(typeId: 13)
 class PriceModel {
   @HiveField(0)

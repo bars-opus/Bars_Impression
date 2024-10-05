@@ -3,8 +3,7 @@ import 'package:bars/utilities/exports.dart';
 // Utility class for handling image operations
 class ImageHandler {
   static Future<void> handleImageFromGallery(
-    BuildContext context,
-  ) async {
+      BuildContext context, bool isLogo) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     try {
@@ -19,10 +18,7 @@ class ImageHandler {
         mySnackBarModeration(context,
             'Harmful content detected. Please choose a different image. Please review');
       } else {
-        submitProfileImage(
-          context,
-          file,
-        );
+        submitProfileImage(context, file, isLogo);
       }
     } catch (e) {
       mySnackBar(context,
@@ -56,6 +52,7 @@ class ImageHandler {
   static Future<void> submitProfileImage(
     BuildContext context,
     File? profileImage,
+    bool isLogo,
   ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -65,13 +62,24 @@ class ImageHandler {
       try {
         String _profileImageUrl = '';
 
-        if (profileImage == null) {
-          _profileImageUrl = _provider.user!.profileImageUrl!;
+        if (isLogo) {
+          if (profileImage == null) {
+            _profileImageUrl = _provider.userStore!.storeLogomageUrl;
+          } else {
+            _profileImageUrl = await StorageService.uploadSotreLogo(
+              _provider.user!.userId!,
+              profileImage,
+            );
+          }
         } else {
-          _profileImageUrl = await StorageService.uploadUserProfileImage(
-            _provider.user!.userId!,
-            profileImage,
-          );
+          if (profileImage == null) {
+            _profileImageUrl = _provider.user!.profileImageUrl!;
+          } else {
+            _profileImageUrl = await StorageService.uploadUserProfileImage(
+              _provider.user!.userId!,
+              profileImage,
+            );
+          }
         }
 
         String dynamicLink = '';
@@ -83,25 +91,50 @@ class ImageHandler {
         // );
 
         WriteBatch batch = FirebaseFirestore.instance.batch();
-        batch.update(
-          usersAuthorRef.doc(_provider.user!.userId),
-          {
-            'storeLogomageUrl': _profileImageUrl,
-          },
-        );
+        // batch.update(
+        //   usersAuthorRef.doc(_provider.user!.userId),
+        //   {
+        //     'storeLogomageUrl': _profileImageUrl,
+        //   },
+        // );
 
-        batch.update(
-          userProfessionalRef.doc(_provider.user!.userId),
-          {
-            'storeLogomageUrl': _profileImageUrl,
-            'dynamicLink': dynamicLink,
-          },
-        );
+        isLogo
+            ? batch.update(
+                userProfessionalRef.doc(_provider.user!.userId),
+                {
+                  'storeLogomageUrl': _profileImageUrl,
+                  // 'dynamicLink': dynamicLink,
+                },
+              )
+            : batch.update(
+                usersAuthorRef.doc(_provider.user!.userId),
+                {
+                  'profileImageUrl': _profileImageUrl,
+                  // 'dynamicLink': dynamicLink,
+                },
+              );
 
         await batch.commit();
-        await HiveUtils.updateAuthorHive(context, _provider.user!.userName!,
-            _provider.user!.bio!, _profileImageUrl, dynamicLink);
-        _provider.setProfileImage(profileImage);
+        // await isLogo
+        //     ? HiveUtils.updateUserStore(
+        //         context,
+        //         _profileImageUrl,
+        //         _provider.userStore!.storeType,
+        //         _provider.userStore!.accountType!,
+        //       )
+        //     :
+             HiveUtils.updateAuthorHive(
+                context,
+                _provider.user!.userName!,
+                _profileImageUrl,
+                dynamicLink,
+                _provider.userStore!.storeType,
+                _provider.userStore!.accountType!,
+              );
+        ;
+        isLogo
+            ? _provider.setLogoImage(profileImage)
+            : _provider.setProfileImage(profileImage);
         _provider.setIsLoading2(false);
       } catch (e) {
         _showBottomSheetErrorMessage(

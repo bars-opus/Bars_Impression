@@ -7,6 +7,8 @@ class SettingSwitch extends StatelessWidget {
   final bool value;
   final Color color;
   final bool isAlwaysWhite;
+    final bool isAlwaysBlack;
+
 
   final Function(bool) onChanged;
 
@@ -15,6 +17,7 @@ class SettingSwitch extends StatelessWidget {
       required this.title,
       this.color = Colors.blue,
       this.isAlwaysWhite = false,
+       this.isAlwaysBlack = false,
       required this.value,
       required this.onChanged});
 
@@ -35,13 +38,13 @@ class SettingSwitch extends StatelessWidget {
                         ResponsiveHelper.responsiveFontSize(context, 16.0),
                     color: isAlwaysWhite
                         ? Colors.white
-                        : Theme.of(context).secondaryHeaderColor,
+                        : isAlwaysBlack? Colors.black: Theme.of(context).secondaryHeaderColor,
                   )),
               TextSpan(
                 text: subTitle,
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: isAlwaysWhite ? Colors.white : Colors.grey,
+                  color: isAlwaysWhite ? Colors.white : isAlwaysBlack? Colors.black: Colors.grey,
                 ),
               ),
             ],
