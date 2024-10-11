@@ -33,7 +33,7 @@ class Activity {
   final String? helperFielId;
 
   final String authorName;
-  final String authorstoreType;
+  final String authorshopType;
   final String authorProfileImageUrl;
   final bool authorVerification;
   final Timestamp? timestamp;
@@ -48,7 +48,7 @@ class Activity {
     required this.comment,
     required this.timestamp,
     required this.authorName,
-    required this.authorstoreType,
+    required this.authorshopType,
     required this.authorProfileImageUrl,
     required this.authorVerification,
     required this.helperFielId,
@@ -66,7 +66,7 @@ class Activity {
       comment: doc['comment'],
       timestamp: doc['timestamp'] ?? DateTime.now(),
       authorName: doc['authorName'] ?? '',
-      authorstoreType: doc['authorstoreType'] ?? '',
+      authorshopType: doc['authorshopType'] ?? '',
       authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
       authorVerification: doc['authorVerification'] ?? false,
     );

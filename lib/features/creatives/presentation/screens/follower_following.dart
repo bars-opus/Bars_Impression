@@ -192,7 +192,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
               context,
               MaterialPageRoute(
                   builder: (_) => ProfileScreen(
-                        user: null,
+                        user: null,accountType: user.accountType!,
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.userId!,

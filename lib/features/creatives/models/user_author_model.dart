@@ -17,7 +17,7 @@ class AccountHolderAuthor {
   final bool? verified;
 
   @HiveField(4)
-  final String? storeType;
+  final String? shopType;
 
   @HiveField(5)
   final String? dynamicLink;
@@ -44,7 +44,7 @@ class AccountHolderAuthor {
     required this.userId,
     required this.userName,
     required this.profileImageUrl,
-    required this.storeType,
+    required this.shopType,
     required this.verified,
     required this.accountType,
     required this.dynamicLink,
@@ -60,7 +60,7 @@ class AccountHolderAuthor {
       userId: doc.id,
       userName: doc['userName'] ?? '',
       profileImageUrl: doc['profileImageUrl'],
-      storeType: doc['storeType'] ?? 'Fan',
+      shopType: doc['shopType'] ?? 'Fan',
       dynamicLink: doc['dynamicLink'] ?? '',
       verified: doc['verified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
@@ -83,7 +83,7 @@ class AccountHolderAuthor {
           data['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
       userName: data['userName'] ?? '',
       profileImageUrl: data['profileImageUrl'],
-      storeType: data['storeType'] ?? '',
+      shopType: data['shopType'] ?? '',
       verified: data['verified'] ?? false,
       disabledAccount: data['disabledAccount'] ?? false,
       reportConfirmed: data['reportConfirmed'] ?? false,

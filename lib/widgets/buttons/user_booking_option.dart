@@ -28,7 +28,7 @@ class UserBookingOption extends StatelessWidget {
                 DisclaimerWidget(
                   title: 'Booking Contact',
                   subTitle:
-                      'These are the contacts provided by ${bookingUser.userName}. While we make efforts to gather the contact information for ${bookingUser.userName}, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify the management contact details for ${bookingUser.userName} independently.',
+                      'These are the contacts provided by ${bookingUser.shopName}. While we make efforts to gather the contact information for ${bookingUser.shopName}, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify the management contact details for ${bookingUser.shopName} independently.',
                   icon: Icons.call,
                 ),
                 const SizedBox(height: 40),

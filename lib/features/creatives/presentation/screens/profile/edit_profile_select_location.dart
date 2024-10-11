@@ -3,11 +3,14 @@ import 'package:flutter/scheduler.dart';
 
 class EditProfileSelectLocation extends StatefulWidget {
   final UserSettingsLoadingPreferenceModel user;
+    final String accountType;
+
   final bool notFromEditProfile;
+
 
   EditProfileSelectLocation({
     required this.user,
-    this.notFromEditProfile = false,
+    this.notFromEditProfile = false, required this.accountType,
   });
 
   @override
@@ -59,19 +62,19 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       },
     );
 
-    try {
-      batch.commit();
-      _provider.setIsLoading(false);
-      // Inside your widget or function
-      await HiveUtils.updateUserLocation(context, _provider.city,
-          _provider.country, _provider.userStore!.storeType);
+    // try {
+    batch.commit();
+    _provider.setIsLoading(false);
+    // Inside your widget or function
+    await HiveUtils.updateUserLocation(context, _provider.city,
+        _provider.country, widget.accountType);
 
-      // _updateAuthorHive(
-      //     _provider.city, _provider.country, _provider.continent, false);
-    } catch (error) {
-      _provider.setIsLoading(false);
-      _showBottomSheetErrorMessage('Failed to update city and country');
-    }
+    // _updateAuthorHive(
+    //     _provider.city, _provider.country, _provider.continent, false);
+    // } catch (error) {
+    //   _provider.setIsLoading(false);
+    //   _showBottomSheetErrorMessage('Failed to update city and country');
+    // }
     setState(() {});
     // } catch (e) {
     // }
@@ -117,8 +120,8 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   //   var updatedUserStore = UserStoreModel(
   //     userId: _provider.userStore!.userId,
   //     userName: _provider.userStore!.userName,
-  //     storeLogomageUrl: _provider.userStore!.storeLogomageUrl,
-  //     storeType: _provider.userStore!.storeType,
+  //     shopLogomageUrl: _provider.userStore!.shopLogomageUrl,
+  //     shopType: _provider.userStore!.shopType,
   //     verified: _provider.userStore!.verified,
   //     terms: _provider.userStore!.terms,
   //     city: city,

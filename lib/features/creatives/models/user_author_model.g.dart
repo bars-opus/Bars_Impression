@@ -20,7 +20,7 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
       userId: fields[0] as String?,
       userName: fields[1] as String?,
       profileImageUrl: fields[2] as String?,
-      storeType: fields[4] as String?,
+      shopType: fields[4] as String?,
       verified: fields[3] as bool?,
       accountType: fields[10] as String?,
       dynamicLink: fields[5] as String?,
@@ -44,7 +44,7 @@ class AccountHolderAuthorAdapter extends TypeAdapter<AccountHolderAuthor> {
       ..writeByte(3)
       ..write(obj.verified)
       ..writeByte(4)
-      ..write(obj.storeType)
+      ..write(obj.shopType)
       ..writeByte(5)
       ..write(obj.dynamicLink)
       ..writeByte(6)

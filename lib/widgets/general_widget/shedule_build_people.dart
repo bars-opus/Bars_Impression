@@ -87,7 +87,7 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
                 ProfileScreen(
                   currentUserId: widget.currentUserId,
                   userId: widget.person.internalProfileLink!,
-                  user: null,
+                  user: null, accountType: '',
                 ))
             : _showBottomSheetWork(context, widget.person.name,
                 widget.person.externalProfileLink!);

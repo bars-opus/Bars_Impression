@@ -1,22 +1,22 @@
 // import 'package:bars/utilities/exports.dart';
 // import 'package:flutter/cupertino.dart';
 
-// class EditstoreTypeSubAccount extends StatefulWidget {
+// class EditshopTypeSubAccount extends StatefulWidget {
 //   final AccountHolderAuthor user;
 
-//   final String storeType;
+//   final String shopType;
 
-//   EditstoreTypeSubAccount({
+//   EditshopTypeSubAccount({
 //     required this.user,
-//     required this.storeType,
+//     required this.shopType,
 //   });
 
 //   @override
-//   _EditstoreTypeSubAccountState createState() =>
-//       _EditstoreTypeSubAccountState();
+//   _EditshopTypeSubAccountState createState() =>
+//       _EditshopTypeSubAccountState();
 // }
 
-// class _EditstoreTypeSubAccountState extends State<EditstoreTypeSubAccount> {
+// class _EditshopTypeSubAccountState extends State<EditshopTypeSubAccount> {
 //   bool _isSalon = false;
 //   bool _isProducer = false;
 //   bool _isCoverArtDesigner = false;
@@ -222,7 +222,7 @@
 //                       const SizedBox(
 //                         height: 10,
 //                       ),
-//                       widget.storeType.startsWith('Salon')
+//                       widget.shopType.startsWith('Salon')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Salon',
@@ -238,7 +238,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Producer')
+//                       widget.shopType.startsWith('Producer')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Producer',
@@ -255,7 +255,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Cover')
+//                       widget.shopType.startsWith('Cover')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Cover_Art_Designer',
@@ -274,7 +274,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Music')
+//                       widget.shopType.startsWith('Music')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Music_Video_Director',
@@ -294,7 +294,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('DJ')
+//                       widget.shopType.startsWith('DJ')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'DJ',
@@ -310,7 +310,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Spa')
+//                       widget.shopType.startsWith('Spa')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Spa',
@@ -328,7 +328,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Photographer')
+//                       widget.shopType.startsWith('Photographer')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Photographer',
@@ -346,7 +346,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Dancer')
+//                       widget.shopType.startsWith('Dancer')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Dancer',
@@ -362,7 +362,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Video_Vixen')
+//                       widget.shopType.startsWith('Video_Vixen')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Video_Vixen',
@@ -380,7 +380,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Makeup_Salon')
+//                       widget.shopType.startsWith('Makeup_Salon')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Makeup_Salon',
@@ -398,7 +398,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Brand_Influencer')
+//                       widget.shopType.startsWith('Brand_Influencer')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Brand_Influencer',
@@ -417,7 +417,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('Blogger')
+//                       widget.shopType.startsWith('Blogger')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'Blogger',
@@ -434,7 +434,7 @@
 //                                         _selectCount++;
 //                                       });
 //                                     }),
-//                       widget.storeType.startsWith('MC(Host)')
+//                       widget.shopType.startsWith('MC(Host)')
 //                           ? const SizedBox.shrink()
 //                           : tile(
 //                               'MC(Host)',

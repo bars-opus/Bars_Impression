@@ -8,7 +8,7 @@ class DiscoverCategoryWidget extends StatefulWidget {
   final List<Post> postsList;
   final List<DocumentSnapshot> postsSnapshot;
   final String locationCategory; //city, country, continent
-  final String type; //event type or storeType type
+  final String type; //event type or shopType type
   final String typeSpecific; // Salon, producer or festivals, others
   final int pageIndex; //
   final String currentUserId; // Salon, producer or festivals, others
@@ -100,10 +100,10 @@ class _DiscoverCategoryWidgetState extends State<DiscoverCategoryWidget> {
 
   _display(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(.3),
+            color: Theme.of(context).cardColor.withOpacity(.8),
             borderRadius: BorderRadius.circular(10)),
         child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -138,12 +138,11 @@ class _DiscoverCategoryWidgetState extends State<DiscoverCategoryWidget> {
         : widget.eventsList.length;
 
     int baseHeight = 200; // Height of one item in the list
-    int additionalHeight = widgetType == 'User'
-        ? 100
-        : 110; // Additional height per item in the list for list sizes greater than 1
+    int additionalHeight =
+        220; // Additional height per item in the list for list sizes greater than 1
 
     num height2 = (list > 0)
-        ? baseHeight + (list - 1) * additionalHeight
+        ? baseHeight + (list) * additionalHeight
         : 0; // Set the height as 0 if the list is empty
 
     return CategoryContainer(

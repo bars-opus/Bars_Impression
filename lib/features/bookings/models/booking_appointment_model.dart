@@ -14,8 +14,9 @@ class BookingAppointmentModel {
   bool isFinalPaymentMade;
   bool isdownPaymentMade;
   String cancellationReason;
-  Timestamp startTime;
-  Timestamp endTime;
+  final String shopName;
+  final String shopLogoUrl;
+  final String shopType;
   final int rating;
   final Timestamp timestamp;
 
@@ -32,10 +33,11 @@ class BookingAppointmentModel {
     required this.termsAndConditions,
     required this.timestamp,
     required this.cancellationReason,
-    required this.startTime,
-    required this.endTime,
+    required this.shopName,
+    required this.shopLogoUrl,
     required this.specialRequirements,
     required this.isdownPaymentMade,
+    required this.shopType,
   });
 
   factory BookingAppointmentModel.fromDoc(DocumentSnapshot doc) {
@@ -54,8 +56,9 @@ class BookingAppointmentModel {
       termsAndConditions: doc['termsAndConditions'] ?? '',
       timestamp: doc['timestamp'],
       cancellationReason: doc['cancellationReason'] ?? '',
-      startTime: doc['startTime'],
-      endTime: doc['endTime'],
+      shopName: doc['shopName'] ?? '',
+      shopLogoUrl: doc['shopLogoUrl'] ?? '',
+      shopType: doc['shopType'] ?? '',
       specialRequirements: doc['specialRequirements'] ?? '',
       isdownPaymentMade: doc['isdownPaymentMade'] ?? false,
     );
@@ -77,8 +80,9 @@ class BookingAppointmentModel {
       termsAndConditions: map['termsAndConditions'],
       timestamp: map['timestamp'],
       cancellationReason: map['cancellationReason'],
-      startTime: map['startTime'],
-      endTime: map['endTime'],
+      shopName: map['shopName'],
+      shopType: map['shopType'],
+      shopLogoUrl: map['shopLogoUrl'],
       specialRequirements: map['specialRequirements'],
       isdownPaymentMade: map['isdownPaymentMade'],
     );
@@ -92,14 +96,15 @@ class BookingAppointmentModel {
       'appointment': appointment.map((e) => e.toJson()).toList(),
       'bookingDate': bookingDate,
       'location': location,
+      'shopType': shopType,
       'isFinalPaymentMade': isFinalPaymentMade,
       'rating': rating,
       'reviewComment': reviewComment,
       'termsAndConditions': termsAndConditions,
       'timestamp': timestamp,
       'cancellationReason': cancellationReason,
-      'startTime': startTime,
-      'endTime': endTime,
+      'shopName': shopName,
+      'shopLogoUrl': shopLogoUrl,
       'specialRequirements': specialRequirements,
       'isdownPaymentMade': isdownPaymentMade,
     };

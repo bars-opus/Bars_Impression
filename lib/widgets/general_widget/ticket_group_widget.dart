@@ -34,13 +34,21 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
     }
   }
 
-  void _toggleTicket(AppointmentSlotModel ticket) {
+  void _toggleTicket(AppointmentSlotModel appoinment) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    var ticketSelected = selectedTickets[ticket.id] ?? false;
+    var appoinmentSelected = selectedTickets[appoinment.id] ?? false;
     setState(() {
-      selectedTickets[ticket.id] = !ticketSelected;
+      selectedTickets[appoinment.id] = !appoinmentSelected;
     });
+
+    if (!appoinmentSelected) {
+      // The appoinment was not previously selected, so add it to the list.
+      _provider.addAppointmentToList(appoinment);
+    } else {
+      // The appoinment was previously selected, so remove it from the list.
+      _provider.removeAppointmentFromList(appoinment);
+    }
   }
 
   _removeTicket(AppointmentSlotModel removingTicket) async {
@@ -159,6 +167,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                                 BorderSide(color: Colors.black),
                                             value: selectedTickets[ticket.id],
                                             onChanged: (bool? value) async {
+                                              var ticketSelected =
+                                                  selectedTickets[ticket.id] ??
+                                                      false;
                                               _toggleTicket(ticket);
                                             },
                                           ),
@@ -179,8 +190,8 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                               : Colors.blue,
                           title: 'Select your favorite worker.',
                           subTitle: ticket.favoriteWorker
-                              ? 'Tap below to book your favorite worker'
-                              : 'A random worker would be selected for you',
+                              ? 'You would have to select a preferred worker in the next step.\nSee available workers below'
+                              : 'A random worker would be selected for you.\nSee available workers below',
                           value: ticket.favoriteWorker,
                           onChanged: (value) {
                             setState(() {
@@ -216,10 +227,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
             collapsedIconColor: Colors.blue,
             title: Text(
               groupName.toUpperCase(),
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             children: ticketWidgets,
           );
@@ -232,11 +240,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 service,
-                style: TextStyle(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
             Container(
@@ -249,71 +253,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
           ],
         );
 
-        return widget.fromProfile
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: content),
-                ],
-              )
-            : content;
-
-        // return widget.fromProfile
-        //     ? Row(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Column(
-        //             children: [
-        //               Padding(
-        //                 padding: const EdgeInsets.all(8.0),
-        //                 child: Container(
-        //                   width:
-        //                       ResponsiveHelper.responsiveFontSize(context, 200),
-        //                   child: Text(
-        //                     service,
-        //                     style: TextStyle(
-        //                         color: Theme.of(context).secondaryHeaderColor,
-        //                         fontSize: ResponsiveHelper.responsiveFontSize(
-        //                             context, 20),
-        //                         fontWeight: FontWeight.bold),
-        //                   ),
-        //                 ),
-        //               ),
-        //               Container(
-        //                 decoration: BoxDecoration(
-        //                   color: Colors.white,
-        //                   borderRadius: BorderRadius.circular(5.0),
-        //                 ),
-        //                 child: Column(children: groupWidgets),
-        //               ),
-        //             ],
-        //           ),
-
-        //         ],
-        //       )
-        //     : Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Padding(
-        //             padding: const EdgeInsets.all(8.0),
-        //             child: Text(
-        //               service,
-        //               style: TextStyle(
-        //                   color: Theme.of(context).secondaryHeaderColor,
-        //                   fontSize:
-        //                       ResponsiveHelper.responsiveFontSize(context, 20),
-        //                   fontWeight: FontWeight.bold),
-        //             ),
-        //           ),
-        //           Container(
-        //             decoration: BoxDecoration(
-        //               color: Colors.white,
-        //               borderRadius: BorderRadius.circular(5.0),
-        //             ),
-        //             child: Column(children: groupWidgets),
-        //           ),
-        //         ],
-        //       );
+        return content;
       },
     );
   }

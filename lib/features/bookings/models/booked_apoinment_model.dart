@@ -2,60 +2,40 @@ import 'package:bars/utilities/exports.dart';
 
 class BookedAppointmentModel {
   final String id;
-  // final String entranceId;
   double price;
-  // bool isSold;
-  WorkersModel woker;
+  final List<ShopWorkerModel> workers;
   String service;
   String type;
   String duruation;
-  String idempotencyKey;
-
-  // String service;
-  // bool validated;
-  final String transactionId;
-  // final Timestamp eventTicketDate;
-  // final Timestamp lastTimeScanned;
-
-  // int row;
-  // int seat;
+  TimeOfDay? selectedSlot;
 
   BookedAppointmentModel({
-    // this.isSold = false,
-    // this.service = 'General',
     required this.id,
     required this.price,
-    required this.woker,
+    required this.workers,
     required this.service,
     required this.type,
     required this.duruation,
-    required this.idempotencyKey,
-    required this.transactionId,
+    required this.selectedSlot,
   });
 
   factory BookedAppointmentModel.fromJson(Map<String, dynamic> json) {
     return BookedAppointmentModel(
       id: json['id'],
-      price: json['price'].toDouble(),
-      // isSold: json['isSold'] ?? false,
-      woker: json['woker'] ?? '',
-      idempotencyKey: json['idempotencyKey'] ?? '',
-      transactionId: json['transactionId'] ?? '',
-      // validated: json['validated'] ?? false,
+      price: (json['price'] as num).toDouble(),
+      workers: (json['workers'] as List<dynamic>?)
+              ?.map((worker) => ShopWorkerModel.fromJson(worker))
+              .toList() ??
+          [],
+      service: json['service'] ?? 'General',
       type: json['type'],
       duruation: json['duruation'],
-      service: json['service'] ?? 'General',
-      // row: json['row'],
-      // seat: json['seat'],
-      // eventTicketDate: json['eventTicketDate'] ??
-      //     Timestamp.fromDate(
-      //       DateTime.now(),
-      //     ),
-      // lastTimeScanned: json['lastTimeScanned'] ??
-      //     Timestamp.fromDate(
-      //       DateTime.now(),
-      //     ),
-      // entranceId: json['entranceId'] ?? '',
+      selectedSlot: json['selectedSlot'] != null
+          ? TimeOfDay(
+              hour: json['selectedSlot']['hour'],
+              minute: json['selectedSlot']['minute'],
+            )
+          : null,
     );
   }
 
@@ -63,50 +43,110 @@ class BookedAppointmentModel {
     return {
       'id': id,
       'price': price,
-      // 'isSold': isSold,
-      'transactionId': transactionId,
-      // 'refundRequestStatus': refundRequestStatus,
-      'idempotencyKey': idempotencyKey,
+      'workers': workers.map((worker) => worker.toJson()).toList(),
+      'service': service,
       'type': type,
       'duruation': duruation,
-      // 'accessLevel': accessLevel,
-      // 'validated': validated,
-      // 'row': row,
-      // 'seat': seat,
-      // 'entranceId': entranceId,
-      // 'eventTicketDate': eventTicketDate,
-      // 'lastTimeScanned': lastTimeScanned,
+      'selectedSlot': selectedSlot != null
+          ? {'hour': selectedSlot!.hour, 'minute': selectedSlot!.minute}
+          : null,
     };
   }
 
-  // A method to convert a TicketModel to a BookedAppointmentModel
   static BookedAppointmentModel fromTicketModel({
     required AppointmentSlotModel ticketModel,
-    required WorkersModel woker,
-    // required bool validated,
+    required ShopWorkerModel woker,
     required String transactionId,
-    // required int row,
-    // required int seat,
     required String service,
+    required List<ShopWorkerModel> workers,
     required String idempotencyKey,
     required Timestamp lastTimeScanned,
+    required TimeOfDay? selectedSlot,
   }) {
     return BookedAppointmentModel(
       id: ticketModel.id,
       price: ticketModel.price,
-      // isSold: ticketModel.isSoldOut,
-      // refundRequestStatus: refundRequestStatus,
-      idempotencyKey: idempotencyKey,
-      // validated: validated,
       type: ticketModel.type,
-      transactionId: transactionId,
-      duruation: ticketModel.duruation, woker: woker, service: service,
-      // accessLevel: ticketModel.accessLevel,
-      // row: row,
-      // seat: seat,
-      // eventTicketDate: ticketModel.eventTicketDate,
-      // lastTimeScanned: lastTimeScanned,
-      // entranceId: entranceId,
+      selectedSlot: selectedSlot,
+      duruation: ticketModel.duruation,
+      workers: workers,
+      service: service,
     );
   }
 }
+
+// class BookedAppointmentModel {
+//   final String id;
+//   double price;
+//   final List<ShopWorkerModel> workers;
+//   String service;
+//   String type;
+//   String duruation;
+//   TimeOfDay? selectedSlot;
+
+//   BookedAppointmentModel({
+//     required this.id,
+//     required this.price,
+//     required this.workers,
+//     required this.service,
+//     required this.type,
+//     required this.duruation,
+//     required this.selectedSlot,
+//   });
+
+//   factory BookedAppointmentModel.fromJson(Map<String, dynamic> json) {
+//     return BookedAppointmentModel(
+//       id: json['id'],
+//       // selectedSlot: json['selectedSlot'],
+//       selectedSlot: json['selectedSlot'] != null
+//           ? TimeOfDay(
+//               hour: json['selectedSlot']['hour'],
+//               minute: json['selectedSlot']['minute'],
+//             )
+//           : null,
+//       price: json['price'].toDouble(),
+//       workers: (json['workers'] as List<dynamic>?)
+//               ?.map((worker) => ShopWorkerModel.fromJson(worker))
+//               .toList() ??
+//           [],
+//       type: json['type'],
+//       duruation: json['duruation'],
+//       service: json['service'] ?? 'General',
+//     );
+//   }
+
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'price': price,
+//       'type': type,
+//       'duruation': duruation,
+//       'selectedSlot': selectedSlot != null
+//           ? {'hour': selectedSlot!.hour, 'minute': selectedSlot!.minute}
+//           : null,
+//       // 'selectedSlot': selectedSlot,
+//     };
+//   }
+
+//   // A method to convert a TicketModel to a BookedAppointmentModel
+//   static BookedAppointmentModel fromTicketModel({
+//     required AppointmentSlotModel ticketModel,
+//     required ShopWorkerModel woker,
+//     required String transactionId,
+//     required String service,
+//     required List<ShopWorkerModel> workers,
+//     required String idempotencyKey,
+//     required Timestamp lastTimeScanned,
+//     required TimeOfDay? selectedSlot,
+//   }) {
+//     return BookedAppointmentModel(
+//       id: ticketModel.id,
+//       price: ticketModel.price,
+//       type: ticketModel.type,
+//       selectedSlot: selectedSlot,
+//       duruation: ticketModel.duruation,
+//       workers: workers,
+//       service: service,
+//     );
+//   }
+// }

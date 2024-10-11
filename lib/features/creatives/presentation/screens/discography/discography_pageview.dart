@@ -212,7 +212,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
 
     var query = userProfessionalRef
         .where('showOnExplorePage', isEqualTo: true)
-        .where('storeType', isEqualTo: type)
+        .where('shopType', isEqualTo: type)
         .where('noBooking', isEqualTo: false);
 
     if (city != null) {
@@ -404,7 +404,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   : _feedCount.isNegative
                       ? _noUsers(eventType)
                       : eventType.startsWith('Fan')
-                          ? ProfileScreen(
+                          ? ProfileScreen(accountType: 'Shop',
                               currentUserId: widget.currentUserId,
                               user: null,
                               userId: widget.user.userId,

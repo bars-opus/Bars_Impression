@@ -16,7 +16,7 @@ class AppointmentSlotModel {
   final String service;
   final double price;
   bool favoriteWorker;
-  final List<WorkersModel> workers;
+  final List<ShopWorkerModel> workers;
 
   AppointmentSlotModel({
     required this.id,
@@ -41,7 +41,7 @@ class AppointmentSlotModel {
       favoriteWorker: json['favoriteWorker'] ?? false,
       service: json['service'] ?? '', // Provide a default value if null
       workers: (json['workers'] as List<dynamic>?)
-              ?.map((worker) => WorkersModel.fromJson(worker))
+              ?.map((worker) => ShopWorkerModel.fromJson(worker))
               .toList() ??
           [],
     );

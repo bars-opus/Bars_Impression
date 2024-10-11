@@ -733,7 +733,7 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                                                     .bodyLarge,
                                               ),
                                               TextSpan(
-                                                text: "\n${user.storeType}",
+                                                text: "\n${user.shopType}",
                                                 style: TextStyle(
                                                   fontSize: ResponsiveHelper
                                                       .responsiveFontSize(

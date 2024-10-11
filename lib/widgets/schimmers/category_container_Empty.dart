@@ -10,7 +10,7 @@ class CategoryContainerEmpty extends StatelessWidget {
   final double height;
   final int liveLocationIntialPage;
 
-  final String storeType;
+  final String shopType;
 
   CategoryContainerEmpty({
     required this.containerTitle,
@@ -20,7 +20,7 @@ class CategoryContainerEmpty extends StatelessWidget {
     required this.liveLocation,
     required this.liveLocationIntialPage,
     required this.isEvent,
-    required this.storeType,
+    required this.shopType,
   });
 
   void _showBottomSheetFetchLiveLocation(
@@ -87,7 +87,7 @@ class CategoryContainerEmpty extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (_) => AllPosts(
                                   currentUserId: _provider.currentUserId!,
-                                  storeType: storeType,
+                                  shopType: shopType,
                                   pageIndex: 0,
                                   // userLocationSettings: null,
                                   liveCity: '',
@@ -103,6 +103,7 @@ class CategoryContainerEmpty extends StatelessWidget {
                                     builder: (_) => EditProfileSelectLocation(
                                       user: _user,
                                       notFromEditProfile: true,
+                                       accountType: _provider.user!.accountType!,
                                     ),
                                   ))
                               : () {};

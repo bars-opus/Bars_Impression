@@ -1,6 +1,5 @@
 // import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bars/features/events/event_room_and_chat/presentation/screens/chats.dart';
-import 'package:bars/features/gemini_ai/presentation/widgets/hope_action.dart';
 
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
@@ -661,9 +660,9 @@ class HomeScreenState extends State<HomeScreen> {
 
       // Only proceed if data is not null
       if (data != null) {
-        if (!data.containsKey('storeType')) {
-          if (data['storeType'] == 'Music_Video_Director') {
-            data['storeType'] = 'Videographer';
+        if (!data.containsKey('shopType')) {
+          if (data['shopType'] == 'Music_Video_Director') {
+            data['shopType'] = 'Videographer';
             batch.update(doc.reference, data);
           }
         }
@@ -826,7 +825,7 @@ class HomeScreenState extends State<HomeScreen> {
   //     var userName = targetDoc.get('userName');
   //     var profileImageUrl = targetDoc.get('profileImageUrl');
   //     var verified = targetDoc.get('verified');
-  //     String storeType = targetDoc.get('storeType');
+  //     String shopType = targetDoc.get('shopType');
   //     var dynamicLink = targetDoc.get('dynamicLink');
   //     var terms = targetDoc.get('terms');
   //     var overview = targetDoc.get('overview');
@@ -858,7 +857,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userName': userName,
   //         'profileImageUrl': profileImageUrl,
   //         'verified': verified,
-  //         'storeType': storeType,
+  //         'shopType': shopType,
   //         'dynamicLink': dynamicLink,
   //         'terms': terms,
   //         'overview': overview,
@@ -953,7 +952,7 @@ class HomeScreenState extends State<HomeScreen> {
   //     var userName = targetDoc.get('userName');
   //     var profileImageUrl = targetDoc.get('profileImageUrl');
   //     var verified = targetDoc.get('verified');
-  //     String storeType = targetDoc.get('storeType');
+  //     String shopType = targetDoc.get('shopType');
   //     var dynamicLink = targetDoc.get('dynamicLink');
   //     var terms = targetDoc.get('terms');
   //     var overview = targetDoc.get('overview');
@@ -986,7 +985,7 @@ class HomeScreenState extends State<HomeScreen> {
   //       WriteBatch continentBatch = FirebaseFirestore.instance.batch();
 
   //       DocumentReference usersByTypeRef =
-  //           userProfessionalRef.doc(storeType.toUpperCase());
+  //           userProfessionalRef.doc(shopType.toUpperCase());
 
   //       DocumentReference usersByContinentRef =
   //           usersByTypeRef.collection('usersByContinent').doc(continent);
@@ -1015,7 +1014,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userName': userName,
   //         'profileImageUrl': profileImageUrl,
   //         'verified': verified,
-  //         'storeType': storeType,
+  //         'shopType': shopType,
   //         'dynamicLink': dynamicLink,
   //         'terms': terms,
   //         'overview': overview,
@@ -1374,7 +1373,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   //     var bio = targetDoc.get('bio');
 
-  //     var storeType = targetDoc.get('storeType');
+  //     var shopType = targetDoc.get('shopType');
   //     var dynamicLink = targetDoc.get('dynamicLink');
   //     var verified = targetDoc.get('verified');
   //     var disabledAccount = targetDoc.get('disabledAccount');
@@ -1391,7 +1390,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userName': userName,
   //         'profileImageUrl': profileImageUrl,
   //         'bio': bio,
-  //         'storeType': storeType,
+  //         'shopType': shopType,
   //         'dynamicLink': dynamicLink,
   //         'verified': verified,
   //         'disabledAccount': disabledAccount,
@@ -1729,7 +1728,7 @@ class HomeScreenState extends State<HomeScreen> {
   //     var id = targetDoc.id;
   //     var userName = targetDoc.get('userName');
   //     // var profileImageUrl = targetDoc.get('profileImageUrl');
-  //     // var storeType = targetDoc.get('storeType');
+  //     // var shopType = targetDoc.get('shopType');
   //     // var verified = targetDoc.get('verified');
   //     // var dynamicLink = targetDoc.get('dynamicLink');
 
@@ -1741,7 +1740,7 @@ class HomeScreenState extends State<HomeScreen> {
   //         'userId': id,
   //         // 'userName': userName,
   //         // 'profileImageUrl': profileImageUrl,
-  //         // 'storeType': storeType,
+  //         // 'shopType': shopType,
   //         // 'verified': verified,
   //         // 'dynamicLink': dynamicLink,
   //       });
@@ -1893,10 +1892,10 @@ class HomeScreenState extends State<HomeScreen> {
   //       Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
   //       if (data != null) {
   //         var professionalPicture1 = data['professionalPicture1'];
-  //         var storeType = data['storeType'];
+  //         var shopType = data['shopType'];
 
   //         // Check conditions
-  //         if (professionalPicture1.isEmpty && storeType != 'Fan') {
+  //         if (professionalPicture1.isEmpty && shopType != 'Fan') {
   //           // Delete the document from the target collection
   //           batch.delete(targetDoc.reference);
   //           print('Deleted document ${targetDoc.id}');
@@ -2450,6 +2449,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ? _navigateToPage(
                       context,
                       ProfileScreen(
+                        accountType: contentType,
                         currentUserId:
                             Provider.of<UserData>(context, listen: false)
                                 .currentUserId!,
@@ -2460,6 +2460,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ? _navigateToPage(
                           context,
                           ProfileScreen(
+                            accountType: contentType,
                             currentUserId:
                                 Provider.of<UserData>(context, listen: false)
                                     .currentUserId!,
@@ -2587,6 +2588,7 @@ class HomeScreenState extends State<HomeScreen> {
           _navigateToPage(
             context,
             ProfileScreen(
+              accountType: _provider.user!.accountType!,
               currentUserId: _provider.currentUserId!,
               userId: parts[1],
               user: null,
@@ -2913,6 +2915,7 @@ class _HomeMobileState extends State<HomeMobile>
                               userId: '',
                             ),
                             ProfileScreen(
+                              accountType: _provider.user!.accountType!,
                               currentUserId: currentUserId,
                               userId: currentUserId,
                               user: userStore,

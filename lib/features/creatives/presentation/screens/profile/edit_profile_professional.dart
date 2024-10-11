@@ -83,6 +83,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     appointments
         .forEach((appointment) => _provider.setAppointmentSlots(appointment));
 
+    Map<String, DateTimeRange> openingHours = widget.user.openingHours;
+    _provider.setOpeningHours(openingHours);
+
     // Add user contact
     List<PortfolioContactModel> contacts = widget.user.contacts;
     contacts.forEach((contact) => _provider.setBookingContacts(contact));
@@ -154,6 +157,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _provider.collaborations.clear();
     _provider.professionalImages.clear();
     _provider.priceRate.clear();
+    _provider.appointmentSlots.clear();
+    _provider.openingHours.clear();
     _provider.setProfessionalImageFile1(null);
     _provider.setProfessionalImageFile2(null);
     _provider.setProfessionalImageFile3(null);
@@ -431,10 +436,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
       UserStoreModel _userStore = UserStoreModel(
         userId: widget.user.userId,
-        userName: _provider.name,
-        storeLogomageUrl: '',
-        storeType: _provider.storeType,
-        verified: _provider.userStore!.verified,
+        shopName: _provider.name,
+        shopLogomageUrl: '',
+        shopType: _provider.shopType,
+        verified: widget.user.verified,
         terms: _provider.termAndConditions,
         city: _provider.city,
         country: _provider.country,
@@ -447,15 +452,16 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         // priceTags: _provider.priceRate,
         services: _provider.services,
         professionalImageUrls: _provider.professionalImages,
-        dynamicLink: _provider.userStore!.dynamicLink,
-        randomId: _provider.userStore!.randomId,
+        dynamicLink: widget.user.dynamicLink,
+        randomId: widget.user.randomId,
         currency: _provider.currency,
-        transferRecepientId: _provider.userStore!.transferRecepientId,
-        maxCapacity: _provider.userStore!.maxCapacity ?? 0,
-        amenities: _provider.userStore!.amenities,
-        averageRating: _provider.userStore!.averageRating ?? 0,
+        transferRecepientId: widget.user.transferRecepientId,
+        maxCapacity: widget.user.maxCapacity ?? 0,
+        amenities: widget.user.amenities,
+        averageRating: widget.user.averageRating ?? 0,
         openingHours: _provider.openingHours,
         appointmentSlots: _provider.appointmentSlots,
+        address: _provider.address,
       );
 
       try {
@@ -487,12 +493,12 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               'currency': _provider.currency,
             }));
 
-        await HiveUtils.updateUserLocation(
-          context,
-          _provider.userStore!.city,
-          _provider.userStore!.country,
-          _provider.userStore!.storeType,
-        );
+        // await HiveUtils.updateUserLocation(
+        //   context,
+        //   _provider.userStore!.city,
+        //   _provider.userStore!.country,
+        //   _provider.userStore!.shopType,
+        // );
 
         // _provider.setUserStore(_userStore);
 
@@ -1504,7 +1510,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     return SearchUserTile(
         verified: user.verified!,
         userName: user.userName!.toUpperCase(),
-        storeType: user.storeType!,
+        shopType: user.shopType!,
         // company: user.company!,
         profileImageUrl: user.profileImageUrl!,
         bio: '',
@@ -1907,7 +1913,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 // _showBottomTaggedPeople
   setNull() {
     Provider.of<UserData>(context, listen: false).setInt1(0);
-    Provider.of<UserData>(context, listen: false).setstoreType('');
+    Provider.of<UserData>(context, listen: false).setshopType('');
     Provider.of<UserData>(context, listen: false).setEmail('');
     Provider.of<UserData>(context, listen: false).setBool5(false);
     Provider.of<UserData>(context, listen: false).setBool6(false);
@@ -2020,13 +2026,13 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         _widget = PriceRateWidget(
             edit: true, prices: _provider.priceRate, seeMore: true);
         break;
-      case 'collaborations':
-        _onPressed = () => _showBottomSheetCollaboration(false);
-        _widget = PortfolioCollaborationWidget(
-            collaborations: _provider.collaborations,
-            seeMore: false,
-            edit: true);
-        break;
+      // case 'collaborations':
+      //   _onPressed = () => _showBottomSheetCollaboration(false);
+      //   _widget = PortfolioCollaborationWidget(
+      //       collaborations: _provider.collaborations,
+      //       seeMore: false,
+      //       edit: true);
+      //   break;
       case 'contacts':
         _onPressed =
             () => _showBottomSheetContactType(_provider.bookingContacts);
@@ -2163,7 +2169,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                   backgroundColor: Theme.of(context).primaryColorLight,
                   radius: ResponsiveHelper.responsiveHeight(context, 50.0),
                   backgroundImage: ImageHandler.displayProfileImage(
-                    widget.user.storeLogomageUrl,
+                    widget.user.shopLogomageUrl,
                     _provider.logoImage,
                   ),
                 ),
@@ -2176,7 +2182,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                     backgroundColor: Theme.of(context).primaryColorLight,
                     radius: ResponsiveHelper.responsiveHeight(context, 50.0),
                     backgroundImage: ImageHandler.displayProfileImage(
-                      widget.user.storeLogomageUrl,
+                      widget.user.shopLogomageUrl,
                       _provider.logoImage,
                     ),
                   ),
@@ -2239,15 +2245,15 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     );
   }
 
-  List<WorkersModel> dummyWorkers = [
-    WorkersModel(
+  List<ShopWorkerModel> dummyWorkers = [
+    ShopWorkerModel(
       id: '1',
       name: 'Alice Johnson',
       role: ['Hair Stylist', 'Color Specialist'],
       services: ['Haircut', 'Hair Stylist', 'Hair Coloring', 'Blow Dry'],
       profileImageUrl: 'https://example.com/images/alice.jpg',
     ),
-    WorkersModel(
+    ShopWorkerModel(
       id: '2',
       name: 'Bob Smith',
       role: ['Massage Therapist', 'Wellness Coach'],
@@ -2306,7 +2312,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           onPressed: () {
             _navigateToPage(
               context,
-              EditstoreType(
+              EditshopType(
                 user: _provider.user!,
               ),
             );
@@ -2324,6 +2330,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               context,
               EditProfileSelectLocation(
                 user: _userLocation,
+                accountType: widget.user.accountType!,
               ),
             );
           },
@@ -2372,23 +2379,11 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           },
           dropDown: false,
         ),
-        OpeninHoursWidget(
-          openingHours: _provider.openingHours.isEmpty
-              ? {
-                  "Monday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                  "Tuesday":
-                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                  "Wednesday":
-                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                  "Thursday":
-                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                  "Friday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                  "Saturday":
-                      DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                  "Sunday": DateTimeRange(start: DateTime(0), end: DateTime(0)),
-                }
-              : _provider.openingHours,
-        ),
+        _provider.openingHours.isEmpty
+            ? NoAppointmentWidget()
+            : OpeninHoursWidget(
+                openingHours: _provider.openingHours,
+              ),
         const SizedBox(
           height: 30,
         ),
@@ -2419,8 +2414,11 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         color: Theme.of(context).cardColor,
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: TicketGroup(
+          fromPrice: false,
           appointmentSlots: _provider.appointmentSlots,
+          openingHours: widget.user.openingHours,
           edit: true,
+          bookingShop: widget.user,
         ),
       ),
       Padding(
@@ -2546,25 +2544,29 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                 isMini: true,
                 indicatorColor: Colors.blue,
               )
-            : !_portfolioIsEmpty
-                ? imageUrlIsEmpty || _imageFileNull
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 20.0, bottom: 40),
-                          child: AlwaysWhiteButton(
-                            buttonText: 'Save',
-                            onPressed: () {
-                              _submit();
-                            },
+            :
 
-                            // _validateTextToxicity,
-                            //  _submit,
-                            buttonColor: Colors.blue,
-                          ),
-                        ),
-                      )
-                    : SizedBox.shrink()
-                : SizedBox.shrink(),
+            // !_portfolioIsEmpty
+            //     ? imageUrlIsEmpty || _imageFileNull
+            //         ?
+
+            Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 40),
+                  child: AlwaysWhiteButton(
+                    buttonText: 'Save',
+                    onPressed: () {
+                      _submit();
+                    },
+
+                    // _validateTextToxicity,
+                    //  _submit,
+                    buttonColor: Colors.blue,
+                  ),
+                ),
+              ),
+        // : SizedBox.shrink()
+        // : SizedBox.shrink(),
       ]),
     );
   }

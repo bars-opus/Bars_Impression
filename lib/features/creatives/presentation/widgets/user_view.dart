@@ -1,5 +1,5 @@
-import 'package:bars/features/creatives/presentation/screens/discography/discography_pageview.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/material.dart';
 
 class UserView extends StatefulWidget {
   final String currentUserId;
@@ -82,19 +82,108 @@ class _UserViewState extends State<UserView> {
     );
   }
 
+  _infoWidget(String label, String value) {
+    return SalesReceiptWidget(
+      maxLines: 2,
+      text1Ccolor: null,
+      inMini: true,
+      text2Ccolor: Theme.of(context).secondaryHeaderColor,
+      isRefunded: false,
+      lable: label,
+      value: value,
+    );
+  }
+
+  _divider() {
+    return Divider(
+      thickness: .3,
+      color: Theme.of(context).primaryColor,
+    );
+  }
+
+  _card(Widget child) {
+    return Card(
+        color: Theme.of(context).primaryColorLight,
+        surfaceTintColor: Colors.transparent,
+        margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 5),
+        shape: RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(30.0), // Adjust the radius as needed
+        ),
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+            child: child));
+  }
+
+  _launchMap(String address) {
+    return MapsLauncher.launchQuery(address);
+  }
+
+  _bookingServiceOptions(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.black.withOpacity(.6),
+        builder: (BuildContext context) {
+          return ServicePriceOptions(
+            fromPrice: true,
+            bookingUser: widget.userProfessional,
+          );
+        });
+  }
+
+  void _showBottomSheetOpeningHours() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 600),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30)),
+          child: ListView(
+            padding: const EdgeInsets.all(10),
+            children: [
+              TicketPurchasingIcon(
+                title: '',
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              OpeninHoursWidget(
+                openingHours: widget.userProfessional.openingHours,
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   _userOthers() {
     bool isAuthor = widget.currentUserId == widget.userProfessional.userId;
     var textStyle = TextStyle(
       fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
       color: Colors.grey,
     );
+
+    final services = widget.userProfessional.appointmentSlots
+        .map((slot) => slot.service)
+        .toSet() // Use a set to ensure uniqueness
+        .toList();
+
+    final workers = widget.userProfessional.appointmentSlots
+        .expand((slot) => slot.workers)
+        .toList();
     return FocusedMenuAction(
       onPressedReport: () {
         _navigateToPage(
             context,
             ReportContentPage(
               contentId: widget.userProfessional.userId,
-              contentType: widget.userProfessional.userName,
+              contentType: widget.userProfessional.shopName,
               parentContentId: widget.userProfessional.userId,
               repotedAuthorId: widget.userProfessional.userId,
             ));
@@ -106,8 +195,8 @@ class _UserViewState extends State<UserView> {
             currentUserId: widget.currentUserId,
             sendContentType: 'User',
             sendContentId: widget.userProfessional.userId,
-            sendImageUrl: widget.userProfessional.storeLogomageUrl,
-            sendTitle: widget.userProfessional.userName,
+            sendImageUrl: widget.userProfessional.shopLogomageUrl,
+            sendTitle: widget.userProfessional.shopName,
           ),
         );
       },
@@ -129,7 +218,7 @@ class _UserViewState extends State<UserView> {
                             Provider.of<UserData>(context).currentUserId!,
                         user: widget.userProfessional,
                         userIndex: userIndex,
-                        types: widget.userProfessional.storeType,
+                        types: widget.userProfessional.shopType,
                         pageIndex: widget.pageIndex,
                         userList: widget.userList,
                         userSnapshot: widget.userSnapshot,
@@ -138,192 +227,187 @@ class _UserViewState extends State<UserView> {
                         isFrom: widget.isFrom,
                       )));
         },
-        child: Container(
-          margin: EdgeInsets.all(10),
-          padding: EdgeInsets.all(10),
-          height: ResponsiveHelper.responsiveHeight(context, 300),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Theme.of(context).cardColor,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                widget.userProfessional.storeLogomageUrl.isEmpty
-                    ? const Icon(
-                        Icons.account_circle,
-                        size: 50.0,
-                        color: Colors.grey,
-                      )
-                    : CircleAvatar(
-                        radius: 25.0,
-                        backgroundColor: Colors.blue,
-                        backgroundImage: CachedNetworkImageProvider(
-                            widget.userProfessional.storeLogomageUrl,
-                            errorListener: (_) {
-                          return;
-                        }),
-                      ),
-                SizedBox(
-                  width: ResponsiveHelper.responsiveWidth(context, 10.0),
-                ),
-                Expanded(
-                  child: Column(
+        child: Column(
+          children: [
+            _card(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.userProfessional.userName.replaceAll('\n', ' '),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        overflow: TextOverflow.ellipsis,
+                      widget.userProfessional.shopLogomageUrl.isEmpty
+                          ? const Icon(
+                              Icons.account_circle,
+                              size: 40.0,
+                              color: Colors.grey,
+                            )
+                          : CircleAvatar(
+                              radius: 20.0,
+                              backgroundColor: Colors.blue,
+                              backgroundImage: CachedNetworkImageProvider(
+                                  widget.userProfessional.shopLogomageUrl,
+                                  errorListener: (_) {
+                                return;
+                              }),
+                            ),
+                      SizedBox(
+                        width: ResponsiveHelper.responsiveWidth(context, 10.0),
                       ),
-                      Text(
-                        widget.userProfessional.storeType.replaceAll('\n', ' '),
-                        style: TextStyle(
-                          fontSize: ResponsiveHelper.responsiveFontSize(
-                              context, 10.0),
-                          color: Colors.blue,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      // RichText(
-                      //   textScaler: MediaQuery.of(context).textScaler,
-                      //   text: TextSpan(
-                      //     children: [
-                      //       TextSpan(text: "Skills: ", style: textStyle),
-                      //       TextSpan(
-                      //         text: widget.userProfessional.skills
-                      //             .map((skills) => skills.name)
-                      //             .join(', '),
-                      //         style: Theme.of(context).textTheme.bodySmall,
-                      //       )
-                      //     ],
-                      //   ),
-                      //   overflow: TextOverflow.ellipsis,
-                      // ),
-                      // RichText(
-                      //   textScaler: MediaQuery.of(context).textScaler,
-                      //   text: TextSpan(
-                      //     children: [
-                      //       TextSpan(
-                      //           text: "Collaborations: ", style: textStyle),
-                      //       TextSpan(
-                      //         text: widget.userProfessional.collaborations
-                      //             .map((collaborations) => collaborations.name)
-                      //             .join(', '),
-                      //         style: Theme.of(context).textTheme.bodySmall,
-                      //       )
-                      //     ],
-                      //   ),
-                      //   overflow: TextOverflow.ellipsis,
-                      // ),
-                      // RichText(
-                      //   textScaler: MediaQuery.of(context).textScaler,
-                      //   text: TextSpan(
-                      //     children: [
-                      //       TextSpan(text: "Performance: ", style: textStyle),
-                      //       TextSpan(
-                      //         text: widget.userProfessional.performances
-                      //             .map((performances) => performances.name)
-                      //             .join(', '),
-                      //         style: Theme.of(context).textTheme.bodySmall,
-                      //       )
-                      //     ],
-                      //   ),
-                      //   overflow: TextOverflow.ellipsis,
-                      // ),
-                      RichText(
-                        textScaler: MediaQuery.of(context).textScaler,
-                        text: TextSpan(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextSpan(text: "Location: ", style: textStyle),
-                            if (widget.userProfessional.city.isNotEmpty)
-                              TextSpan(
-                                text: widget.userProfessional.city,
-                                style: Theme.of(context).textTheme.bodySmall,
+                            Text(
+                              widget.userProfessional.shopName
+                                  .replaceAll('\n', ' '),
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              widget.userProfessional.shopType
+                                  .replaceAll('\n', ' '),
+                              style: TextStyle(
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 10.0),
+                                color: Colors.blue,
                               ),
-                            if (widget.userProfessional.city.isNotEmpty &&
-                                widget.userProfessional.country.isNotEmpty)
-                              TextSpan(
-                                text: ', ',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            if (widget.userProfessional.country.isNotEmpty)
-                              TextSpan(
-                                text: widget.userProfessional.country,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            // if (widget.userProfessional.continent.isNotEmpty &&
-                            //     widget.userProfessional.country.isNotEmpty)
-                            //   TextSpan(
-                            //     text: ', ',
-                            //     style: Theme.of(context).textTheme.bodySmall,
-                            //   ),
-                            // TextSpan(
-                            //   text: widget.userProfessional.continent,
-                            //   style: Theme.of(context).textTheme.bodySmall,
-                            // ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            StarRatingWidget(
+                              isMini: true,
+                              enableTap: false,
+                              onRatingChanged: (_) {},
+                              rating:
+                                  widget.userProfessional.averageRating ?? 0,
+                            ),
                           ],
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      Divider(
-                        thickness: .3,
-                        color: Theme.of(context).primaryColor,
+                      Container(
+                        width: ResponsiveHelper.responsiveWidth(context, 50.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+
+                            _showBottomSheet(context);
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.mediumImpact();
+                                  _showBottomSheet(context);
+                                },
+                                child: Icon(
+                                  Icons.more_vert_outlined,
+                                  size: ResponsiveHelper.responsiveHeight(
+                                      context, 20),
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                Container(
-                  width: ResponsiveHelper.responsiveWidth(context, 50.0),
-                  child: GestureDetector(
+                  _divider(),
+                  GestureDetector(
+                      onTap: () {
+                        _showBottomSheetOpeningHours();
+                      },
+                      child: ShopOpenStatus(shop: widget.userProfessional)),
+                  _divider(),
+                  GestureDetector(
                     onTap: () {
-                      HapticFeedback.mediumImpact();
-
-                      _showBottomSheet(context);
+                      _launchMap(widget.userProfessional.address);
                     },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.mediumImpact();
-                            _showBottomSheet(context);
-                          },
-                          child: Icon(
-                            Icons.more_vert_outlined,
-                            size:
-                                ResponsiveHelper.responsiveHeight(context, 20),
-                            color: Theme.of(context).secondaryHeaderColor,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.mediumImpact();
-                            _showBottomSheetBookMe(context);
-                            // _showBottomSheetBookingCalendar();
-                          },
-                          child: Icon(
-                            Icons.call_outlined,
-                            // Icons.calendar_month,
-                            size:
-                                ResponsiveHelper.responsiveHeight(context, 25),
-                            color: Colors.blue,
-                          ),
-                        ),
-                      ],
+                    child: _infoWidget(
+                      'Location',
+                      widget.userProfessional.address,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            _card(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _divider(),
+                  GestureDetector(
+                    onTap: () {
+                      _bookingServiceOptions(context);
+                    },
+                    child: SizedBox(
+                      height: ResponsiveHelper.responsiveFontSize(context,
+                          75), // Adjust height to fit two rows of chips
+                      child: GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // Two rows
+                          childAspectRatio: .3, // Adjust aspect ratio as needed
+                        ),
+                        itemCount: services.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(1.0),
+                            child: Container(
+                              width: ResponsiveHelper.responsiveFontSize(
+                                  context, 100),
+                              decoration: BoxDecoration(
+                                // borderRadius: BorderRadius.circular(10.0),
+                                color: Colors.blue.shade50,
+                              ),
+                              child: Chip(
+                                label: Text(
+                                  services[index],
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                backgroundColor: Colors.blue.shade50,
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                    width: 0.0,
+                                  ),
+                                  // borderRadius: BorderRadius.circular(5.0),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  _divider(),
+                  Container(
+                    padding: EdgeInsets.all(
+                        ResponsiveHelper.responsiveWidth(context, 2)),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        bottomLeft: Radius.circular(10.0),
+                      ),
+                    ),
+                    child: ShedulePeopleHorizontal(
+                      small: true,
+                      edit: false,
+                      workers: workers,
+                      currentUserId: widget.currentUserId,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

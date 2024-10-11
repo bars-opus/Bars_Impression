@@ -131,7 +131,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                       builder: (_) => ProfileScreen(
                             currentUserId: widget.currentUserId,
                             userId: widget.user.userId,
-                            user: null,
+                            user: null, accountType: '',
                           )));
             },
             leading: widget.user.profileImageUrl!.isEmpty
@@ -150,7 +150,7 @@ class _ChatDetailsState extends State<ChatDetails> {
               verified: widget.user!.verified! ? true : false,
             ),
             subtitle: Text(
-              widget.user.storeType!,
+              widget.user.shopType!,
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12),

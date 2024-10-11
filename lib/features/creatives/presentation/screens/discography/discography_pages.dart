@@ -68,7 +68,7 @@ class _DiscographyPagesState extends State<DiscographyPages> {
   }) async {
     var query = userProfessionalRef
         .where('showOnExplorePage', isEqualTo: true)
-        .where('storeType', isEqualTo: widget.types)
+        .where('shopType', isEqualTo: widget.types)
         .where('noBooking', isEqualTo: false);
 
     if (country != null) {
@@ -202,7 +202,7 @@ class _DiscographyPagesState extends State<DiscographyPages> {
               return ProfileScreen(
                   currentUserId: widget.currentUserId,
                   userId: user.userId,
-                  user: user);
+                  user: user, accountType: 'Shop',);
 
               //  DiscographyWidget(
               //   currentUserId: widget.currentUserId,

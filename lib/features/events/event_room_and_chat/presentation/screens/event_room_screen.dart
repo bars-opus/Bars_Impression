@@ -348,7 +348,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
                   ? SizedBox.shrink()
                   : CircularButton(
                       color: readyToSend ? palleteColor : Colors.transparent,
-                      icon:  Icons.send,
+                      icon: Icons.send,
                       onPressed: onSend),
             ),
           ],
@@ -409,7 +409,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
       attachments: attachement,
       eventId: widget.room.linkedEventId,
       authorName: _provider.user!.userName!,
-      authorProfileHanlde: _provider.user!.storeType!,
+      authorProfileHanlde: _provider.user!.shopType!,
       authorProfileImageUrl: _provider.user!.profileImageUrl!,
       authorVerification: _provider.user!.verified! ? false : true,
     );

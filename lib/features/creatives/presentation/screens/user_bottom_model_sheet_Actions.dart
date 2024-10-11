@@ -146,7 +146,7 @@ class _UserBottomModalSheetActionsState
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 550.0),
+      height: ResponsiveHelper.responsiveHeight(context, 450.0),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),
@@ -164,10 +164,12 @@ class _UserBottomModalSheetActionsState
             ),
 
             UserHeaderListTileWidget(
+              imageUrl: widget.user.shopLogomageUrl,
               onPressed: () {
                 _navigateToPage(
                     context,
                     ProfileScreen(
+                       accountType: widget.user.accountType!,
                       currentUserId: widget.currentUserId,
                       userId: widget.user.userId,
                       user: null,
@@ -204,8 +206,8 @@ class _UserBottomModalSheetActionsState
                               Provider.of<UserData>(context, listen: false)
                                   .currentUserId!,
                           sendContentType: 'User',
-                          sendImageUrl: widget.user.storeLogomageUrl,
-                          sendTitle: widget.user.userName,
+                          sendImageUrl: widget.user.shopLogomageUrl,
+                          sendTitle: widget.user.shopName,
                         ));
                   },
                   Icons.send_outlined,
@@ -225,15 +227,62 @@ class _UserBottomModalSheetActionsState
               ],
             ),
 
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     _sortByWidget(
+            //       () async {
+            //         // _showBottomSheetAdvice(context);
+            //       },
+            //       MdiIcons.thoughtBubbleOutline,
+            //       'Advice',
+            //       null,
+            //       true,
+            //     ),
+            //     _sortByWidget(
+            //       widget.currentUserId == widget.user.userId
+            //           ? () {
+            //               _showBottomSheetCantMessage();
+            //             }
+            //           : () async {
+            //               // try {
+            //               Chat? _chat = await DatabaseService.getUserChatWithId(
+            //                 widget.currentUserId,
+            //                 widget.user.userId,
+            //               );
+
+            //               _bottomModalSheetMessage(
+            //                 context,
+            //                 _chat,
+            //               );
+            //               // } catch (e) {}
+            //             },
+            //       Icons.message_outlined,
+            //       'Message',
+            //       null,
+            //       false,
+            //     ),
+            //   ],
+            // ),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _sortByWidget(
                   () async {
-                    // _showBottomSheetAdvice(context);
+                    _navigateToPage(
+                        context,
+                        ProfileScreen(
+                          accountType: widget.user.accountType!,
+                          currentUserId: widget.currentUserId,
+                          userId: widget.user.userId,
+                          user: null,
+                        ));
                   },
-                  MdiIcons.thoughtBubbleOutline,
-                  'Advice',
+                  Icons.person_2_outlined,
+                  'Profile',
                   null,
                   true,
                 ),
@@ -262,46 +311,6 @@ class _UserBottomModalSheetActionsState
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _sortByWidget(
-                  () async {
-                    _navigateToPage(
-                        context,
-                        ProfileScreen(
-                          currentUserId: widget.currentUserId,
-                          userId: widget.user.userId,
-                          user: null,
-                        ));
-                  },
-                  Icons.person_2_outlined,
-                  'Profile',
-                  null,
-                  true,
-                ),
-                _sortByWidget(
-                  () async {
-                    _navigateToPage(
-                        context,
-                        UserBarcode(
-                          userDynamicLink: widget.user.dynamicLink,
-                          bio: widget.user.overview,
-                          userName: widget.user.userName,
-                          userId: widget.user.userId,
-                          profileImageUrl: widget.user.storeLogomageUrl,
-                        ));
-                  },
-                  Icons.qr_code,
-                  'Barcode',
-                  null,
-                  true,
-                ),
-              ],
-            ),
 
             const SizedBox(
               height: 10,
@@ -325,7 +334,7 @@ class _UserBottomModalSheetActionsState
                         context,
                         ReportContentPage(
                           contentId: widget.user.userId,
-                          contentType: widget.user.userName,
+                          contentType: widget.user.shopName,
                           parentContentId: widget.user.userId,
                           repotedAuthorId: widget.user.userId,
                         ));

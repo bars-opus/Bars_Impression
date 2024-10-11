@@ -11,16 +11,18 @@ class DatabaseService {
     WriteBatch batch = _firestore.batch();
 
     DocumentReference userAuthorRef = usersAuthorRef.doc(signedInHandler.uid);
+
     DocumentReference userLocationSettingsRef =
         usersLocationSettingsRef.doc(signedInHandler.uid);
+
     DocumentReference userGeneralSettingsRef =
         usersGeneralSettingsRef.doc(signedInHandler.uid);
 
-    DocumentReference usersProfessionalRef =
-        userProfessionalRef.doc(signedInHandler.uid);
+    // DocumentReference usersProfessionalRef =
+    //     userProfessionalRef.doc(signedInHandler.uid);
 
-    DocumentReference usersRatingdocRef =
-        usersRatingRef.doc(signedInHandler.uid);
+    // DocumentReference usersRatingdocRef =
+    //     usersRatingRef.doc(signedInHandler.uid);
 
     DocumentReference followerRef = followersRef
         .doc(signedInHandler.uid)
@@ -29,7 +31,7 @@ class DatabaseService {
 
     batch.set(followerRef, {'userId': signedInHandler.uid});
 
-    double randomId = Random().nextDouble();
+    // double randomId = Random().nextDouble();
 
     batch.set(userAuthorRef, {
       'accountType': 'Client',
@@ -39,7 +41,7 @@ class DatabaseService {
       'lastActiveDate': Timestamp.fromDate(DateTime.now()),
       // 'name': signedInHandler.displayName ?? name,
       // 'isShop': false,
-      'storeType': '',
+      'shopType': '',
       'profileImageUrl': '',
       'reportConfirmed': false,
       'userId': signedInHandler.uid,
@@ -80,41 +82,120 @@ class DatabaseService {
       'reportConfirmed': false,
     });
 
-    batch.set(usersProfessionalRef, {
-      'userId': signedInHandler.uid,
-      'accountType': 'Client',
-      'userName': '',
-      'storeLogomageUrl': '',
-      'storeType': 'Fan',
-      'dynamicLink': '',
-      'currency': '',
-      'randomId': randomId,
-      'verified': false,
-      'terms': '',
-      'overview': '',
-      'city': '',
-      'country': '',
-      'noBooking': false,
-      'awards': [],
-      'contacts': [],
-      'skills': [],
-      'links': [],
-      'services': [],
-      'professionalImageUrls': [],
-      // 'priceTags': [],
-      'improvementSuggestion': '',
-      'showOnExplorePage': true,
-      'transferRecepientId': '',
-      'averageRating': 0,
-      'currentVisitors': 0,
-      'maxCapacity': 0,
-      'amenities': [],
-      'openingHours': {},
-      'appointmentSlots': [],
-    });
+    // batch.set(usersProfessionalRef, {
+    //   'userId': signedInHandler.uid,
+    //   'accountType': 'Client',
+    //   'userName': '',
+    //   'shopLogomageUrl': '',
+    //   'shopType': 'Fan',
+    //   'dynamicLink': '',
+    //   'address': '',
+    //   'currency': '',
+    //   'randomId': randomId,
+    //   'verified': false,
+    //   'terms': '',
+    //   'overview': '',
+    //   'city': '',
+    //   'country': '',
+    //   'noBooking': false,
+    //   'awards': [],
+    //   'contacts': [],
+    //   'skills': [],
+    //   'links': [],
+    //   'services': [],
+    //   'professionalImageUrls': [],
+    //   // 'priceTags': [],
+    //   'improvementSuggestion': '',
+    //   'showOnExplorePage': true,
+    //   'transferRecepientId': '',
+    //   'averageRating': 0,
+    //   'currentVisitors': 0,
+    //   'maxCapacity': 0,
+    //   'amenities': [],
+    //   'openingHours': {},
+    //   'appointmentSlots': [],
+    // });
+
+    // batch.set(usersRatingdocRef, {
+    //   'userId': signedInHandler.uid,
+    //   'oneStar': 0,
+    //   'twoStar': 0,
+    //   'threeStar': 0,
+    //   'fourStar': 0,
+    //   'fiveStar': 0,
+    // });
+
+    // Commit the batch
+    return batch.commit();
+  }
+
+  static Future<void> createUserProfileITypeData(
+      {required String userId,
+      required String accountType,
+      required String shopType,
+      required String name,
+      required WriteBatch batch}) async {
+    // final _firestore = FirebaseFirestore.instance;
+    // WriteBatch batch = _firestore.batch();
+
+    DocumentReference usersProfessionalRef = userProfessionalRef.doc(userId);
+
+    DocumentReference usersRatingdocRef = usersRatingRef.doc(userId);
+
+    DocumentReference usersWorkerdocRef = usersWokerRef.doc(userId);
+
+    double randomId = Random().nextDouble();
+
+    if (accountType == "Shop") {
+      batch.set(usersProfessionalRef, {
+        'userId': userId,
+        'accountType': accountType,
+        'shopName': '',
+        'shopLogomageUrl': '',
+        'shopType': shopType,
+        'dynamicLink': '',
+        'address': '',
+        'currency': '',
+        'randomId': randomId,
+        'verified': false,
+        'terms': '',
+        'overview': '',
+        'city': '',
+        'country': '',
+        'noBooking': false,
+        'awards': [],
+        'contacts': [],
+        'skills': [],
+        'links': [],
+        'services': [],
+        'professionalImageUrls': [],
+        // 'priceTags': [],
+        'improvementSuggestion': '',
+        'showOnExplorePage': true,
+        'transferRecepientId': '',
+        'averageRating': 0,
+        'currentVisitors': 0,
+        'maxCapacity': 0,
+        'amenities': [],
+        'openingHours': {},
+        'appointmentSlots': [],
+      });
+    } else {
+      batch.set(usersWorkerdocRef, {
+        'id': userId,
+        'randomId': randomId,
+        'accountType': accountType,
+        'shopId': '',
+        'name': name,
+        'role': [],
+        'services': [],
+        'averageRating': 0,
+        'profileImageUrl': '',
+      });
+    }
 
     batch.set(usersRatingdocRef, {
-      'userId': signedInHandler.uid,
+      'userId': userId,
       'oneStar': 0,
       'twoStar': 0,
       'threeStar': 0,
@@ -123,7 +204,7 @@ class DatabaseService {
     });
 
     // Commit the batch
-    return batch.commit();
+    // return batch.commit();
   }
 
   static void updateUser(AccountHolderAuthor user) {
@@ -132,7 +213,7 @@ class DatabaseService {
       'userName': user.userName,
       'profileImageUrl': user.profileImageUrl!,
       // 'bio': user.bio,
-      'storeType': user.storeType!,
+      'shopType': user.shopType!,
     });
   }
 
@@ -328,7 +409,7 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': currentUser.profileImageUrl,
       'authorName': currentUser.userName,
-      'authorstoreType': currentUser.storeType,
+      'authorshopType': currentUser.shopType,
       'authorVerification': currentUser.verified,
     });
 
@@ -508,24 +589,24 @@ class DatabaseService {
 
   static Future<int> numUsersAll111() async {
     QuerySnapshot feedSnapShot = await userProfessionalRef
-        // .where('storeType', isEqualTo: storeType)
+        // .where('shopType', isEqualTo: shopType)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedSnapShot.docs.length;
   }
 
-  static Future<int> numUsersAll(String storeType) async {
+  static Future<int> numUsersAll(String shopType) async {
     QuerySnapshot feedSnapShot = await userProfessionalRef
-        .where('storeType', isEqualTo: storeType)
+        .where('shopType', isEqualTo: shopType)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedSnapShot.docs.length - 1;
   }
 
   static Future<int> numusersLiveLocation(
-      String storeType, String liveCity, String liveCountry) async {
+      String shopType, String liveCity, String liveCountry) async {
     QuerySnapshot feedSnapShot = await userProfessionalRef
-        .where('storeType', isEqualTo: storeType)
+        .where('shopType', isEqualTo: shopType)
         .where('city', isEqualTo: liveCity)
         .where('country', isEqualTo: liveCountry)
         // .where('showOnExplorePage', isEqualTo: true)
@@ -2384,7 +2465,7 @@ class DatabaseService {
     // await sendTaggedNotificaton(
     //   batch: batch,
     //   taggedUsers: taggedsers,
-    //   authorstoreType: author.storeType,
+    //   authorshopType: author.shopType,
     //   authorVerification: author.verified,
     // );
 
@@ -2493,7 +2574,7 @@ class DatabaseService {
   //   await sendTaggedNotificaton(
   //     batch: batch,
   //     taggedUsers: taggedsers,
-  //     authorstoreType: author.storeType,
+  //     authorshopType: author.shopType,
   //     authorVerification: author.verified,
   //   );
 
@@ -2514,7 +2595,7 @@ class DatabaseService {
   static Future<void> sendTaggedNotificaton({
     required WriteBatch batch,
     required List<TaggedNotificationModel> taggedUsers,
-    required authorstoreType,
+    required authorshopType,
     required authorVerification,
   }) async {
     for (var taggedUser in taggedUsers) {
@@ -2545,7 +2626,7 @@ class DatabaseService {
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': '',
         'authorName': 'Tagged in Event',
-        'authorstoreType': authorstoreType,
+        'authorshopType': authorshopType,
         'authorVerification': authorVerification,
       });
     }
@@ -2586,7 +2667,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': '',
             'authorName': 'New event in ${event.city}',
-            'authorstoreType': event.authorId,
+            'authorshopType': event.authorId,
             'authorVerification': false
           });
 
@@ -2643,7 +2724,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': '',
             'authorName': 'New event by ${event.authorName}\n${event.title}',
-            'authorstoreType': event.authorId,
+            'authorshopType': event.authorId,
             'authorVerification': false
           });
 
@@ -2792,7 +2873,7 @@ class DatabaseService {
     //         'timestamp': Timestamp.fromDate(DateTime.now()),
     //         'authorProfileImageUrl': '',
     //         'authorName': 'Event informaiton updated',
-    //         'authorstoreType': event.authorId,
+    //         'authorshopType': event.authorId,
     //         'authorVerification': false
     //       });
     //       operationCount++; // One operation for the user activity
@@ -2866,7 +2947,7 @@ class DatabaseService {
     //   //     'timestamp': Timestamp.fromDate(DateTime.now()),
     //   //     'authorProfileImageUrl': '',
     //   //     'authorName': 'Event informaiton updated',
-    //   //     'authorstoreType': event.authorId,
+    //   //     'authorshopType': event.authorId,
     //   //     'authorVerification': false
     //   //   });
     //   //   operationCount++; // One operation for the user activity
@@ -3054,7 +3135,7 @@ class DatabaseService {
           'timestamp': Timestamp.fromDate(DateTime.now()),
           'authorProfileImageUrl': '',
           'authorName': 'Event deleted',
-          'authorstoreType': '',
+          'authorshopType': '',
           'authorVerification': false
         });
 
@@ -3261,7 +3342,7 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': '',
       'authorName': 'Refund requested ',
-      'authorstoreType': event.authorId,
+      'authorshopType': event.authorId,
       'authorVerification': false
     });
 
@@ -3290,7 +3371,7 @@ class DatabaseService {
 
   static Future<void> confirmUserTag(
     TaggedNotificationModel tag,
-    authorstoreType,
+    authorshopType,
     authorVerification,
     authorUserName,
   ) async {
@@ -3322,7 +3403,7 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': '',
       'authorName': 'Tag confirmed',
-      'authorstoreType': authorstoreType,
+      'authorshopType': authorshopType,
       'authorVerification': authorVerification,
     });
 
@@ -3560,7 +3641,7 @@ class DatabaseService {
       'govIdType': verification.govIdType,
       'email': verification.email,
       'phoneNumber': verification.phoneNumber,
-      'storeType': verification.storeType,
+      'shopType': verification.shopType,
       'gvIdImageUrl': verification.gvIdImageUrl,
       'website': verification.website,
       'socialMedia': verification.socialMedia,
@@ -4090,7 +4171,7 @@ class DatabaseService {
       otherLink: '',
       newsCoverage: '',
       phoneNumber: '',
-      storeType: '',
+      shopType: '',
       rejectedReason: '',
       socialMedia: '',
       status: '',
@@ -4120,7 +4201,7 @@ class DatabaseService {
   //     'authorId': currentUserId,
   //     'authorProfileImageUrl': user.profileImageUrl,
   //     'authorName': user.userName,
-  //     'authorstoreType': user.storeType,
+  //     'authorshopType': user.shopType,
   //     'authorVerification': user.verified,
   //     'timestamp': Timestamp.fromDate(DateTime.now()),
   //     'report': '',
@@ -4161,7 +4242,7 @@ class DatabaseService {
   //     'content': comment,
   //     'authorId': user.userId,
   //     'authorName': user.userName,
-  //     'authorstoreType': user.storeType,
+  //     'authorshopType': user.shopType,
   //     'authorProfileImageUrl': user.profileImageUrl,
   //     'authorVerification': user.verified,
   //     'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -4258,7 +4339,7 @@ class DatabaseService {
       'content': advice,
       'authorId': user.userId,
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -4287,7 +4368,7 @@ class DatabaseService {
       'report': '',
       'reportConfirmed': reportConfirmed,
       'authorName': currentUser.userName,
-      'authorstoreType': currentUser.storeType,
+      'authorshopType': currentUser.shopType,
       'authorProfileImageUrl': currentUser.profileImageUrl,
       'authorVerification': currentUser.verified,
       'authorId': currentUser.userId,
@@ -4560,6 +4641,12 @@ class DatabaseService {
     return feedSnapShot.docs.length;
   }
 
+  static Future<int> numUserAppointments(String userId) async {
+    QuerySnapshot feedSnapShot =
+        await newBookingsSentRef.doc(userId).collection('bookings').get();
+    return feedSnapShot.docs.length;
+  }
+
   static Future<bool> isTicketOrderAvailable({
     required Transaction transaction,
     required String userOrderId,
@@ -4683,7 +4770,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorstoreType': '',
+      'authorshopType': '',
       'authorVerification': currentUser.verified,
     });
 
@@ -4784,6 +4871,58 @@ class DatabaseService {
     await batch.commit();
   }
 
+  static Future<void> createBookingAppointment({
+    required BookingAppointmentModel booking,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    // Initialize a WriteBatch
+    Map<String, dynamic> bookingData = booking.toJson();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // References to the affiliate documents
+    final bookingReceivedDocRef = newBookingsReceivedRef
+        .doc(booking.shopId)
+        .collection('bookings')
+        .doc(booking.id);
+// f2427095-a9ec-40b2-8fc3-82bcec946740
+    final bookingsSentDocRef = newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id);
+
+    // Set the affiliate data in the batch
+    batch.set(bookingReceivedDocRef, bookingData);
+    batch.set(bookingsSentDocRef, bookingData);
+
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(booking.shopId)
+        .collection('userActivities')
+        .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': booking.clientId,
+      'authorId': currentUser.userId,
+      'postId': booking.id,
+      'seen': false,
+      'type': 'bookingReceived',
+      'postImageUrl': '',
+      'comment': 'Congratulation\nNew booking deal',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorshopType': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch write
+    await batch.commit();
+  }
+
   static Future<void> createBookingRequest({
     required BookingModel booking,
     required AccountHolderAuthor currentUser,
@@ -4828,7 +4967,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorstoreType': '',
+      'authorshopType': '',
       'authorVerification': currentUser.verified,
     });
 
@@ -4892,7 +5031,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorstoreType': '',
+      'authorshopType': '',
       'authorVerification': currentUser.verified,
     });
 
@@ -4974,7 +5113,7 @@ class DatabaseService {
         'authorProfileImageUrl':
             authorProfileImageUrl, // Assuming there's a profileImageUrl field
         'authorName': event.authorName,
-        'authorstoreType': '',
+        'authorshopType': '',
         'authorVerification': false,
       });
     }
@@ -5044,7 +5183,7 @@ class DatabaseService {
       'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorVerification': user.verified,
     });
   }
@@ -5120,7 +5259,7 @@ class DatabaseService {
       'authorProfileImageUrl': currentUser
           .profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': currentUser.userName,
-      'authorstoreType': '',
+      'authorshopType': '',
       'authorVerification': currentUser.verified,
     });
   }
@@ -5225,7 +5364,7 @@ class DatabaseService {
       'authorProfileImageUrl':
           user.profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorVerification': user.verified,
     });
   }
@@ -5404,7 +5543,7 @@ class DatabaseService {
       'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorVerification': user.verified,
     });
   }
@@ -5589,6 +5728,21 @@ class DatabaseService {
     });
   }
 
+  static Future<void> deleteAppointment({
+    required BookingAppointmentModel appointmentOrder,
+  }) async {
+    newBookingsSentRef
+        .doc(appointmentOrder.clientId)
+        .collection('bookings')
+        .doc(appointmentOrder.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
   static Future<void> answerEventInviteTransaction({
     required Transaction transaction,
     // required String eventId,
@@ -5662,7 +5816,7 @@ class DatabaseService {
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': '',
         'authorName': 'Cordially Invited',
-        'authorstoreType': event.authorId,
+        'authorshopType': event.authorId,
         'authorVerification': user.verified,
       });
     }
@@ -5685,7 +5839,7 @@ class DatabaseService {
       'mediaType': '',
       'mediaUrl': '',
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'reportConfirmed': reportConfirmed,
@@ -5715,7 +5869,7 @@ class DatabaseService {
       'mediaType': '',
       'mediaUrl': '',
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'reportConfirmed': reportConfirmed,
@@ -5810,7 +5964,7 @@ class DatabaseService {
       'authorProfileImageUrl':
           user.profileImageUrl, // Assuming there's a profileImageUrl field
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorVerification': user.verified,
     });
   }
@@ -5836,7 +5990,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': user.profileImageUrl,
             'authorName': user.userName,
-            'authorstoreType': user.storeType,
+            'authorshopType': user.shopType,
             'authorVerification': user.verified,
           })
         : event != null
@@ -5854,7 +6008,7 @@ class DatabaseService {
                 'timestamp': Timestamp.fromDate(DateTime.now()),
                 'authorProfileImageUrl': user.profileImageUrl,
                 'authorName': user.userName,
-                'authorstoreType': user.storeType,
+                'authorshopType': user.shopType,
                 'authorVerification': user.verified,
               })
             : followerUser != null
@@ -5872,7 +6026,7 @@ class DatabaseService {
                     'timestamp': Timestamp.fromDate(DateTime.now()),
                     'authorProfileImageUrl': user.profileImageUrl,
                     'authorName': user.userName,
-                    'authorstoreType': user.storeType,
+                    'authorshopType': user.shopType,
                     'authorVerification': user.verified,
                   })
                 : followerUser != null
@@ -5890,7 +6044,7 @@ class DatabaseService {
                         'timestamp': Timestamp.fromDate(DateTime.now()),
                         'authorProfileImageUrl': user.profileImageUrl,
                         'authorName': user.userName,
-                        'authorstoreType': user.storeType,
+                        'authorshopType': user.shopType,
                         'authorVerification': user.verified,
                       })
                     : null;
@@ -6045,7 +6199,7 @@ class DatabaseService {
       'content': comment,
       'authorId': user.userId,
       'authorName': user.userName,
-      'authorstoreType': user.storeType,
+      'authorshopType': user.shopType,
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
       'timestamp': Timestamp.fromDate(DateTime.now()),

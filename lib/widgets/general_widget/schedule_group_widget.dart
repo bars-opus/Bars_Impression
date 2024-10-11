@@ -85,7 +85,7 @@ class ScheduleGroup extends StatelessWidget {
                     ProfileScreen(
                       user: null,
                       currentUserId: currentUserId,
-                      userId: eventOrganiserId,
+                      userId: eventOrganiserId, accountType: '',
                     ));
               },
               child: RichText(

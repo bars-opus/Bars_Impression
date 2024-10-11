@@ -465,7 +465,7 @@ class _BrandMatchingWidgetState extends State<BrandMatchingWidget> {
                             .replaceAll('\n', ' '),
                         verified: widget.brandMatching.verified,
                       ),
-                      Text(widget.brandMatching.storeType,
+                      Text(widget.brandMatching.shopType,
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 11.0),

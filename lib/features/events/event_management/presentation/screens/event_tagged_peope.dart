@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class EventTaggedPeople extends StatelessWidget {
-  final List<WorkersModel> workers; // final bool isSponsor;
+  final List<ShopWorkerModel> workers; // final bool isSponsor;
   final bool showTagsOnImage;
 
   const EventTaggedPeople(
@@ -13,10 +13,10 @@ class EventTaggedPeople extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // var _size = MediaQuery.of(context).size;
-    List<WorkersModel> taggedPeople = workers;
-    List<WorkersModel> taggedPeopleOption = [];
-    for (WorkersModel taggedPeople in taggedPeople) {
-      WorkersModel taggedPersonOption = taggedPeople;
+    List<ShopWorkerModel> taggedPeople = workers;
+    List<ShopWorkerModel> taggedPeopleOption = [];
+    for (ShopWorkerModel taggedPeople in taggedPeople) {
+      ShopWorkerModel taggedPersonOption = taggedPeople;
       taggedPeopleOption.add(taggedPersonOption);
     }
     taggedPeopleOption.sort((a, b) => a.name.compareTo(b.name));

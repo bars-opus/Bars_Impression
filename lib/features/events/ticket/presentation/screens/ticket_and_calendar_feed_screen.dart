@@ -18,7 +18,7 @@ class _TicketAndCalendarFeedScreenState
     extends State<TicketAndCalendarFeedScreen>
     with AutomaticKeepAliveClientMixin {
   DocumentSnapshot? _lastTicketOrderDocument;
-  List<TicketOrderModel> _ticketOrder = [];
+  List<BookingAppointmentModel> _appointmentOrder = [];
   int _ticketCount = 0;
   int limit = 5;
   bool _hasNext = true;
@@ -36,7 +36,7 @@ class _TicketAndCalendarFeedScreenState
   @override
   void initState() {
     super.initState();
-    _setUpInvites();
+    _setUpAppointments();
     _setUpUserCount();
     _hideButtonController = ScrollController();
   }
@@ -59,7 +59,8 @@ class _TicketAndCalendarFeedScreenState
   }
 
   _setUpUserCount() async {
-    int feedCount = await DatabaseService.numUsersTickets(widget.currentUserId);
+    int feedCount =
+        await DatabaseService.numUserAppointments(widget.currentUserId);
     if (mounted) {
       setState(() {
         _ticketCount = feedCount;
@@ -69,26 +70,26 @@ class _TicketAndCalendarFeedScreenState
 
   Set<String> addedTicketIds = Set<String>();
 
-  _setUpInvites() async {
+  _setUpAppointments() async {
     try {
-      QuerySnapshot ticketOrderSnapShot = await newUserTicketOrderRef
+      QuerySnapshot ticketOrderSnapShot = await newBookingsSentRef
           .doc(widget.currentUserId)
-          .collection('ticketOrders')
-          .orderBy('eventTimestamp', descending: true)
+          .collection('bookings')
+          .orderBy('bookingDate', descending: true)
           .limit(30)
           .get();
 
-      List<TicketOrderModel> ticketOrders = ticketOrderSnapShot.docs
-          .map((doc) => TicketOrderModel.fromDoc(doc))
+      List<BookingAppointmentModel> ticketOrders = ticketOrderSnapShot.docs
+          .map((doc) => BookingAppointmentModel.fromDoc(doc))
           .toList();
 
-      List<TicketOrderModel> sortedTicketOrders =
+      List<BookingAppointmentModel> sortedTicketOrders =
           _sortTicketOrders(ticketOrders);
 
-      List<TicketOrderModel> uniqueEvents = [];
+      List<BookingAppointmentModel> uniqueEvents = [];
 
       for (var ticketOrder in sortedTicketOrders) {
-        if (addedTicketIds.add(ticketOrder.eventId)) {
+        if (addedTicketIds.add(ticketOrder.id)) {
           uniqueEvents.add(ticketOrder);
         }
       }
@@ -98,7 +99,7 @@ class _TicketAndCalendarFeedScreenState
 
       if (mounted) {
         setState(() {
-          _ticketOrder = uniqueEvents;
+          _appointmentOrder = uniqueEvents;
           _isLoading = false;
         });
       }
@@ -122,25 +123,25 @@ class _TicketAndCalendarFeedScreenState
       return;
     }
     try {
-      QuerySnapshot postFeedSnapShot = await newUserTicketOrderRef
+      QuerySnapshot postFeedSnapShot = await newBookingsSentRef
           .doc(widget.currentUserId)
-          .collection('ticketOrders')
-          .orderBy('eventTimestamp', descending: true) // Keep consistent order
+          .collection('bookings')
+          .orderBy('bookingDate', descending: true) // Keep consistent order
           .startAfterDocument(_lastTicketOrderDocument!)
           .limit(limit)
           .get();
 
-      List<TicketOrderModel> ticketOrders = postFeedSnapShot.docs
-          .map((doc) => TicketOrderModel.fromDoc(doc))
+      List<BookingAppointmentModel> ticketOrders = postFeedSnapShot.docs
+          .map((doc) => BookingAppointmentModel.fromDoc(doc))
           .toList();
 
-      List<TicketOrderModel> sortedTicketOrders =
+      List<BookingAppointmentModel> sortedTicketOrders =
           _sortTicketOrders(ticketOrders);
 
-      List<TicketOrderModel> uniqueEvents = [];
+      List<BookingAppointmentModel> uniqueEvents = [];
 
       for (var ticketOrder in sortedTicketOrders) {
-        if (addedTicketIds.add(ticketOrder.eventId)) {
+        if (addedTicketIds.add(ticketOrder.id)) {
           uniqueEvents.add(ticketOrder);
         }
       }
@@ -151,7 +152,7 @@ class _TicketAndCalendarFeedScreenState
 
       if (mounted) {
         setState(() {
-          _ticketOrder.addAll(uniqueEvents);
+          _appointmentOrder.addAll(uniqueEvents);
           // Check if there might be more documents to load
           _hasNext = postFeedSnapShot.docs.length == limit;
         });
@@ -165,8 +166,8 @@ class _TicketAndCalendarFeedScreenState
   }
 
 // Custom sort function
-  List<TicketOrderModel> _sortTicketOrders(
-      List<TicketOrderModel> ticketOrders) {
+  List<BookingAppointmentModel> _sortTicketOrders(
+      List<BookingAppointmentModel> ticketOrders) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(Duration(days: 1));
@@ -191,9 +192,9 @@ class _TicketAndCalendarFeedScreenState
     // Sort the list
     ticketOrders.sort((a, b) {
       final eventADate =
-          a.eventTimestamp!.toDate(); // Convert Timestamp to DateTime if needed
+          a.bookingDate!.toDate(); // Convert Timestamp to DateTime if needed
       final eventBDate =
-          b.eventTimestamp!.toDate(); // Convert Timestamp to DateTime if needed
+          b.bookingDate!.toDate(); // Convert Timestamp to DateTime if needed
 
       // Get the sort weight for both events
       final weightA = sortWeight(eventADate);
@@ -205,7 +206,7 @@ class _TicketAndCalendarFeedScreenState
       } else {
         // If events have the same weight, sort by timestamp
         // Assuming you still want to sort descending
-        return b.eventTimestamp!.compareTo(a.eventTimestamp!);
+        return b.bookingDate!.compareTo(a.bookingDate!);
       }
     });
 
@@ -240,19 +241,19 @@ class _TicketAndCalendarFeedScreenState
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                TicketOrderModel ticketOrder = _ticketOrder[index];
+                BookingAppointmentModel appoinmentOrder =
+                    _appointmentOrder[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: SizedBox.shrink()
-                  
-                  // EventsFeedAttendingWidget(
-                  //   ticketOrder: ticketOrder,
-                  //   currentUserId: widget.currentUserId,
-                  //   ticketList: _ticketOrder,
-                  // ),
+                  child: UserAppointmenstWidget(
+                    // ticketOrder: ticketOrder,
+                    currentUserId: widget.currentUserId,
+                    appointmentList: _appointmentOrder,
+                    appointmentOrder: appoinmentOrder,
+                  ),
                 );
               },
-              childCount: _ticketOrder.length,
+              childCount: _appointmentOrder.length,
             ),
           ),
         ],
@@ -260,11 +261,11 @@ class _TicketAndCalendarFeedScreenState
     );
   }
 
-  Map<DateTime, List<TicketOrderModel>> convertToMap(
-      List<TicketOrderModel> tickets) {
-    Map<DateTime, List<TicketOrderModel>> eventMap = {};
-    for (TicketOrderModel ticket in tickets) {
-      DateTime date = ticket.eventTimestamp!.toDate();
+  Map<DateTime, List<BookingAppointmentModel>> convertToMap(
+      List<BookingAppointmentModel> tickets) {
+    Map<DateTime, List<BookingAppointmentModel>> eventMap = {};
+    for (BookingAppointmentModel ticket in tickets) {
+      DateTime date = ticket.bookingDate!.toDate();
       DateTime normalizedDate = DateTime(date.year, date.month, date.day);
       if (eventMap[normalizedDate] == null) {
         eventMap[normalizedDate] = [];
@@ -275,7 +276,8 @@ class _TicketAndCalendarFeedScreenState
   }
 
   _calendar(BuildContext context) {
-    Map<DateTime, List<TicketOrderModel>> _ticket = convertToMap(_ticketOrder);
+    Map<DateTime, List<BookingAppointmentModel>> _ticket =
+        convertToMap(_appointmentOrder);
 
     return Listener(
       onPointerDown: (PointerDownEvent event) {
@@ -355,7 +357,8 @@ class _TicketAndCalendarFeedScreenState
         onDaySelected: (selectedDay, focusedDay) {
           DateTime normalizedDay =
               DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
-          List<TicketOrderModel> selectedEvents = _ticket[normalizedDay] ?? [];
+          List<BookingAppointmentModel> selectedEvents =
+              _ticket[normalizedDay] ?? [];
           HapticFeedback.mediumImpact();
           showModalBottomSheet(
             context: context,
@@ -407,32 +410,38 @@ class _TicketAndCalendarFeedScreenState
                   SizedBox(
                     height: ResponsiveHelper.responsiveHeight(context, 100),
                   ),
-                  // if (selectedEvents.isNotEmpty)
-                  //   Container(
-                  //     decoration: BoxDecoration(
-                  //         color: Theme.of(context).primaryColorLight,
-                  //         borderRadius: BorderRadius.circular(20)),
-                  //     child: Padding(
-                  //       padding: const EdgeInsets.all(20.0),
-                  //       child: Column(
-                  //         mainAxisSize: MainAxisSize.min,
-                  //         children: selectedEvents
-                  //             .map(
-                  //               (ticket) => Padding(
-                  //                 padding:
-                  //                     const EdgeInsets.symmetric(vertical: 2.0),
-                  //                 child:
-                  //                  EventsFeedAttendingWidget(
-                  //                   ticketOrder: ticket,
-                  //                   currentUserId: widget.currentUserId,
-                  //                   ticketList: _ticketOrder,
-                  //                 ),
-                  //               ),
-                  //             )
-                  //             .toList(),
-                  //       ),
-                  //     ),
-                  //   ),
+                  if (selectedEvents.isNotEmpty)
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorLight,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: selectedEvents
+                              .map(
+                                (appoinmentOrder) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 2.0),
+                                  child: UserAppointmenstWidget(
+                                    // ticketOrder: ticketOrder,
+                                    currentUserId: widget.currentUserId,
+                                    appointmentList: _appointmentOrder,
+                                    appointmentOrder: appoinmentOrder,
+                                  ),
+
+                                  //  EventsFeedAttendingWidget(
+                                  //   ticketOrder: ticket,
+                                  //   currentUserId: widget.currentUserId,
+                                  //   ticketList: _appointmentOrder,
+                                  // ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
                 ],
               );
             },
@@ -506,17 +515,9 @@ class _TicketAndCalendarFeedScreenState
                   children: [
                     TextSpan(
                       text:
-                          'The calendar above allows you to stay organized by keeping track of the dates of your tickets (events). To explore other events for specific dates, ',
+                          'The calendar above allows you to stay organized by keeping track of the dates of your appointments.  ',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    TextSpan(
-                      text: "tap here.",
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 12.0),
-                        color: Colors.blue,
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -534,7 +535,7 @@ class _TicketAndCalendarFeedScreenState
         _isLoading = true;
       },
     );
-    await _setUpInvites();
+    await _setUpAppointments();
     await _setUpUserCount();
   }
 
@@ -570,7 +571,7 @@ class _TicketAndCalendarFeedScreenState
                         ? Center(
                             child: NoContents(
                               icon: MdiIcons.ticketOutline,
-                              title: 'No appointments found',
+                              title: 'No appointments',
                               subTitle:
                                   'This section will display the appoints you have on your schedule.',
                             ),

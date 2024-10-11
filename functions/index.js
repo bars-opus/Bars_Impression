@@ -1784,7 +1784,7 @@ exports.onCreateNewActivity = functions.firestore
         contentType: createdActivityItem.type,
         authorId: createdActivityItem.authorId,
         contentId: createdActivityItem.postId,
-        eventAuthorId: createdActivityItem.authorstoreType,
+        eventAuthorId: createdActivityItem.authorshopType,
       },
       token: androidNotificationToken
   };

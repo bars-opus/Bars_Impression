@@ -45,8 +45,8 @@ class NoEventInfoWidget extends StatelessWidget {
       height: from.startsWith('Location') ? 70 : 100,
       noLocation: false,
       liveLocation: from,
-storeType: specificType,
-      
+      shopType: specificType,
+
       //  from.startsWith('Location') || from.startsWith('Images')
       //     ? true
       //     : false,

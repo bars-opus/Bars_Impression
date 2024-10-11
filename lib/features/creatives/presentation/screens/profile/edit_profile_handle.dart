@@ -1,20 +1,21 @@
+import 'package:bars/features/creatives/presentation/screens/profile/profile_screen.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:hive/hive.dart';
 
-class EditstoreType extends StatefulWidget {
+class EditshopType extends StatefulWidget {
   final AccountHolderAuthor user;
 
-  EditstoreType({
+  EditshopType({
     required this.user,
   });
 
   @override
-  _EditstoreTypeState createState() => _EditstoreTypeState();
+  _EditshopTypeState createState() => _EditshopTypeState();
 }
 
-class _EditstoreTypeState extends State<EditstoreType> {
+class _EditshopTypeState extends State<EditshopType> {
   final _formKey = GlobalKey<FormState>();
-  String _storeType = '';
+  String _shopType = '';
   String _accountType = '';
   String selectedStoreValue = '';
   String selectedAccountValue = '';
@@ -22,9 +23,9 @@ class _EditstoreTypeState extends State<EditstoreType> {
   @override
   void initState() {
     super.initState();
-    _storeType = widget.user.storeType!;
+    _shopType = widget.user.shopType!;
     _accountType = widget.user.accountType!;
-    selectedStoreValue = _storeType.isEmpty ? values.last : _storeType;
+    selectedStoreValue = _shopType.isEmpty ? values.last : _shopType;
     selectedAccountValue = _accountType.isEmpty ? values.last : _accountType;
   }
 
@@ -46,7 +47,7 @@ class _EditstoreTypeState extends State<EditstoreType> {
     );
   }
 
-  _updateAccountType() async {
+  _submitAccountType() async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     if (_accountType.isEmpty) {
@@ -69,31 +70,49 @@ class _EditstoreTypeState extends State<EditstoreType> {
       },
     );
 
-    try {
-      await batch.commit();
-      // await HiveUtils.updateUserStore(
-      //     context,
-      //     _provider.userStore!.storeLogomageUrl,
-      //     _provider.userStore!.storeType,
-      //     _accountType);
-      await HiveUtils.updateAuthorHive(
-          context,
-          _provider.user!.userName!,
-          _provider.user!.profileImageUrl!,
-          _provider.user!.dynamicLink!,
-          _provider.user!.storeType!,
-          _accountType);
-      // _updateAuthorHive(_storeType);
-    } catch (error) {
-      // Handle the error appropriately
-    }
+    // try {
+    await batch.commit();
+    // await HiveUtils.updateUserStore(
+    //     context,
+    //     _provider.userStore!.shopLogomageUrl,
+    //     _provider.userStore!.shopType,
+    //     _accountType);
+    await HiveUtils.updateAuthorHive(
+      context: context,
+      name: _provider.user!.userName!,
+      profileImageUrl: _provider.user!.profileImageUrl!,
+      link: _provider.user!.dynamicLink!,
+      shopType: _shopType,
+      accountType: _accountType,
+      disabledAccount: _provider.user!.disabledAccount!,
+      reportConfirmed: _provider.user!.reportConfirmed!,
+      verified: _provider.user!.verified!,
+      disableChat: _provider.user!.disableChat!,
+
+      // ProfileScreen.setUp();
+      // lastActiveDate: _provider.user!.lastActiveDate!,
+
+      // context,
+      // _provider.user!.userName!,
+      // _provider.user!.profileImageUrl!,
+      // _provider.user!.dynamicLink!,
+      // _provider.user!.shopType!,
+      // _accountType
+    );
+
+    profileScreenKey.currentState?.setUp();
+
+    // _updateAuthorHive(_shopType);
+    // } catch (error) {
+    //   // Handle the error appropriately
+    // }
   }
 
   _updateStore() async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    if (_storeType.isEmpty) {
-      _storeType = 'Shop';
+    if (_shopType.isEmpty) {
+      _shopType = 'Shop';
     }
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -101,13 +120,13 @@ class _EditstoreTypeState extends State<EditstoreType> {
     batch.update(
       usersAuthorRef.doc(widget.user.userId),
       {
-        'storeType': _storeType,
+        'shopType': _shopType,
       },
     );
     batch.update(
       userProfessionalRef.doc(widget.user.userId),
       {
-        'storeType': _storeType,
+        'shopType': _shopType,
       },
     );
 
@@ -115,23 +134,35 @@ class _EditstoreTypeState extends State<EditstoreType> {
       await batch.commit();
       // await HiveUtils.updateUserStore(
       //     context,
-      //     _provider.userStore!.storeLogomageUrl,
-      //     _storeType,
+      //     _provider.userStore!.shopLogomageUrl,
+      //     _shopType,
       //     _provider.userStore!.accountType!);
       await HiveUtils.updateAuthorHive(
-          context,
-          _provider.user!.userName!,
-          _provider.user!.profileImageUrl!,
-          _provider.user!.dynamicLink!,
-          _storeType,
-          _provider.user!.accountType!);
-      // _updateAuthorHive(_storeType);
+        context: context,
+        name: _provider.user!.userName!,
+        profileImageUrl: _provider.user!.profileImageUrl!,
+        link: _provider.user!.dynamicLink!,
+        shopType: _shopType,
+        accountType: _accountType,
+        disabledAccount: _provider.user!.disabledAccount!,
+        reportConfirmed: _provider.user!.reportConfirmed!,
+        verified: _provider.user!.verified!,
+        disableChat: _provider.user!.disableChat!,
+        // lastActiveDate: _provider.user!.lastActiveDate!,
+        // context,
+        // _provider.user!.userName!,
+        // _provider.user!.profileImageUrl!,
+        // _provider.user!.dynamicLink!,
+        // _shopType,
+        // _provider.user!.accountType!
+      );
+      // _updateAuthorHive(_shopType);
     } catch (error) {
       // Handle the error appropriately
     }
   }
 
-  // _updateAuthorHive(String storeType) {
+  // _updateAuthorHive(String shopType) {
   //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
   //   final accountUserStoreBox = Hive.box<UserStoreModel>('accountUserStore');
 
@@ -145,7 +176,7 @@ class _EditstoreTypeState extends State<EditstoreType> {
   //     disabledAccount: _provider.user!.disabledAccount,
   //     dynamicLink: _provider.user!.dynamicLink,
   //     lastActiveDate: _provider.user!.lastActiveDate,
-  //     storeType: storeType,
+  //     shopType: shopType,
   //     profileImageUrl: _provider.user!.profileImageUrl,
   //     reportConfirmed: _provider.user!.reportConfirmed,
   //     userId: _provider.user!.userId,
@@ -158,8 +189,8 @@ class _EditstoreTypeState extends State<EditstoreType> {
   //   var updatedUserStore = UserStoreModel(
   //       userId: _provider.userStore!.userId,
   //       userName: _provider.userStore!.userName,
-  //       storeLogomageUrl: _provider.userStore!.storeLogomageUrl,
-  //       storeType: storeType,
+  //       shopLogomageUrl: _provider.userStore!.shopLogomageUrl,
+  //       shopType: shopType,
   //       verified: _provider.userStore!.verified,
   //       terms: _provider.userStore!.terms,
   //       city: _provider.userStore!.city,
@@ -188,7 +219,7 @@ class _EditstoreTypeState extends State<EditstoreType> {
     batch.update(
       usersAuthorRef.doc(widget.user.userId),
       {
-        'storeType': _storeType,
+        'shopType': _shopType,
         'verified': false,
       },
     );
@@ -196,7 +227,7 @@ class _EditstoreTypeState extends State<EditstoreType> {
     batch.update(
       userProfessionalRef.doc(widget.user.userId),
       {
-        'storeType': _storeType,
+        'shopType': _shopType,
         'verified': false,
       },
     );
@@ -267,9 +298,10 @@ class _EditstoreTypeState extends State<EditstoreType> {
             activeColor: Colors.blue,
             onChanged: (value) => setState(
               () {
-                _storeType = this.selectedStoreValue = value!;
+                _shopType = this.selectedStoreValue = value!;
                 Navigator.pop(context);
-                _updateStore();
+                _updateShoptAndType();
+                // _updateStore();
               },
             ),
           ),
@@ -374,6 +406,11 @@ class _EditstoreTypeState extends State<EditstoreType> {
     );
   }
 
+  _updateShoptAndType() {
+    _updateStore();
+    _submitAccountType();
+  }
+
   static const accountType = <String>[
     "Client",
     "Shop",
@@ -408,8 +445,13 @@ class _EditstoreTypeState extends State<EditstoreType> {
             onChanged: (value) => setState(
               () {
                 _accountType = this.selectedAccountValue = value!;
-                _updateAccountType();
-                if (_accountType == 'Shop') _showBottomSheetStoreType(context);
+                _accountType == 'Shop'
+                    ? _showBottomSheetStoreType(context)
+                    : _accountType == 'Worker'
+                        ? _updateShoptAndType()
+                        : _submitAccountType();
+                // _updateAccountType();
+                // if (_accountType == 'Shop') _showBottomSheetStoreType(context);
               },
             ),
           );

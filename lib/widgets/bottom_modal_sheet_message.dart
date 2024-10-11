@@ -561,7 +561,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
         verified: _user!.verified! ? true : false,
       ),
       subtitle: Text(
-        _user.storeType,
+        _user.shopType,
         style: TextStyle(
           color: Colors.blue,
           fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
@@ -630,7 +630,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                   child: CircularButton(
                       color: readyToSend ? Colors.blue : Colors.transparent,
-                      icon:  Icons.send,
+                      icon: Icons.send,
                       onPressed: onSend),
                 ),
         ),

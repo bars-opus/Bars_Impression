@@ -58,11 +58,11 @@ class _EditProfileNameState extends State<EditProfileName> {
         try {
           // var currentUser = Provider.of<UserData>(context, listen: false).user;
           await _usernameService.validateTextToxicity(
-              context, 
+              context,
               // _changeUserName,
-               _controller.text.trim(),
-                // false,
-                 null);
+              _controller.text.trim(),
+              // false,
+              null);
 
           // _validateTextToxicity(_changeUserName);
         } catch (e) {

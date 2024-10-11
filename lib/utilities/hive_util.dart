@@ -7,7 +7,7 @@ class HiveUtils {
     BuildContext context,
     String city,
     String country,
-    String storeType,
+    String shopType,
   ) async {
     Box<UserSettingsLoadingPreferenceModel> locationPreferenceBox;
     Box<UserStoreModel> accountUserStoreBox;
@@ -43,7 +43,7 @@ class HiveUtils {
   // static Future<void> updateUserStore(
   //   BuildContext context,
   //   String logoImageUrl,
-  //   String storeType,
+  //   String shopType,
   //   String accountType,
   // ) async {
   //   Box<UserStoreModel> accountUserStoreBox;
@@ -62,8 +62,8 @@ class HiveUtils {
   //     userId: _provider.userStore!.userId,
   //     accountType: accountType,
   //     userName: _provider.userStore!.userName,
-  //     storeLogomageUrl: logoImageUrl,
-  //     storeType: storeType,
+  //     shopLogomageUrl: logoImageUrl,
+  //     shopType: shopType,
   //     verified: _provider.userStore!.verified,
   //     terms: _provider.userStore!.terms,
   //     city: _provider.userStore!.city,
@@ -93,13 +93,19 @@ class HiveUtils {
   // }
 
   // Method to update author information
-  static updateAuthorHive(
-      BuildContext context,
-      String name,
-      String profileImageUrl,
-      String link,
-      String storeType,
-      String accountType) {
+  static updateAuthorHive( {
+    required BuildContext context,
+    required String name,
+    required String profileImageUrl,
+    required String link,
+    required String shopType,
+    required String accountType,
+    required bool disabledAccount,
+    required bool reportConfirmed,
+    required bool verified,
+    required bool disableChat,
+    // required Timestamp lastActiveDate,
+  }) {
     final accountAuthorBox = Hive.box<AccountHolderAuthor>('currentUser');
 
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -107,16 +113,16 @@ class HiveUtils {
     var updatedAccountAuthor = AccountHolderAuthor(
       // bio: bio,
       accountType: accountType,
-      disabledAccount: _provider.user!.disabledAccount,
+      disabledAccount: disabledAccount,
       dynamicLink: link,
-      lastActiveDate: _provider.user!.lastActiveDate,
-      storeType: storeType,
+      lastActiveDate: Timestamp.fromDate(DateTime.now()),
+      shopType: shopType,
       profileImageUrl: profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
+      reportConfirmed: reportConfirmed,
+      userId: _provider.currentUserId,
       userName: name, // Update userName with the new name parameter
-      verified: _provider.user!.verified,
-      disableChat: _provider.user!.disableChat,
+      verified: verified,
+      disableChat: disableChat,
       // isShop: _provider.user!.isShop,
     );
 

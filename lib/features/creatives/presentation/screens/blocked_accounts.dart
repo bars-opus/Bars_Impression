@@ -106,7 +106,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.userId!,
-                        user: null,
+                        user: null, accountType: user.accountType!,
                       )));
         });
   }

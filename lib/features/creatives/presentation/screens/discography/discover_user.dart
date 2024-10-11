@@ -1,3 +1,4 @@
+
 // import 'package:bars/utilities/exports.dart';
 
 // //These code has been tested for  better performance and potential bug prevention:
@@ -299,7 +300,7 @@
 //                 }
 //                 return CreativesScreen(
 //                   currentUserId: widget.currentUserId,
-//                   storeType: eventType.trim(),
+//                   shopType: eventType.trim(),
 //                   pageIndex: tabIndex,
 //                   userLocationSettings: _userLocationSettings!,
 //                   liveCity: widget.liveCity,

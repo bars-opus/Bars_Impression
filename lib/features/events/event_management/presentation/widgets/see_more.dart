@@ -38,31 +38,31 @@ class SeeMore extends StatelessWidget {
       ),
       body: Container(
         child:
-        
-        //  isEvent
-        //     ? EventTypes(
-        //         currentUserId: currentUserId,
-        //         types: types.startsWith('All') ? '' : types,
-        //         pageIndex: types.startsWith('All') ? 0 : pageIndex,
-        //         userLocationSettings: userLocationSettings,
-        //         liveCity: liveCity,
-        //         liveCountry: liveCountry,
-        //         seeMoreFrom: isFrom,
-        //         sortNumberOfDays: sortNumberOfDays,
-        //         isFrom: isFrom,
-        //       )
-        //     :
-            
-             CreativesScreen(
-                currentUserId: currentUserId,
-                storeType: types,
-                // exploreLocation: '',
-                pageIndex: pageIndex,
-                userLocationSettings: userLocationSettings,
-                liveCity: liveCity,
-                liveCountry: liveCountry,
-                seeMoreFrom: isFrom, isFrom: isFrom,
-              ),
+
+            //  isEvent
+            //     ? EventTypes(
+            //         currentUserId: currentUserId,
+            //         types: types.startsWith('All') ? '' : types,
+            //         pageIndex: types.startsWith('All') ? 0 : pageIndex,
+            //         userLocationSettings: userLocationSettings,
+            //         liveCity: liveCity,
+            //         liveCountry: liveCountry,
+            //         seeMoreFrom: isFrom,
+            //         sortNumberOfDays: sortNumberOfDays,
+            //         isFrom: isFrom,
+            //       )
+            //     :
+
+            CreativesScreen(
+          currentUserId: currentUserId,
+          shopType: types,
+          // exploreLocation: '',
+          pageIndex: pageIndex,
+          userLocationSettings: userLocationSettings,
+          liveCity: liveCity,
+          liveCountry: liveCountry,
+          seeMoreFrom: isFrom, isFrom: isFrom,
+        ),
       ),
     );
   }

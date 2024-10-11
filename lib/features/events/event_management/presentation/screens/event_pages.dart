@@ -75,7 +75,7 @@ class _EventPagesState extends State<EventPages> {
         //     :
         allEventsRef
             .where('showOnExplorePage', isEqualTo: true)
-            .where('storeType', isEqualTo: widget.types);
+            .where('shopType', isEqualTo: widget.types);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);

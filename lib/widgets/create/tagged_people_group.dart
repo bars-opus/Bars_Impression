@@ -2,7 +2,7 @@ import 'package:bars/utilities/exports.dart';
 
 // ignore: must_be_immutable
 class TaggedPeopleGroup extends StatelessWidget {
-  List<WorkersModel> workers;
+  List<ShopWorkerModel> workers;
   final bool canBeEdited;
 
   TaggedPeopleGroup({
@@ -12,7 +12,7 @@ class TaggedPeopleGroup extends StatelessWidget {
 
   void _removeTaggedEventPeople(
     BuildContext context,
-    WorkersModel removingTaggedEventPeople,
+    ShopWorkerModel removingTaggedEventPeople,
   ) {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.taggedEventPeople.removeWhere(
@@ -61,7 +61,7 @@ class TaggedPeopleGroup extends StatelessWidget {
     );
   }
 
-  _display(BuildContext context, WorkersModel worker) {
+  _display(BuildContext context, ShopWorkerModel worker) {
     String imageUrl = worker.profileImageUrl ?? '';
     return ListTile(
       leading: imageUrl.isEmpty
@@ -124,7 +124,7 @@ class TaggedPeopleGroup extends StatelessWidget {
                       currentUserId:
                           Provider.of<UserData>(context, listen: false)
                               .currentUserId!,
-                      userId: worker.id,
+                      userId: worker.id, accountType: '',
                     )));
       },
       title: RichText(
@@ -171,10 +171,10 @@ class TaggedPeopleGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List<WorkersModel> newworkers =
+    // List<ShopWorkerModel> newworkers =
     //     workers;
-    // Map<String, List<WorkersModel>> taggedByGroup = {};
-    // for (WorkersModel workers
+    // Map<String, List<ShopWorkerModel>> taggedByGroup = {};
+    // for (ShopWorkerModel workers
     //     in workerss) {
     //   if (!taggedByGroup.containsKey(workers.role)) {
     //     taggedByGroup[workers.role] = [];

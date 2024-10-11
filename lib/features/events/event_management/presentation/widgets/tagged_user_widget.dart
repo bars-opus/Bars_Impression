@@ -156,7 +156,7 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
                         ProfileScreen(
                           currentUserId: _provider.currentUserId!,
                           user: null,
-                          userId: taggedPerson.internalProfileLink!,
+                          userId: taggedPerson.internalProfileLink!, accountType: '',
                         ));
               },
               child: Stack(

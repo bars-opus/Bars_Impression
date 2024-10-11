@@ -7,7 +7,7 @@ class Post {
   final String hashTag;
   final String authorId;
   final String authorName;
-  final String storeType;
+  final String shopType;
   final String authorIdProfileImageUrl;
   final bool authorVerification;
   final String reportConfirmed;
@@ -23,7 +23,7 @@ class Post {
     required this.hashTag,
     required this.authorId,
     required this.authorName,
-    required this.storeType,
+    required this.shopType,
     required this.authorIdProfileImageUrl,
     required this.authorVerification,
     required this.report,
@@ -45,7 +45,7 @@ class Post {
       blurHash: doc['blurHash'] ?? '',
       // // likeCount: doc['likeCount'] ?? 0,
       timestamp: doc['timestamp'],
-      storeType: doc['storeType'],
+      shopType: doc['shopType'],
       authorIdProfileImageUrl: doc['authorIdProfileImageUrl'],
       authorName: doc['authorName'],
       authorVerification: doc['authorVerification'] ?? false,
@@ -60,7 +60,7 @@ class Post {
       'hashTag': hashTag,
       'authorId': authorId,
       'authorName': authorName,
-      'storeType': storeType,
+      'shopType': shopType,
       // // 'likeCount': likeCount,
       'authorIdProfileImageUrl': authorIdProfileImageUrl,
       'authorVerification': authorVerification,
@@ -79,7 +79,7 @@ class Post {
       hashTag: json['hashTag'] ?? '',
       authorId: json['authorId'] ?? '',
       authorName: json['authorName'] ?? '',
-      storeType: json['storeType'] ?? '',
+      shopType: json['shopType'] ?? '',
       // // likeCount: json['likeCount'] ?? '',
       authorIdProfileImageUrl: json['authorIdProfileImageUrl'] ?? '',
       authorVerification: json['authorVerification'] ?? false,

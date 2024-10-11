@@ -86,7 +86,7 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
             Align(
               alignment: Alignment.topLeft,
               child: Text(
-                '1. If you change your username (${widget.user.userName})\n2. If you change your account type (${widget.user.storeType})\n3. If your account becomes inactive or incomplete',
+                '1. If you change your username (${widget.user.userName})\n2. If you change your account type (${widget.user.shopType})\n3. If your account becomes inactive or incomplete',
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
                   color: Theme.of(context).primaryColor,
@@ -118,7 +118,7 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                             ? Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => EditstoreType(
+                                  builder: (_) => EditshopType(
                                     user: widget.user,
                                   ),
                                 ))

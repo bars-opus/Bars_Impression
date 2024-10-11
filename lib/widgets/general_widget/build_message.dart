@@ -366,9 +366,7 @@ class _SlidableMessageState extends State<SlidableMessage>
                   color: textColor,
                 ),
               ),
-              onTap: 
-              
-              message.sendContent!.type.startsWith('Post')
+              onTap: message.sendContent!.type.startsWith('Post')
                   ? () async {
                       _isLoading = true;
                       try {
@@ -381,7 +379,7 @@ class _SlidableMessageState extends State<SlidableMessage>
                               EventEnlargedScreen(
                                 currentUserId: widget.currentUserId,
                                 post: post,
-                                type: post.storeType,
+                                type: post.shopType,
                                 showPrivateEvent: true,
                               ));
                         } else {
@@ -402,7 +400,7 @@ class _SlidableMessageState extends State<SlidableMessage>
                           ProfileScreen(
                             user: null,
                             currentUserId: widget.currentUserId,
-                            userId: message.sendContent!.id,
+                            userId: message.sendContent!.id, accountType: '',
                           ));
                     },
             ),

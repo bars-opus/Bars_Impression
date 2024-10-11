@@ -197,7 +197,7 @@ class _EventAttendeesInvitedScreeenState
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
-                          text: "\n${user.storeType}",
+                          text: "\n${user.shopType}",
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 12.0),

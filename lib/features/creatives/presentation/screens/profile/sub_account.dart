@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 
 class SubAccounts extends StatefulWidget {
   final AccountHolderAuthor user;
-  final String storeType;
+  final String shopType;
 
   SubAccounts({
     required this.user,
-    required this.storeType,
+    required this.shopType,
   });
 
   @override
@@ -106,9 +106,9 @@ class _SubAccountsState extends State<SubAccounts> {
   //   Navigator.push(
   //       context,
   //       MaterialPageRoute(
-  //           builder: (_) => EditstoreTypeSubAccount(
+  //           builder: (_) => EditshopTypeSubAccount(
   //                 user: widget.user,
-  //                 storeType: widget.storeType,
+  //                 shopType: widget.shopType,
   //               )));
   //   try {} catch (e) {}
   // }

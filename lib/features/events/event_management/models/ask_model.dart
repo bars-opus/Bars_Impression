@@ -8,7 +8,7 @@ class Ask {
   final String reportConfirmed;
   final Timestamp timestamp;
   final String authorName;
-  final String authorstoreType;
+  final String authorshopType;
   final String authorProfileImageUrl;
   final bool authorVerification;
 
@@ -20,7 +20,7 @@ class Ask {
     required this.reportConfirmed,
     required this.timestamp,
     required this.authorName,
-    required this.authorstoreType,
+    required this.authorshopType,
     required this.authorProfileImageUrl,
     required this.authorVerification,
   });
@@ -34,7 +34,7 @@ class Ask {
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
       authorName: doc['authorName'] ?? '',
-      authorstoreType: doc['authorstoreType'] ?? '',
+      authorshopType: doc['authorshopType'] ?? '',
       authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
       authorVerification: doc['authorVerification'] ?? false,
     );

@@ -7,6 +7,8 @@ final usersLocationSettingsRef =
     _firestore.collection('user_location_settings');
 final usersGeneralSettingsRef = _firestore.collection('user_general_settings');
 final userProfessionalRef = _firestore.collection('user_store');
+final usersWokerRef = _firestore.collection('user_worker');
+
 final usersRatingRef = _firestore.collection('new_userRating');
 final userWorkRequestRef = _firestore.collection('user_workRequest');
 final allWorkRequestRef = _firestore.collection('all_workRequest');
@@ -17,9 +19,6 @@ final postsRef = _firestore.collection('user_posts');
 final allPostsRef = _firestore.collection('all_Posts');
 final allPostsSummaryRef = _firestore.collection('all_PostsSummary');
 final commentsRef = _firestore.collection('comments');
-
-
-
 
 //
 
@@ -69,8 +68,10 @@ final new_userBrandIfoRef = _firestore.collection('new_userBrandIfo');
 final newEventBrandMatchingRef =
     _firestore.collection('new_event_brand_matching');
 final newUserDonationsRef = _firestore.collection('new_userDonations');
-final newBookingsReceivedRef = _firestore.collection('new_userBookingReceived');
-final newBookingsSentRef = _firestore.collection('new_userBookingMade');
+
+final newBookingsReceivedRef = _firestore.collection('shop_bookingReceived');
+final newBookingsSentRef = _firestore.collection('Shop_bookingMade');
+
 final newReviewReceivedRef = _firestore.collection('new_userReviewReceived');
 final newReviewMadeRef = _firestore.collection('new_userReviewMade');
 final newEventTicketOrderRef = _firestore.collection('new_eventTicketOrder');

@@ -63,7 +63,7 @@ class _ReActivateAccountState extends State<ReActivateAccount> {
       // isShop: _provider.user!.isShop,
       dynamicLink: _provider.user!.dynamicLink,
       lastActiveDate: _provider.user!.lastActiveDate,
-      storeType: _provider.user!.storeType,
+      shopType: _provider.user!.shopType,
       profileImageUrl: _provider.user!.profileImageUrl,
       reportConfirmed: _provider.user!.reportConfirmed,
       userId: _provider.user!.userId,

@@ -674,21 +674,21 @@
 //                   ),
 //               ListTile(
 //                 leading: _isLoading
-//                     ? SizedBox(
-//                         height:
-//                             ResponsiveHelper.responsiveFontSize(context, 30.0),
-//                         width:
-//                             ResponsiveHelper.responsiveFontSize(context, 30.0),
-//                         child: CircularProgressIndicator(
-//                           backgroundColor: Colors.transparent,
-//                           valueColor: new AlwaysStoppedAnimation<Color>(
-//                             Colors.blue,
-//                           ),
-//                           strokeWidth:
-//                               ResponsiveHelper.responsiveFontSize(context, 2.0),
-//                         ),
-//                       )
-//                     : widget.isUser
+                    // ? SizedBox(
+                    //     height:
+                    //         ResponsiveHelper.responsiveFontSize(context, 30.0),
+                    //     width:
+                    //         ResponsiveHelper.responsiveFontSize(context, 30.0),
+                    //     child: CircularProgressIndicator(
+                    //       backgroundColor: Colors.transparent,
+                    //       valueColor: new AlwaysStoppedAnimation<Color>(
+                    //         Colors.blue,
+                    //       ),
+                    //       strokeWidth:
+                    //           ResponsiveHelper.responsiveFontSize(context, 2.0),
+                    //     ),
+                    //   )
+                    // : widget.isUser
 //                         ? Container(
 //                             height:
 //                                 ResponsiveHelper.responsiveHeight(context, 50),

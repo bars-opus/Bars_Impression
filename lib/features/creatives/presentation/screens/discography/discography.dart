@@ -475,7 +475,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
   //           child: UserAdviceScreen(
   //             currentUserId: widget.currentUserId,
   //             userId: widget.userPortfolio.userId,
-  //             userName: widget.userPortfolio.userName,
+  //             shopName: widget.userPortfolio.shopName,
   //             isBlocked: _isBlockedUser,
   //             isBlocking: _isBlockingUser,
   //             updateBlockStatus: () {
@@ -614,7 +614,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
         receiverId: widget.userPortfolio.userId,
         reason: _donateReasonController.text.trim(),
         amount: _amount,
-        userName: widget.userPortfolio.userName,
+        userName: widget.userPortfolio.shopName,
       );
       try {
         await retry(
@@ -823,7 +823,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
           },
           title: 'Confirm amount',
           subTitle:
-              'You are about to donate GHC $amount to support ${widget.userPortfolio.userName}',
+              'You are about to donate GHC $amount to support ${widget.userPortfolio.shopName}',
         );
       },
     );
@@ -1087,29 +1087,32 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                                         seeMore: true,
                                       ),
                                     )
-                                  : from.startsWith('collaborations')
+                                  :
+
+                                  // from.startsWith('collaborations')
+                                  //     ? Padding(
+                                  //         padding:
+                                  //             const EdgeInsets.only(top: 30.0),
+                                  //         child: PortfolioCollaborationWidget(
+                                  //           edit: false,
+                                  //           seeMore: true,
+                                  //           collaborations:
+                                  //               _provider.collaborations,
+                                  //         ),
+                                  //       )
+                                  // :
+                                  from.startsWith('review')
                                       ? Padding(
                                           padding:
                                               const EdgeInsets.only(top: 30.0),
-                                          child: PortfolioCollaborationWidget(
-                                            edit: false,
-                                            seeMore: true,
-                                            collaborations:
-                                                _provider.collaborations,
-                                          ),
+                                          child:
+                                              _buildDisplayReviewList(context),
                                         )
-                                      : from.startsWith('review')
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 30.0),
-                                              child: _buildDisplayReviewList(
-                                                  context),
-                                            )
-                                          : PortfolioWidget(
-                                              portfolios: [],
-                                              seeMore: true,
-                                              edit: false,
-                                            ),
+                                      : PortfolioWidget(
+                                          portfolios: [],
+                                          seeMore: true,
+                                          edit: false,
+                                        ),
               const SizedBox(
                 height: 40,
               ),
@@ -1159,6 +1162,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     return _navigateToPage(
         context,
         ProfileScreen(
+          accountType: 'Shop',
           currentUserId: widget.currentUserId,
           userId: widget.userPortfolio.userId,
           user: null,
@@ -1175,7 +1179,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(width: 10),
-            widget.userPortfolio.storeLogomageUrl.isEmpty
+            widget.userPortfolio.shopLogomageUrl.isEmpty
                 ? GestureDetector(
                     onTap: () {
                       _navigateToProfile();
@@ -1194,7 +1198,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       radius: 18.0,
                       backgroundColor: Colors.blue,
                       backgroundImage: CachedNetworkImageProvider(
-                          widget.userPortfolio.storeLogomageUrl),
+                          widget.userPortfolio.shopLogomageUrl),
                     ),
                   ),
             SizedBox(width: 10),
@@ -1213,7 +1217,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                         Flexible(
                             // And this
                             child: Text(
-                          widget.userPortfolio.userName,
+                          widget.userPortfolio.shopName,
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 16.0),
@@ -1235,7 +1239,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      widget.userPortfolio.storeType,
+                      widget.userPortfolio.shopType,
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 14.0),
@@ -1484,7 +1488,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       subTitle: isCurrency
                           ? _isCurrentUser
                               ? 'Please enter your currency to be able to receive donations and to use the booking manager to handel your booking requests. Please note that the Booking Manager is only supported for GHC at this time. '
-                              : 'To book ${widget.userPortfolio.userName}\' services using the Booking Manager, please enter your currency. Please note that the Booking Manager is only supported for GHC at this time. '
+                              : 'To book ${widget.userPortfolio.shopName}\' services using the Booking Manager, please enter your currency. Please note that the Booking Manager is only supported for GHC at this time. '
                           : 'Enter your location to setup your booking portfolio. When you enter your city, we can suggest local events taking place in that area, as well as connect you with other creatives who are also based in the same location. This facilitates meaningful connections and creates opportunities for potential business collaborations and networking.',
                       icon: isCurrency
                           ? Icons.attach_money_outlined
@@ -1497,15 +1501,16 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                         isCurrency ? 'Select currency' : 'Enter country',
                     onPressed: () {
                       Navigator.pop(context);
-                      isCurrency
-                          ? _showCurrencyPicker()
-                          : _navigateToPage(
-                              context,
-                              EditProfileSelectLocation(
-                                notFromEditProfile: true,
-                                user: currentUserPayoutInfo,
-                              ),
-                            );
+                      // isCurrency
+                      //     ? _showCurrencyPicker()
+                      //     : _navigateToPage(
+                      //         context,
+                      //         EditProfileSelectLocation(
+                      //           notFromEditProfile: true,
+                      //           user: currentUserPayoutInfo,
+                      //            accountType: widget.user.accountType!,
+                      //         ),
+                      //       );
                     },
                   ),
                   const SizedBox(height: 10),
@@ -1595,7 +1600,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                   ? currentUserGhanaOrCurrencyGHS
                       ? 'Booking manager'
                       : 'Booking contact'
-                  : 'Book ${widget.userPortfolio.userName}',
+                  : 'Book ${widget.userPortfolio.shopName}',
               () {
                 _showBottomSheetBookMe();
               },
@@ -1669,13 +1674,13 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
               Icons.location_on_outlined,
               Colors.blue,
               () {
-                _navigateToPage(
-                  context,
-                  EditProfileSelectLocation(
-                    notFromEditProfile: true,
-                    user: currentUserPayoutInfo,
-                  ),
-                );
+                // _navigateToPage(
+                //   context,
+                //   EditProfileSelectLocation(
+                //     notFromEditProfile: true,
+                //     user: currentUserPayoutInfo,
+                //   ),
+                // );
               },
               true,
             ),
@@ -1741,7 +1746,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
             _messageButton(
               _isCurrentUser
                   ? 'Your contacts '
-                  : 'Contact ${widget.userPortfolio.userName} directly ',
+                  : 'Contact ${widget.userPortfolio.shopName} directly ',
               () {
                 HapticFeedback.mediumImpact();
                 _showBottomSheetBookMe();
@@ -1752,7 +1757,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
             _messageButton(
               _isLoading
                   ? 'Loading...'
-                  : 'Message ${widget.userPortfolio.userName}',
+                  : 'Message ${widget.userPortfolio.shopName}',
               () async {
                 if (_isLoading) return;
                 _isLoading = true;
@@ -1775,7 +1780,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
             _messageButton(
               _isCurrentUser
                   ? 'Advices for you'
-                  : 'Advice ${widget.userPortfolio.userName}',
+                  : 'Advice ${widget.userPortfolio.shopName}',
               () {
                 // _showBottomSheetAdvice(context);
               },
@@ -1789,10 +1794,10 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
               _navigateToPage(
                   context,
                   UserBarcode(
-                    profileImageUrl: widget.userPortfolio.storeLogomageUrl,
+                    profileImageUrl: widget.userPortfolio.shopLogomageUrl,
                     userDynamicLink: widget.userPortfolio.dynamicLink,
                     bio: widget.userPortfolio.overview,
-                    userName: widget.userPortfolio.userName,
+                    userName: widget.userPortfolio.shopName,
                     userId: widget.userPortfolio.userId,
                   ));
             },
@@ -1813,7 +1818,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       parentContentId: widget.userPortfolio.userId,
                       repotedAuthorId: widget.userPortfolio.userId,
                       contentId: widget.userPortfolio.userId,
-                      contentType: widget.userPortfolio.userName,
+                      contentType: widget.userPortfolio.shopName,
                     ));
               },
               child: Material(
@@ -1958,13 +1963,13 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                 seeMore: false,
                 edit: false,
               ),
-              _divider('Collaborations', 'collaborations',
-                  _provider.collaborations.length >= 4 ? true : false),
-              PortfolioCollaborationWidget(
-                collaborations: _provider.collaborations,
-                seeMore: false,
-                edit: false,
-              ),
+              // _divider('Collaborations', 'collaborations',
+              //     _provider.collaborations.length >= 4 ? true : false),
+              // PortfolioCollaborationWidget(
+              //   collaborations: _provider.collaborations,
+              //   seeMore: false,
+              //   edit: false,
+              // ),
               _divider('Works', 'works',
                   _provider.linksToWork.length >= 4 ? true : false),
               PortfolioWidgetWorkLink(

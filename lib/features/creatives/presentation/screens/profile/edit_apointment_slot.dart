@@ -1,10 +1,11 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 class EditApointmentSlot extends StatefulWidget {
   final Map<String, DateTimeRange> openingHours;
   // final List<String> services;
-  final List<WorkersModel> workers;
+  final List<ShopWorkerModel> workers;
 
   EditApointmentSlot({
     required this.openingHours,
@@ -45,7 +46,7 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
     }
   }
 
-  List<WorkersModel> selectedWorkers = [];
+  List<ShopWorkerModel> selectedWorkers = [];
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   List<String> selectedDays = [];
@@ -84,7 +85,7 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
     return Duration(hours: hours, minutes: minutes);
   }
 
-  List<WorkersModel> _getAvailableWorkers(String selectedService) {
+  List<ShopWorkerModel> _getAvailableWorkers(String selectedService) {
     return widget.workers.where((worker) {
       return worker.services
           .toString()
@@ -112,16 +113,37 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
         (usePredefinedDuration && selectedDuration == null) ||
         (!usePredefinedDuration && (startTime == null || endTime == null))) {
       showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Please select all fields.'),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context), child: Text('OK'))
-          ],
-        ),
-      );
+          context: context,
+          builder: (context) => AlertDialog(
+                backgroundColor: Theme.of(context).primaryColorLight,
+                surfaceTintColor: Colors.transparent,
+                elevation: 50,
+                title: Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Icon(
+                    Icons.error_outline_outlined,
+                    color: Colors.red,
+                    size: ResponsiveHelper.responsiveFontSize(context, 30),
+                  ),
+                ),
+                content: Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Text(
+                    'Please select all fields.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center, // Center text alignment
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'OK',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                ],
+              ));
       return;
     }
 
@@ -169,7 +191,7 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
       // endTime: endTime!,
       service: _serviceController.text.trim(),
       workers: selectedWorkers, price: _price,
-      type: _typeController.text.trim(), favoriteWorker: true,
+      type: _typeController.text.trim(), favoriteWorker: false,
     );
 
     _provider.setAppointmentSlots(_appointment);
@@ -187,12 +209,121 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
     });
 
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Success'),
-        content: Text('Appointment slot created.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('OK'))
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Theme.of(context).primaryColorLight,
+              surfaceTintColor: Colors.transparent,
+              elevation: 50,
+              title: Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Icon(
+                  Icons.check,
+                  color: Colors.blue,
+                  size: ResponsiveHelper.responsiveFontSize(context, 30),
+                ),
+              ),
+              content: Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Text(
+                  'Appointment slot created.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center, // Center text alignment
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'OK',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ));
+    // showDialog(
+    //   context: context,
+    //   builder: (context) => AlertDialog(
+    //     title: Text('Success'),
+    //     content: Text('Appointment slot created.'),
+    //     actions: [
+    //       TextButton(onPressed: () => Navigator.pop(context), child: Text('OK'))
+    //     ],
+    //   ),
+    // );
+  }
+
+  void _showBottomWorkers() {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: ResponsiveHelper.responsiveFontSize(context, 600),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(30)),
+              child: ListView(
+                padding: EdgeInsets.all(16.0),
+                children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  Column(
+                    children: _getAvailableWorkers(
+                            _serviceController.text.trim().toLowerCase())
+                        .map((worker) {
+                      return CheckboxListTile(
+                        title: Text(worker.name),
+                        value: selectedWorkers.contains(worker),
+                        onChanged: (bool? value) {
+                          setState(() {
+                            if (value == true) {
+                              selectedWorkers.add(worker);
+                            } else {
+                              selectedWorkers.remove(worker);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            );
+          });
+        });
+  }
+
+  _selectedWorkers() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    return Container(
+      padding: EdgeInsets.all(ResponsiveHelper.responsiveWidth(context, 2)),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ShedulePeopleHorizontal(
+              edit: true,
+              workers: selectedWorkers,
+              currentUserId: _provider.currentUserId!,
+            ),
+          ),
+          IconButton(
+              onPressed: () {
+                _showBottomWorkers();
+              },
+              icon: Icon(Icons.edit,
+                  size: ResponsiveHelper.responsiveFontSize(context, 20),
+                  color: Theme.of(context).secondaryHeaderColor))
         ],
       ),
     );
@@ -209,51 +340,168 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
           return ListView(
             padding: EdgeInsets.all(16.0),
             children: [
-              Text('Select Days'),
-              ...widget.openingHours.keys.map((day) {
-                return CheckboxListTile(
-                  title: Text(day),
-                  value: selectedDays.contains(day),
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value == true) {
-                        selectedDays.add(day);
-                      } else {
-                        selectedDays.remove(day);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('Use Predefined Duration'),
-                  Switch(
-                    value: usePredefinedDuration,
-                    onChanged: (value) {
-                      setState(() {
-                        usePredefinedDuration = value;
-                        startTime = null;
-                        endTime = null;
-                      });
-                    },
-                  ),
-                ],
+              TicketPurchasingIcon(
+                title: '',
               ),
+              LoginField(
+                notLogin: true,
+                labelText: 'Service',
+                hintText: "service you offer",
+                onValidateText: () {},
+                icon: Icons.email,
+                controller: _serviceController,
+              ),
+
+              LoginField(
+                notLogin: true,
+                labelText: 'Service type',
+                hintText: "type of service you offer",
+                onValidateText: () {},
+                icon: Icons.email,
+                controller: _typeController,
+              ),
+
+              LoginField(
+                notLogin: true,
+                icon: Icons.email,
+                controller: _priceController,
+                labelText: 'Price',
+                hintText: "price of the savice",
+                onValidateText: () {},
+              ),
+              const SizedBox(height: 20),
               if (usePredefinedDuration)
-                DropdownButton<String>(
-                  hint: Text('Select Duration'),
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    border: InputBorder.none, // Remove the underline
+                  ),
+                  elevation: 0,
+                  hint: Text(
+                    'Select Duration',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
+                    ),
+                  ),
                   value: selectedDuration,
+                  style: Theme.of(context).textTheme.bodyLarge,
                   onChanged: (value) =>
                       setState(() => selectedDuration = value),
                   items: durations.map((duration) {
                     return DropdownMenuItem<String>(
                       value: duration,
-                      child: Text(duration),
+                      child: Text(
+                        duration,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium, // Change font size here
+                      ),
                     );
                   }).toList(),
+                  dropdownColor: Theme.of(context).primaryColorLight,
+                  selectedItemBuilder: (BuildContext context) {
+                    return durations.map((String value) {
+                      return Text(
+                        value,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      );
+                    }).toList();
+                  },
                 ),
+              Divider(
+                thickness: 1,
+                color: Colors.grey,
+              ),
+              selectedWorkers.isNotEmpty
+                  ? _selectedWorkers()
+                  : GestureDetector(
+                      onTap: () {
+                        _showBottomWorkers();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: Text(
+                          'Select workers',
+                          style: TextStyle(
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14),
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+
+              if (selectedWorkers.isEmpty)
+                Divider(
+                  thickness: 1,
+                  color: Colors.grey,
+                ),
+              const SizedBox(height: 40),
+              Text(
+                'Select Days',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 10),
+              ...widget.openingHours.keys.map((day) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 800),
+                  margin: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: selectedDays.contains(day)
+                        ? Theme.of(context).primaryColorLight
+                        : Theme.of(context).primaryColorLight.withOpacity(.5),
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: selectedDays.contains(day)
+                        ? [
+                            BoxShadow(
+                              color: Colors.black12,
+                              offset: Offset(0, 10),
+                              blurRadius: 8.0,
+                              spreadRadius: 2.0,
+                            )
+                          ]
+                        : [],
+                  ),
+                  child: CheckboxListTile(
+                    title: Text(
+                      day,
+                      style: selectedDays.contains(day)
+                          ? Theme.of(context).textTheme.bodyLarge
+                          : Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    value: selectedDays.contains(day),
+                    activeColor: Colors.blue,
+                    onChanged: (bool? value) {
+                      HapticFeedback.mediumImpact();
+                      setState(() {
+                        if (value == true) {
+                          selectedDays.add(day);
+                        } else {
+                          selectedDays.remove(day);
+                        }
+                      });
+                    },
+                  ),
+                );
+              }).toList(),
+
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     Text('Use Predefined Duration'),
+              //     Switch(
+              //       value: usePredefinedDuration,
+              //       onChanged: (value) {
+              //         setState(() {
+              //           usePredefinedDuration = value;
+              //           startTime = null;
+              //           endTime = null;
+              //         });
+              //       },
+              //     ),
+              //   ],
+              // ),
+
               // if (!usePredefinedDuration)
               //   Column(
               //     children: [
@@ -295,68 +543,33 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
               //     );
               //   }).toList(),
               // ),
-              LoginField(
-                notLogin: true,
-                labelText: 'Service',
-                hintText: "service you offer",
-                onValidateText: () {},
-                icon: Icons.email,
-                controller: _serviceController,
-              ),
 
-              LoginField(
-                notLogin: true,
-                labelText: 'Service type',
-                hintText: "type of service you offer",
-                onValidateText: () {},
-                icon: Icons.email,
-                controller: _typeController,
-              ),
+              // if (_serviceController.text.isNotEmpty)
 
-              LoginField(
-                notLogin: true,
-                icon: Icons.email,
-                controller: _priceController,
-                labelText: 'Price',
-                hintText: "price of the savice",
-                // initialValue: '',
-                // onSavedText: (input) => price = input,
-                // onChanged: (value) {
-                //   setState(() {
-                //     price = value;
-                //   });
-                // },
-                onValidateText: () {},
-              ),
-              if (_serviceController.text.isNotEmpty)
-                Column(
-                  children: _getAvailableWorkers(
-                          _serviceController.text.trim().toLowerCase())
-                      .map((worker) {
-                    return CheckboxListTile(
-                      title: Text(worker.name),
-                      value: selectedWorkers.contains(worker),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedWorkers.add(worker);
-                          } else {
-                            selectedWorkers.remove(worker);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
+              SizedBox(height: 50),
+              Center(
+                child: AlwaysWhiteButton(
+                  textColor: selectedDays.isEmpty ? Colors.grey : Colors.white,
+                  buttonText: 'Create Appointment Slot',
+                  onPressed: _createSlot,
+                  buttonColor: selectedDays.isEmpty
+                      ? Theme.of(context).cardColor
+                      : Colors.blue,
                 ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                child: Text('Create Appointment Slot'),
-                onPressed: _createSlot,
               ),
-              SizedBox(height: 40),
+              // ElevatedButton(
+              //   child: Text('Create Appointment Slot'),
+              //   onPressed: _createSlot,
+              // ),
+              SizedBox(height: 70),
+              Divider(),
+              // SizedBox(height: 20),
               TicketGroup(
+                fromPrice: false,
                 appointmentSlots: _provider2.appointmentSlots,
+                openingHours: widget.openingHours,
                 edit: true,
+                bookingShop: null,
               ),
             ],
           );

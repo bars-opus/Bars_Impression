@@ -146,7 +146,7 @@ class _EventPageViewState extends State<EventPageView> {
     }
     if (pageIndex != 0) {
       _filteredPosts =
-          widget.postList.where((post) => post.storeType == type).toList();
+          widget.postList.where((post) => post.shopType == type).toList();
       _filteredEventSnapshot.clear();
       widget.liveCity.isNotEmpty
           ? _setupPosts(
@@ -204,15 +204,15 @@ class _EventPageViewState extends State<EventPageView> {
     // final currentDate = DateTime(now.year, now.month, now.day);
     // // Calculate the end date based on the sortNumberOfDays
     // final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-    var query = 
-    
-    // (type.startsWith('All'))
-    //     ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
-    //     :
-        
-         allEventsRef
+    var query =
+
+        // (type.startsWith('All'))
+        //     ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+        //     :
+
+        allEventsRef
             .where('showOnExplorePage', isEqualTo: true)
-            .where('storeType', isEqualTo: type);
+            .where('shopType', isEqualTo: type);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -395,9 +395,7 @@ class _EventPageViewState extends State<EventPageView> {
           ),
           Positioned(
             bottom: 70,
-            child: 
-            
-            InfoWidget(
+            child: InfoWidget(
               info: _isSnackbarType.startsWith('Others')
                   ? 'You are now browsing $_isSnackbarType'
                   : 'You are now browsing $_isSnackbarType',

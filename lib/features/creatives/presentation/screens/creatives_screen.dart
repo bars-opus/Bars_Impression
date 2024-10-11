@@ -9,7 +9,7 @@ import 'package:bars/utilities/exports.dart';
 class CreativesScreen extends StatefulWidget {
   static final id = 'CreativesScreen';
   final String currentUserId;
-  final String storeType;
+  final String shopType;
   final int pageIndex;
   final UserSettingsLoadingPreferenceModel userLocationSettings;
   final String liveCity;
@@ -19,7 +19,7 @@ class CreativesScreen extends StatefulWidget {
 
   CreativesScreen({
     required this.currentUserId,
-    required this.storeType,
+    required this.shopType,
     required this.pageIndex,
     required this.userLocationSettings,
     required this.liveCity,
@@ -80,9 +80,9 @@ class _CreativesScreenState extends State<CreativesScreen>
     print(widget.liveCity);
     int feedCount = widget.liveCity.isNotEmpty
         ? await DatabaseService.numusersLiveLocation(
-            widget.storeType, widget.liveCity, widget.liveCountry)
+            widget.shopType, widget.liveCity, widget.liveCountry)
         : await DatabaseService.numUsersAll(
-            widget.storeType,
+            widget.shopType,
           );
     if (mounted) {
       setState(() {
@@ -151,7 +151,7 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     var query = userProfessionalRef
         .where('showOnExplorePage', isEqualTo: true)
-        .where('storeType', isEqualTo: widget.storeType)
+        .where('shopType', isEqualTo: widget.shopType)
         .where('noBooking', isEqualTo: false);
 
     if (city != null) {
@@ -336,7 +336,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     try {
       var query = userProfessionalRef
           .where('showOnExplorePage', isEqualTo: true)
-          .where('storeType', isEqualTo: widget.storeType);
+          .where('shopType', isEqualTo: widget.shopType);
 
       if (country != null) {
         query = query.where('country', isEqualTo: country);
@@ -363,7 +363,7 @@ class _CreativesScreenState extends State<CreativesScreen>
 
         // Make an additional query to get more documents
         QuerySnapshot additionalSnapshot = await userProfessionalRef
-            .where('storeType', isEqualTo: widget.storeType)
+            .where('shopType', isEqualTo: widget.shopType)
             .orderBy('randomId') // Order by must be the same as the first query
             .where('randomId', isLessThan: randomValue)
             .limit(remainingLimit)
@@ -435,7 +435,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       currentUserId: widget.currentUserId,
       locationCategory: locationCategory,
       type: 'User',
-      typeSpecific: widget.storeType,
+      typeSpecific: widget.shopType,
       pageIndex: widget.pageIndex,
       usersSnapshot: usersSnapshot,
       usersList: usersList,
@@ -462,7 +462,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       child: Container(
         // color: Theme.of(context).cardColor,
         child: ListTile(
-          leading: user.storeLogomageUrl.isEmpty
+          leading: user.shopLogomageUrl.isEmpty
               ? Icon(
                   Icons.account_circle,
                   size: ResponsiveHelper.responsiveHeight(context, 50.0),
@@ -472,7 +472,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                   radius: ResponsiveHelper.responsiveHeight(context, 25.0),
                   backgroundColor: Colors.blue,
                   backgroundImage: CachedNetworkImageProvider(
-                      user.storeLogomageUrl, errorListener: (_) {
+                      user.shopLogomageUrl, errorListener: (_) {
                     return;
                   }),
                 ),
@@ -482,14 +482,14 @@ class _CreativesScreenState extends State<CreativesScreen>
             children: <Widget>[
               NameText(
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-                name: user.userName.toUpperCase().trim().replaceAll('\n', ' '),
+                name: user.shopName.toUpperCase().trim().replaceAll('\n', ' '),
                 verified: user.verified,
               ),
               RichText(
                   textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(children: [
                     TextSpan(
-                        text: user.storeType,
+                        text: user.shopType,
                         style: TextStyle(
                           fontSize:
                               ResponsiveHelper.responsiveFontSize(context, 10),
@@ -508,6 +508,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                         user: null,
                         currentUserId: _provider.currentUserId!,
                         userId: user.userId,
+                        accountType: 'Shop',
                       ))),
         ),
       ),
@@ -546,7 +547,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                             ? const SizedBox.shrink()
                             : NoEventInfoWidget(
                                 from: 'Location',
-                                specificType: widget.storeType,
+                                specificType: widget.shopType,
                                 liveLocation: widget.liveCity,
                                 liveLocationIntialPage: widget.pageIndex,
                                 isEvent: false,
@@ -594,7 +595,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                         if (widget.liveCity.isEmpty)
                           NoEventInfoWidget(
                             from: 'Location',
-                            specificType: widget.storeType,
+                            specificType: widget.shopType,
                             liveLocation: widget.liveCity,
                             liveLocationIntialPage: widget.pageIndex,
                             isEvent: false,
@@ -606,7 +607,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                           ),
                         NoEventInfoWidget(
                           from: 'Images',
-                          specificType: widget.storeType,
+                          specificType: widget.shopType,
                           liveLocation: widget.liveCity,
                           liveLocationIntialPage: widget.pageIndex,
                           isEvent: false,
@@ -621,14 +622,14 @@ class _CreativesScreenState extends State<CreativesScreen>
                               ? CategoryContainerEmpty(
                                   liveLocationIntialPage: widget.pageIndex,
                                   containerSubTitle:
-                                      'Enter your city, and countryto unlock a world of ${widget.storeType.toLowerCase()}\'s living around you.\n',
+                                      'Enter your city, and countryto unlock a world of ${widget.shopType.toLowerCase()}\'s living around you.\n',
                                   containerTitle:
                                       'Please set up your location to get started',
                                   noLocation: true,
                                   height: 100,
                                   liveLocation: '',
                                   isEvent: false,
-                                  storeType: widget.storeType,
+                                  shopType: widget.shopType,
                                 )
                               : const SizedBox.shrink(),
                         if (hasCity)
@@ -641,12 +642,12 @@ class _CreativesScreenState extends State<CreativesScreen>
                                       SeeMore(
                                         userLocationSettings:
                                             widget.userLocationSettings,
-                                        // storeType: _storeType,
+                                        // shopType: _shopType,
                                         currentUserId: widget.currentUserId,
                                         liveCity: widget.liveCity,
                                         liveCountry: widget.liveCountry,
                                         pageIndex: widget.pageIndex,
-                                        types: widget.storeType,
+                                        types: widget.shopType,
                                         // seeMoreFrom: 'City',
                                         isEvent: false, isFrom: 'City',
                                         sortNumberOfDays: 0,
@@ -666,7 +667,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         liveCity: widget.liveCity,
                                         liveCountry: widget.liveCountry,
                                         pageIndex: widget.pageIndex,
-                                        types: widget.storeType,
+                                        types: widget.shopType,
                                         isEvent: false,
                                         isFrom: 'Country',
                                         sortNumberOfDays: 0,
@@ -687,7 +688,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                         //                 liveCity: widget.liveCity,
                         //                 liveCountry: widget.liveCountry,
                         //                 pageIndex: widget.pageIndex,
-                        //                 types: widget.storeType,
+                        //                 types: widget.shopType,
                         //                 isEvent: false,
                         //                 isFrom: 'Continent',
                         //                 sortNumberOfDays: 0,
@@ -701,17 +702,21 @@ class _CreativesScreenState extends State<CreativesScreen>
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         UserStoreModel user = _usersAll[index];
-                        return widget.storeType == 'Fan'
+                        return widget.shopType == 'Fan'
                             ? _userFan(user)
-                            : UserView(
-                                userSnapshot: _usersAllSnapshot,
-                                userList: _usersAll,
-                                currentUserId: widget.currentUserId,
-                                userProfessional: user,
-                                pageIndex: widget.pageIndex,
-                                liveCity: '',
-                                liveCountry: '',
-                                isFrom: '',
+                            : Container(
+                                color: Theme.of(context).cardColor,
+                                padding: const EdgeInsets.all(10),
+                                child: UserView(
+                                  userSnapshot: _usersAllSnapshot,
+                                  userList: _usersAll,
+                                  currentUserId: widget.currentUserId,
+                                  userProfessional: user,
+                                  pageIndex: widget.pageIndex,
+                                  liveCity: '',
+                                  liveCountry: '',
+                                  isFrom: '',
+                                ),
                               );
                       },
                       childCount: _usersAll.length,
@@ -749,7 +754,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       isEvent: true,
       liveLocationIntialPage: widget.pageIndex,
       from: from,
-      specificType: widget.storeType,
+      specificType: widget.shopType,
       liveLocation: widget.liveCity,
     );
   }

@@ -3,7 +3,7 @@ import 'package:bars/utilities/exports.dart';
 class SearchUserTile extends StatelessWidget {
   final String profileImageUrl;
   final String userName;
-  final String storeType;
+  final String shopType;
   final String bio;
   final bool verified;
   final VoidCallback onPressed;
@@ -12,7 +12,7 @@ class SearchUserTile extends StatelessWidget {
       {required this.bio,
       required this.userName,
       required this.profileImageUrl,
-      required this.storeType,
+      required this.shopType,
       required this.verified,
       required this.onPressed});
 
@@ -62,7 +62,7 @@ class SearchUserTile extends StatelessWidget {
                 ),
               ],
             ),
-            Text(storeType,
+            Text(shopType,
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                   color: Colors.blue,

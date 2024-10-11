@@ -67,18 +67,17 @@ class _ViewSentContentState extends State<ViewSentContent> {
                   }
                   Post _post = snapshot.data;
 
-                  return 
-                  EventEnlargedScreen(
+                  return EventEnlargedScreen(
                     currentUserId: _provider.currentUserId!,
                     post: _post,
-                    type: _post.storeType,
+                    type: _post.shopType,
                     palette: null,
                     showPrivateEvent: true,
                     // marketedAffiliateId: widget.affiliateId,
                   );
                 })
-            : 
-            
+            :
+
             // widget.contentType.startsWith('InviteRecieved')
             //     ? FutureBuilder<List<dynamic>>(
             //         future: Future.wait([
@@ -139,17 +138,55 @@ class _ViewSentContentState extends State<ViewSentContent> {
             //           );
             //         },
             //       )
-                // : 
-                widget.contentType.startsWith('message')
+            // :
+            widget.contentType.startsWith('message')
+                ? FutureBuilder<List<dynamic>>(
+                    future: Future.wait([
+                      DatabaseService.getUserChatWithId(
+                          _provider.currentUserId!, widget.contentId),
+                      DatabaseService.getUserWithId(widget.contentId),
+                    ]),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<dynamic>> snapshot) {
+                      if (!snapshot.hasData) {
+                        return Container(
+                          width: width,
+                          height: height,
+                          color: Colors.black,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          ),
+                        );
+                      }
+
+                      Chat _chat = snapshot.data![0];
+                      AccountHolderAuthor _user = snapshot.data![1];
+
+                      return BottomModalSheetMessage(
+                        currentUserId: _provider.currentUserId!,
+                        user: null,
+                        showAppbar: true,
+                        userAuthor: _user,
+                        chatLoaded: _chat,
+                        userPortfolio: null,
+                        userId: widget.contentId,
+                      );
+                    },
+                  )
+                : widget.contentType.startsWith('eventRoom')
                     ? FutureBuilder<List<dynamic>>(
                         future: Future.wait([
-                          DatabaseService.getUserChatWithId(
-                              _provider.currentUserId!, widget.contentId),
-                          DatabaseService.getUserWithId(widget.contentId),
+                          DatabaseService.getEventRoomWithId(widget.contentId),
+                          DatabaseService.getTicketIdWithId(
+                              widget.contentId, _provider.currentUserId!),
                         ]),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<dynamic>> snapshot) {
-                          if (!snapshot.hasData) {
+                          if (!snapshot.hasData ||
+                              snapshot.data![0] == null ||
+                              snapshot.data![1] == null) {
                             return Container(
                               width: width,
                               height: height,
@@ -162,33 +199,14 @@ class _ViewSentContentState extends State<ViewSentContent> {
                             );
                           }
 
-                          Chat _chat = snapshot.data![0];
-                          AccountHolderAuthor _user = snapshot.data![1];
-
-                          return BottomModalSheetMessage(
-                            currentUserId: _provider.currentUserId!,
-                            user: null,
-                            showAppbar: true,
-                            userAuthor: _user,
-                            chatLoaded: _chat,
-                            userPortfolio: null,
-                            userId: widget.contentId,
-                          );
-                        },
-                      )
-                    : widget.contentType.startsWith('eventRoom')
-                        ? FutureBuilder<List<dynamic>>(
-                            future: Future.wait([
-                              DatabaseService.getEventRoomWithId(
-                                  widget.contentId),
-                              DatabaseService.getTicketIdWithId(
-                                  widget.contentId, _provider.currentUserId!),
-                            ]),
+                          EventRoom _eventRoom = snapshot.data![0];
+                          TicketIdModel? ticketId = snapshot.data![1];
+                          return FutureBuilder<PaletteGenerator>(
+                            future: _generatePalette(_eventRoom.imageUrl),
                             builder: (BuildContext context,
-                                AsyncSnapshot<List<dynamic>> snapshot) {
-                              if (!snapshot.hasData ||
-                                  snapshot.data![0] == null ||
-                                  snapshot.data![1] == null) {
+                                AsyncSnapshot<PaletteGenerator>
+                                    paletteSnapshot) {
+                              if (!paletteSnapshot.hasData) {
                                 return Container(
                                   width: width,
                                   height: height,
@@ -200,131 +218,110 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                   ),
                                 );
                               }
-
-                              EventRoom _eventRoom = snapshot.data![0];
-                              TicketIdModel? ticketId = snapshot.data![1];
-                              return FutureBuilder<PaletteGenerator>(
-                                future: _generatePalette(_eventRoom.imageUrl),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<PaletteGenerator>
-                                        paletteSnapshot) {
-                                  if (!paletteSnapshot.hasData) {
-                                    return Container(
-                                      width: width,
-                                      height: height,
-                                      color: Colors.black,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  PaletteGenerator _palette =
-                                      paletteSnapshot.data!;
-                                  return EventRoomScreen(
-                                    currentUserId: _provider.currentUserId!,
-                                    room: _eventRoom,
-                                    palette: _palette,
-                                    ticketId: ticketId!,
-                                  );
-                                },
+                              PaletteGenerator _palette = paletteSnapshot.data!;
+                              return EventRoomScreen(
+                                currentUserId: _provider.currentUserId!,
+                                room: _eventRoom,
+                                palette: _palette,
+                                ticketId: ticketId!,
                               );
                             },
-                          )
-                        : 
-                        
-                        // widget.contentType.startsWith('refundProcessed')
-                        //     ? FutureBuilder<List<dynamic>>(
-                        //         future: Future.wait([
-                        //           DatabaseService.getUserTicketOrderWithId(
-                        //             widget.contentId,
-                        //             _provider.currentUserId!,
-                        //           ),
-                        //           DatabaseService.getUserEventWithId(
-                        //               widget.contentId, widget.eventAuthorId),
-                        //         ]),
-                        //         builder: (BuildContext context,
-                        //             AsyncSnapshot<List<dynamic>> snapshot) {
-                        //           if (!snapshot.hasData ||
-                        //               snapshot.data![0] == null ||
-                        //               snapshot.data![1] == null) {
-                        //             return Container(
-                        //               width: width,
-                        //               height: height,
-                        //               color: Colors.black,
-                        //               child: Center(
-                        //                 child: CircularProgressIndicator(
-                        //                   color: Colors.blue,
-                        //                 ),
-                        //               ),
-                        //             );
-                        //           }
+                          );
+                        },
+                      )
+                    :
 
-                        //           TicketOrderModel _ticketOrder =
-                        //               snapshot.data![0];
-                        //           Event? event = snapshot.data![1];
-                        //           // RefundModel? newRefund;
+                    // widget.contentType.startsWith('refundProcessed')
+                    //     ? FutureBuilder<List<dynamic>>(
+                    //         future: Future.wait([
+                    //           DatabaseService.getUserTicketOrderWithId(
+                    //             widget.contentId,
+                    //             _provider.currentUserId!,
+                    //           ),
+                    //           DatabaseService.getUserEventWithId(
+                    //               widget.contentId, widget.eventAuthorId),
+                    //         ]),
+                    //         builder: (BuildContext context,
+                    //             AsyncSnapshot<List<dynamic>> snapshot) {
+                    //           if (!snapshot.hasData ||
+                    //               snapshot.data![0] == null ||
+                    //               snapshot.data![1] == null) {
+                    //             return Container(
+                    //               width: width,
+                    //               height: height,
+                    //               color: Colors.black,
+                    //               child: Center(
+                    //                 child: CircularProgressIndicator(
+                    //                   color: Colors.blue,
+                    //                 ),
+                    //               ),
+                    //             );
+                    //           }
 
-                        //           return FutureBuilder<PaletteGenerator>(
-                        //             future: _generatePalette(event!.imageUrl),
-                        //             builder: (BuildContext context,
-                        //                 AsyncSnapshot<PaletteGenerator>
-                        //                     paletteSnapshot) {
-                        //               if (!paletteSnapshot.hasData) {
-                        //                 return Container(
-                        //                   width: width,
-                        //                   height: height,
-                        //                   color: Colors.black,
-                        //                   child: Center(
-                        //                     child: CircularProgressIndicator(
-                        //                       color: Colors.blue,
-                        //                     ),
-                        //                   ),
-                        //                 );
-                        //               }
-                        //               PaletteGenerator _palette =
-                        //                   paletteSnapshot.data!;
-                        //               return PurchasedAttendingTicketScreen(
-                        //                 ticketOrder: _ticketOrder,
-                        //                 event: event,
-                        //                 currentUserId: _provider.currentUserId!,
-                        //                 justPurchased: '',
-                        //                 palette: _palette,
-                        //               );
-                        //             },
-                        //           );
-                        //         },
-                        //       )
-                            // :
-                            //  widget.contentType.startsWith('eventDeleted')
-                            //     ? FutureBuilder(
-                            //         future: DatabaseService
-                            //             .getUserTicketOrderWithId(
-                            //           widget.contentId,
-                            //           _provider.currentUserId!,
-                            //         ),
-                            //         builder: (BuildContext context,
-                            //             AsyncSnapshot snapshot) {
-                            //           if (!snapshot.hasData) {
-                            //             return Container(
-                            //               width: width,
-                            //               height: height,
-                            //               color: Colors.black,
-                            //               child: Center(
-                            //                   child: CircularProgressIndicator(
-                            //                 color: Colors.blue,
-                            //               )),
-                            //             );
-                            //           }
-                            //           TicketOrderModel _ticketOrder =
-                            //               snapshot.data;
+                    //           TicketOrderModel _ticketOrder =
+                    //               snapshot.data![0];
+                    //           Event? event = snapshot.data![1];
+                    //           // RefundModel? newRefund;
 
-                            //           return _ticketOrderDeleted(
-                            //               _provider.currentUserId!,
-                            //               _ticketOrder);
-                            //         })
-                                // :
-                                 const SizedBox.shrink());
+                    //           return FutureBuilder<PaletteGenerator>(
+                    //             future: _generatePalette(event!.imageUrl),
+                    //             builder: (BuildContext context,
+                    //                 AsyncSnapshot<PaletteGenerator>
+                    //                     paletteSnapshot) {
+                    //               if (!paletteSnapshot.hasData) {
+                    //                 return Container(
+                    //                   width: width,
+                    //                   height: height,
+                    //                   color: Colors.black,
+                    //                   child: Center(
+                    //                     child: CircularProgressIndicator(
+                    //                       color: Colors.blue,
+                    //                     ),
+                    //                   ),
+                    //                 );
+                    //               }
+                    //               PaletteGenerator _palette =
+                    //                   paletteSnapshot.data!;
+                    //               return PurchasedAttendingTicketScreen(
+                    //                 ticketOrder: _ticketOrder,
+                    //                 event: event,
+                    //                 currentUserId: _provider.currentUserId!,
+                    //                 justPurchased: '',
+                    //                 palette: _palette,
+                    //               );
+                    //             },
+                    //           );
+                    //         },
+                    //       )
+                    // :
+                    //  widget.contentType.startsWith('eventDeleted')
+                    //     ? FutureBuilder(
+                    //         future: DatabaseService
+                    //             .getUserTicketOrderWithId(
+                    //           widget.contentId,
+                    //           _provider.currentUserId!,
+                    //         ),
+                    //         builder: (BuildContext context,
+                    //             AsyncSnapshot snapshot) {
+                    //           if (!snapshot.hasData) {
+                    //             return Container(
+                    //               width: width,
+                    //               height: height,
+                    //               color: Colors.black,
+                    //               child: Center(
+                    //                   child: CircularProgressIndicator(
+                    //                 color: Colors.blue,
+                    //               )),
+                    //             );
+                    //           }
+                    //           TicketOrderModel _ticketOrder =
+                    //               snapshot.data;
+
+                    //           return _ticketOrderDeleted(
+                    //               _provider.currentUserId!,
+                    //               _ticketOrder);
+                    //         })
+                    // :
+                    const SizedBox.shrink());
   }
 }

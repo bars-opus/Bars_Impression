@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:bars/features/events/services/paystack_ticket_payment_mobile_money.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
-import 'package:bars/widgets/general_widget/ticket_purchase_summary_widget.dart';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +13,10 @@ import 'package:uuid/uuid.dart';
 
 class TicketGroup extends StatefulWidget {
   final List<AppointmentSlotModel> appointmentSlots;
+  final Map<String, DateTimeRange> openingHours;
+  final UserStoreModel? bookingShop;
+  final bool fromPrice;
+
   // final Event? event;
   // final String currentUserId;
   // final String inviteReply;
@@ -26,11 +30,14 @@ class TicketGroup extends StatefulWidget {
 
   TicketGroup({
     required this.appointmentSlots,
+    required this.openingHours,
+    required this.bookingShop,
+
     // required this.event,
-    // required this.currentUserId,
+    required this.fromPrice,
     // required this.inviteReply,
     this.edit = false,
-    this.fromProfile = true,
+    this.fromProfile = false,
 
     // // required this.marketedAffiliateId ,
     // this.onInvite = false,
@@ -43,13 +50,15 @@ class TicketGroup extends StatefulWidget {
 
 class _TicketGroupState extends State<TicketGroup> {
   int _selectedSeat = 0;
+  // bool _isLoadingSubmit = false;
+
   int _selectedRow = 0;
 
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Provider.of<UserData>(context, listen: false).ticketList.clear();
+      _clear();
     });
   }
 
@@ -109,26 +118,29 @@ class _TicketGroupState extends State<TicketGroup> {
         'savedTickets'); // 'savedTickets' is the key used to store the tickets
   }
 
-  // void _generateTickets(
-  //   // TicketModel? purchasintgTickets,
-  //   String purchaseReferenceId,
-  //   String transactionId,
-  //   bool isPaymentVerified,
-  //   String paymentProvider,
+  // _sendBookingRequest(
+  //   BookingAppointmentModel appointmentOrder,
   // ) async {
   //   var _provider = Provider.of<UserData>(context, listen: false);
 
-  //   var _user = _provider.user;
+  //   _showBottomSheetLoading('Sending booking request');
+  //   var _user = Provider.of<UserData>(context, listen: false).user;
+  //   String commonId = Uuid().v4();
 
-  //   _showBottomSheetLoading('Generating ticket');
-  //   List<TicketModel> _finalTicket = _provider.ticketList.isEmpty
-  //       ? await loadTickets()
-  //       : _provider.ticketList;
+  //   if (_provider.isLoading) {
+  //     return;
+  //   }
+  //   if (mounted) {
+  //     _provider.setIsLoading(true);
+
+  //     // setState(() {
+  //     //   _isLoadingSubmit = true;
+  //     // });
+  //   }
 
   //   Future<T> retry<T>(Future<T> Function() function, {int retries = 3}) async {
   //     Duration delay =
   //         const Duration(milliseconds: 100); // Start with a short delay
-
   //     for (int i = 0; i < retries; i++) {
   //       try {
   //         return await function();
@@ -137,103 +149,87 @@ class _TicketGroupState extends State<TicketGroup> {
   //           // Don't delay after the last attempt
   //           rethrow;
   //         }
-
   //         await Future.delayed(delay);
   //         delay *= 2; // Double the delay for the next attempt
   //       }
   //     }
-
   //     throw Exception('Failed after $retries attempts');
   //   }
 
-  //   FirebaseFirestore.instance.runTransaction((transaction) async {
-  //     try {
-  //       // Check if the ticket order already exists to ensure idempotency
-  //       // bool existingOrder = await DatabaseService.isTicketOrderAvailable(
-  //       //   transaction: transaction,
-  //       //   userOrderId: widget.currentUserId,
-  //       //   eventId: widget.event!.id,
-  //       // );
+  //   Future<void> sendInvites() => DatabaseService.createBookingAppointment(
+  //         currentUser: _user!,
+  //         booking: appointmentOrder,
+  //       );
 
-  //       if (!existingOrder) {
-  //         String commonId = Uuid().v4();
+  //   try {
+  //     await retry(() => sendInvites(), retries: 3);
 
-  //         Future<TicketOrderModel> createTicketOrder() => _createTicketOrder(
-  //               transactionId,
-  //               transaction,
-  //               commonId,
-  //               _finalTicket,
-  //               purchaseReferenceId,
-  //               isPaymentVerified,
-  //               paymentProvider,
-  //             );
-
-  //         TicketOrderModel order =
-  //             await retry(() => createTicketOrder(), retries: 3);
-  //         if (!widget.event!.isFree || !widget.event!.isCashPayment) {
-  //           Navigator.pop(context);
-  //           // await Future.delayed(Duration(milliseconds: 700));
-  //           Navigator.pop(context);
-  //           // await Future.delayed(Duration(milliseconds: 700));
-  //         }
-  //         if (widget.event!.termsAndConditions.isNotEmpty) {
-  //           Navigator.pop(context);
-  //           // await Future.delayed(Duration(milliseconds: 700));
-  //         }
-
-  //         // Navigator.pop(context);
-  //         await removeTickets();
-
-  //         ;
-  //         Navigator.pop(context);
-  //         PaletteGenerator _paletteGenerator =
-  //             await PaletteGenerator.fromImageProvider(
-  //           CachedNetworkImageProvider(widget.event!.imageUrl),
-  //           size: Size(1110, 150),
-  //           maximumColorCount: 20,
-  //         );
-  //         // HapticFeedback.lightImpact();
-  //         // _navigateToPage(
-  //         //   context,
-  //         //   PurchasedAttendingTicketScreen(
-  //         //     ticketOrder: order,
-  //         //     event: widget.event!,
-  //         //     currentUserId: widget.currentUserId,
-  //         //     justPurchased: 'New',
-  //         //     palette: _paletteGenerator,
-  //         //   ),
-  //         // );
-  //         mySnackBar(
-  //             context,
-  //             widget.event!.isFree || widget.event!.isCashPayment
-  //                 ? 'Free ticket generated succesfully'
-  //                 : ' Ticket purchased succesfully');
-  //       } else {
-  //         if (!widget.event!.isFree || !widget.event!.isCashPayment) {
-  //           Navigator.pop(context);
-  //           // await Future.delayed(Duration(milliseconds: 700));
-  //           Navigator.pop(context);
-
-  //           // await Future.delayed(Duration(milliseconds: 700));
-  //         }
-  //         if (widget.event!.termsAndConditions.isNotEmpty) {
-  //           Navigator.pop(context);
-  //           // await Future.delayed(Duration(milliseconds: 700));
-  //         }
-  //         // Navigator.pop(context);
-  //         mySnackBar(context, ' Ticket is already available');
-  //       }
-  //     } catch (e) {
-  //       String error = e.toString();
-  //       String result = error.contains(']')
-  //           ? error.substring(error.lastIndexOf(']') + 1)
-  //           : error;
-  //       Navigator.pop(context);
-  //       _showBottomSheetErrorMessage(context, result);
-  //     } finally {}
-  //   });
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     _showBottomSheetBookingSuccesful();
+  //     // Navigator.pop(context);
+  //     _clear();
+  //     mySnackBar(context, "Service successfully booked");
+  //   } catch (e) {
+  //     Navigator.pop(context);
+  //     _showBottomSheetErrorMessage(context, 'Could not send book service');
+  //   } finally {
+  //     _endLoading();
+  //   }
   // }
 
+  // void _endLoading() {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+
+  //   if (mounted) {
+  //     _provider.setIsLoading(false);
+  //     // setState(() {
+  //     //   _isLoadingSubmit = false; // Set isLoading to false
+  //     // });
+  //   }
+  // }
+
+  _clear() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setAddress('');
+    _provider.appointmentSlots.clear();
+    _provider.setFinalBookingAppointment(null);
+    _provider.appointmentWorkers.clear();
+    _provider.selectedSlots.clear();
+    _provider.setIsLoading(false);
+    _provider.addressSearchResults = null;
+    _provider.setIsVirtual(false);
+    _provider.setIsEndTimeSelected(false);
+    _provider.setIsStartTimeSelected(false);
+    // _provider.setBookingPriceRate(null);
+  }
+
+  // void _showBottomConfirmBooking(
+  //   BookingAppointmentModel appointmentOrder,
+  // ) {
+  //   // String amount = _bookingAmountController.text;
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return ConfirmationPrompt(
+  //         height: 350,
+  //         buttonText: 'Book',
+  //         onPressed: () async {
+  //           Navigator.pop(context);
+  //           _sendBookingRequest(appointmentOrder);
+  //         },
+  //         title: 'Confirm booking',
+  //         subTitle:
+  //             'You are send booking request? This request must be accepted by this creative before the booking would be effective. Not that this creative is not oblige to respond or accept this request.',
+  //       );
+  //     },
+  //   );
+  // }
   // Future<TicketOrderModel> _createTicketOrder(
   //   String transactionId,
   //   Transaction transaction,
@@ -394,6 +390,7 @@ class _TicketGroupState extends State<TicketGroup> {
     // int price = 3;
     double totalPrice = _provider.ticketList
         .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
+
     String email = FirebaseAuth.instance.currentUser!.email!;
     //  "supportbarsopus@gmail.com"; // User's email
     int amount = totalPrice.toInt(); // Amount in kobo
@@ -541,121 +538,130 @@ class _TicketGroupState extends State<TicketGroup> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          height:
+            height:
 
-              // widget.event!.isFree
-              // ? 300
-              // : widget.event!.isCashPayment
-              //     ? 400
-              //     :
+                // widget.event!.isFree
+                // ? 300
+                // : widget.event!.isCashPayment
+                //     ? 400
+                //     :
 
-              380,
-          buttonText:
-              //  widget.event!.isFree || widget.event!.isCashPayment
-              //     ? 'Generate Ticket'
-              //     :
-              'Purchase Ticket',
-          onPressed: () async {
-            // Check internet connectivity
-            var connectivityResult = await Connectivity().checkConnectivity();
-            if (connectivityResult == ConnectivityResult.none) {
-              // No internet connection
-              _showBottomSheetErrorMessage(context,
-                  'No internet connection available. Please connect to the internet and try again.');
-              return;
-            }
+                380,
+            buttonText:
+                //  widget.event!.isFree || widget.event!.isCashPayment
+                //     ? 'Generate Ticket'
+                //     :
+                'Book service',
+            onPressed: () async {
+              // Check internet connectivity
+              var connectivityResult = await Connectivity().checkConnectivity();
+              if (connectivityResult == ConnectivityResult.none) {
+                // No internet connection
+                _showBottomSheetErrorMessage(context,
+                    'No internet connection available. Please connect to the internet and try again.');
+                return;
+              }
 
-            if (_provider.ticketList.isEmpty) {
-              _showBottomSheetErrorMessage(context,
-                  'No selected ticket. Tap on the attend button to reselect your tickets.');
-            } else {
-              // Check the condition of the event being free or cash payment
-              // if (widget.event!.isFree || widget.event!.isCashPayment) {
-              //   // HapticFeedback.lightImpact();
-              //   Navigator.pop(context);
-              //   _generateTickets('', '', false, '');
-              // } else {
-              //   _showBottomSheetLoading('Initializing payment');
-              //   _initiatePayment(context);
+              if (_provider.ticketList.isEmpty) {
+                _showBottomSheetErrorMessage(context,
+                    'No selected ticket. Tap on the attend button to reselect your tickets.');
+              } else {
+                // Check the condition of the event being free or cash payment
+                // if (widget.event!.isFree || widget.event!.isCashPayment) {
+                //   // HapticFeedback.lightImpact();
+                //   Navigator.pop(context);
+                //   _generateTickets('', '', false, '');
+                // } else {
+                //   _showBottomSheetLoading('Initializing payment');
+                //   _initiatePayment(context);
 
-              //   // _payForTicket();
-              // }
-            }
-          },
-          title:
-              // widget.event!.isFree || widget.event!.isCashPayment
-              //     ? 'Are you sure you want to proceed and generate a ticket?'
-              //     :
-              'Are you sure you want to proceed and purchase this tickets?',
-          subTitle:
-              // widget.event!.termsAndConditions.isNotEmpty
-              //     ? 'By purchasing or generating a ticket to this event, you have accepted the terms and conditions that govern this event as provided by the event organizer.'
-              //     : widget.event!.isCashPayment
-              //         ? 'The payment method for this ticket is cash in hand. Therefore, you will be required to pay for the tickets you generate here at the event venue. For further clarification or more information, please contact the event organizer'
-              //         : widget.event!.isFree
-              //             ? ''
-              //             :
-              'Please avoid interrupting any processing, loading, or countdown indicators during the payment process. Kindly wait for the process to finish on its own.',
-        );
+                //   // _payForTicket();
+                // }
+              }
+            },
+            title:
+                // widget.event!.isFree || widget.event!.isCashPayment
+                //     ? 'Are you sure you want to proceed and generate a ticket?'
+                //     :
+                'Are you sure you want to proceed and book services of ${widget.bookingShop!.shopName}?',
+            subTitle:
+                // widget.event!.termsAndConditions.isNotEmpty
+                //     ? 'By purchasing or generating a ticket to this event, you have accepted the terms and conditions that govern this event as provided by the event organizer.'
+                //     : widget.event!.isCashPayment
+                //         ? 'The payment method for this ticket is cash in hand. Therefore, you will be required to pay for the tickets you generate here at the event venue. For further clarification or more information, please contact the event organizer'
+                //         : widget.event!.isFree
+                //             ? ''
+                //             :
+
+                ''
+            // 'Please avoid interrupting any processing, loading, or countdown indicators during the payment process. Kindly wait for the process to finish on its own.',
+            );
       },
     );
   }
 
-  _eventOnTicketAndPurchaseButton() {
-    return Column(
-      children: [
-        // Container(
-        //   decoration: BoxDecoration(
-        //       color: Theme.of(context).primaryColorLight.withOpacity(.6),
-        //       borderRadius: BorderRadius.circular(10)),
-        //   child: Padding(
-        //     padding: const EdgeInsets.all(8.0),
-        //     child: EventOnTicketWidget(
-        //       event: widget.event!,
-        //       currentUserId: widget.currentUserId,
-        //     ),
-        //   ),
-        // ),
-        const SizedBox(
-          height: 20,
-        ),
-        Divider(
-          thickness: .2,
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-        Center(
-          child: AlwaysWhiteButton(
-            buttonText:
-                //  widget.event!.isFree
-                //     ? 'Generate free ticket'
-                //     : widget.event!.isCashPayment
-                //         ? 'Generate ticket'
-                //         :
-                'Purchase ticket',
-            onPressed: () {
-              _showBottomConfirmTicketAddOrder(
-                context,
-              );
-            },
-            buttonColor: Colors.blue,
-          ),
-        ),
-      ],
-    );
-  }
+  // _eventOnTicketAndPurchaseButton(
+  //   BuildContext context,
+  //   BookingAppointmentModel appointmentOrder,
+  // ) {
+  //   var _provider = Provider.of<UserData>(
+  //     context,
+  //   );
+
+  //   return Column(
+  //     children: [
+  //       // Container(
+  //       //   decoration: BoxDecoration(
+  //       //       color: Theme.of(context).primaryColorLight.withOpacity(.6),
+  //       //       borderRadius: BorderRadius.circular(10)),
+  //       //   child: Padding(
+  //       //     padding: const EdgeInsets.all(8.0),
+  //       //     child: EventOnTicketWidget(
+  //       //       event: widget.event!,
+  //       //       currentUserId: widget.currentUserId,
+  //       //     ),
+  //       //   ),
+  //       // ),
+
+  //       const SizedBox(
+  //         height: 40,
+  //       ),
+  //       // if (appointmentOrder != null)
+  //       if (appointmentOrder.appointment.isNotEmpty)
+  //         Center(
+  //           child: AlwaysWhiteButton(
+  //             buttonText:
+  //                 //  widget.event!.isFree
+  //                 //     ? 'Generate free ticket'
+  //                 //     : widget.event!.isCashPayment
+  //                 //         ? 'Generate ticket'
+  //                 //         :
+  //                 'Book service',
+  //             onPressed: () {
+  //               _showBottomConfirmBooking(appointmentOrder);
+  //               // _showBottomConfirmTicketAddOrder(
+  //               //   context,
+  //               // );
+  //             },
+  //             buttonColor: Colors.blue,
+  //           ),
+  //         ),
+  //       const SizedBox(
+  //         height: 30,
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // void _showBottomFinalPurhcaseSummary(
   //   BuildContext context,
+  //   BookingAppointmentModel appointmentOrder,
   // ) {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   // double totalPrice = _provider.ticketList
+  //   //     .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
 
-  //   double totalPrice = _provider.ticketList
-  //       .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
-
-  //   final List<String> currencyPartition =
-  //       widget.event!.rate.trim().replaceAll('\n', ' ').split("|");
+  //   // final List<String> currencyPartition =
+  //   //     widget.event!.rate.trim().replaceAll('\n', ' ').split("|");
 
   //   showModalBottomSheet(
   //     context: context,
@@ -663,7 +669,7 @@ class _TicketGroupState extends State<TicketGroup> {
   //     backgroundColor: Colors.transparent,
   //     builder: (BuildContext context) {
   //       return Container(
-  //         height: ResponsiveHelper.responsiveHeight(context, 670),
+  //         height: ResponsiveHelper.responsiveHeight(context, 640),
   //         decoration: BoxDecoration(
   //             color: Theme.of(context).primaryColor,
   //             borderRadius: BorderRadius.circular(30)),
@@ -674,86 +680,81 @@ class _TicketGroupState extends State<TicketGroup> {
   //               const SizedBox(
   //                 height: 10,
   //               ),
-  //               Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   TicketPurchasingIcon(
-  //                     title: 'Payment.',
-  //                   ),
-  //                   Padding(
-  //                     padding: const EdgeInsets.only(right: 20.0),
-  //                     child: ShakeTransition(
-  //                       axis: Axis.vertical,
-  //                       child: RichText(
-  //                         textScaler: MediaQuery.of(context).textScaler,
-  //                         text: TextSpan(
-  //                           children: [
-  //                             TextSpan(
-  //                               text: currencyPartition.length > 1
-  //                                   ? " ${currencyPartition[1]}\n"
-  //                                   : '',
-  //                               style:
-  //                                   Theme.of(context).textTheme.displayMedium,
-  //                             ),
-  //                             TextSpan(
-  //                               text: totalPrice.toString(),
-  //                               style: Theme.of(context).textTheme.titleLarge,
-  //                             )
-  //                           ],
-  //                         ),
-  //                         textAlign: TextAlign.end,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
+  //               TicketPurchasingIcon(
+  //                 title: 'Payment.',
   //               ),
-  //               const SizedBox(
-  //                 height: 40,
-  //               ),
-  //               TicketPurchaseSummaryWidget(),
-  //               const SizedBox(
-  //                 height: 10,
-  //               ),
-  //               Divider(
-  //                 thickness: .2,
-  //               ),
-  //               Align(
-  //                 alignment: Alignment.centerLeft,
-  //                 child: RichText(
-  //                   textScaler: MediaQuery.of(context).textScaler,
-  //                   text: TextSpan(
-  //                     children: [
-  //                       TextSpan(
-  //                         text: "Currency:   ",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: currencyPartition.length > 1
-  //                             ? " ${currencyPartition[0]}\n"
-  //                             : '',
-  //                         style: Theme.of(context).textTheme.bodyLarge,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "Total:            ",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: totalPrice.toString(),
-  //                         style: Theme.of(context).textTheme.bodyLarge,
-  //                       )
-  //                     ],
-  //                   ),
-  //                   textAlign: TextAlign.start,
-  //                 ),
-  //               ),
-  //               Divider(
-  //                 thickness: .2,
-  //               ),
+  //               // Row(
+  //               //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               //   crossAxisAlignment: CrossAxisAlignment.start,
+  //               //   children: [
+
+  //               //     Padding(
+  //               //       padding: const EdgeInsets.only(right: 20.0),
+  //               //       child: ShakeTransition(
+  //               //         axis: Axis.vertical,
+  //               //         child: RichText(
+  //               //           textScaler: MediaQuery.of(context).textScaler,
+  //               //           text: TextSpan(
+  //               //             children: [
+  //               //               TextSpan(
+  //               //                 text: currencyPartition.length > 1
+  //               //                     ? " ${currencyPartition[1]}\n"
+  //               //                     : '',
+  //               //                 style:
+  //               //                     Theme.of(context).textTheme.displayMedium,
+  //               //               ),
+  //               //               TextSpan(
+  //               //                 text: totalPrice.toString(),
+  //               //                 style: Theme.of(context).textTheme.titleLarge,
+  //               //               )
+  //               //             ],
+  //               //           ),
+  //               //           textAlign: TextAlign.end,
+  //               //         ),
+  //               //       ),
+  //               //     ),
+  //               //   ],
+  //               // ),
   //               const SizedBox(
   //                 height: 20,
   //               ),
-  //               _eventOnTicketAndPurchaseButton(),
+  //               BookingSummaryWidget(
+  //                 edit: true,
+  //                 currency: widget.bookingShop!.currency,
+  //                 appointmentOrder: appointmentOrder,
+  //               ),
+
+  //               // Align(
+  //               //   alignment: Alignment.centerLeft,
+  //               //   child: RichText(
+  //               //     textScaler: MediaQuery.of(context).textScaler,
+  //               //     text: TextSpan(
+  //               //       children: [
+  //               //         TextSpan(
+  //               //           text: "Currency:   ",
+  //               //           style: Theme.of(context).textTheme.bodyMedium,
+  //               //         ),
+  //               //         TextSpan(
+  //               //           text: currencyPartition.length > 1
+  //               //               ? " ${currencyPartition[0]}\n"
+  //               //               : '',
+  //               //           style: Theme.of(context).textTheme.bodyLarge,
+  //               //         ),
+  //               //         TextSpan(
+  //               //           text: "Total:            ",
+  //               //           style: Theme.of(context).textTheme.bodyMedium,
+  //               //         ),
+  //               //         TextSpan(
+  //               //           text: totalPrice.toString(),
+  //               //           style: Theme.of(context).textTheme.bodyLarge,
+  //               //         )
+  //               //       ],
+  //               //     ),
+  //               //     textAlign: TextAlign.start,
+  //               //   ),
+  //               // ),
+
+  //               _eventOnTicketAndPurchaseButton(context, appointmentOrder),
   //             ],
   //           ),
   //         ),
@@ -850,25 +851,133 @@ class _TicketGroupState extends State<TicketGroup> {
     // }
   }
 
-  void _showBottomSheetExternalLink() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 550),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          // child: WebDisclaimer(
-          //   link: widget.event!.ticketSite,
-          //   contentType: 'Event ticket',
-          //   icon: Icons.link,
-          // )
-        );
-      },
-    );
+  // void _showBottomSheetBookingSuccesful() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: ResponsiveHelper.responsiveHeight(context, 350),
+  //         padding: const EdgeInsets.all(20),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).cardColor,
+  //             borderRadius: BorderRadius.circular(30)),
+  //         child: ListView(
+  //           children: [
+  //             TicketPurchasingIcon(
+  //               title: '',
+  //             ),
+  //             ShakeTransition(
+  //               duration: const Duration(seconds: 2),
+  //               child: Icon(
+  //                 Icons.check_circle_outline_outlined,
+  //                 size: 50,
+  //                 color: Colors.blue,
+  //               ),
+  //             ),
+  //             const SizedBox(height: 20),
+  //             Center(
+  //               child: Text(
+  //                 'Booking\nsuccessful',
+  //                 style: Theme.of(context).textTheme.titleLarge,
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ),
+  //             const SizedBox(height: 20),
+  //             Text(
+  //               'Your booking to ${widget.bookingShop!.userName}. has been succesful. The booking details is now available on your calendar.',
+  //               style: Theme.of(context).textTheme.bodyMedium,
+  //               textAlign: TextAlign.center,
+  //             ),
+  //             const SizedBox(height: 20),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  // _creatingBookingData(BuildContext context) async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   List<BookedAppointmentModel> bookedAppointments = [];
+
+  //   for (var appointmentSlot in _provider.appointmentSlots) {
+  //     // Find matching selected slots
+  //     var matchingSlots = _provider.selectedSlots.where((selectedSlot) =>
+  //         selectedSlot.service == appointmentSlot.service &&
+  //         selectedSlot.type == appointmentSlot.type);
+
+  //     for (var selectedSlot in matchingSlots) {
+  //       // Find matching workers for the service
+  //       var matchingWorkers = appointmentSlot.workers
+  //           .where(
+  //               (worker) => worker.services.contains(appointmentSlot.service))
+  //           .toList();
+
+  //       // Create a booked appointment model
+  //       BookedAppointmentModel appointment = BookedAppointmentModel(
+  //         id: appointmentSlot.id,
+  //         price: appointmentSlot.price,
+  //         workers: matchingWorkers,
+  //         service: appointmentSlot.service,
+  //         type: appointmentSlot.type,
+  //         duruation: appointmentSlot.duruation,
+  //         selectedSlot: selectedSlot.selectedSlot,
+  //       );
+
+  //       bookedAppointments.add(appointment);
+  //       String commonId = Uuid().v4();
+
+  //       BookingAppointmentModel bookedAppointment = BookingAppointmentModel(
+  //         id: commonId,
+  //         shopId: widget.bookingShop!.userId,
+  //         isFinalPaymentMade: false,
+  //         clientId: _provider.currentUserId!,
+  //         appointment: bookedAppointments,
+  //         bookingDate: _provider.startDate,
+  //         location: widget.bookingShop!.address,
+  //         rating: 0,
+  //         reviewComment: '',
+  //         timestamp: Timestamp.fromDate(DateTime.now()),
+  //         termsAndConditions: '',
+  //         cancellationReason: '',
+  //         shopName: widget.bookingShop!.userName,
+  //         shopLogoUrl: widget.bookingShop!.shopLogomageUrl,
+  //         specialRequirements: '',
+  //         isdownPaymentMade: false,
+  //         shopType: widget.bookingShop!.shopType,
+  //       );
+  //       _showBottomFinalPurhcaseSummary(context, bookedAppointment);
+
+  //       // _provider.setFinalBookingAppointment(bookedAppointment);
+  //     }
+  //   }
+  // }
+
+  // _selectGenerateTimeSlot() {
+  //   return showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return ShowSlotWidget(openingHours: widget.openingHours);
+  //     },
+  //   );
+  // }
+
+  _selectPreferedWorker() {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return SelectWorkers(
+            bookingShop: widget.bookingShop!,
+            edit: widget.edit,
+            fromProfile: widget.fromProfile,
+          );
+        });
   }
 
   _ticketLoadingIndicator() {
@@ -926,21 +1035,6 @@ class _TicketGroupState extends State<TicketGroup> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  RichText(
-                    textScaler: MediaQuery.of(context).textScaler,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Terms and Conditions',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        // TextSpan(
-                        //   text: "\n\n${widget.event!.termsAndConditions}",
-                        //   style: Theme.of(context).textTheme.bodyMedium,
-                        // ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -965,16 +1059,33 @@ class _TicketGroupState extends State<TicketGroup> {
           buttonText: 'set up city',
           onPressed: () async {
             Navigator.pop(context);
-            _navigateToPage(
-                context,
-                EditProfileSelectLocation(
-                  user: _userLocation!,
-                  notFromEditProfile: true,
-                ));
+            // _navigateToPage(
+            //     context,
+            //     EditProfileSelectLocation(
+            //       user: _userLocation!,
+            //       notFromEditProfile: true,
+            //     ));
           },
           title: 'Set up your city',
           subTitle:
               'To proceed with purchasing a ticket, we kindly ask you to provide your country information. This allows us to handle ticket processing appropriately, as the process may vary depending on different countries. Please note that specifying your city is sufficient, and there is no need to provide your precise location or community details.',
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetBookingCalendar() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BookingCalendar(
+          currentUserId: _provider.currentUserId!,
+          bookingUser: widget.bookingShop!,
+          // prices: _profileUser!.priceTags,
+          fromPrice: widget.fromPrice,
         );
       },
     );
@@ -997,68 +1108,55 @@ class _TicketGroupState extends State<TicketGroup> {
               top: _provider.appointmentSlots.isEmpty ? 0.0 : 50.0),
           child: Container(
             height: ResponsiveHelper.responsiveHeight(
-                context,
-                widget.fromProfile
-                    ? 350
-                    : widget.appointmentSlots.length * 350),
+                context, widget.appointmentSlots.length * 500),
             width: width,
             child: TicketGoupWidget(
               fromProfile: widget.fromProfile,
-              // onCalendatSchedule: widget.onCalendatSchedule,
-              // onInvite: widget.onInvite,
               appointmentSlots: widget.appointmentSlots,
               isEditing: widget.edit,
-
-              // widget.appointmentSlots == null ? true : false,
-              currency: _provider.currency,
-              //  widget.event == null
-              //     ? _provider.currency
-              //     : widget.event!.rate.isEmpty
-              //         ? _provider.currency
-              //         : widget.event!.rate,
-              // isFree: widget.event == null ? false : widget.event!.isFree,
+              currency: widget.bookingShop!.currency,
               eventId: '',
-              //  widget.event == null ? '' : widget.event!.id,
               eventAuthorId: '',
-
-              //  widget.event == null
-              //     ? widget.currentUserId
-              //     : widget.event!.authorId,
             ),
           ),
         ),
         if (!widget.fromProfile)
           if (_provider.appointmentSlots.isNotEmpty)
-            Positioned(
-                right: 30,
-                top: 10,
-                child:
+            if (!widget.edit)
+              Positioned(
+                  right: 30,
+                  top: 10,
+                  child:
 
-                    // _checkingTicketAvailability
-                    //     ? _ticketLoadingIndicator()
-                    //     :
+                      // _checkingTicketAvailability
+                      //     ? _ticketLoadingIndicator()
+                      //     :
 
-                    MiniCircularProgressButton(
-                  text: 'Continue',
-                  onPressed:
-                      // widget.isPreview
-                      //     ? () {
-                      //         _showBottomSheetErrorMessage(
-                      //           context,
-                      //           'Not available in preview mode',
-                      //         );
-                      //       }
-                      //     : _usercountry!.isEmpty
-                      //         ? () {
-                      //             widget.event!.isFree
-                      //                 ? _attendMethod()
-                      //                 : _showBottomEditLocation(context);
-                      //           }
-                      //         :
+                      MiniCircularProgressButton(
+                    text: 'Continue',
+                    onPressed:
+                        // widget.isPreview
+                        //     ? () {
+                        //         _showBottomSheetErrorMessage(
+                        //           context,
+                        //           'Not available in preview mode',
+                        //         );
+                        //       }
+                        //     : _usercountry!.isEmpty
+                        //         ? () {
+                        //             widget.event!.isFree
+                        //                 ? _attendMethod()
+                        //                 : _showBottomEditLocation(context);
+                        //           }
+                        //         :
 
-                      _validateAttempt,
-                  color: Colors.blue,
-                ))
+                        () {
+                      widget.fromPrice
+                          ? _showBottomSheetBookingCalendar()
+                          : _selectPreferedWorker();
+                    },
+                    color: Colors.blue,
+                  ))
       ],
     );
   }

@@ -4,7 +4,7 @@ class AllPosts extends StatefulWidget {
   static final id = 'AllPosts';
   final String currentUserId;
   // final String eventId;
-  final String storeType;
+  final String shopType;
 
   // final bool isUser;
   // final bool fromActivity;
@@ -21,7 +21,7 @@ class AllPosts extends StatefulWidget {
     required this.currentUserId,
     // required this.isUser,
     // required this.eventId,
-    required this.storeType,
+    required this.shopType,
     // required this.fromActivity,
 
     required this.pageIndex,
@@ -87,7 +87,7 @@ class _AllPostsState extends State<AllPosts>
   _setUpTags() async {
     try {
       Query allPostsSnapShot = await allPostsRef
-          .where('storeType', isEqualTo: widget.storeType)
+          .where('shopType', isEqualTo: widget.shopType)
           .orderBy('timestamp', descending: true)
           .limit(limit);
 
@@ -119,7 +119,7 @@ class _AllPostsState extends State<AllPosts>
   _loadMoreInvites() async {
     try {
       Query postQuery = allPostsRef
-          .where('storeType', isEqualTo: widget.storeType)
+          .where('shopType', isEqualTo: widget.shopType)
           .orderBy('timestamp', descending: true)
           .startAfterDocument(_lastInviteDocument!)
           .limit(limit);
@@ -305,7 +305,7 @@ class _AllPostsState extends State<AllPosts>
                   surfaceTintColor: Colors.transparent,
                   backgroundColor: Theme.of(context).primaryColorLight,
                   title: Text(
-                    '${widget.storeType} images',
+                    '${widget.shopType} images',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
@@ -366,7 +366,7 @@ class _AllPostsState extends State<AllPosts>
                                 icon: (Icons.image),
                                 title: 'No posts,',
                                 subTitle:
-                                    'All ${widget.storeType.toLowerCase()} images would be displayed here.',
+                                    'All ${widget.shopType.toLowerCase()} images would be displayed here.',
                               ),
                             ))
                           : Expanded(

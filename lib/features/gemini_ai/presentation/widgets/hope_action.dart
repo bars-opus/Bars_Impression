@@ -246,12 +246,12 @@ class _HopeActionsState extends State<HopeActions> {
           buttonText: 'set up city',
           onPressed: () async {
             Navigator.pop(context);
-            _navigateToPage(
-                context,
-                EditProfileSelectLocation(
-                  user: _userLocation!,
-                  notFromEditProfile: true,
-                ));
+            // _navigateToPage(
+            //     context,
+            //     EditProfileSelectLocation(
+            //       user: _userLocation!,
+            //       notFromEditProfile: true,
+            //     ));
           },
           title: 'Set up your city',
           subTitle:
@@ -484,15 +484,13 @@ class _HopeActionsState extends State<HopeActions> {
                   )
                 // : _provider.florenceActionChoice == 'myTickets'
                 //     ? TicketsSummary()
-                    // :
-                    //  _provider.florenceActionChoice == 'eventsCreated'
-                    //     ? EventCreatedSummary()
-                    //     : 
-                        // _provider.florenceActionChoice == 'invites'
-                        //     ? InviteSummary()
-                            :
-                            
-                             _promptInput('Not sure what you want?');
+                // :
+                //  _provider.florenceActionChoice == 'eventsCreated'
+                //     ? EventCreatedSummary()
+                //     :
+                // _provider.florenceActionChoice == 'invites'
+                //     ? InviteSummary()
+                : _promptInput('Not sure what you want?');
   }
 
   @override

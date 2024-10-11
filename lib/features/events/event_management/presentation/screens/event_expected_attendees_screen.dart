@@ -161,7 +161,7 @@ class _EventExpectedAttendeesScreenState
                       ProfileScreen(
                         currentUserId: _provider.currentUserId!,
                         userId: attendee.userOrderId,
-                        user: null,
+                        user: null, accountType: '',
                       ));
                 },
                 leading: user.profileImageUrl!.isEmpty
@@ -186,7 +186,7 @@ class _EventExpectedAttendeesScreenState
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
-                          text: "\n${user.storeType}",
+                          text: "\n${user.shopType}",
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 12.0),

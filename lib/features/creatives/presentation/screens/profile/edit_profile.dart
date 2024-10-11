@@ -6,11 +6,15 @@ import 'package:hive/hive.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final AccountHolderAuthor user;
-  final UserStoreModel userStore;
+  final UserStoreModel? shop;
+  final ShopWorkerModel? worker;
+  final String accountType;
 
   EditProfileScreen({
     required this.user,
-    required this.userStore,
+    required this.shop,
+    required this.worker,
+    required this.accountType,
   });
 
   @override
@@ -277,7 +281,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       disabledAccount: _provider.user!.disabledAccount,
       dynamicLink: link,
       lastActiveDate: _provider.user!.lastActiveDate,
-      storeType: _provider.user!.storeType,
+      shopType: _provider.user!.shopType,
       profileImageUrl: profileImageUrl,
       reportConfirmed: _provider.user!.reportConfirmed,
       userId: _provider.user!.userId,
@@ -463,6 +467,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         EditProfileSelectLocation(
                           notFromEditProfile: true,
                           user: _user,
+                          accountType: widget.user.accountType!,
                         ),
                       );
                     },
@@ -498,7 +503,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: () {
               _navigateToPage(
                 context,
-                EditstoreType(
+                EditshopType(
                   user: widget.user,
                 ),
               );
@@ -518,6 +523,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 EditProfileSelectLocation(
                   user: _user,
+                  accountType: widget.user.accountType!,
                 ),
               );
             },
@@ -538,6 +544,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           _showBottomSheetNoCity();
                         }
                       : () async {
+                          print(widget.accountType + '    bb');
+                          print(widget.shop.toString() + '    bb');
                           Navigator.pop(context);
                           // if (_provider.isLoading) return;
                           // _provider.setIsLoading(true);
@@ -549,12 +557,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           //   );
 
                           //   if (user != null) {
-                          _navigateToPage(
-                            context,
-                            EditProfileProfessional(
-                              user: widget.userStore,
-                            ),
-                          );
+                          if (_provider2.user!.accountType == 'Shop' &&
+                              widget.shop != null)
+                            _navigateToPage(
+                              context,
+                              EditProfileProfessional(
+                                user: widget.shop!,
+                              ),
+                            );
                           //   } else {
                           //     _showBottomSheetErrorMessage(
                           //         'Failed to fetch booking data.');

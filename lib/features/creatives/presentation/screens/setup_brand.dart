@@ -15,7 +15,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
   File? _profileImage;
-  String _storeType = '';
+  String _shopType = '';
   String _accountType = '';
   String selectedValue = '';
   String query = "";
@@ -38,7 +38,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     _namecontroller.addListener(_oninputChanged);
     // _bioTextController.addListener(_oninputChanged);
 
-    selectedValue = _storeType.isEmpty ? '' : _storeType;
+    selectedValue = _shopType.isEmpty ? '' : _shopType;
 
     selectedValue = _accountType.isEmpty ? '' : _accountType;
 
@@ -200,10 +200,26 @@ class _SetUpBrandState extends State<SetUpBrand> {
     try {
       await batch.commit();
 
-      await HiveUtils.updateAuthorHive(context, newUsername, '', '',
-          _provider.storeType, _provider.accountType);
+      await HiveUtils.updateAuthorHive(
+        context: context,
+        accountType: '',
+        disabledAccount: false,
+        // lastActiveDate: Timestamp.fromDate(DateTime.now()),
+        shopType: '',
+        profileImageUrl: '',
+        reportConfirmed: false,
+        verified: false,
+        disableChat: false,
+        name: newUsername,
+        link: '',
+
+        // context, newUsername, '', '',
+        // _provider.shopType, _provider.accountType
+        //
+      );
       animateToPage(1);
       _provider.setIsLoading(false);
+      _provider.setName(newUsername);
     } catch (e) {
       _provider.setIsLoading(false);
       mySnackBar(context, e.toString());
@@ -222,7 +238,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   //     // isShop: _provider.user!.isShop,
   //     dynamicLink: '',
   //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
-  //     storeType: '',
+  //     shopType: '',
   //     profileImageUrl: '',
   //     reportConfirmed: false,
   //     userId: _provider.currentUserId,
@@ -235,7 +251,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   // }
 
-  // _updateAuthorProfiHandleHive(String storeType, String link) {
+  // _updateAuthorProfiHandleHive(String shopType, String link) {
   //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
   //   var _provider = Provider.of<UserData>(context, listen: false);
   //   // Create a new instance of AccountHolderAuthor with the updated name
@@ -247,7 +263,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   //     disabledAccount: false,
   //     dynamicLink: link,
   //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
-  //     storeType: storeType,
+  //     shopType: shopType,
   //     profileImageUrl: '',
   //     reportConfirmed: false,
   //     userId: _provider.currentUserId,
@@ -260,32 +276,32 @@ class _SetUpBrandState extends State<SetUpBrand> {
   //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   // }
 
-  _updateAuthorBioAndImgeUrlHive(String profileImageUrl, String link) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
-    var _provider = Provider.of<UserData>(context, listen: false);
-    // Create a new instance of AccountHolderAuthor with the updated name
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // name: _provider.name,
-      // bio: bio,
-      // isShop: _provider.user!.isShop,
-      accountType: _provider.accountType,
-      disabledAccount: false,
-      dynamicLink: link,
-      lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      storeType: _provider.storeType,
-      profileImageUrl: profileImageUrl,
-      reportConfirmed: false,
-      userId: _provider.currentUserId,
-      userName: _provider.changeNewUserName.isEmpty
-          ? _namecontroller.text.toUpperCase()
-          : _provider.changeNewUserName.toUpperCase(),
-      verified: false,
-      // isShop: false,
-      disableChat: false,
-    );
-    // Put the new object back into the box with the same key
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
+  // _updateAuthorBioAndImgeUrlHive(String profileImageUrl, String link) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   // Create a new instance of AccountHolderAuthor with the updated name
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     // name: _provider.name,
+  //     // bio: bio,
+  //     // isShop: _provider.user!.isShop,
+  //     accountType: _provider.accountType,
+  //     disabledAccount: false,
+  //     dynamicLink: link,
+  //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
+  //     shopType: _provider.shopType,
+  //     profileImageUrl: profileImageUrl,
+  //     reportConfirmed: false,
+  //     userId: _provider.currentUserId,
+  //     userName: _provider.changeNewUserName.isEmpty
+  //         ? _namecontroller.text.toUpperCase()
+  //         : _provider.changeNewUserName.toUpperCase(),
+  //     verified: false,
+  //     // isShop: false,
+  //     disableChat: false,
+  //   );
+  //   // Put the new object back into the box with the same key
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
 
   _validateTextToxicityBio(AccountHolderAuthor user) async {
     // animateToPage(1);
@@ -342,19 +358,19 @@ class _SetUpBrandState extends State<SetUpBrand> {
       //   Navigator.pop(context);
       // }
       // else {
-      try {
-        // var currentUser = Provider.of<UserData>(context, listen: false).user;
-        bool validated = await _usernameService.validateTextToxicity(
-            context, _namecontroller.text.trim(), _pageController);
+      // try {
+      // var currentUser = Provider.of<UserData>(context, listen: false).user;
+      bool validated = await _usernameService.validateTextToxicity(
+          context, _namecontroller.text.trim(), _pageController);
 
-        if (validated) {
-          changeUsername(_namecontroller.text.trim());
-        }
-        // _validateTextToxicity(_changeUserName);
-      } catch (e) {
-        mySnackBar(context, e.toString());
-        // }
+      if (validated) {
+        changeUsername(_namecontroller.text.trim());
       }
+      // _validateTextToxicity(_changeUserName);
+      // } catch (e) {
+      //   mySnackBar(context, e.toString());
+      //   // }
+      // }
     }
   }
 
@@ -401,22 +417,36 @@ class _SetUpBrandState extends State<SetUpBrand> {
           },
         );
 
-        // batch.update(
-        //   userProfessionalRef.doc(currentUserId),
-        //   {
-        //     'dynamicLink': link,
-        //     'profileImageUrl': profileImageUrl,
-        //     // 'bio': bio,
-        //   },
-        // );
+        String profileType =
+            _accountType.isEmpty ? _provider.accountType : _accountType;
+
+        if (profileType == 'Worker') {
+          batch.update(
+            usersWokerRef.doc(currentUserId),
+            {
+              'profileImageUrl': profileImageUrl,
+            },
+          );
+        }
+
         await batch.commit();
         HiveUtils.updateAuthorHive(
-          context,
-          _provider.user!.userName!,
-          _profileImageUrl,
-          '',
-          _provider.storeType,
-          _provider.accountType,
+          context: context,
+          accountType: _accountType,
+          disabledAccount: false,
+          shopType: _provider.shopType,
+          profileImageUrl: _profileImageUrl,
+          reportConfirmed: false,
+          verified: false,
+          disableChat: false,
+          name: _provider.name,
+          link: link,
+          // context,
+          // _provider.user!.userName!,
+          // _profileImageUrl,
+          // '',
+          // _provider.shopType,
+          // _provider.accountType,
         );
         // _updateAuthorBioAndImgeUrlHive(profileImageUrl, link);
         // _bioTextController.clear();
@@ -451,46 +481,51 @@ class _SetUpBrandState extends State<SetUpBrand> {
     );
   }
 
-  _submitstoreType() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // _submitshopType() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    _provider.setIsLoading(true);
-    String currentUserId = _provider.currentUserId!;
-    if (_storeType.isEmpty) {
-      _storeType = 'Fan';
-    }
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-    String link = await DatabaseService.myDynamicLink(
-      '',
-      _provider.changeNewUserName,
-      '',
-      'https://www.barsopus.com/user_$currentUserId',
-    );
+  //   _provider.setIsLoading(true);
+  //   String currentUserId = _provider.currentUserId!;
+  //   if (_shopType.isEmpty) {
+  //     _shopType = 'Fan';
+  //   }
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   String link = await DatabaseService.myDynamicLink(
+  //     '',
+  //     _provider.changeNewUserName,
+  //     '',
+  //     'https://www.barsopus.com/user_$currentUserId',
+  //   );
 
-    batch.update(
-      usersAuthorRef.doc(currentUserId),
-      {
-        'storeType': _storeType,
-        'dynamicLink': link,
-      },
-    );
+  //   batch.update(
+  //     usersAuthorRef.doc(currentUserId),
+  //     {
+  //       'shopType': _shopType,
+  //       'dynamicLink': link,
+  //     },
+  //   );
 
-    batch.update(
-      userProfessionalRef.doc(currentUserId),
-      {
-        'storeType': _storeType,
-        'dynamicLink': link,
-      },
-    );
-    try {
-      batch.commit();
-      _provider.setstoreType(_storeType);
-      animateToPage(1);
-      // _updateAuthorProfiHandleHive(_storeType, link);
-    } catch (e) {
-      _showBottomSheetErrorMessage();
-    }
-    _provider.setIsLoading(false);
+  //   batch.update(
+  //     userProfessionalRef.doc(currentUserId),
+  //     {
+  //       'shopType': _shopType,
+  //       'dynamicLink': link,
+  //     },
+  //   );
+  //   try {
+  //     batch.commit();
+  //     _provider.setshopType(_shopType);
+  //     animateToPage(1);
+  //     // _updateAuthorProfiHandleHive(_shopType, link);
+  //   } catch (e) {
+  //     _showBottomSheetErrorMessage();
+  //   }
+  //   _provider.setIsLoading(false);
+  // }
+
+  _updateShoptAndType() {
+    _updateStore();
+    _submitAccountType();
   }
 
   _submitAccountType() async {
@@ -502,7 +537,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
       _accountType = 'Client';
     }
     WriteBatch batch = FirebaseFirestore.instance.batch();
-
     batch.update(
       usersAuthorRef.doc(currentUserId),
       {
@@ -510,33 +544,25 @@ class _SetUpBrandState extends State<SetUpBrand> {
       },
     );
 
-    batch.update(
-      userProfessionalRef.doc(currentUserId),
-      {
-        'accountType': _accountType,
-      },
-    );
-
     try {
       await batch.commit();
-      // await HiveUtils.updateUserStore(
-      //     context,
-      //     _provider.userStore!.storeLogomageUrl,
-      //     _provider.storeType,
-      //     _accountType);
       await HiveUtils.updateAuthorHive(
-          context,
-          _provider.user!.userName!,
-          _provider.user!.profileImageUrl!,
-          _provider.user!.dynamicLink!,
-          _provider.storeType,
-          _accountType);
+        context: context,
+        accountType: _accountType,
+        disabledAccount: false,
+        // lastActiveDate: Timestamp.fromDate(DateTime.now()),
+        shopType: _provider.shopType,
+        profileImageUrl: '',
+        reportConfirmed: false,
+        verified: false,
+        disableChat: false,
+        name: _provider.name,
+        link: '',
+      );
       _provider.setAccountType(_accountType);
       _provider.setIsLoading(false);
       if (_accountType == 'Shop') Navigator.pop(context);
       animateToPage(1);
-
-      // _updateAuthorProfiHandleHive(_accountType, _provider.user!.dynamicLink!);
     } catch (e) {
       _provider.setIsLoading(false);
       _showBottomSheetErrorMessage();
@@ -549,35 +575,47 @@ class _SetUpBrandState extends State<SetUpBrand> {
     _provider.setIsLoading(true);
     String currentUserId = _provider.currentUserId!;
 
-    if (_storeType.isEmpty) {
-      _storeType = 'Shop';
+    if (_shopType.isEmpty) {
+      _shopType = 'Client';
     }
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
-
     batch.update(
       usersAuthorRef.doc(currentUserId),
       {
-        'storeType': _storeType,
+        'shopType': _shopType,
       },
     );
-    batch.update(
-      userProfessionalRef.doc(currentUserId),
-      {
-        'storeType': _storeType,
-      },
-    );
+
+    await DatabaseService.createUserProfileITypeData(
+        userId: currentUserId,
+        accountType:
+            _accountType.isEmpty ? _provider.accountType : _accountType,
+        shopType: _shopType,
+        name: _provider.user!.userName!,
+        batch: batch);
 
     try {
       await batch.commit();
       // await HiveUtils.updateUserStore(
-      //     context, '', _storeType, _provider.accountType);
-      await HiveUtils.updateAuthorHive(context, _provider.user!.userName!, '',
-          _provider.user!.dynamicLink!, _storeType, _provider.accountType);
-      _provider.setstoreType(_storeType);
+      //     context, '', _shopType, _provider.accountType);
+      await HiveUtils.updateAuthorHive(
+        context: context,
+        accountType: _provider.accountType,
+        disabledAccount: false,
+        // lastActiveDate: Timestamp.fromDate(DateTime.now()),
+        shopType: _shopType,
+        profileImageUrl: '',
+        reportConfirmed: false,
+        verified: false,
+        disableChat: false,
+        name: _provider.name,
+        link: '',
+      );
+      _provider.setshopType(_shopType);
       _provider.setIsLoading(false);
       // animateToPage(1);
-      // _updateAuthorHive(_storeType);
+      // _updateAuthorHive(_shopType);
     } catch (error) {
       _provider.setIsLoading(false);
       _showBottomSheetErrorMessage();
@@ -585,7 +623,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     }
   }
 
-  static const storeType = <String>[
+  static const shopType = <String>[
     "Salon",
     "Barbershop",
     "Spa",
@@ -596,7 +634,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
           unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
         ),
         child: Column(
-            children: storeType.map((value) {
+            children: shopType.map((value) {
           final selected = this.selectedValue == value;
           final color =
               selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
@@ -616,12 +654,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
             activeColor: Colors.blue,
             onChanged: (value) => setState(
               () {
-                _storeType = this.selectedValue = value!;
-                _updateStore();
-
-                _submitAccountType();
-
-                // _submitstoreType();
+                _shopType = this.selectedValue = value!;
+                _updateShoptAndType();
+                // _submitshopType();
               },
             ),
           );
@@ -640,7 +675,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
         ),
         child: Column(
             children: accountType.map((value) {
-          var _provider = Provider.of<UserData>(context, listen: false);
+          // var _provider = Provider.of<UserData>(context, listen: false);
 
           final selected = this.selectedValue == value;
           final color =
@@ -665,7 +700,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
                 // _submitAccountType();
                 _accountType == 'Shop'
                     ? _showBottomSheetStoreType(context)
-                    : _submitAccountType();
+                    : _accountType == 'Worker'
+                        ? _updateShoptAndType()
+                        : _submitAccountType();
               },
             ),
           );

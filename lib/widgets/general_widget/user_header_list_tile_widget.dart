@@ -3,11 +3,13 @@ import 'package:bars/utilities/exports.dart';
 class UserHeaderListTileWidget extends StatelessWidget {
   var user;
   final Widget trailing;
+  String imageUrl;
   final VoidCallback onPressed;
 
   UserHeaderListTileWidget(
       {super.key,
       required this.user,
+      required this.imageUrl,
       this.trailing = const SizedBox.shrink(),
       required this.onPressed});
 
@@ -16,7 +18,7 @@ class UserHeaderListTileWidget extends StatelessWidget {
     return ListTile(
       onTap: onPressed,
       trailing: trailing,
-      leading: user.profileImageUrl.isEmpty
+      leading: imageUrl.isEmpty
           ? Icon(
               Icons.account_circle,
               size: ResponsiveHelper.responsiveHeight(context, 50.0),
@@ -29,8 +31,8 @@ class UserHeaderListTileWidget extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Theme.of(context).primaryColor,
                 image: DecorationImage(
-                  image: CachedNetworkImageProvider(user.profileImageUrl!,
-                      errorListener: (_) {
+                  image:
+                      CachedNetworkImageProvider(imageUrl, errorListener: (_) {
                     return;
                   }),
                   fit: BoxFit.cover,
@@ -45,7 +47,7 @@ class UserHeaderListTileWidget extends StatelessWidget {
                 text: user.userName!.toUpperCase(),
                 style: Theme.of(context).textTheme.bodyMedium),
             TextSpan(
-              text: "\n${user.storeType}",
+              text: "\n${user.shopType}",
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),

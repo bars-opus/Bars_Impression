@@ -105,7 +105,7 @@ class SchedulePeopleGroup extends StatelessWidget {
                                                   listen: false)
                                               .currentUserId!,
                                           userId: groupTaggedEventPeopleGroups
-                                              .internalProfileLink!,
+                                              .internalProfileLink!, accountType: '',
                                         )));
                       },
                       title: RichText(

@@ -33,7 +33,7 @@ class _TagWidgetState extends State<TagWidget> {
       } else {
         await DatabaseService.confirmUserTag(
           widget.currentTag,
-          _provider.user!.storeType,
+          _provider.user!.shopType,
           _provider.user!.verified,
           _provider.user!.userName,
         );
@@ -136,6 +136,7 @@ class _TagWidgetState extends State<TagWidget> {
                 currentUserId: widget.currentUserId,
                 userId: widget.currentTag.taggedParentAuthorId!,
                 user: null,
+                accountType: '',
               ));
             },
       child: Padding(

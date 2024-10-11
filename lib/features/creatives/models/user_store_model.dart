@@ -8,13 +8,13 @@ class UserStoreModel {
   // @HiveField(0)
   final String userId;
   // @HiveField(1)
-  final String userName;
+  final String shopName;
   // @HiveField(2)
-  final String storeLogomageUrl;
+  final String shopLogomageUrl;
   // @HiveField(3)
   final bool verified;
   // @HiveField(4)
-  final String storeType;
+  final String shopType;
   // @HiveField(5)
   final String dynamicLink;
   // @HiveField(6)
@@ -27,6 +27,8 @@ class UserStoreModel {
   final String city;
   // @HiveField(10)
   final String country;
+  final String address;
+
   // @HiveField(11)
   final String currency;
   // @HiveField(12)
@@ -60,10 +62,10 @@ class UserStoreModel {
 
   UserStoreModel({
     required this.userId,
-    required this.userName,
-    required this.storeLogomageUrl,
+    required this.shopName,
+    required this.shopLogomageUrl,
     required this.verified,
-    required this.storeType,
+    required this.shopType,
     required this.dynamicLink,
     required this.terms,
     required this.overview,
@@ -85,64 +87,65 @@ class UserStoreModel {
     this.averageRating,
     required this.openingHours,
     required this.appointmentSlots,
+    required this.address,
   });
 
-
   factory UserStoreModel.fromDoc(DocumentSnapshot doc) {
-  return UserStoreModel(
-    userId: doc.id,
-    userName: doc['userName'] ?? '',
-    storeLogomageUrl: doc['storeLogomageUrl'] ?? '',
-    storeType: doc['storeType'] ?? 'Fan',
-    dynamicLink: doc['dynamicLink'] ?? '',
-    accountType: doc['accountType'] ?? '',
-    verified: doc['verified'] ?? false,
-    terms: doc['terms'] ?? '',
-    overview: doc['overview'] ?? '',
-    city: doc['city'] ?? '',
-    country: doc['country'] ?? '',
-    currency: doc['currency'] ?? '',
-    transferRecepientId: doc['transferRecepientId'] ?? '',
-    randomId: doc['randomId'] ?? 0.0,
-    noBooking: doc['noBooking'] ?? false,
-    awards: List<PortfolioModel>.from(
-        doc['awards']?.map((award) => PortfolioModel.fromJson(award)) ?? []),
-    contacts: List<PortfolioContactModel>.from(doc['contacts']
-            ?.map((contact) => PortfolioContactModel.fromJson(contact)) ??
-        []),
-    links: List<PortfolioModel>.from(
-        doc['links']?.map((link) => PortfolioModel.fromJson(link)) ?? []),
-    services: List<PortfolioModel>.from(
-        doc['services']?.map((service) => PortfolioModel.fromJson(service)) ??
-            []),
-    professionalImageUrls:
-        List<String>.from(doc['professionalImageUrls'] ?? []),
-    currentVisitors: doc['currentVisitors'],
-    maxCapacity: doc['maxCapacity'],
-    amenities: List<String>.from(doc['amenities'] ?? []),
-    averageRating: doc['averageRating'],
-    openingHours: (doc['openingHours'] as Map<String, dynamic>)?.map(
-          (key, value) => MapEntry(
-            key,
-            DateTimeRange(
-              start: DateTime.parse(value['start']),
-              end: DateTime.parse(value['end']),
+    return UserStoreModel(
+      userId: doc.id,
+      shopName: doc['shopName'] ?? '',
+      shopLogomageUrl: doc['shopLogomageUrl'] ?? '',
+      shopType: doc['shopType'] ?? 'Fan',
+      dynamicLink: doc['dynamicLink'] ?? '',
+      accountType: doc['accountType'] ?? '',
+      verified: doc['verified'] ?? false,
+      terms: doc['terms'] ?? '',
+      overview: doc['overview'] ?? '',
+      city: doc['city'] ?? '',
+      country: doc['country'] ?? '',
+      currency: doc['currency'] ?? '',
+      address: doc['address'] ?? '',
+      transferRecepientId: doc['transferRecepientId'] ?? '',
+      randomId: doc['randomId'] ?? 0.0,
+      noBooking: doc['noBooking'] ?? false,
+      awards: List<PortfolioModel>.from(
+          doc['awards']?.map((award) => PortfolioModel.fromJson(award)) ?? []),
+      contacts: List<PortfolioContactModel>.from(doc['contacts']
+              ?.map((contact) => PortfolioContactModel.fromJson(contact)) ??
+          []),
+      links: List<PortfolioModel>.from(
+          doc['links']?.map((link) => PortfolioModel.fromJson(link)) ?? []),
+      services: List<PortfolioModel>.from(
+          doc['services']?.map((service) => PortfolioModel.fromJson(service)) ??
+              []),
+      professionalImageUrls:
+          List<String>.from(doc['professionalImageUrls'] ?? []),
+      currentVisitors: doc['currentVisitors'],
+      maxCapacity: doc['maxCapacity'],
+      amenities: List<String>.from(doc['amenities'] ?? []),
+      averageRating: doc['averageRating'] ?? 0,
+      openingHours: (doc['openingHours'] as Map<String, dynamic>)?.map(
+            (key, value) => MapEntry(
+              key,
+              DateTimeRange(
+                start: DateTime.parse(value['start']),
+                end: DateTime.parse(value['end']),
+              ),
             ),
-          ),
-        ) ??
-        {},
-    appointmentSlots: List<AppointmentSlotModel>.from(doc['appointmentSlots']
-            ?.map((slot) => AppointmentSlotModel.fromJson(slot)) ??
-        []),
-  );
-}
+          ) ??
+          {},
+      appointmentSlots: List<AppointmentSlotModel>.from(doc['appointmentSlots']
+              ?.map((slot) => AppointmentSlotModel.fromJson(slot)) ??
+          []),
+    );
+  }
 
   // factory UserStoreModel.fromDoc(DocumentSnapshot doc) {
   //   return UserStoreModel(
   //     userId: doc.id,
-  //     userName: doc['userName'] ?? '',
-  //     storeLogomageUrl: doc['storeLogomageUrl'] ?? '',
-  //     storeType: doc['storeType'] ?? 'Fan',
+  //     shopName: doc['shopName'] ?? '',
+  //     shopLogomageUrl: doc['shopLogomageUrl'] ?? '',
+  //     shopType: doc['shopType'] ?? 'Fan',
   //     dynamicLink: doc['dynamicLink'] ?? '',
   //     accountType: doc['accountType'] ?? '',
   //     verified: doc['verified'] ?? false,
@@ -180,11 +183,12 @@ class UserStoreModel {
   factory UserStoreModel.fromJson(Map<String, dynamic> json) {
     return UserStoreModel(
       userId: json['userId'],
-      userName: json['userName'],
-      storeLogomageUrl: json['storeLogomageUrl'],
-      storeType: json['storeType'],
+      shopName: json['shopName'],
+      shopLogomageUrl: json['shopLogomageUrl'],
+      shopType: json['shopType'],
       dynamicLink: json['dynamicLink'],
       verified: json['verified'],
+      address: json['address'],
       terms: json['terms'],
       overview: json['overview'],
       accountType: json['accountType'],
@@ -223,11 +227,12 @@ class UserStoreModel {
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'userName': userName,
-      'storeLogomageUrl': storeLogomageUrl,
-      'storeType': storeType,
+      'shopName': shopName,
+      'shopLogomageUrl': shopLogomageUrl,
+      'shopType': shopType,
       'dynamicLink': dynamicLink,
       'verified': verified,
+      'address': address,
       'terms': terms,
       'overview': overview,
       'accountType': accountType,

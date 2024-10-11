@@ -3,8 +3,9 @@ import 'package:bars/utilities/exports.dart';
 class ShedulePeopleHorizontal extends StatelessWidget {
   final bool edit;
   // final String from;
-  final List<WorkersModel> workers;
+  final List<ShopWorkerModel> workers;
   final String currentUserId;
+  final bool small;
   // final Event event;
   // final bool fromDetails;
   // final bool? isSponsor;
@@ -14,6 +15,7 @@ class ShedulePeopleHorizontal extends StatelessWidget {
       required this.edit,
       // required this.from,
       required this.workers,
+      this.small = false,
       // required this.event,
       // required this.fromDetails,
       // this.isSponsor,
@@ -113,7 +115,7 @@ class ShedulePeopleHorizontal extends StatelessWidget {
     int remainingCount =
         workers.length > maxDisplayCount ? workers.length - maxDisplayCount : 0;
 
-    double overlapOffset = 25.0;
+    double overlapOffset = small ? 15 : 25.0;
     double circleAvatarDiameter = 36.0; // 2 * radius + padding
 
     return GestureDetector(
@@ -127,9 +129,9 @@ class ShedulePeopleHorizontal extends StatelessWidget {
           duration: const Duration(milliseconds: 700),
           height: workers.isEmpty
               ? 0
-              : ResponsiveHelper.responsiveWidth(context, 50),
+              : ResponsiveHelper.responsiveWidth(context, small ? 30 : 50),
           child: Container(
-            height: 50, // Adjust the height as needed
+            height: small ? 30 : 50, // Adjust the height as needed
             child: Stack(
               alignment: Alignment.topLeft,
               children: [
@@ -147,11 +149,13 @@ class ShedulePeopleHorizontal extends StatelessWidget {
                       child: imageUrl.isEmpty
                           ? Icon(
                               Icons.account_circle,
-                              size: 30.0,
+                              size: small ? 20 : 30.0,
                               color: Colors.grey,
                             )
                           : CircleAvatar(
-                              radius: 15, // Adjust the radius as needed
+                              radius: small
+                                  ? 10
+                                  : 15, // Adjust the radius as needed
                               backgroundColor: Colors.blue,
                               backgroundImage: NetworkImage(imageUrl),
                             ),

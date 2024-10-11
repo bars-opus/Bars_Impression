@@ -64,7 +64,7 @@ class ImageHandler {
 
         if (isLogo) {
           if (profileImage == null) {
-            _profileImageUrl = _provider.userStore!.storeLogomageUrl;
+            _profileImageUrl = _provider.userStore!.shopLogomageUrl;
           } else {
             _profileImageUrl = await StorageService.uploadSotreLogo(
               _provider.user!.userId!,
@@ -94,7 +94,7 @@ class ImageHandler {
         // batch.update(
         //   usersAuthorRef.doc(_provider.user!.userId),
         //   {
-        //     'storeLogomageUrl': _profileImageUrl,
+        //     'shopLogomageUrl': _profileImageUrl,
         //   },
         // );
 
@@ -102,7 +102,7 @@ class ImageHandler {
             ? batch.update(
                 userProfessionalRef.doc(_provider.user!.userId),
                 {
-                  'storeLogomageUrl': _profileImageUrl,
+                  'shopLogomageUrl': _profileImageUrl,
                   // 'dynamicLink': dynamicLink,
                 },
               )
@@ -119,18 +119,29 @@ class ImageHandler {
         //     ? HiveUtils.updateUserStore(
         //         context,
         //         _profileImageUrl,
-        //         _provider.userStore!.storeType,
+        //         _provider.userStore!.shopType,
         //         _provider.userStore!.accountType!,
         //       )
         //     :
-             HiveUtils.updateAuthorHive(
-                context,
-                _provider.user!.userName!,
-                _profileImageUrl,
-                dynamicLink,
-                _provider.userStore!.storeType,
-                _provider.userStore!.accountType!,
-              );
+        HiveUtils.updateAuthorHive(
+          context: context,
+          name: _provider.user!.userName!,
+          profileImageUrl: _profileImageUrl,
+          link: dynamicLink,
+          shopType: _provider.userStore!.shopType,
+          accountType: _provider.userStore!.accountType!,
+          disabledAccount: _provider.user!.disabledAccount!,
+          reportConfirmed: _provider.user!.reportConfirmed!,
+          verified: _provider.user!.verified!,
+          disableChat: _provider.user!.disableChat!,
+          // lastActiveDate: _provider.user!.lastActiveDate!,
+          // context,
+          // _provider.user!.userName!,
+          // _profileImageUrl,
+          // dynamicLink,
+          // _provider.userStore!.shopType,
+          // _provider.userStore!.accountType!,
+        );
         ;
         isLogo
             ? _provider.setLogoImage(profileImage)

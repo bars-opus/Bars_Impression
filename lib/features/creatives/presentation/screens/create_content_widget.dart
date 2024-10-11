@@ -65,7 +65,7 @@
 //         height: ResponsiveHelper.responsiveHeight(
 //             context,
 
-//             //  _user!.storeType!.startsWith('Fans') ? 170 :
+//             //  _user!.shopType!.startsWith('Fans') ? 170 :
 
 //             230),
 //         decoration: BoxDecoration(
@@ -97,7 +97,7 @@
 //                     : () {},
 //                 text: 'Create new event',
 //               ),
-//               // if (!_user.storeType!.startsWith('Fans'))
+//               // if (!_user.shopType!.startsWith('Fans'))
 //               BottomModelSheetListTileActionWidget(
 //                 isLoading: _provide2.isLoading,
 //                 dontPop: true,

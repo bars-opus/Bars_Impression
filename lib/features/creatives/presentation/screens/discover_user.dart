@@ -303,7 +303,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                 return CreativesScreen(
                   currentUserId: widget.currentUserId,
                   // exploreLocation: '',
-                  storeType: eventType.trim(),
+                  shopType: eventType.trim(),
                   pageIndex: tabIndex,
                   userLocationSettings: _userLocationSettings!,
                   //  isLiveLocation: widget.isLiveLocation,

@@ -79,7 +79,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                   ProfileScreen(
                     currentUserId: widget.currentUserId,
                     userId: activity.authorId!,
-                    user: null,
+                    user: null, accountType: '',
                   ));
             },
       child: activity.authorProfileImageUrl.isEmpty
@@ -360,7 +360,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       ProfileScreen(
         currentUserId: widget.currentUserId,
         userId: authorId,
-        user: null,
+        user: null, accountType: '',
       ),
     );
   }

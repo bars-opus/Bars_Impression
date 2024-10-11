@@ -20,7 +20,7 @@ class _PayoutWidgetState extends State<PayoutWidget> {
     return PayoutDataWidget(
       label: lable,
       value: value,
-      text2Ccolor: Colors.black,
+      text2Ccolor: Theme.of(context).secondaryHeaderColor,
     );
   }
 

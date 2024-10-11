@@ -64,7 +64,7 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
             ProfileScreen(
               user: null,
               currentUserId: widget.currentUserId,
-              userId: message.senderId,
+              userId: message.senderId, accountType: '',
             ));
       },
       child: message.authorProfileImageUrl.isEmpty
@@ -410,7 +410,7 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                               ProfileScreen(
                                 user: null,
                                 currentUserId: widget.currentUserId,
-                                userId: widget.message.senderId,
+                                userId: widget.message.senderId, accountType: '',
                               ));
                         }),
               FocusedMenuItem(

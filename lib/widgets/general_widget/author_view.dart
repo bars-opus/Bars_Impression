@@ -4,7 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 // ignore: must_be_immutable
 class Authorview extends StatelessWidget {
   final String userName;
-  final String storeType;
+  final String shopType;
   final String profileImageUrl;
   final bool verified;
   final String authorId;
@@ -26,7 +26,7 @@ class Authorview extends StatelessWidget {
     required this.report,
     required this.timestamp,
     required this.userName,
-    required this.storeType,
+    required this.shopType,
     required this.profileImageUrl,
     required this.verified,
     required this.authorId,
@@ -126,7 +126,7 @@ class Authorview extends StatelessWidget {
                     textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
-                          text: storeType,
+                          text: shopType,
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 10),
@@ -233,7 +233,7 @@ class Authorview extends StatelessWidget {
                         builder: (_) => ProfileScreen(
                               user: null,
                               currentUserId: currentUserId,
-                              userId: authorId,
+                              userId: authorId, accountType: shopType,
                             ))),
           ),
         ),

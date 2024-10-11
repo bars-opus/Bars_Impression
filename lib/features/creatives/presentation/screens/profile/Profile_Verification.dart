@@ -49,7 +49,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
   //       newsCoverage: _newsCoverage,
   //       govIdType: _govIdType,
   //       verificationType: 'ThroughApp',
-  //       storeType: widget.user.storeType!,
+  //       shopType: widget.user.shopType!,
   //       wikipedia: _wikipedia,
   //       // email: widget.user.email!,
   //       // phoneNumber: widget.user.contacts!,
@@ -466,7 +466,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  // widget.user.storeType!.startsWith('Fan')
+                  // widget.user.shopType!.startsWith('Fan')
                   //     ? Navigator.push(
                   //         context,
                   //         MaterialPageRoute(
@@ -534,7 +534,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    // widget.user.storeType!.startsWith('Fan')
+                    // widget.user.shopType!.startsWith('Fan')
                     //     ? Navigator.push(
                     //         context,
                     //         MaterialPageRoute(
@@ -861,15 +861,14 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 70.0),
                                     child:
-                                        widget.user.storeType!.startsWith('Fan')
+                                        widget.user.shopType!.startsWith('Fan')
                                             ? AlwaysWhiteButton(
                                                 onPressed: () {
                                                   widget.user.profileImageUrl!
                                                               .isNotEmpty &&
                                                           widget.user.userName!
                                                               .isNotEmpty &&
-                                                          ''
-                                                              .isNotEmpty
+                                                          ''.isNotEmpty
                                                       ? animateToPage()
                                                       : _showSelectImageDialog2();
                                                 },

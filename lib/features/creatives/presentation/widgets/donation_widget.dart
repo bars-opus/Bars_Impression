@@ -98,6 +98,7 @@ class _DonationWidgetState extends State<DonationWidget> {
         onTap: () {
           _navigateToPage(
             ProfileScreen(
+               accountType: 'Client',
               currentUserId: widget.currentUserId,
               userId: widget.isDonor
                   ? widget.donation.receiverId

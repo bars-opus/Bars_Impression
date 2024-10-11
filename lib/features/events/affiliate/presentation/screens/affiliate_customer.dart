@@ -115,7 +115,7 @@ class _AffiliateCustomersState extends State<AffiliateCustomers>
                         user: null,
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
-                        userId: user.userId!,
+                        userId: user.userId!, accountType: '',
                       )));
         });
   }

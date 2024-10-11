@@ -1,8 +1,5 @@
-import 'package:bars/utilities/date_picker.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:uuid/uuid.dart';
 
 class BookingCalendar extends StatefulWidget {
   final String currentUserId;
@@ -22,7 +19,7 @@ class BookingCalendar extends StatefulWidget {
 }
 
 class _BookingCalendarState extends State<BookingCalendar> {
-  List<BookingModel> _allbookings = [];
+  List<BookingAppointmentModel> _allbookings = [];
   bool _isLoadingSubmit = false;
   int selectedIndex = 0;
   final _allbookingSnapshot = <DocumentSnapshot>[];
@@ -46,7 +43,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
   @override
   void initState() {
     super.initState();
-    _setupBookings(false);
+    if (widget.bookingUser.userId == widget.currentUserId)
+      _setupBookings(false);
     _descriptionController.addListener(_onDonateChanged);
     _termsController.addListener(_onDonateChanged);
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -59,6 +57,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   _clearCurency(UserData provider) {
     provider.setCurrency('');
+    // provider.appointmentSlots.clear();
   }
 
   void processCurrency(UserData provider) {
@@ -104,7 +103,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     }
   }
 
-  Future<List<BookingModel>> _setupBookings(bool fetchMore) async {
+  Future<List<BookingAppointmentModel>> _setupBookings(bool fetchMore) async {
     var _userLocationSettings =
         Provider.of<UserData>(context, listen: false).userLocationPreference;
 
@@ -112,7 +111,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
     String city = _userLocationSettings.city!;
 
     int remainingLimit = 50;
-    List<BookingModel> bookings = [];
+    List<BookingAppointmentModel> bookings = [];
 
     // Fetch events from the city
     bookings += fetchMore
@@ -171,16 +170,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   Set<String> addedEventIds = Set<String>();
 
-  Future<List<BookingModel>> _fetchBookings({
+  Future<List<BookingAppointmentModel>> _fetchBookings({
     required int limit,
     String? country,
     String? city,
     required DateTime currentDate,
     required DateTime firstDayOfNextMonth,
   }) async {
-    Query<Map<String, dynamic>> query = newBookingsReceivedRef
-        .doc(widget.bookingUser.userId)
-        .collection('bookings');
+    Query<Map<String, dynamic>> query =
+        newBookingsReceivedRef.doc(widget.currentUserId).collection('bookings');
 
     // if (country != null) {
     //   query = query.where('country', isEqualTo: country);
@@ -197,10 +195,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
         .limit(limit)
         .get();
 
-    List<BookingModel> uniqueBookings = [];
+    List<BookingAppointmentModel> uniqueBookings = [];
 
     for (var doc in eventFeedSnapShot.docs) {
-      BookingModel event = BookingModel.fromDoc(doc);
+      BookingAppointmentModel event = BookingAppointmentModel.fromDoc(doc);
       if (!addedEventIds.contains(event.id)) {
         uniqueBookings.add(event);
         addedEventIds.add(event.id);
@@ -218,16 +216,15 @@ class _BookingCalendarState extends State<BookingCalendar> {
     // }
   }
 
-  Future<List<BookingModel>> _fetchMoreBookings({
+  Future<List<BookingAppointmentModel>> _fetchMoreBookings({
     required int limit,
     String? country,
     String? city,
     required DateTime currentDate,
     required DateTime firstDayOfNextMonth,
   }) async {
-    Query<Map<String, dynamic>> query = newBookingsReceivedRef
-        .doc(widget.bookingUser.userId)
-        .collection('bookings');
+    Query<Map<String, dynamic>> query =
+        newBookingsReceivedRef.doc(widget.currentUserId).collection('bookings');
 
     // if (country != null) {
     //   query = query.where('country', isEqualTo: country);
@@ -246,10 +243,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
       QuerySnapshot eventFeedSnapShot =
           await query.orderBy(FieldPath.documentId).limit(limit).get();
 
-      List<BookingModel> uniqueBookings = [];
+      List<BookingAppointmentModel> uniqueBookings = [];
 
       for (var doc in eventFeedSnapShot.docs) {
-        BookingModel event = BookingModel.fromDoc(doc);
+        BookingAppointmentModel event = BookingAppointmentModel.fromDoc(doc);
         if (!addedEventIds.contains(event.id)) {
           uniqueBookings.add(event);
           addedEventIds.add(event.id);
@@ -265,9 +262,10 @@ class _BookingCalendarState extends State<BookingCalendar> {
     }
   }
 
-  Map<DateTime, List<BookingModel>> convertToMap(List<BookingModel> events) {
-    Map<DateTime, List<BookingModel>> eventMap = {};
-    for (BookingModel event in events) {
+  Map<DateTime, List<BookingAppointmentModel>> convertToMap(
+      List<BookingAppointmentModel> events) {
+    Map<DateTime, List<BookingAppointmentModel>> eventMap = {};
+    for (BookingAppointmentModel event in events) {
       DateTime date = event.bookingDate.toDate();
       DateTime normalizedDate = DateTime(date.year, date.month,
           date.day); // normalize the date to midnight time.
@@ -335,85 +333,85 @@ class _BookingCalendarState extends State<BookingCalendar> {
     );
   }
 
-  _sendBookingRequest() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // _sendBookingRequest() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    _showBottomSheetLoading('Sending booking request');
-    var _user = Provider.of<UserData>(context, listen: false).user;
-    String commonId = Uuid().v4();
+  //   _showBottomSheetLoading('Sending booking request');
+  //   var _user = Provider.of<UserData>(context, listen: false).user;
+  //   String commonId = Uuid().v4();
 
-    if (_isLoadingSubmit) {
-      return;
-    }
-    if (mounted) {
-      setState(() {
-        _isLoadingSubmit = true;
-      });
-    }
+  //   if (_isLoadingSubmit) {
+  //     return;
+  //   }
+  //   if (mounted) {
+  //     setState(() {
+  //       _isLoadingSubmit = true;
+  //     });
+  //   }
 
-    Future<T> retry<T>(Future<T> Function() function, {int retries = 3}) async {
-      Duration delay =
-          const Duration(milliseconds: 100); // Start with a short delay
-      for (int i = 0; i < retries; i++) {
-        try {
-          return await function();
-        } catch (e) {
-          if (i == retries - 1) {
-            // Don't delay after the last attempt
-            rethrow;
-          }
-          await Future.delayed(delay);
-          delay *= 2; // Double the delay for the next attempt
-        }
-      }
-      throw Exception('Failed after $retries attempts');
-    }
+  //   Future<T> retry<T>(Future<T> Function() function, {int retries = 3}) async {
+  //     Duration delay =
+  //         const Duration(milliseconds: 100); // Start with a short delay
+  //     for (int i = 0; i < retries; i++) {
+  //       try {
+  //         return await function();
+  //       } catch (e) {
+  //         if (i == retries - 1) {
+  //           // Don't delay after the last attempt
+  //           rethrow;
+  //         }
+  //         await Future.delayed(delay);
+  //         delay *= 2; // Double the delay for the next attempt
+  //       }
+  //     }
+  //     throw Exception('Failed after $retries attempts');
+  //   }
 
-    BookingModel _booking = BookingModel(
-      id: commonId,
-      creativeId: widget.bookingUser.userId,
-      clientId: widget.currentUserId,
-      isEvent: _provider.isVirtual,
-      bookingDate: _provider.startDate,
-      location: _provider.address,
-      description: _descriptionController.text.trim(),
-      answer: '',
-      priceRate: null,
-      // messages: [],
-      isFinalPaymentMade: false,
-      // reason: _bookingReasonController.text.trim(),
-      termsAndConditions: _termsController.text.trim(),
-      timestamp: Timestamp.fromDate(DateTime.now()),
-      cancellationReason: '',
-      startTime: _provider.sheduleDateTemp,
-      endTime: _provider.clossingDay, rating: 0, reviewComment: '',
-      // serviceStatus: '',
-      specialRequirements: _specialRequirementsController.text.trim(),
-      isdownPaymentMade: false,
-      arrivalScanTimestamp: null,
-      departureScanTimestamp: null, reNogotiate: false,
-    );
+  //   BookingAppointmentModel _booking = BookingAppointmentModel(
+  //     id: commonId,
+  //     creativeId: widget.bookingUser.userId,
+  //     clientId: widget.currentUserId,
+  //     isEvent: _provider.isVirtual,
+  //     bookingDate: _provider.startDate,
+  //     location: _provider.address,
+  //     description: _descriptionController.text.trim(),
+  //     answer: '',
+  //     priceRate: null,
+  //     // messages: [],
+  //     isFinalPaymentMade: false,
+  //     // reason: _bookingReasonController.text.trim(),
+  //     termsAndConditions: _termsController.text.trim(),
+  //     timestamp: Timestamp.fromDate(DateTime.now()),
+  //     cancellationReason: '',
+  //     startTime: _provider.sheduleDateTemp,
+  //     endTime: _provider.clossingDay, rating: 0, reviewComment: '',
+  //     // serviceStatus: '',
+  //     specialRequirements: _specialRequirementsController.text.trim(),
+  //     isdownPaymentMade: false,
+  //     arrivalScanTimestamp: null,
+  //     departureScanTimestamp: null, reNogotiate: false,
+  //   );
 
-    Future<void> sendInvites() => DatabaseService.createBookingRequest(
-          currentUser: _user!,
-          booking: _booking,
-        );
+  //   Future<void> sendInvites() => DatabaseService.createBookingRequest(
+  //         currentUser: _user!,
+  //         booking: _booking,
+  //       );
 
-    try {
-      await retry(() => sendInvites(), retries: 3);
-      _clear();
-      mySnackBar(context, "Booking request successfully sent");
+  //   try {
+  //     await retry(() => sendInvites(), retries: 3);
+  //     _clear();
+  //     mySnackBar(context, "Booking request successfully sent");
 
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pop(context);
-    } catch (e) {
-      Navigator.pop(context);
-      _showBottomSheetErrorMessage(context, 'Could not send booking request');
-    } finally {
-      _endLoading();
-    }
-  }
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //     Navigator.pop(context);
+  //   } catch (e) {
+  //     Navigator.pop(context);
+  //     _showBottomSheetErrorMessage(context, 'Could not send booking request');
+  //   } finally {
+  //     _endLoading();
+  //   }
+  // }
 
   _clear() {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -439,27 +437,27 @@ class _BookingCalendarState extends State<BookingCalendar> {
     }
   }
 
-  void _showBottomConfirmBooking() {
-    // String amount = _bookingAmountController.text;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return ConfirmationPrompt(
-          height: 350,
-          buttonText: 'Book',
-          onPressed: () async {
-            // Navigator.pop(context);
-            _sendBookingRequest();
-          },
-          title: 'Confirm booking',
-          subTitle:
-              'You are send booking request? This request must be accepted by this creative before the booking would be effective. Not that this creative is not oblige to respond or accept this request.',
-        );
-      },
-    );
-  }
+  // void _showBottomConfirmBooking() {
+  //   // String amount = _bookingAmountController.text;
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return ConfirmationPrompt(
+  //         height: 350,
+  //         buttonText: 'Book',
+  //         onPressed: () async {
+  //           // Navigator.pop(context);
+  //           _sendBookingRequest();
+  //         },
+  //         title: 'Confirm booking',
+  //         subTitle:
+  //             'You are send booking request? This request must be accepted by this creative before the booking would be effective. Not that this creative is not oblige to respond or accept this request.',
+  //       );
+  //     },
+  //   );
+  // }
 
   //section for people performain in an event
   _cancelSearch() {
@@ -592,211 +590,211 @@ class _BookingCalendarState extends State<BookingCalendar> {
     );
   }
 
-  void _showBottomSheetBook(BuildContext context) {
-    var _blueStyle = TextStyle(
-      color: Colors.blue,
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
-    );
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        var _provider = Provider.of<UserData>(
-          context,
-        );
-        return ValueListenableBuilder(
-            valueListenable: _isTypingNotifier,
-            builder: (BuildContext context, bool isTyping, Widget? child) {
-              return Form(
-                key: _donateAmountFormKey,
-                child: GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: Container(
-                    height: ResponsiveHelper.responsiveHeight(context, 680),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ListView(
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TicketPurchasingIcon(
-                            title: '',
-                          ),
-                          _isTypingNotifier.value
-                              ? Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 0.0),
-                                    child: MiniCircularProgressButton(
-                                        color: Colors.blue,
-                                        text: 'Continue',
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          _showBottomConfirmBooking();
-                                        }),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height: 20,
-                                ),
-                          DonationHeaderWidget(
-                            disableBottomPadding: true,
-                            title: 'Book',
-                            iconColor: Colors.blue,
-                            icon: Icons.calendar_month,
-                          ),
-                          Center(
-                            child: Text(
-                              MyDateFormat.toDate(DateTime.parse(
-                                  _provider.startDate.toDate().toString())),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 70,
-                          ),
-                          SettingSwitchBlack(
-                            title: 'Booking for event?',
-                            subTitle:
-                                'Leave the toggle on when you are not booking a creative for an event.',
-                            value: _provider.isVirtual,
-                            onChanged: (bool value) =>
-                                _provider.setIsVirtual(value),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 50, horizontal: 20),
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColorLight,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                PickOptionWidget(
-                                  title: 'Booking location',
-                                  onPressed: () {
-                                    _showBottomVenue(
-                                      'Adrress',
-                                    );
-                                  },
-                                  dropDown: true,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    _showBottomVenue(
-                                      'Adrress',
-                                    );
-                                  },
-                                  child: Text(
-                                    _provider.address,
-                                    style: TextStyle(
-                                        fontSize: 14, color: Colors.black),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                                DatePicker(
-                                  isMini: true,
-                                  onlyWhite: false,
-                                  onStartDateChanged: (DateTime newDate) {
-                                    _provider.setSheduleTimestamp(
-                                        Timestamp.fromDate(newDate));
-                                  },
-                                  onStartTimeChanged: (DateTime newDate) {
-                                    _provider.setSheduleTimestamp(
-                                        Timestamp.fromDate(newDate));
-                                  },
-                                  onEndDateChanged: (DateTime newDate) {
-                                    _provider.setClossingDay(
-                                        Timestamp.fromDate(newDate));
-                                  },
-                                  onEndTimeChanged: (DateTime newDate) {
-                                    _provider.setClossingDay(
-                                        Timestamp.fromDate(newDate));
-                                  },
-                                  date: false,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          UnderlinedTextField(
-                            autofocus: false,
-                            controler: _descriptionController,
-                            labelText: 'Desciption',
-                            hintText:
-                                'Details about your booking service request.',
-                            onValidateText: () {},
-                          ),
-                          UnderlinedTextField(
-                            autofocus: false,
-                            controler: _specialRequirementsController,
-                            labelText: 'Special requirements (optional)',
-                            hintText: 'Any special requirements needed',
-                            onValidateText: () {},
-                          ),
-                          UnderlinedTextField(
-                            autofocus: false,
-                            controler: _termsController,
-                            labelText: 'Terms and conditions',
-                            hintText: 'To guide the booking',
-                            onValidateText: () {},
-                          ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              _showBottomSheetManagerDonationDoc();
-                            },
-                            child: RichText(
-                              textScaleFactor:
-                                  MediaQuery.of(context).textScaleFactor,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        'Your booking request will sent to the selected creative and stored in a pending state, awaiting review.  You will be notified when the service creative has reviewed and responded to your booking request. If the creative accepts your request, you will be prompted to make an initial deposit payment of 30% of the service price. ',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                  TextSpan(
-                                    text: 'more',
-                                    style: _blueStyle,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 300,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            });
-      },
-    );
-  }
+  // void _showBottomSheetBook(BuildContext context) {
+  //   var _blueStyle = TextStyle(
+  //     color: Colors.blue,
+  //     fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
+  //   );
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       var _provider = Provider.of<UserData>(
+  //         context,
+  //       );
+  //       return ValueListenableBuilder(
+  //           valueListenable: _isTypingNotifier,
+  //           builder: (BuildContext context, bool isTyping, Widget? child) {
+  //             return Form(
+  //               key: _donateAmountFormKey,
+  //               child: GestureDetector(
+  //                 onTap: () {
+  //                   FocusScope.of(context).unfocus();
+  //                 },
+  //                 child: Container(
+  //                   height: ResponsiveHelper.responsiveHeight(context, 680),
+  //                   decoration: BoxDecoration(
+  //                       color: Theme.of(context).cardColor,
+  //                       borderRadius: BorderRadius.circular(30)),
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.all(20.0),
+  //                     child: ListView(
+  //                       children: [
+  //                         const SizedBox(
+  //                           height: 10,
+  //                         ),
+  //                         TicketPurchasingIcon(
+  //                           title: '',
+  //                         ),
+  //                         _isTypingNotifier.value
+  //                             ? Align(
+  //                                 alignment: Alignment.bottomRight,
+  //                                 child: Padding(
+  //                                   padding: const EdgeInsets.only(bottom: 0.0),
+  //                                   child: MiniCircularProgressButton(
+  //                                       color: Colors.blue,
+  //                                       text: 'Continue',
+  //                                       onPressed: () {
+  //                                         Navigator.pop(context);
+  //                                         // _showBottomConfirmBooking();
+  //                                       }),
+  //                                 ),
+  //                               )
+  //                             : SizedBox(
+  //                                 height: 20,
+  //                               ),
+  //                         DonationHeaderWidget(
+  //                           disableBottomPadding: true,
+  //                           title: 'Book',
+  //                           iconColor: Colors.blue,
+  //                           icon: Icons.calendar_month,
+  //                         ),
+  //                         Center(
+  //                           child: Text(
+  //                             MyDateFormat.toDate(DateTime.parse(
+  //                                 _provider.startDate.toDate().toString())),
+  //                             style: Theme.of(context).textTheme.titleLarge,
+  //                           ),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 70,
+  //                         ),
+  //                         SettingSwitchBlack(
+  //                           title: 'Booking for event?',
+  //                           subTitle:
+  //                               'Leave the toggle on when you are not booking a creative for an event.',
+  //                           value: _provider.isVirtual,
+  //                           onChanged: (bool value) =>
+  //                               _provider.setIsVirtual(value),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 30,
+  //                         ),
+  //                         Container(
+  //                           padding: const EdgeInsets.symmetric(
+  //                               vertical: 50, horizontal: 20),
+  //                           decoration: BoxDecoration(
+  //                               color: Theme.of(context).primaryColorLight,
+  //                               borderRadius: BorderRadius.circular(30)),
+  //                           child: Column(
+  //                             crossAxisAlignment: CrossAxisAlignment.start,
+  //                             children: [
+  //                               PickOptionWidget(
+  //                                 title: 'Booking location',
+  //                                 onPressed: () {
+  //                                   _showBottomVenue(
+  //                                     'Adrress',
+  //                                   );
+  //                                 },
+  //                                 dropDown: true,
+  //                               ),
+  //                               const SizedBox(
+  //                                 height: 10,
+  //                               ),
+  //                               GestureDetector(
+  //                                 onTap: () {
+  //                                   _showBottomVenue(
+  //                                     'Adrress',
+  //                                   );
+  //                                 },
+  //                                 child: Text(
+  //                                   _provider.address,
+  //                                   style: TextStyle(
+  //                                       fontSize: 14, color: Colors.black),
+  //                                 ),
+  //                               ),
+  //                               const SizedBox(
+  //                                 height: 50,
+  //                               ),
+  //                               DatePicker(
+  //                                 isMini: true,
+  //                                 onlyWhite: false,
+  //                                 onStartDateChanged: (DateTime newDate) {
+  //                                   _provider.setSheduleTimestamp(
+  //                                       Timestamp.fromDate(newDate));
+  //                                 },
+  //                                 onStartTimeChanged: (DateTime newDate) {
+  //                                   _provider.setSheduleTimestamp(
+  //                                       Timestamp.fromDate(newDate));
+  //                                 },
+  //                                 onEndDateChanged: (DateTime newDate) {
+  //                                   _provider.setClossingDay(
+  //                                       Timestamp.fromDate(newDate));
+  //                                 },
+  //                                 onEndTimeChanged: (DateTime newDate) {
+  //                                   _provider.setClossingDay(
+  //                                       Timestamp.fromDate(newDate));
+  //                                 },
+  //                                 date: false,
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 40,
+  //                         ),
+  //                         UnderlinedTextField(
+  //                           autofocus: false,
+  //                           controler: _descriptionController,
+  //                           labelText: 'Desciption',
+  //                           hintText:
+  //                               'Details about your booking service request.',
+  //                           onValidateText: () {},
+  //                         ),
+  //                         UnderlinedTextField(
+  //                           autofocus: false,
+  //                           controler: _specialRequirementsController,
+  //                           labelText: 'Special requirements (optional)',
+  //                           hintText: 'Any special requirements needed',
+  //                           onValidateText: () {},
+  //                         ),
+  //                         UnderlinedTextField(
+  //                           autofocus: false,
+  //                           controler: _termsController,
+  //                           labelText: 'Terms and conditions',
+  //                           hintText: 'To guide the booking',
+  //                           onValidateText: () {},
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 50,
+  //                         ),
+  //                         GestureDetector(
+  //                           onTap: () {
+  //                             _showBottomSheetManagerDonationDoc();
+  //                           },
+  //                           child: RichText(
+  //                             textScaleFactor:
+  //                                 MediaQuery.of(context).textScaleFactor,
+  //                             text: TextSpan(
+  //                               children: [
+  //                                 TextSpan(
+  //                                   text:
+  //                                       'Your booking request will sent to the selected creative and stored in a pending state, awaiting review.  You will be notified when the service creative has reviewed and responded to your booking request. If the creative accepts your request, you will be prompted to make an initial deposit payment of 30% of the service price. ',
+  //                                   style:
+  //                                       Theme.of(context).textTheme.bodySmall,
+  //                                 ),
+  //                                 TextSpan(
+  //                                   text: 'more',
+  //                                   style: _blueStyle,
+  //                                 ),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         const SizedBox(
+  //                           height: 300,
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             );
+  //           });
+  //     },
+  //   );
+  // }
 
   void selectItem(int index) {
     setState(() {
@@ -865,7 +863,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
               // _isAuthor
               //     ? 'You have not been booked on this date'
               //     :
-              '${widget.bookingUser.userName} has been booked for this day. You can still create a booking request for this date or select another day.',
+              '${widget.bookingUser.shopName} has been booked for this day. You can still create a booking request for this date or select another day.',
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -885,133 +883,109 @@ class _BookingCalendarState extends State<BookingCalendar> {
     );
   }
 
-  _bookingPrice(BuildContext context) {
-    var _blueSyle = TextStyle(
-      color: Colors.blue,
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
-    );
+  _invalidBookindDate(BuildContext context) {
+    bool _isAuthor = widget.bookingUser.userId == widget.currentUserId;
+
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.black.withOpacity(.6),
         builder: (BuildContext context) {
-          var _provider = Provider.of<UserData>(
-            context,
-          );
           return Container(
-            height: ResponsiveHelper.responsiveHeight(
-                context,  700),
+            height: ResponsiveHelper.responsiveHeight(context, 300),
+            width: double.infinity,
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView(
-                children: [
-                  // const SizedBox(
-                  //   height: 10,
-                  // ),
-                  TicketPurchasingIcon(
-                    title: '',
-                  ),
-                  if (_provider.bookingPriceRate != null)
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 30.0),
-                        child: MiniCircularProgressButton(
-                            color: Colors.blue,
-                            text: 'Continue',
-                            onPressed: () {
-                              _showBottomSheetBook(context);
-                            }),
-                      ),
-                    ),
-                  DonationHeaderWidget(
-                    title: 'select service',
-                    iconColor: Colors.grey,
-                    icon: FontAwesomeIcons.scissors,
-                    disableBottomPadding: true,
-                  ),
-                  if (_provider.bookingPriceRate != null)
-                    Center(
-                      child: Text(
-                        "${_provider.currency} ${_provider.bookingPriceRate!.price.toString()}",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                  const SizedBox(height: 20),
-                  TicketGroup(
-                    appointmentSlots: _provider.appointmentSlots,
-                    // edit: true,
-                  ),
-                  // PriceRateWidget(
-                  //   //  widget.bookingUser.currency,
-                  //   prices: widget.bookingUser.priceTags,
-                  //   edit: false,
-                  //   seeMore: false,
-                  // ),
-                  const SizedBox(height: 40),
-                  GestureDetector(
-                    onTap: () {
-                      _showBottomSheetBookMe();
-                    },
-                    child: RichText(
-                      textScaler: MediaQuery.of(context).textScaler,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                'Carefully review the available price options and select the one that best fits your service needs. Please note that you can only select a single price option per booking request. If you have any further inquiries, you can ',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          TextSpan(
-                            text: ' contact the creative ',
-                            style: _blueSyle,
-                          ),
-                          TextSpan(
-                            text:
-                                'directly using the provided contact information.',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.start,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.calendar_month_outlined,
+                  color: Colors.grey,
+                  size: ResponsiveHelper.responsiveHeight(context, 50.0),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: ShakeTransition(
+                    child: Text(
+                      // _isAuthor
+                      //     ? 'You have not been booked on this date'
+                      //     :
+                      'Invalid date selected.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(
-                    height: 100,
-                  )
-                ],
-              ),
+                ),
+                // const SizedBox(height: 20),
+                // // if (!_isAuthor)
+                // EventBottomButton(
+                //   buttonColor: Colors.blue,
+                //   buttonText: 'Book',
+                //   onPressed: () {
+                //     Navigator.pop(context);
+                //     _SelectPriceOptions(context);
+                //   },
+                // ),
+              ],
             ),
           );
         });
   }
 
+  _selectPreferedWorker() {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return SelectWorkers(
+            bookingShop: widget.bookingUser,
+            edit: false,
+            fromProfile: false,
+          );
+        });
+  }
+
+  _bookingServiceOptions(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.black.withOpacity(.6),
+        builder: (BuildContext context) {
+          return ServicePriceOptions(
+            bookingUser: widget.bookingUser,
+            fromPrice: widget.fromPrice,
+          );
+        });
+  }
+
   _SelectPriceOptions(BuildContext context) {
-    return 
-    
-    // widget.bookingUser.priceTags.isEmpty
-    //     ? showModalBottomSheet(
-    //         context: context,
-    //         isScrollControlled: true,
-    //         backgroundColor: Colors.black.withOpacity(.6),
-    //         builder: (BuildContext context) {
-    //           return Container(
-    //               height: ResponsiveHelper.responsiveHeight(context, 350),
-    //               width: double.infinity,
-    //               decoration: BoxDecoration(
-    //                   color: Theme.of(context).cardColor,
-    //                   borderRadius: BorderRadius.circular(30)),
-    //               child: Padding(
-    //                   padding: const EdgeInsets.all(20.0),
-    //                   child: _BookingNotSetUp()));
-    //         })
-    //     :
-         widget.fromPrice
-            ? _showBottomSheetBook(context)
-            : _bookingPrice(context);
+    return
+
+        // widget.bookingUser.priceTags.isEmpty
+        //     ? showModalBottomSheet(
+        //         context: context,
+        //         isScrollControlled: true,
+        //         backgroundColor: Colors.black.withOpacity(.6),
+        //         builder: (BuildContext context) {
+        //           return Container(
+        //               height: ResponsiveHelper.responsiveHeight(context, 350),
+        //               width: double.infinity,
+        //               decoration: BoxDecoration(
+        //                   color: Theme.of(context).cardColor,
+        //                   borderRadius: BorderRadius.circular(30)),
+        //               child: Padding(
+        //                   padding: const EdgeInsets.all(20.0),
+        //                   child: _BookingNotSetUp()));
+        //         })
+        //     :
+        widget.fromPrice
+            ? _selectPreferedWorker()
+            : _bookingServiceOptions(context);
   }
 
   _notBookingForYou(BuildContext context, DateTime selectedDay) {
@@ -1068,52 +1042,57 @@ class _BookingCalendarState extends State<BookingCalendar> {
   }
 
   _displaySelectedBooking(BuildContext context,
-      List<BookingModel> selectedBookings, DateTime selectedDay) {
+      List<BookingAppointmentModel> selectedBookings, DateTime selectedDay) {
     bool _isAuthor = widget.bookingUser.userId == widget.currentUserId;
 
-    return selectedBookings.isNotEmpty
-        ? showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.black.withOpacity(.6),
-            builder: (BuildContext context) {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: selectedBookings.isNotEmpty ? 20.0 : 0),
-                child: ListView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  children: [
-                    SizedBox(
-                      height: ResponsiveHelper.responsiveHeight(context, 100),
-                    ),
-                    _header(selectedDay),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    _isAuthor
-                        ? Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: selectedBookings
-                                .map((booking) => BookingWidget(
-                                      booking: booking,
-                                      currentUserId: widget.currentUserId,
-                                    ))
-                                .toList())
-                        : Container(
-                            height:
-                                ResponsiveHelper.responsiveHeight(context, 300),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: _userBookedInfoForNotAuthor(context),
-                          ),
-                  ],
-                ),
-              );
-            },
-          )
-        : _isAuthor
+    return
+        //  selectedBookings.isNotEmpty
+        //     ?
+
+        //     showModalBottomSheet(
+        //         context: context,
+        //         isScrollControlled: true,
+        //         backgroundColor: Colors.black.withOpacity(.6),
+        //         builder: (BuildContext context) {
+        //           return Padding(
+        //             padding: EdgeInsets.symmetric(
+        //                 horizontal: selectedBookings.isNotEmpty ? 20.0 : 0),
+        //             child: ListView(
+        //               physics: AlwaysScrollableScrollPhysics(),
+        //               children: [
+        //                 SizedBox(
+        //                   height: ResponsiveHelper.responsiveHeight(context, 100),
+        //                 ),
+        //                 _header(selectedDay),
+        //                 const SizedBox(
+        //                   height: 10,
+        //                 ),
+        //                 _isAuthor
+        //                     ? Column(
+        //                         mainAxisSize: MainAxisSize.min,
+        //                         children: selectedBookings
+        //                             .map((booking) => BookingWidget(
+        //                                   booking: booking,
+        //                                   currentUserId: widget.currentUserId,
+        //                                 ))
+        //                             .toList())
+        //                     : Container(
+        //                         height:
+        //                             ResponsiveHelper.responsiveHeight(context, 300),
+        //                         width: double.infinity,
+        //                         decoration: BoxDecoration(
+        //                             color: Theme.of(context).cardColor,
+        //                             borderRadius: BorderRadius.circular(30)),
+        //                         child: _userBookedInfoForNotAuthor(context),
+        //                       ),
+        //               ],
+        //             ),
+        //           );
+        //         },
+        //       )
+        //     :
+
+        !_isAuthor
             ? _notBookingForYou(context, selectedDay)
             : _SelectPriceOptions(context);
   }
@@ -1145,7 +1124,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    Map<DateTime, List<BookingModel>> _bookings = convertToMap(_allbookings);
+    Map<DateTime, List<BookingAppointmentModel>> _bookings =
+        convertToMap(_allbookings);
     var _provider = Provider.of<UserData>(context, listen: false);
     bool _isAuthor = widget.bookingUser.userId == widget.currentUserId;
 
@@ -1176,7 +1156,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                 child: Text(
                   _isAuthor
                       ? 'Your \nbookings'
-                      : "Book\n${widget.bookingUser.userName}",
+                      : "Book\n${widget.bookingUser.shopName}",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               )),
@@ -1207,35 +1187,36 @@ class _BookingCalendarState extends State<BookingCalendar> {
                   bottom: 1,
                   child: Wrap(
                     children: events.map((e) {
-                      BookingModel bookings = e as BookingModel;
+                      BookingAppointmentModel bookings =
+                          e as BookingAppointmentModel;
 
                       // Now you can access the isPrivate property
-                      Color markerColor;
-                      if (!_isAuthor) {
-                        markerColor = Colors.grey;
-                      } else if (bookings.isEvent) {
-                        bookings.answer == ''
-                            ? markerColor = Color.fromARGB(255, 255, 229, 152)
-                            : bookings.answer == 'Rejected'
-                                ? markerColor = Colors.grey
-                                : markerColor =
-                                    Color.fromARGB(255, 225, 169, 2);
-                      } else if (!bookings.isEvent) {
-                        bookings.answer == ''
-                            ? markerColor = Colors.green.withOpacity(.4)
-                            : bookings.answer == 'Rejected'
-                                ? markerColor = Colors.grey
-                                : markerColor = Colors.green;
-                      } else {
-                        markerColor = Theme.of(context).secondaryHeaderColor;
-                      }
+                      // Color markerColor;
+                      // if (!_isAuthor) {
+                      //   markerColor = Colors.grey;
+                      // } else if (bookings.isEvent) {
+                      //   bookings.answer == ''
+                      //       ? markerColor = Color.fromARGB(255, 255, 229, 152)
+                      //       : bookings.answer == 'Rejected'
+                      //           ? markerColor = Colors.grey
+                      //           : markerColor =
+                      //               Color.fromARGB(255, 225, 169, 2);
+                      // } else if (!bookings.isEvent) {
+                      //   bookings.answer == ''
+                      //       ? markerColor = Colors.green.withOpacity(.4)
+                      //       : bookings.answer == 'Rejected'
+                      //           ? markerColor = Colors.grey
+                      //           : markerColor = Colors.green;
+                      // } else {
+                      //   markerColor = Theme.of(context).secondaryHeaderColor;
+                      // }
                       return Container(
                         width: 10,
                         height: 10,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: markerColor,
-                        ),
+                            shape: BoxShape.circle, color: Colors.blue
+                            // markerColor,
+                            ),
                       );
                     }).toList(),
                   ),
@@ -1283,13 +1264,13 @@ class _BookingCalendarState extends State<BookingCalendar> {
               DateTime normalizedSelectedDay = DateTime(
                   selectedDay.year, selectedDay.month, selectedDay.day);
 
-              if (!_isAuthor) if (normalizedSelectedDay
-                  .isBefore(normalizedNow)) {
+              // if (!_isAuthor)
+              if (normalizedSelectedDay.isBefore(normalizedNow)) {
                 // print('Invalid date');
-                return;
+                return _invalidBookindDate(context);
               }
 
-              List<BookingModel> selectedBookings =
+              List<BookingAppointmentModel> selectedBookings =
                   _bookings[normalizedSelectedDay] ?? [];
               HapticFeedback.mediumImpact();
 
@@ -1300,140 +1281,152 @@ class _BookingCalendarState extends State<BookingCalendar> {
             lastDay: DateTime(2028),
             focusedDay: _focusedDay,
           ),
-          loading
-              ? Padding(
-                  padding: EdgeInsets.only(top: 30.0),
-                  child: Center(
-                    child: SizedBox(
-                      height:
-                          ResponsiveHelper.responsiveFontSize(context, 30.0),
-                      width: ResponsiveHelper.responsiveFontSize(context, 30.0),
-                      child: CircularProgressIndicator(
-                        backgroundColor: Colors.transparent,
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.blue,
-                        ),
-                        strokeWidth:
-                            ResponsiveHelper.responsiveFontSize(context, 2.0),
-                      ),
-                    ),
-                  ),
-                )
-              :
-              // widget.bookingUser.contacts.isEmpty
-              //     ? SizedBox.shrink()
-              //     :
+          // loading
+          //     ?
+          // widget.bookingUser.contacts.isEmpty
+          //     ? SizedBox.shrink()
+          //     :
 
-              EventBottomButton(
-                  buttonColor: Colors.blue,
-                  buttonText: 'Contact ${widget.bookingUser.userName} directly',
-                  onPressed: () {
-                    HapticFeedback.mediumImpact();
-                    _showBottomSheetBookMe();
-                  },
-                ),
-          if (!loading)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: _isAuthor
-                  ? RichText(
-                      textScaler: MediaQuery.of(context).textScaler,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                '\n\nThis calendar helps manage your booking appointments. There are two main color-coded indicators to represent the status of bookings\n\n',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          // TextSpan(
-                          //   text: ' red ',
-                          //   style: TextStyle(
-                          //       backgroundColor: Colors.red.withOpacity(.5),
-                          //       color: Colors.black,
-                          //       fontSize: ResponsiveHelper.responsiveFontSize(
-                          //           context, 12)),
-                          // ),
-                          // TextSpan(
-                          //   text:
-                          //       ' indicates booking request that you have rejected, the ',
-                          //   style: Theme.of(context).textTheme.bodySmall,
-                          // ),
-                          TextSpan(
-                            text: 'Yellow   ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                backgroundColor: Colors.yellow.withOpacity(.5),
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12)),
-                          ),
-                          TextSpan(
-                            text: ' indicates a booking for an event.\n',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          TextSpan(
-                            text: 'Green   ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                backgroundColor: Colors.green.withOpacity(.5),
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12)),
-                          ),
-                          TextSpan(
-                            text:
-                                ' indicates a booking by another creative for creative work.\n\nThe',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          TextSpan(
-                            text: '  yellow   ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                backgroundColor: Colors.yellow.withOpacity(.2),
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12)),
-                          ),
-                          TextSpan(
-                            text: ' and ',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          TextSpan(
-                            text: '   green   ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                backgroundColor: Colors.green.withOpacity(.2),
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12)),
-                          ),
-                          TextSpan(
-                            text:
-                                ' indicators will initially appear faint when the booking requests are unanswered. ',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        _showBottomSheetManagerDonationDoc();
-                      },
-                      child: RichText(
-                        textScaler: MediaQuery.of(context).textScaler,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text:
-                                  "\To initiate a booking request, please tap on the desired date on the calendar. Dates without any visual indicator signify that the creative has not yet been booked.",
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            TextSpan(
-                              text: '\nmore.',
-                              style: _blueSyle,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+          if (!_isAuthor)
+            EventBottomButton(
+              buttonColor: Colors.blue,
+              buttonText: 'Contact ${widget.bookingUser.shopName} directly',
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                _showBottomSheetBookMe();
+              },
             ),
+          _isAuthor
+              ?
+              // if (!loading)
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: loading
+                      ? Padding(
+                          padding: EdgeInsets.only(top: 30.0),
+                          child: Center(
+                            child: SizedBox(
+                              height: ResponsiveHelper.responsiveFontSize(
+                                  context, 30.0),
+                              width: ResponsiveHelper.responsiveFontSize(
+                                  context, 30.0),
+                              child: CircularProgressIndicator(
+                                backgroundColor: Colors.transparent,
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.blue,
+                                ),
+                                strokeWidth:
+                                    ResponsiveHelper.responsiveFontSize(
+                                        context, 2.0),
+                              ),
+                            ),
+                          ),
+                        )
+                      : RichText(
+                          textScaler: MediaQuery.of(context).textScaler,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    '\n\nThis calendar helps manage your booking appointments. There are two main color-coded indicators to represent the status of bookings\n\n',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              // TextSpan(
+                              //   text: ' red ',
+                              //   style: TextStyle(
+                              //       backgroundColor: Colors.red.withOpacity(.5),
+                              //       color: Colors.black,
+                              //       fontSize: ResponsiveHelper.responsiveFontSize(
+                              //           context, 12)),
+                              // ),
+                              // TextSpan(
+                              //   text:
+                              //       ' indicates booking request that you have rejected, the ',
+                              //   style: Theme.of(context).textTheme.bodySmall,
+                              // ),
+                              TextSpan(
+                                text: 'Yellow   ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    backgroundColor:
+                                        Colors.yellow.withOpacity(.5),
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12)),
+                              ),
+                              TextSpan(
+                                text: ' indicates a booking for an event.\n',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              TextSpan(
+                                text: 'Green   ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    backgroundColor:
+                                        Colors.green.withOpacity(.5),
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12)),
+                              ),
+                              TextSpan(
+                                text:
+                                    ' indicates a booking by another creative for creative work.\n\nThe',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              TextSpan(
+                                text: '  yellow   ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    backgroundColor:
+                                        Colors.yellow.withOpacity(.2),
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12)),
+                              ),
+                              TextSpan(
+                                text: ' and ',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              TextSpan(
+                                text: '   green   ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    backgroundColor:
+                                        Colors.green.withOpacity(.2),
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12)),
+                              ),
+                              TextSpan(
+                                text:
+                                    ' indicators will initially appear faint when the booking requests are unanswered. ',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ))
+              : GestureDetector(
+                  onTap: () {
+                    _showBottomSheetManagerDonationDoc();
+                  },
+                  child: RichText(
+                    textScaler: MediaQuery.of(context).textScaler,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text:
+                              "\To initiate a booking request, please tap on the desired date on the calendar. Dates without any visual indicator signify that the creative has not yet been booked.",
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        TextSpan(
+                          text: '\nmore.',
+                          style: _blueSyle,
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
         ],
       ),
     );

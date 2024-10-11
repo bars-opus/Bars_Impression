@@ -19,9 +19,9 @@
 //     return UserStoreModel(
 //       userId: fields[0] as String,
 //       userName: fields[1] as String,
-//       storeLogomageUrl: fields[2] as String,
+//       shopLogomageUrl: fields[2] as String,
 //       verified: fields[3] as bool,
-//       storeType: fields[4] as String,
+//       shopType: fields[4] as String,
 //       dynamicLink: fields[5] as String,
 //       terms: fields[6] as String,
 //       overview: fields[7] as String,
@@ -55,11 +55,11 @@
 //       ..writeByte(1)
 //       ..write(obj.userName)
 //       ..writeByte(2)
-//       ..write(obj.storeLogomageUrl)
+//       ..write(obj.shopLogomageUrl)
 //       ..writeByte(3)
 //       ..write(obj.verified)
 //       ..writeByte(4)
-//       ..write(obj.storeType)
+//       ..write(obj.shopType)
 //       ..writeByte(5)
 //       ..write(obj.dynamicLink)
 //       ..writeByte(6)

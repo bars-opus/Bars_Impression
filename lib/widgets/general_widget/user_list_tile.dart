@@ -75,7 +75,7 @@ class UserListTile extends StatelessWidget {
                   ),
                 ],
               ),
-              Text(user.storeType!,
+              Text(user.shopType!,
                   style: TextStyle(
                     fontSize:
                         ResponsiveHelper.responsiveFontSize(context, 12.0),

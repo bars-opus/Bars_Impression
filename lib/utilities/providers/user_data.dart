@@ -35,7 +35,7 @@ class UserData extends ChangeNotifier {
   late String _overview;
   late String _termAndConditions;
   late String _email;
-  late String _storeType;
+  late String _shopType;
   late String _dressCode;
   late String currentVisitors;
   late ChatMessage? _replyChatMessage;
@@ -82,12 +82,15 @@ class UserData extends ChangeNotifier {
   late int _int3;
   late int _creatIconIndex;
   late bool _creatIconIsSelected;
+  late BookingAppointmentModel? _finalBookingAppointment;
 
   late int? _averageRating;
   late int? _maxCapacity;
   late List<String> _amenities;
   late Map<String, DateTimeRange> _openingHours;
   late List<AppointmentSlotModel> _appointmentSlots;
+  late List<ShopWorkerModel> _appointmentWorkers;
+  late List<SelectedSlotModel> _selectedSlots;
 
 // event variables
   List<TaggedEventPeopleModel> _taggedEventPeople = [];
@@ -249,7 +252,7 @@ class UserData extends ChangeNotifier {
     _termAndConditions = '';
     _email = '';
     _florenceActionChoice = '';
-    _storeType = '';
+    _shopType = '';
     _ticketNames = '';
     _startDate = Timestamp.fromDate(DateTime.now());
     _sheduleDateTemp = Timestamp.fromDate(DateTime.now());
@@ -296,6 +299,7 @@ class UserData extends ChangeNotifier {
     _startTimeSelected = false;
     _endTimeSelected = false;
     _creatIconIsSelected = false;
+    _finalBookingAppointment = null;
     _shortcutBool = false;
     _loadingThisWeekEvent = true;
     _isLoading = false;
@@ -402,6 +406,8 @@ class UserData extends ChangeNotifier {
     _amenities = [];
     _openingHours = {};
     _appointmentSlots = [];
+    _appointmentWorkers = [];
+    _selectedSlots = [];
   }
 
   // Getters
@@ -500,7 +506,7 @@ class UserData extends ChangeNotifier {
   String get termAndConditions => _termAndConditions;
   String get email => _email;
   String get florenceActionChoice => _florenceActionChoice;
-  String get storeType => _storeType;
+  String get shopType => _shopType;
   String get overview => _overview;
   String get imageUrl => _imageUrl;
   String get dressingCode => _dressingCode;
@@ -546,6 +552,9 @@ class UserData extends ChangeNotifier {
   bool get bool6 => _bool6;
   bool get isSendigChat => _isSendigChat;
   bool get creatIconIsSelected => _creatIconIsSelected;
+  BookingAppointmentModel? get finalBookingAppointment =>
+      _finalBookingAppointment;
+
   bool get shortcutBool => _shortcutBool;
   bool get loadingThisWeekEvent => _loadingThisWeekEvent;
   bool get isLoading => _isLoading;
@@ -557,10 +566,8 @@ class UserData extends ChangeNotifier {
   File? get messageImage => _messageImage;
   PriceModel? get bookingPriceRate => _bookingPriceRate;
   File? get profileImage => _profileImage;
- File? get logoImage => _logoImage;
+  File? get logoImage => _logoImage;
 
-
-  
   File? get professionalImageFile1 => _professionalImageFile1;
   File? get professionalImageFile2 => _professionalImageFile2;
   File? get professionalImageFile3 => _professionalImageFile3;
@@ -575,6 +582,8 @@ class UserData extends ChangeNotifier {
   Map<String, DateTimeRange> get openingHours => _openingHours;
 
   List<AppointmentSlotModel> get appointmentSlots => _appointmentSlots;
+  List<ShopWorkerModel> get appointmentWorkers => _appointmentWorkers;
+  List<SelectedSlotModel> get selectedSlots => _selectedSlots;
 
   UserSettingsGeneralModel? get userGeneraSentenceser => _userGeneraSentence;
   UserSettingsLoadingPreferenceModel? get userLocationPreference =>
@@ -675,6 +684,52 @@ class UserData extends ChangeNotifier {
 
   void setAppointmentSlots(AppointmentSlotModel appointmentSlots) {
     _appointmentSlots.add(appointmentSlots);
+    notifyListeners();
+  }
+
+  void addAppointmentToList(AppointmentSlotModel apoinement) {
+    if (!_appointmentSlots.contains(apoinement)) {
+      _appointmentSlots.add(apoinement);
+      notifyListeners();
+    }
+  }
+
+  void removeAppointmentFromList(AppointmentSlotModel apoinement) {
+    _appointmentSlots.remove(apoinement);
+    notifyListeners();
+  }
+
+  void setAppointmentWorkersSlots(ShopWorkerModel appointmentWorkers) {
+    _appointmentWorkers.add(appointmentWorkers);
+    notifyListeners();
+  }
+
+  void addAppointmentWorkersToList(ShopWorkerModel appointmentWorkers) {
+    if (!_appointmentWorkers.contains(appointmentWorkers)) {
+      _appointmentWorkers.add(appointmentWorkers);
+      notifyListeners();
+    }
+  }
+
+  void removeAppointmentWorkersFromList(ShopWorkerModel appointmentWorkers) {
+    _appointmentWorkers.remove(appointmentWorkers);
+    notifyListeners();
+  }
+
+  void setSelectedSlots(SelectedSlotModel selectedSlots) {
+    _selectedSlots.add(selectedSlots);
+    notifyListeners();
+  }
+
+  void addSelectedSlotToList(SelectedSlotModel selectedSlots) {
+    if (!_selectedSlots.contains(selectedSlots)) {
+      _selectedSlots.add(selectedSlots);
+      notifyListeners();
+    }
+  }
+
+  void removeSelectedSlotFromList(SelectedSlotModel selectedSlots) {
+    _selectedSlots.remove(selectedSlots);
     notifyListeners();
   }
 
@@ -853,8 +908,8 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setstoreType(String storeType) {
-    _storeType = storeType;
+  void setshopType(String shopType) {
+    _shopType = shopType;
     notifyListeners();
   }
 
@@ -882,6 +937,30 @@ class UserData extends ChangeNotifier {
     _creatIconIsSelected = creatIconIsSelected;
     notifyListeners();
   }
+
+  void setFinalBookingAppointment(
+      BookingAppointmentModel? finalBookingAppointment) {
+    _finalBookingAppointment = finalBookingAppointment;
+    notifyListeners();
+  }
+
+  // void removeBookedAppointment(String appointmentId) {
+  //   if (_finalBookingAppointment != null) {
+  //     print(
+  //         'Before removal: ${_finalBookingAppointment!.appointment.map((a) => a.id).toList()}');
+
+  //     _finalBookingAppointment!.appointment
+  //         .removeWhere((BookedAppointmentModel appointment) {
+  //       print('Comparing: ${appointment.id} with $appointmentId');
+  //       return appointment.id == appointmentId;
+  //     });
+
+  //     print(
+  //         'After removal: ${_finalBookingAppointment!.appointment.map((a) => a.id).toList()}');
+
+  //     notifyListeners();
+  //   }
+  // }
 
   void setCreatIconIndex(int creatIconIndex) {
     _creatIconIndex = creatIconIndex;
@@ -1003,8 +1082,6 @@ class UserData extends ChangeNotifier {
     _logoImage = logoImage;
     notifyListeners();
   }
-
-  
 
   void setImage(File? image) {
     _image = image;

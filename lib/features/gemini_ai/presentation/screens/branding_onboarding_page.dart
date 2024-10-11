@@ -290,7 +290,7 @@ class _BrandingOnboardingScreenState extends State<BrandingOnboardingScreen> {
       matchReason: '',
       userName: _provider.user!.userName!,
       profileImageUrl: _provider.user!.profileImageUrl!,
-      storeType: _provider.user!.storeType!,
+      shopType: _provider.user!.shopType!,
       verified: _provider.user!.verified!,
     );
 

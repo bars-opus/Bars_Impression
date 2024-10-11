@@ -2,53 +2,53 @@ import 'package:bars/utilities/exports.dart';
 import 'package:hive/hive.dart';
 
 class UsernameService {
-  Future<void> changeUsername(
-      BuildContext context,
-      // String oldUsername,
-      String newUsername,
-      String userId,
-      //  bool isSetUp
-      PageController? pageController) async {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Future<void> changeUsername(
+  //     BuildContext context,
+  //     // String oldUsername,
+  //     String newUsername,
+  //     String userId,
+  //     //  bool isSetUp
+  //     PageController? pageController) async {
+  //   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    batch.update(
-      usersAuthorRef.doc(userId),
-      {
-        'userName': newUsername,
-      },
-    );
+  //   batch.update(
+  //     usersAuthorRef.doc(userId),
+  //     {
+  //       'userName': newUsername,
+  //     },
+  //   );
 
-    // batch.update(
-    //   userProfessionalRef.doc(widget.user.userId),
-    //   {
-    //     'accountType': newUsername,
-    //   },
-    // );
+  //   // batch.update(
+  //   //   userProfessionalRef.doc(widget.user.userId),
+  //   //   {
+  //   //     'accountType': newUsername,
+  //   //   },
+  //   // );
 
-    try {
-      // await batch.commit();
-      // await HiveUtils.updateUserStore(
-      //     context,
-      //     _provider.userStore!.storeLogomageUrl,
-      //     _provider.userStore!.storeType,
-      //      _provider.user!.accountType!);
-      // if (pageController != null)
+  //   try {
+  //     // await batch.commit();
+  //     // await HiveUtils.updateUserStore(
+  //     //     context,
+  //     //     _provider.userStore!.shopLogomageUrl,
+  //     //     _provider.userStore!.shopType,
+  //     //      _provider.user!.accountType!);
+  //     // if (pageController != null)
 
-      pageController!.animateToPage(
-        1,
-        duration: Duration(milliseconds: 800),
-        curve: Curves.easeInOut,
-      );
-      await HiveUtils.updateAuthorHive(context, newUsername, '', '',
-          _provider.storeType, _provider.accountType);
-    } catch (e) {
-      _provider.setIsLoading(false);
-      mySnackBar(context, e.toString());
-    }
+  //     pageController!.animateToPage(
+  //       1,
+  //       duration: Duration(milliseconds: 800),
+  //       curve: Curves.easeInOut,
+  //     );
+  //     await HiveUtils.updateAuthorHive(context, newUsername, '', '',
+  //         _provider.shopType, _provider.accountType);
+  //   } catch (e) {
+  //     _provider.setIsLoading(false);
+  //     mySnackBar(context, e.toString());
+  //   }
 
 //     try {
 //       _provider.setIsLoading(true);
@@ -136,7 +136,7 @@ class UsernameService {
 //       _provider.setIsLoading(false);
 //       mySnackBar(context, e.toString());
 //     }
-  }
+  // }
 
   Future<bool> validateTextToxicity(
       BuildContext context,
@@ -193,62 +193,62 @@ class UsernameService {
     }
   }
 
-  _updateAuthorBioAndImgeUrlHive(
-      BuildContext context, String userName, String dynamicLink) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  // _updateAuthorBioAndImgeUrlHive(
+  //     BuildContext context, String userName, String dynamicLink) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
-    var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    // Create a new instance of AccountHolderAuthor with the updated name
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // isShop: _provider.user!.isShop,
-      // name: _provider.name,
-      // bio: _provider.user!.bio,
-      disabledAccount: false,
-      // name: _provider.name,
-      // bio: _provider.user?.bio ?? '',
-      dynamicLink: dynamicLink,
-      lastActiveDate: Timestamp.fromDate(DateTime.now()),
-      storeType: _provider.storeType,
-      profileImageUrl: _provider.user?.profileImageUrl ?? '',
-      // storeType: _provider.profrilehandle,
-      // profileImageUrl: _provider.user!.profileImageUrl,
-      reportConfirmed: false,
-      userId: _provider.currentUserId,
-      userName: userName,
-      verified: false,
-      // isShop: false,
-      disableChat: false, accountType: _provider.accountType,
-    );
+  //   // Create a new instance of AccountHolderAuthor with the updated name
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     // isShop: _provider.user!.isShop,
+  //     // name: _provider.name,
+  //     // bio: _provider.user!.bio,
+  //     disabledAccount: false,
+  //     // name: _provider.name,
+  //     // bio: _provider.user?.bio ?? '',
+  //     dynamicLink: dynamicLink,
+  //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
+  //     shopType: _provider.shopType,
+  //     profileImageUrl: _provider.user?.profileImageUrl ?? '',
+  //     // shopType: _provider.profrilehandle,
+  //     // profileImageUrl: _provider.user!.profileImageUrl,
+  //     reportConfirmed: false,
+  //     userId: _provider.currentUserId,
+  //     userName: userName,
+  //     verified: false,
+  //     // isShop: false,
+  //     disableChat: false, accountType: _provider.accountType,
+  //   );
 
-    // Put the new object back into the box with the same key
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
+  //   // Put the new object back into the box with the same key
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
 
-  void _updateAuthorHive(
-      BuildContext context, String userName, String dynamicLink) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  // void _updateAuthorHive(
+  //     BuildContext context, String userName, String dynamicLink) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
-    var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // isShop: _provider.user!.isShop,
-      // name: _provider.user!.name,
-      // bio: _provider.user!.bio,
-      disabledAccount: _provider.user!.disabledAccount,
-      dynamicLink: dynamicLink,
-      lastActiveDate: _provider.user!.lastActiveDate,
-      storeType: _provider.user!.storeType,
-      profileImageUrl: _provider.user!.profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
-      userName: userName,
-      verified: _provider.user!.verified,
-      // isShop: _provider.user!.isShop,
-      disableChat: _provider.user!.disableChat,
-      accountType: _provider.accountType,
-    );
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     // isShop: _provider.user!.isShop,
+  //     // name: _provider.user!.name,
+  //     // bio: _provider.user!.bio,
+  //     disabledAccount: _provider.user!.disabledAccount,
+  //     dynamicLink: dynamicLink,
+  //     lastActiveDate: _provider.user!.lastActiveDate,
+  //     shopType: _provider.user!.shopType,
+  //     profileImageUrl: _provider.user!.profileImageUrl,
+  //     reportConfirmed: _provider.user!.reportConfirmed,
+  //     userId: _provider.user!.userId,
+  //     userName: userName,
+  //     verified: _provider.user!.verified,
+  //     // isShop: _provider.user!.isShop,
+  //     disableChat: _provider.user!.disableChat,
+  //     accountType: _provider.accountType,
+  //   );
 
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
 }

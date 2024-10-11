@@ -334,8 +334,8 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       authorName: provider.user!.userName!,
       caption: provider.caption,
       hashTag: provider.hashTagg,
-      storeType: provider.userStore!.storeType,
-      authorIdProfileImageUrl: provider.userStore!.storeLogomageUrl,
+      shopType: provider.userStore!.shopType,
+      authorIdProfileImageUrl: provider.userStore!.shopLogomageUrl,
       authorVerification: provider.userStore!.verified,
     );
   }
@@ -360,15 +360,15 @@ Please deliver detailed and actionable insights to assist organizers in marketin
       caption: _provider.caption,
       hashTag: _provider.hashTagg,
       authorName: post.authorName,
-      storeType: post.storeType,
+      shopType: post.shopType,
       authorIdProfileImageUrl: post.authorIdProfileImageUrl,
       authorVerification: post.authorVerification,
     );
 
-   
     try {
       await DatabaseService.editPost(
-          _post, );
+        _post,
+      );
       setNull(_provider, true, context);
       mySnackBar(context, 'Saved successfully');
       return _post; // Return the edited event
