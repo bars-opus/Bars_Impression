@@ -3,7 +3,11 @@ import 'package:bars/utilities/exports.dart';
 // Utility class for handling image operations
 class ImageHandler {
   static Future<void> handleImageFromGallery(
-      BuildContext context, bool isLogo) async {
+    BuildContext context,
+    bool isLogo,
+    // UserData provider,
+    // UserStoreModel? shop,
+  ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     try {
@@ -18,7 +22,11 @@ class ImageHandler {
         mySnackBarModeration(context,
             'Harmful content detected. Please choose a different image. Please review');
       } else {
-        submitProfileImage(context, file, isLogo);
+        submitProfileImage(
+          context,
+          file,
+          isLogo,
+        );
       }
     } catch (e) {
       mySnackBar(context,
@@ -53,6 +61,8 @@ class ImageHandler {
     BuildContext context,
     File? profileImage,
     bool isLogo,
+    // UserData provider,
+    // UserStoreModel? shop,
   ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -123,29 +133,34 @@ class ImageHandler {
         //         _provider.userStore!.accountType!,
         //       )
         //     :
-        HiveUtils.updateAuthorHive(
-          context: context,
-          name: _provider.user!.userName!,
-          profileImageUrl: _profileImageUrl,
-          link: dynamicLink,
-          shopType: _provider.userStore!.shopType,
-          accountType: _provider.userStore!.accountType!,
-          disabledAccount: _provider.user!.disabledAccount!,
-          reportConfirmed: _provider.user!.reportConfirmed!,
-          verified: _provider.user!.verified!,
-          disableChat: _provider.user!.disableChat!,
-          // lastActiveDate: _provider.user!.lastActiveDate!,
-          // context,
-          // _provider.user!.userName!,
-          // _profileImageUrl,
-          // dynamicLink,
-          // _provider.userStore!.shopType,
-          // _provider.userStore!.accountType!,
-        );
-        ;
+
+        if (!isLogo)
+          HiveUtils.updateAuthorHive(
+            context: context,
+            name: _provider.user!.userName!,
+            profileImageUrl: _profileImageUrl,
+            link: dynamicLink,
+            shopType: _provider.user!.shopType!,
+            accountType: _provider.user!.accountType!,
+            disabledAccount: _provider.user!.disabledAccount!,
+            reportConfirmed: _provider.user!.reportConfirmed!,
+            verified: _provider.user!.verified!,
+            disableChat: _provider.user!.disableChat!,
+            // lastActiveDate: _provider.user!.lastActiveDate!,
+            // context,
+            // _provider.user!.userName!,
+            // _profileImageUrl,
+            // dynamicLink,
+            // _provider.userStore!.shopType,
+            // _provider.userStore!.accountType!,
+          );
         isLogo
             ? _provider.setLogoImage(profileImage)
             : _provider.setProfileImage(profileImage);
+        isLogo
+            ? _provider.setLogoImageUrl(_profileImageUrl)
+            : _provider.setProfileImageUrl(_profileImageUrl);
+
         _provider.setIsLoading2(false);
       } catch (e) {
         _showBottomSheetErrorMessage(
@@ -155,6 +170,44 @@ class ImageHandler {
       }
     }
   }
+
+  // static void setProviderStore(
+  //   UserData provider,
+  //   UserStoreModel shop,
+  // ) {
+  //   UserStoreModel _userStore = UserStoreModel(
+  //     userId: provider.user!.userId!,
+  //     shopName: provider.name,
+  //     shopLogomageUrl: '',
+  //     shopType: provider.shopType,
+  //     verified: provider.user!.verified!,
+  //     terms: provider.termAndConditions,
+  //     city: provider.city,
+  //     country: provider.country,
+  //     overview: provider.overview,
+  //     accountType: provider.accountType,
+  //     noBooking: provider.noBooking,
+  //     awards: provider.awards,
+  //     contacts: provider.bookingContacts,
+  //     links: provider.linksToWork,
+  //     // priceTags: provider.priceRate,
+  //     services: provider.services,
+  //     professionalImageUrls: provider.professionalImages,
+  //     dynamicLink: provider.user!.dynamicLink!,
+  //     randomId: shop.randomId,
+  //     currency: provider.currency,
+  //     transferRecepientId: shop.transferRecepientId,
+  //     maxCapacity: shop.maxCapacity ?? 0,
+  //     amenities: shop.amenities,
+  //     averageRating: shop.averageRating ?? 0,
+  //     openingHours: provider.openingHours,
+  //     appointmentSlots: provider.appointmentSlots,
+  //     address: provider.address,
+  //   );
+
+  //   // UserStoreModel updatedUser = UserStoreModel.fromJson(_userStore);
+  //   provider.setUserStore(_userStore);
+  // }
 
   static void _showBottomSheetErrorMessage(
       BuildContext context, String message) {

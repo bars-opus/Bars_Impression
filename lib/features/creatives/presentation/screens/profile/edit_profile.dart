@@ -46,10 +46,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   _handleImageFromGallery() {
-    ImageHandler.handleImageFromGallery(context, false
-        // Submit the image file
-        // _submitProfileImage(file);
-        );
+    ImageHandler.handleImageFromGallery(
+      context, false,
+      // Provider.of<UserData>(context, listen: false),
+      // null,
+      // Submit the image file
+      // _submitProfileImage(file);
+    );
   }
   // _handleImageFromGallery() async {
   //   var _provider = Provider.of<UserData>(context, listen: false);
@@ -124,9 +127,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _isLoading = true;
       });
 
-      String _profileImageUrl = _newProfileImageUrl.isEmpty
-          ? widget.user.profileImageUrl!
-          : _newProfileImageUrl;
+      // String _profileImageUrl = _newProfileImageUrl.isEmpty
+      //     ? widget.user.profileImageUrl!
+      //     : _newProfileImageUrl;
 
       // if (_profileImage == null) {
       //   _profileImageUrl = widget.user.profileImageUrl!;
@@ -139,47 +142,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       String name = _name.trim().replaceAll('\n', ' ');
       String bio = _bio.trim().replaceAll('\n', ' ');
-      String dynamicLink = await DatabaseService.myDynamicLink(
-        _profileImageUrl,
-        _provider.user!.userName!,
-        _bio,
-        'https://www.barsopus.com/user_${_provider.currentUserId}',
-      );
+      String dynamicLink = '';
+
+      //  await DatabaseService.myDynamicLink(
+      //   _profileImageUrl,
+      //   _provider.user!.userName!,
+      //   _bio,
+      //   'https://www.barsopus.com/user_${_provider.currentUserId}',
+      // );
 
       try {
         WriteBatch batch = FirebaseFirestore.instance.batch();
         batch.update(
           usersAuthorRef.doc(widget.user.userId),
           {
-            'name': name,
+            'userName': name,
             // 'profileImageUrl': _profileImageUrl,
-            'bio': bio,
+            // 'bio': bio,
             'dynamicLink': dynamicLink,
           },
         );
 
-        batch.update(
-          userProfessionalRef.doc(widget.user.userId),
-          {
-            // 'profileImageUrl': _profileImageUrl,
-            'dynamicLink': dynamicLink,
-          },
-        );
+        // batch.update(
+        //   userProfessionalRef.doc(widget.user.userId),
+        //   {
+        //     // 'profileImageUrl': _profileImageUrl,
+        //     'dynamicLink': dynamicLink,
+        //   },
+        // );
 
         try {
           batch.commit();
+          HiveUtils.updateAuthorHive(
+              context: context,
+              name: name,
+              profileImageUrl: _provider.profileImage == null
+                  ? widget.user.profileImageUrl!
+                  : _provider.imageUrl,
+              link: dynamicLink,
+              shopType: widget.user.shopType!,
+              accountType: widget.user.accountType!,
+              disabledAccount: widget.user.disabledAccount!,
+              reportConfirmed: widget.user.reportConfirmed!,
+              verified: widget.user.verified!,
+              disableChat: widget.user.disableChat!);
         } catch (error) {}
 
-        _updateAuthorHive(
-          name,
-          bio,
-          _profileImageUrl,
-        );
+        // _updateAuthorHive(
+        //   name,
+        //   bio,
+        // _provider.profileImage == null
+        //     ? widget.user.profileImageUrl!
+        //     : _provider.imageUrl,
+        // );
 
         Navigator.pop(context);
         _flushBar(
-          widget.user.userName!,
-          "Your profile was edited successfully!!!",
+          name,
+          "Your userName was edited successfully!!!",
         );
       } catch (e) {
         _showBottomSheetErrorMessage('Failed to save profile');
@@ -268,33 +288,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   //   }
   // }
 
-  _updateAuthorHive(String name, String profileImageUrl, String link) {
-    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+  // _updateAuthorHive(String name, String profileImageUrl, String link) {
+  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
-    var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    // Create a new instance of AccountHolderAuthor with the updated name
-    var updatedAccountAuthor = AccountHolderAuthor(
-      // name: name,
-      // bio: bio,
-      accountType: _provider.user!.accountType,
-      disabledAccount: _provider.user!.disabledAccount,
-      dynamicLink: link,
-      lastActiveDate: _provider.user!.lastActiveDate,
-      shopType: _provider.user!.shopType,
-      profileImageUrl: profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
-      userName: _provider.user!.userName,
-      verified: _provider.user!.verified,
-      // isShop: _provider.user!.isShop,
-      disableChat: _provider.user!.disableChat,
-      //  isShop: _provider.user!.isShop,
-    );
+  //   // Create a new instance of AccountHolderAuthor with the updated name
+  //   var updatedAccountAuthor = AccountHolderAuthor(
+  //     // name: name,
+  //     // bio: bio,
+  //     accountType: _provider.user!.accountType,
+  //     disabledAccount: _provider.user!.disabledAccount,
+  //     dynamicLink: link,
+  //     lastActiveDate: _provider.user!.lastActiveDate,
+  //     shopType: _provider.user!.shopType,
+  //     profileImageUrl: profileImageUrl,
+  //     reportConfirmed: _provider.user!.reportConfirmed,
+  //     userId: _provider.user!.userId,
+  //     userName: _provider.user!.userName,
+  //     verified: _provider.user!.verified,
+  //     // isShop: _provider.user!.isShop,
+  //     disableChat: _provider.user!.disableChat,
+  //     //  isShop: _provider.user!.isShop,
+  //   );
 
-    // Put the new object back into the box with the same key
-    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
-  }
+  //   // Put the new object back into the box with the same key
+  //   accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  // }
 
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
@@ -532,53 +552,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         if (_provider2.user!.accountType == 'Shop') _divider,
         if (_provider2.user!.accountType == 'Shop')
-          _provider2.isLoading
-              ? _loadingPortfolio(true, () {})
-              : IntroInfo(
-                  leadingIcon: Icons.store_mall_directory_outlined,
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Shop ',
-                  onPressed: _user.city!.isEmpty
-                      ? () {
-                          Navigator.pop(context);
-                          _showBottomSheetNoCity();
-                        }
-                      : () async {
-                          print(widget.accountType + '    bb');
-                          print(widget.shop.toString() + '    bb');
-                          Navigator.pop(context);
-                          // if (_provider.isLoading) return;
-                          // _provider.setIsLoading(true);
+          // _provider2.isLoading
+          //     ? _loadingPortfolio(true, () {})
+          //     :
 
-                          // try {
-                          //   UserStoreModel? user =
-                          //       await DatabaseService.getUserProfessionalWithId(
-                          //     widget.user.userId!,
-                          //   );
+          IntroInfo(
+            leadingIcon: Icons.store_mall_directory_outlined,
+            titleColor: Theme.of(context).secondaryHeaderColor,
+            title: 'Shop ',
+            onPressed: _user.city!.isEmpty
+                ? () {
+                    Navigator.pop(context);
+                    _showBottomSheetNoCity();
+                  }
+                : () async {
+                    print(widget.accountType + '    bb');
+                    print(widget.shop.toString() + '    bb');
+                    Navigator.pop(context);
+                    // if (_provider.isLoading) return;
+                    // _provider.setIsLoading(true);
 
-                          //   if (user != null) {
-                          if (_provider2.user!.accountType == 'Shop' &&
-                              widget.shop != null)
-                            _navigateToPage(
-                              context,
-                              EditProfileProfessional(
-                                user: widget.shop!,
-                              ),
-                            );
-                          //   } else {
-                          //     _showBottomSheetErrorMessage(
-                          //         'Failed to fetch booking data.');
-                          //   }
-                          // } catch (e) {
-                          //   _showBottomSheetErrorMessage(
-                          //       'Failed to fetch booking data.');
-                          // } finally {
-                          //   _provider.setIsLoading(false);
-                          // }
-                        },
-                  subTitle: "",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
+                    // try {
+                    //   UserStoreModel? user =
+                    //       await DatabaseService.getUserProfessionalWithId(
+                    //     widget.user.userId!,
+                    //   );
+
+                    //   if (user != null) {
+                    if (_provider2.user!.accountType == 'Shop' &&
+                        widget.shop != null)
+                      _navigateToPage(
+                        context,
+                        EditProfileProfessional(
+                          user: widget.shop!,
+                        ),
+                      );
+                    //   } else {
+                    //     _showBottomSheetErrorMessage(
+                    //         'Failed to fetch booking data.');
+                    //   }
+                    // } catch (e) {
+                    //   _showBottomSheetErrorMessage(
+                    //       'Failed to fetch booking data.');
+                    // } finally {
+                    //   _provider.setIsLoading(false);
+                    // }
+                  },
+            subTitle: "",
+            icon: Icons.arrow_forward_ios_outlined,
+          ),
         _divider,
         // _isLoadingBrandInfo
         //     ? _loadingPortfolio(true, () {})
@@ -671,73 +693,79 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     var _provider = Provider.of<UserData>(
       context,
     );
-    return Column(
-      children: [
-        _provider.isLoading
-            ? SchimmerSkeleton(
-                schimmerWidget: CircleAvatar(
+    return ListTile(
+      title: _stageNameAndBioFields(),
+
+      leading: _provider.isLoading
+          ? SchimmerSkeleton(
+              schimmerWidget: CircleAvatar(
+                backgroundColor: Theme.of(context).primaryColorLight,
+                radius: ResponsiveHelper.responsiveHeight(context, 30.0),
+                backgroundImage: ImageHandler.displayProfileImage(
+                  _provider.user!.profileImageUrl,
+                  _provider.profileImage,
+                ),
+              ),
+            )
+          : Hero(
+              tag: 'container1' + widget.user.userId.toString(),
+              child: GestureDetector(
+                onTap: _handleImageFromGallery,
+                child: CircleAvatar(
                   backgroundColor: Theme.of(context).primaryColorLight,
-                  radius: ResponsiveHelper.responsiveHeight(context, 50.0),
+                  radius: ResponsiveHelper.responsiveHeight(context, 30.0),
                   backgroundImage: ImageHandler.displayProfileImage(
                     _provider.user!.profileImageUrl,
                     _provider.profileImage,
                   ),
                 ),
-              )
-            : Hero(
-                tag: 'container1' + widget.user.userId.toString(),
-                child: GestureDetector(
-                  onTap: _handleImageFromGallery,
-                  child: CircleAvatar(
-                    backgroundColor: Theme.of(context).primaryColorLight,
-                    radius: ResponsiveHelper.responsiveHeight(context, 50.0),
-                    backgroundImage: ImageHandler.displayProfileImage(
-                      _provider.user!.profileImageUrl,
-                      _provider.profileImage,
-                    ),
-                  ),
-                ),
               ),
-        //  Hero(
-        //     tag: 'container1' + widget.user.userId.toString(),
-        //     child: GestureDetector(
-        //       onTap: _handleImageFromGallery,
-        //       child: Icon(
-        //         Icons.account_circle,
-        //         color: Colors.grey,
-        //         size: ResponsiveHelper.responsiveHeight(context, 80),
-        //       ),
-        //     ),
-        //   ),
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.transparent,
-            side: BorderSide(width: 1.0, color: Colors.transparent),
-          ),
-          onPressed: _handleImageFromGallery,
-          child: Text(
-            'Set photo',
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
             ),
-          ),
-        ),
-        const SizedBox(
-          height: 30.0,
-        ),
-        // Divider(
-        //   thickness: .2,
-        //   color: Colors.grey,
-        // ),
-        // Column(
-        //   children: [
-        //     // _changeUserNameField(),
-        //     _stageNameAndBioFields(),
-        //   ],
-        // ),
-        _stageNameAndBioFields(),
-      ],
+
+      // Column(
+      //   children: [
+
+      //     //  Hero(
+      //     //     tag: 'container1' + widget.user.userId.toString(),
+      //     //     child: GestureDetector(
+      //     //       onTap: _handleImageFromGallery,
+      //     //       child: Icon(
+      //     //         Icons.account_circle,
+      //     //         color: Colors.grey,
+      //     //         size: ResponsiveHelper.responsiveHeight(context, 80),
+      //     //       ),
+      //     //     ),
+      //     //   ),
+      //     OutlinedButton(
+      //       style: OutlinedButton.styleFrom(
+      //         foregroundColor: Colors.transparent,
+      //         side: BorderSide(width: 1.0, color: Colors.transparent),
+      //       ),
+      //       onPressed: _handleImageFromGallery,
+      //       child: Text(
+      //         'Set photo',
+      //         style: TextStyle(
+      //           color: Colors.blue,
+      //           fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+      //         ),
+      //       ),
+      //     ),
+      //     const SizedBox(
+      //       height: 30.0,
+      //     ),
+      //     // Divider(
+      //     //   thickness: .2,
+      //     //   color: Colors.grey,
+      //     // ),
+      //     // Column(
+      //     //   children: [
+      //     //     // _changeUserNameField(),
+      //     //     _stageNameAndBioFields(),
+      //     //   ],
+      //     // ),
+      //     _stageNameAndBioFields(),
+      //   ],
+      // ),
     );
   }
 
@@ -810,11 +838,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _provider.userLocationPreference;
 
     return ListView(children: [
-      Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: IconButton(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
             onPressed: () => Navigator.pop(context),
             icon: Icon(
               Icons.close,
@@ -822,7 +849,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               size: ResponsiveHelper.responsiveHeight(context, 30),
             ),
           ),
-        ),
+          _isLoading
+              ? Padding(
+                  padding: const EdgeInsets.only(
+                    right: 20.0,
+                  ),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                        Colors.blue,
+                      ),
+                      strokeWidth:
+                          ResponsiveHelper.responsiveFontSize(context, 2.0),
+                    ),
+                  ),
+                )
+              : Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0, bottom: 20),
+                    child: MiniCircularProgressButton(
+                        dontShowShadow: true,
+                        color: Colors.blue,
+                        text: 'Save',
+                        onPressed: () {
+                          _submit();
+                        }),
+                  ),
+                ),
+        ],
       ),
       // EditProfileScaffold(
       //   title: 'Edit Profile',
@@ -834,50 +892,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       //     ? SizedBox()
       //     :
 
-      _isLoading
-          ? Padding(
-              padding: const EdgeInsets.only(
-                right: 20.0,
-              ),
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.transparent,
-                  valueColor: new AlwaysStoppedAnimation<Color>(
-                    Colors.blue,
-                  ),
-                  strokeWidth:
-                      ResponsiveHelper.responsiveFontSize(context, 2.0),
-                ),
-              ),
-            )
-          : Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0, bottom: 20),
-                child: MiniCircularProgressButton(
-                    dontShowShadow: true,
-                    color: Colors.blue,
-                    text: 'Save',
-                    onPressed: () {}),
-              ),
-            ),
       Form(
         key: _formKey,
         child: Padding(
             padding: const EdgeInsets.all(0.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const SizedBox(
+                  height: 40,
+                ),
                 // const SizedBox(
                 //   height: 20.0,
                 // ),
-                if (_provider2.user!.accountType != 'Shop')
-                  _profileImageWidget(),
-                if (_provider2.user!.accountType == 'Shop')
-                  const SizedBox(
-                    height: 40,
-                  ),
+                // if (_provider2.user!.accountType != 'Shop')
+                _profileImageWidget(),
+                // if (_provider2.user!.accountType == 'Shop')
+                const SizedBox(
+                  height: 40,
+                ),
                 if (_user != null) _editPageOptionWidget(),
                 // const SizedBox(height: 40),
                 // GestureDetector(

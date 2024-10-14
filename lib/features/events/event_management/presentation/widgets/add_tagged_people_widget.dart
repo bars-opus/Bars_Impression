@@ -66,7 +66,7 @@ class _AddTaggedPeopleState extends State<AddTaggedPeople> {
         userName: user.userName!.toUpperCase(),
         shopType: user.shopType!,
         profileImageUrl: user.profileImageUrl!,
-        bio: '',
+        // bio: '',
         onPressed: _addPeopleFunction(user, isSchedule));
   }
 

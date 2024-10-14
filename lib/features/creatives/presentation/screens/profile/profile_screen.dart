@@ -5,23 +5,19 @@ import 'package:bars/utilities/exports.dart';
 // import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 
-final GlobalKey<_ProfileScreenState> profileScreenKey =
-    GlobalKey<_ProfileScreenState>();
-
 class ProfileScreen extends StatefulWidget {
   final String currentUserId;
   static final id = 'Profile_screen';
   final String userId;
   final String accountType;
-  final UserStoreModel? user;
+  final AccountHolderAuthor? user;
 
   ProfileScreen({
-    Key? key,
     required this.currentUserId,
     required this.accountType,
     required this.userId,
     required this.user,
-  }) : super(key: profileScreenKey);
+  });
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -206,7 +202,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     // _setUpEvents();
     _setUpInvites();
 
-    _fetchProfile();
+    if (widget.user == null || widget.user!.accountType != 'Client')
+      _fetchProfile();
   }
 
   _setCurrency(UserData _provider, UserStoreModel userPortfolio) {
@@ -232,6 +229,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   _nothing() {}
 
   Future<void> _fetchProfile() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     var userSnapshot = widget.accountType == 'Shop'
         ? await userProfessionalRef.doc(widget.userId).get()
         : widget.accountType == 'Worker'
@@ -244,6 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         if (mounted) {
           setState(() {
             _profileStore = user;
+            _provider.setUserStore(user);
             _isFecthing = false;
           });
         }
@@ -2727,7 +2727,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   mainProfileLoadingIdicator() {
     return Container(
-      color: Colors.transparent,
+      color: Theme.of(context).primaryColorLight,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -2774,17 +2774,22 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _fetchedProfile() {
+  _fetchedProfile(BuildContext context) {
+    var _provider = Provider.of<UserData>(context);
+    bool isAuthor = widget.currentUserId == widget.userId;
+
+    print(isAuthor);
+
     if (_isFecthing) {
       return mainProfileLoadingIdicator();
     } else if (_userNotFound) {
       return UserNotFound(userName: 'User');
     } else {
       return widget.accountType == 'Shop'
-          ? _profileStore == null
+          ? _profileStore == null || _provider.userStore == null
               ? mainProfileLoadingIdicator()
               : ShopProfile(
-                  shop: _profileStore!,
+                  shop: isAuthor ? _provider.userStore! : _profileStore!,
                   clientCount: _followerCount,
                   currentUserId: widget.currentUserId,
                 )
@@ -2806,24 +2811,20 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  _shopScaffoldSetUp() {
-    return widget.user == null
-        ? _profileStore != null && widget.userId == widget.currentUserId
-            ? ShopProfile(
-                shop: _profileStore!,
-                currentUserId: widget.currentUserId,
-                clientCount: _followerCount,
-              )
-            //  _shopScaffold(_profileStore!)
-            : _fetchedProfile()
-        : ShopProfile(
-            shop: _profileStore!,
+  _shopScaffoldSetUp(BuildContext context) {
+    var _provider = Provider.of<UserData>(context);
+    bool isAuthor = widget.currentUserId == widget.userId;
+    return _profileStore != null
+        ? ShopProfile(
+            shop: isAuthor ? _provider.userStore! : _profileStore!,
             currentUserId: widget.currentUserId,
             clientCount: _followerCount,
-          );
+          )
+        //  _shopScaffold(_profileStore!)
+        : _fetchedProfile(context);
   }
 
-  _clientScaffoldSetUp() {
+  _clientScaffoldSetUp(BuildContext context) {
     return widget.user == null
         ? _profileClient != null && widget.userId == widget.currentUserId
             ? ClientProfile(
@@ -2833,38 +2834,29 @@ class _ProfileScreenState extends State<ProfileScreen>
               )
 
             // _cleintScaffold(_profileClient!)
-            : _fetchedProfile()
+            : _fetchedProfile(context)
         : ClientProfile(
-            client: _profileClient!,
+            client: widget.user!,
             currentUserId: widget.currentUserId,
             clientCount: _followerCount,
           );
   }
 
-  _workerScaffoldSetUp() {
-    return widget.user == null
-        ? _profileWorker != null && widget.userId == widget.currentUserId
-            ? _cleintScaffold(_profileClient!)
-            : _fetchedProfile()
-        : _cleintScaffold(_profileClient!);
+  _workerScaffoldSetUp(BuildContext context) {
+    return _profileWorker != null && widget.userId == widget.currentUserId
+        ? _cleintScaffold(_profileClient!)
+        : _fetchedProfile(context);
   }
 
   bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
-    print(widget.accountType);
     // var _provider = Provider.of<UserData>(context);
     super.build(context);
     return widget.accountType == 'Shop'
-        ? _shopScaffoldSetUp()
+        ? _shopScaffoldSetUp(context)
         : widget.accountType == 'Client'
-            ? _clientScaffoldSetUp()
-            : _workerScaffoldSetUp();
+            ? _clientScaffoldSetUp(context)
+            : _workerScaffoldSetUp(context);
   }
 }
-
-
-
-
-
-

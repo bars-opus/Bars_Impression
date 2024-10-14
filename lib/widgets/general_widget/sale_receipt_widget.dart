@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 class SalesReceiptWidget extends StatelessWidget {
   final String lable;
   final String value;
+  final String value2;
+
   final bool isRefunded;
   final Color? text2Ccolor;
   final int? width;
@@ -20,6 +22,7 @@ class SalesReceiptWidget extends StatelessWidget {
       this.text2Ccolor,
       this.isTicket = false,
       this.inMini = false,
+      this.value2 = '',
       this.text1Ccolor,
       this.maxLines = 5,
       this.width});
@@ -59,13 +62,38 @@ class SalesReceiptWidget extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Text(
-            value,
-            style: _textStyle2,
+          child: RichText(
+            textScaleFactor:
+                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+            text: TextSpan(
+              children: [
+                TextSpan(text: value, style: _textStyle2),
+                if (value2.isNotEmpty)
+                  TextSpan(
+                    text: '\n${value2}',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                      color: value2 == 'Open'
+                          ? Colors.blue
+                          : value2 == 'Closed'
+                              ? Colors.red
+                              : Colors.grey,
+                    ),
+                  ),
+              ],
+            ),
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
           ),
+          // Text(
+          //   value,
+          //   style: _textStyle2,
+          //   maxLines: maxLines,
+          //   overflow: TextOverflow.ellipsis,
+          //   textAlign: TextAlign.start,
+          // ),
         )
       ],
     );

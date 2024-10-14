@@ -134,6 +134,8 @@ class DatabaseService {
       required String accountType,
       required String shopType,
       required String name,
+      required String city,
+      required String country,
       required WriteBatch batch}) async {
     // final _firestore = FirebaseFirestore.instance;
     // WriteBatch batch = _firestore.batch();
@@ -160,8 +162,8 @@ class DatabaseService {
         'verified': false,
         'terms': '',
         'overview': '',
-        'city': '',
-        'country': '',
+        'city': city,
+        'country': country,
         'noBooking': false,
         'awards': [],
         'contacts': [],
@@ -1417,11 +1419,11 @@ class DatabaseService {
     // Create a Map to hold the fields to update
     Map<String, dynamic> eventData = {};
 
-    // Update imageUrl
-    if (provider.imageUrlDraft != imageUrl) {
-      eventData['imageUrl'] = imageUrl;
-      provider.setImageUrlDraft(imageUrl);
-    }
+    // // Update imageUrl
+    // if (provider.imageUrlDraft != imageUrl) {
+    //   eventData['imageUrl'] = imageUrl;
+    //   provider.setImageUrlDraft(imageUrl);
+    // }
 
     // Update isVirtual
     if (provider.isVirtualDraft != isVirtual) {
@@ -4647,6 +4649,18 @@ class DatabaseService {
     return feedSnapShot.docs.length;
   }
 
+  static Future<int> numShopAppointmentsReceived(
+      String currentUserId, DateTime startOfDay, DateTime endOfDay) async {
+    QuerySnapshot feedSnapShot = await newBookingsReceivedRef
+        .doc(currentUserId)
+        .collection('bookings')
+        .where('bookingDate',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('bookingDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+        .get();
+    return feedSnapShot.docs.length;
+  }
+
   static Future<bool> isTicketOrderAvailable({
     required Transaction transaction,
     required String userOrderId,
@@ -4872,40 +4886,42 @@ class DatabaseService {
   }
 
   static Future<void> createBookingAppointment({
-    required BookingAppointmentModel booking,
+    required BookingAppointmentModel bookedAppointmentShop,
+    required BookingAppointmentModel bookedAppointmentClient,
     required AccountHolderAuthor currentUser,
   }) async {
     // Initialize a WriteBatch
-    Map<String, dynamic> bookingData = booking.toJson();
+    Map<String, dynamic> bookingShopData = bookedAppointmentShop.toJson();
+    Map<String, dynamic> bookingClientData = bookedAppointmentClient.toJson();
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     // References to the affiliate documents
     final bookingReceivedDocRef = newBookingsReceivedRef
-        .doc(booking.shopId)
+        .doc(bookedAppointmentShop.shopId)
         .collection('bookings')
-        .doc(booking.id);
+        .doc(bookedAppointmentShop.id);
 // f2427095-a9ec-40b2-8fc3-82bcec946740
     final bookingsSentDocRef = newBookingsSentRef
-        .doc(booking.clientId)
+        .doc(bookedAppointmentShop.clientId)
         .collection('bookings')
-        .doc(booking.id);
+        .doc(bookedAppointmentShop.id);
 
     // Set the affiliate data in the batch
-    batch.set(bookingReceivedDocRef, bookingData);
-    batch.set(bookingsSentDocRef, bookingData);
+    batch.set(bookingReceivedDocRef, bookingShopData);
+    batch.set(bookingsSentDocRef, bookingClientData);
 
     // Create a new document reference for the activity within the userActivities collection
     DocumentReference activityDocRef = activitiesRef
-        .doc(booking.shopId)
+        .doc(bookedAppointmentShop.shopId)
         .collection('userActivities')
         .doc(); // Create a new document reference with a generated ID
 
     // Add the activity creation to the batch
     batch.set(activityDocRef, {
-      'helperFielId': booking.clientId,
+      'helperFielId': bookedAppointmentShop.clientId,
       'authorId': currentUser.userId,
-      'postId': booking.id,
+      'postId': bookedAppointmentShop.id,
       'seen': false,
       'type': 'bookingReceived',
       'postImageUrl': '',

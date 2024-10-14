@@ -5,7 +5,7 @@ class PayoutDataWidget extends StatelessWidget {
   final String value;
   final Color? text2Ccolor;
   final Color? text1Ccolor;
-
+    final String value2;
   final bool inMini;
   final int? maxLines;
 
@@ -16,6 +16,7 @@ class PayoutDataWidget extends StatelessWidget {
     this.inMini = false,
     this.text2Ccolor,
     this.text1Ccolor,
+     this.value2 = '',
     this.maxLines = 5,
   });
 
@@ -36,6 +37,7 @@ class PayoutDataWidget extends StatelessWidget {
           isRefunded: false,
           lable: label,
           value: value,
+          value2: value2,
         ),
       ),
     );

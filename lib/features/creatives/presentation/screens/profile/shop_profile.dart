@@ -53,7 +53,12 @@ class _ShopProfileState extends State<ShopProfile>
     });
 
     _hideButtonController = ScrollController();
-    SchedulerBinding.instance.addPostFrameCallback((_) {});
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      var _provider = Provider.of<UserData>(context, listen: false);
+
+      _provider.setLogoImageUrl(widget.shop.shopLogomageUrl);
+      _provider.appointmentSlots.clear();
+    });
     Timer.periodic(Duration(seconds: 5), (Timer timer) {
       if (_index < 2) {
         _index++;
@@ -545,7 +550,10 @@ class _ShopProfileState extends State<ShopProfile>
               ProfileImageHeaderWidget(
                 isClient: false,
                 isAuthor: _isAuthor,
-                imageUrl: widget.shop.shopLogomageUrl,
+                imageUrl:
+                    Provider.of<UserData>(context, listen: false).logoImageUrl,
+
+                //  widget.shop.shopLogomageUrl,
                 userId: widget.shop.userId,
                 verified: widget.shop.verified,
                 name: widget.shop.shopName,
@@ -553,9 +561,11 @@ class _ShopProfileState extends State<ShopProfile>
                 user: widget.shop,
                 clientCount: widget.clientCount,
                 currentUserId: widget.currentUserId,
-                onPressed: () {
-                  _showBottomSheetEditProfile();
-                },
+                onPressed: _isAuthor
+                    ? () {
+                        _showBottomSheetEditProfile();
+                      }
+                    : () {},
               ),
 
               divider,
@@ -1191,13 +1201,7 @@ class _ShopProfileState extends State<ShopProfile>
     bool _isCurrentUser = widget.currentUserId == widget.shop.userId;
 
     return Material(
-      color:
-
-          //  widget.shop.userId == widget.currentUserId
-          //     ? Theme.of(context).primaryColor
-          //     :
-
-          Theme.of(context).primaryColorLight,
+      color: Theme.of(context).primaryColorLight,
       child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
@@ -1206,7 +1210,7 @@ class _ShopProfileState extends State<ShopProfile>
             const SizedBox(
               height: 10,
             ),
-            _button('Book', () {
+            _button(_isCurrentUser ? 'Your booking appointments' : 'Book', () {
               _showBottomSheetBookingCalendar(false);
             }, 'Right'),
             const SizedBox(
@@ -1271,35 +1275,35 @@ class _ShopProfileState extends State<ShopProfile>
             _divider('Reviews', 'review', false),
             if (!_isFecthingRatings) _buildDisplayReviewGrid(context),
             _divider('Price list and service', 'price', false),
-            if (_provider.appointmentSlots.isNotEmpty && !_isCurrentUser)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '',
-                    // "${_provider.currency} ${_provider.bookingPriceRate!.price.toString()}",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30.0, right: 10),
-                      child: MiniCircularProgressButton(
-                          color: Colors.blue,
-                          text: 'Book',
-                          onPressed: () {
-                            _showBottomSheetBookingCalendar(true);
-                          }),
-                    ),
-                  ),
-                ],
-              ),
+            // if (_provider.appointmentSlots.isNotEmpty && !_isCurrentUser)
+            //   Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Text(
+            //         '',
+            //         // "${_provider.currency} ${_provider.bookingPriceRate!.price.toString()}",
+            //         style: Theme.of(context).textTheme.titleLarge,
+            //       ),
+            //       Align(
+            //         alignment: Alignment.bottomRight,
+            //         child: Padding(
+            //           padding: const EdgeInsets.only(bottom: 30.0, right: 10),
+            //           child: MiniCircularProgressButton(
+            //               color: Colors.blue,
+            //               text: 'Book',
+            //               onPressed: () {
+            //                 _showBottomSheetBookingCalendar(true);
+            //               }),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
             Container(
               color: Theme.of(context).cardColor,
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: TicketGroup(
                 fromProfile: true,
-                fromPrice: false,
+                fromPrice: true,
                 appointmentSlots: user.appointmentSlots,
                 edit: false,
                 openingHours: user.openingHours,

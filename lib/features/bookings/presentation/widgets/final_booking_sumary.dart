@@ -2,10 +2,14 @@ import 'package:bars/utilities/exports.dart';
 
 class FinalBookingSummary extends StatefulWidget {
   final UserStoreModel bookingShop;
-  final BookingAppointmentModel appointmentOrder;
+  final BookingAppointmentModel bookedAppointmentShop;
+  final BookingAppointmentModel bookedAppointmentClient;
 
   const FinalBookingSummary(
-      {super.key, required this.bookingShop, required this.appointmentOrder});
+      {super.key,
+      required this.bookingShop,
+      required this.bookedAppointmentClient,
+      required this.bookedAppointmentShop});
 
   @override
   State<FinalBookingSummary> createState() => _FinalBookingSummaryState();
@@ -51,7 +55,8 @@ class _FinalBookingSummaryState extends State<FinalBookingSummary> {
 
     Future<void> sendInvites() => DatabaseService.createBookingAppointment(
           currentUser: _user!,
-          booking: appointmentOrder,
+          bookedAppointmentClient: appointmentOrder,
+          bookedAppointmentShop: widget.bookedAppointmentShop,
         );
 
     try {
@@ -250,9 +255,10 @@ class _FinalBookingSummaryState extends State<FinalBookingSummary> {
           BookingSummaryWidget(
             edit: true,
             currency: widget.bookingShop.currency,
-            appointmentOrder: widget.appointmentOrder,
+            appointmentOrder: widget.bookedAppointmentClient,
           ),
-          _eventOnTicketAndPurchaseButton(context, widget.appointmentOrder),
+          _eventOnTicketAndPurchaseButton(
+              context, widget.bookedAppointmentClient),
         ],
       ),
     );

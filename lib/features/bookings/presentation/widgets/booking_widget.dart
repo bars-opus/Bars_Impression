@@ -872,7 +872,8 @@ class _BookingWidgetStateState extends State<BookingWidget>
                   userId: _isAuthor
                       ? widget.booking.clientId
                       : widget.booking.creativeId,
-                  user: null, accountType: _isAuthor? 'Client':'Shop',
+                  user: null,
+                  accountType: _isAuthor ? 'Client' : 'Shop',
                 ));
           },
           leading: Icon(

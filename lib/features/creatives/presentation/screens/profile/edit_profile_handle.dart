@@ -63,49 +63,60 @@ class _EditshopTypeState extends State<EditshopType> {
       },
     );
 
-    batch.update(
-      userProfessionalRef.doc(widget.user.userId),
-      {
-        'accountType': _accountType,
-      },
-    );
+    // Get a reference to the document
+    DocumentReference userDocRef = userProfessionalRef.doc(widget.user.userId);
 
-    // try {
-    await batch.commit();
-    // await HiveUtils.updateUserStore(
-    //     context,
-    //     _provider.userStore!.shopLogomageUrl,
-    //     _provider.userStore!.shopType,
-    //     _accountType);
-    await HiveUtils.updateAuthorHive(
-      context: context,
-      name: _provider.user!.userName!,
-      profileImageUrl: _provider.user!.profileImageUrl!,
-      link: _provider.user!.dynamicLink!,
-      shopType: _shopType,
-      accountType: _accountType,
-      disabledAccount: _provider.user!.disabledAccount!,
-      reportConfirmed: _provider.user!.reportConfirmed!,
-      verified: _provider.user!.verified!,
-      disableChat: _provider.user!.disableChat!,
+// Check if the document exists
+    await userDocRef.get().then((docSnapshot) {
+      if (docSnapshot.exists) {
+        // Document exists, proceed with the update
+        batch.update(
+          userDocRef,
+          {
+            'accountType': _accountType,
+          },
+        );
+      } else {
+        // Document does not exist, create it
+        DatabaseService.createUserProfileITypeData(
+          accountType: _accountType,
+          userId: widget.user.userId!,
+          shopType: _shopType,
+          name: widget.user.userName!,
+          batch: batch,
+          city: _provider.userLocationPreference!.city!,
+          country: _provider.userLocationPreference!.city!,
+        );
+      }
+    });
+    // }).catchError((error) {
+    //   // Handle any errors that occur during the get operation
+    //   // print('Error getting document: $error');
+    // });
 
-      // ProfileScreen.setUp();
-      // lastActiveDate: _provider.user!.lastActiveDate!,
+    try {
+      await batch.commit();
 
-      // context,
-      // _provider.user!.userName!,
-      // _provider.user!.profileImageUrl!,
-      // _provider.user!.dynamicLink!,
-      // _provider.user!.shopType!,
-      // _accountType
-    );
+      await HiveUtils.updateAuthorHive(
+        context: context,
+        name: _provider.user!.userName!,
+        profileImageUrl: _provider.user!.profileImageUrl!,
+        link: _provider.user!.dynamicLink!,
+        shopType: _shopType,
+        accountType: _accountType,
+        disabledAccount: _provider.user!.disabledAccount!,
+        reportConfirmed: _provider.user!.reportConfirmed!,
+        verified: _provider.user!.verified!,
+        disableChat: _provider.user!.disableChat!,
+      );
 
-    profileScreenKey.currentState?.setUp();
-
-    // _updateAuthorHive(_shopType);
-    // } catch (error) {
-    //   // Handle the error appropriately
-    // }
+      if (widget.user.accountType != _accountType)
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => ConfigPage()),
+            (Route<dynamic> route) => false); // _updateAuthorHive(_shopType);
+    } catch (error) {
+      // Handle the error appropriately
+    }
   }
 
   _updateStore() async {
@@ -300,7 +311,8 @@ class _EditshopTypeState extends State<EditshopType> {
               () {
                 _shopType = this.selectedStoreValue = value!;
                 Navigator.pop(context);
-                _updateShoptAndType();
+                _showBottomSheetConfirmSetUp();
+
                 // _updateStore();
               },
             ),
@@ -351,6 +363,30 @@ class _EditshopTypeState extends State<EditshopType> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showBottomSheetConfirmSetUp() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          buttonText: 'Reload profile',
+          onPressed: () {
+            Navigator.pop(context);
+            _accountType == 'Shop'
+                ? _updateShoptAndType()
+                : _accountType == 'Worker'
+                    ? _updateShoptAndType()
+                    : _submitAccountType();
+          },
+          title: 'Reload profile.',
+          subTitle:
+              'You will need to reload your profile to update your account type.',
+        );
+      },
     );
   }
 
@@ -406,9 +442,9 @@ class _EditshopTypeState extends State<EditshopType> {
     );
   }
 
-  _updateShoptAndType() {
+  _updateShoptAndType() async {
+    await _submitAccountType();
     _updateStore();
-    _submitAccountType();
   }
 
   static const accountType = <String>[
@@ -447,9 +483,7 @@ class _EditshopTypeState extends State<EditshopType> {
                 _accountType = this.selectedAccountValue = value!;
                 _accountType == 'Shop'
                     ? _showBottomSheetStoreType(context)
-                    : _accountType == 'Worker'
-                        ? _updateShoptAndType()
-                        : _submitAccountType();
+                    : _showBottomSheetConfirmSetUp();
                 // _updateAccountType();
                 // if (_accountType == 'Shop') _showBottomSheetStoreType(context);
               },

@@ -146,7 +146,7 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
-            backgroundColor: Color(0xFF1a1a1a),
+            backgroundColor: Color(0xFF013e9d),
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(

@@ -13,7 +13,8 @@ class ShowSlotWidget extends StatefulWidget {
 class _ShowSlotWidgetState extends State<ShowSlotWidget> {
   void _showBottomFinalPurhcaseSummary(
     BuildContext context,
-    BookingAppointmentModel appointmentOrder,
+    BookingAppointmentModel bookedAppointmentClient,
+    BookingAppointmentModel bookedAppointmentShop,
   ) {
     showModalBottomSheet(
       context: context,
@@ -27,7 +28,8 @@ class _ShowSlotWidgetState extends State<ShowSlotWidget> {
                 borderRadius: BorderRadius.circular(30)),
             child: FinalBookingSummary(
               bookingShop: widget.bookingShop,
-              appointmentOrder: appointmentOrder,
+              bookedAppointmentShop: bookedAppointmentShop,
+              bookedAppointmentClient: bookedAppointmentClient,
             ));
       },
     );
@@ -35,6 +37,9 @@ class _ShowSlotWidgetState extends State<ShowSlotWidget> {
 
   _creatingBookingData(BuildContext context) async {
     var _provider = Provider.of<UserData>(context, listen: false);
+
+    print(_provider.appointmentWorkers);
+
     List<BookedAppointmentModel> bookedAppointments = [];
 
     for (var appointmentSlot in _provider.appointmentSlots) {
@@ -43,12 +48,22 @@ class _ShowSlotWidgetState extends State<ShowSlotWidget> {
           selectedSlot.service == appointmentSlot.service &&
           selectedSlot.type == appointmentSlot.type);
 
+      var matchingWorkers = _provider.appointmentWorkers.where((worker) {
+        bool serviceMatch = worker.services
+            .any((service) => appointmentSlot.service.contains(service));
+        bool typeMatch =
+            worker.role.any((type) => appointmentSlot.type.contains(type));
+        return serviceMatch && typeMatch;
+      }).toList();
+
       for (var selectedSlot in matchingSlots) {
         // Find matching workers for the service
-        var matchingWorkers = appointmentSlot.workers
-            .where(
-                (worker) => worker.services.contains(appointmentSlot.service))
-            .toList();
+        // var matchingWorkers = _provider.appointmentWorkers
+        //     .where(
+        //         (worker) => worker.services.contains(appointmentSlot.service))
+        //     .toList();
+
+        // print(matchingWorkers);
 
         // Create a booked appointment model
         BookedAppointmentModel appointment = BookedAppointmentModel(
@@ -64,7 +79,8 @@ class _ShowSlotWidgetState extends State<ShowSlotWidget> {
         bookedAppointments.add(appointment);
         String commonId = Uuid().v4();
 
-        BookingAppointmentModel bookedAppointment = BookingAppointmentModel(
+        BookingAppointmentModel bookedAppointmentClient =
+            BookingAppointmentModel(
           id: commonId,
           shopId: widget.bookingShop.userId,
           isFinalPaymentMade: false,
@@ -83,7 +99,29 @@ class _ShowSlotWidgetState extends State<ShowSlotWidget> {
           isdownPaymentMade: false,
           shopType: widget.bookingShop.shopType,
         );
-        _showBottomFinalPurhcaseSummary(context, bookedAppointment);
+
+        BookingAppointmentModel bookedAppointmentShop = BookingAppointmentModel(
+          id: commonId,
+          shopId: widget.bookingShop.userId,
+          isFinalPaymentMade: false,
+          clientId: _provider.currentUserId!,
+          appointment: bookedAppointments,
+          bookingDate: _provider.startDate,
+          location: widget.bookingShop.address,
+          rating: 0,
+          reviewComment: '',
+          timestamp: Timestamp.fromDate(DateTime.now()),
+          termsAndConditions: '',
+          cancellationReason: '',
+          shopName: _provider.user!.userName!,
+          //  widget.bookingShop.shopName,
+          shopLogoUrl: _provider.user!.profileImageUrl!,
+          specialRequirements: '',
+          isdownPaymentMade: false,
+          shopType: '',
+        );
+        _showBottomFinalPurhcaseSummary(
+            context, bookedAppointmentClient, bookedAppointmentShop);
 
         // _provider.setFinalBookingAppointment(bookedAppointment);
       }
@@ -130,8 +168,11 @@ class _ShowSlotWidgetState extends State<ShowSlotWidget> {
                 ),
                 const SizedBox(height: 20),
                 TimeSlotSelection(
+                  shopId: widget.bookingShop.userId,
                   appointmentSlots: _provider.appointmentSlots,
                   openingHours: widget.bookingShop.openingHours,
+                  selectedDate: _provider.startDate.toDate(),
+                  selectedWorkers: _provider.appointmentWorkers,
                 )
               ],
             ),

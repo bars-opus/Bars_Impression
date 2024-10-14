@@ -238,7 +238,7 @@
 //         ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
 //         : allEventsRef
 //             .where('showOnExplorePage', isEqualTo: true)
-//             .where('type', isEqualTo: widget.types);
+            // .where('type', isEqualTo: widget.types);
 //     // if (country != null) query = query.where('country', isEqualTo: country);
 //     if (city != null) query = query.where('city', isEqualTo: city);
 

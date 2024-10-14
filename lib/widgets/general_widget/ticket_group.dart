@@ -17,16 +17,10 @@ class TicketGroup extends StatefulWidget {
   final UserStoreModel? bookingShop;
   final bool fromPrice;
 
-  // final Event? event;
-  // final String currentUserId;
-  // final String inviteReply;
   final bool edit;
   final bool fromProfile;
 
-  // final bool onCalendatSchedule;
-  // final bool isPreview;
-
-  // final String marketedAffiliateId;
+  final DateTime? selectedDay;
 
   TicketGroup({
     required this.appointmentSlots,
@@ -38,6 +32,7 @@ class TicketGroup extends StatefulWidget {
     // required this.inviteReply,
     this.edit = false,
     this.fromProfile = false,
+    this.selectedDay,
 
     // // required this.marketedAffiliateId ,
     // this.onInvite = false,
@@ -57,9 +52,10 @@ class _TicketGroupState extends State<TicketGroup> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _clear();
-    });
+    if (!widget.fromProfile)
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        _clear();
+      });
   }
 
   void _showBottomSheetErrorMessage(BuildContext context, String error) {
@@ -195,7 +191,7 @@ class _TicketGroupState extends State<TicketGroup> {
   _clear() {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.setAddress('');
-    _provider.appointmentSlots.clear();
+    if (!widget.edit) _provider.appointmentSlots.clear();
     _provider.setFinalBookingAppointment(null);
     _provider.appointmentWorkers.clear();
     _provider.selectedSlots.clear();
@@ -1091,13 +1087,17 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    var _provider = Provider.of<UserData>(
-      context,
-    );
-    var _usercountry = _provider.userLocationPreference!.country;
+    var _provider = Provider.of<UserData>(context);
+
+    // Filter appointment slots based on selected day
+    final filteredSlots = widget.selectedDay != null
+        ? widget.appointmentSlots
+            .where((appointment) =>
+                appointment.day.contains(_getDayName(widget.selectedDay!)))
+            .toList()
+        : widget.appointmentSlots;
 
     return Stack(
       children: [
@@ -1108,56 +1108,98 @@ class _TicketGroupState extends State<TicketGroup> {
               top: _provider.appointmentSlots.isEmpty ? 0.0 : 50.0),
           child: Container(
             height: ResponsiveHelper.responsiveHeight(
-                context, widget.appointmentSlots.length * 500),
+                context, filteredSlots.length * 500),
             width: width,
             child: TicketGoupWidget(
+              selectedDay: widget.selectedDay,
               fromProfile: widget.fromProfile,
-              appointmentSlots: widget.appointmentSlots,
+              appointmentSlots: filteredSlots, // Pass filtered slots
               isEditing: widget.edit,
-              currency: widget.bookingShop!.currency,
+              currency: widget.bookingShop == null
+                  ? _provider.currency
+                  : widget.bookingShop!.currency,
               eventId: '',
               eventAuthorId: '',
             ),
           ),
         ),
-        if (!widget.fromProfile)
-          if (_provider.appointmentSlots.isNotEmpty)
-            if (!widget.edit)
-              Positioned(
-                  right: 30,
-                  top: 10,
-                  child:
-
-                      // _checkingTicketAvailability
-                      //     ? _ticketLoadingIndicator()
-                      //     :
-
-                      MiniCircularProgressButton(
-                    text: 'Continue',
-                    onPressed:
-                        // widget.isPreview
-                        //     ? () {
-                        //         _showBottomSheetErrorMessage(
-                        //           context,
-                        //           'Not available in preview mode',
-                        //         );
-                        //       }
-                        //     : _usercountry!.isEmpty
-                        //         ? () {
-                        //             widget.event!.isFree
-                        //                 ? _attendMethod()
-                        //                 : _showBottomEditLocation(context);
-                        //           }
-                        //         :
-
-                        () {
-                      widget.fromPrice
-                          ? _showBottomSheetBookingCalendar()
-                          : _selectPreferedWorker();
-                    },
-                    color: Colors.blue,
-                  ))
+        if (_provider.appointmentSlots.isNotEmpty)
+          if (!widget.edit)
+            Positioned(
+                right: 30,
+                top: 10,
+                child: MiniCircularProgressButton(
+                  text: 'Continue',
+                  onPressed: () {
+                    widget.fromPrice || widget.fromProfile
+                        ? _showBottomSheetBookingCalendar()
+                        : _selectPreferedWorker();
+                  },
+                  color: Colors.blue,
+                ))
       ],
     );
   }
+
+  String _getDayName(DateTime date) {
+    return [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ][date.weekday - 1];
+  }
 }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final width = MediaQuery.of(context).size.width;
+//     var _provider = Provider.of<UserData>(
+//       context,
+//     );
+
+//     return Stack(
+//       children: [
+//         AnimatedPadding(
+//           curve: Curves.easeOutBack,
+//           duration: const Duration(milliseconds: 500),
+//           padding: EdgeInsets.only(
+//               top: _provider.appointmentSlots.isEmpty ? 0.0 : 50.0),
+//           child: Container(
+//             height: ResponsiveHelper.responsiveHeight(
+//                 context, widget.appointmentSlots.length * 500),
+//             width: width,
+//             child: TicketGoupWidget(
+//               selectedDay: widget.selectedDay,
+//               fromProfile: widget.fromProfile,
+//               appointmentSlots: widget.appointmentSlots,
+//               isEditing: widget.edit,
+//               currency: widget.bookingShop == null
+//                   ? _provider.currency
+//                   : widget.bookingShop!.currency,
+//               eventId: '',
+//               eventAuthorId: '',
+//             ),
+//           ),
+//         ),
+//         if (_provider.appointmentSlots.isNotEmpty)
+//           if (!widget.edit)
+//             Positioned(
+//                 right: 30,
+//                 top: 10,
+//                 child: MiniCircularProgressButton(
+//                   text: 'Continue',
+//                   onPressed: () {
+//                     widget.fromPrice || widget.fromProfile
+//                         ? _showBottomSheetBookingCalendar()
+//                         : _selectPreferedWorker();
+//                   },
+//                   color: Colors.blue,
+//                 ))
+//       ],
+//     );
+//   }
+// }

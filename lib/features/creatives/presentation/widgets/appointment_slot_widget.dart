@@ -177,30 +177,3 @@ class _AppointmentSlotWidgetState extends State<AppointmentSlotWidget> {
         : _buildDisplayPortfolioList(context);
   }
 }
-
- 
- 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: ResponsiveHelper.responsiveFontSize(context, 300),
-//       child: ListView.builder(
-//         itemCount: widget.appointmentSlots.length,
-//         itemBuilder: (context, index) {
-//           final slot = widget.appointmentSlots[index];
-//           return Card(
-//             margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-//             child: ListTile(
-//               title: Text(' - ${slot.service}'),
-//               // ${slot.day}
-//               subtitle: Text(
-//                 'Time: ${slot.startTime.format(context)} - ${slot.endTime.format(context)}\nWorkers: ${slot.workers.map((w) => w.name).join(', ')}',
-//                 style: TextStyle(color: Colors.black),
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

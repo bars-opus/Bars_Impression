@@ -1,14 +1,14 @@
 import 'package:bars/utilities/exports.dart';
 
 class UserHeaderListTileWidget extends StatelessWidget {
-  var user;
+ final UserStoreModel shop;
   final Widget trailing;
   String imageUrl;
   final VoidCallback onPressed;
 
   UserHeaderListTileWidget(
       {super.key,
-      required this.user,
+      required this.shop,
       required this.imageUrl,
       this.trailing = const SizedBox.shrink(),
       required this.onPressed});
@@ -44,10 +44,10 @@ class UserHeaderListTileWidget extends StatelessWidget {
         text: TextSpan(
           children: [
             TextSpan(
-                text: user.userName!.toUpperCase(),
+                text: shop.shopName.toUpperCase(),
                 style: Theme.of(context).textTheme.bodyMedium),
             TextSpan(
-              text: "\n${user.shopType}",
+              text: "\n${shop.shopType}",
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),

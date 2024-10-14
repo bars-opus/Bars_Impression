@@ -116,6 +116,10 @@ class UserData extends ChangeNotifier {
   late String _rate;
   late String _currency;
   late String _imageUrl;
+  late String _profileImageUrl;
+
+  late String _logoImageUrl;
+
   late String _eventTermsAndConditions;
   late String _dressingCode;
   late String _blurHash;
@@ -166,7 +170,6 @@ class UserData extends ChangeNotifier {
   late String _continentDraft;
   late String _rateDraft;
   late String _currencyDraft;
-  late String _imageUrlDraft;
   late String _eventTermsAndConditionsDraft;
   late String _virtualVenueDraft;
   late String _dressingCodeDraft;
@@ -385,7 +388,8 @@ class UserData extends ChangeNotifier {
     _continentDraft = '';
     _rateDraft = '';
     _currencyDraft = '';
-    _imageUrlDraft = '';
+    _profileImageUrl = '';
+    _logoImageUrl = '';
     _eventTermsAndConditionsDraft = '';
     _virtualVenueDraft = '';
     _dressingCodeDraft = '';
@@ -449,7 +453,10 @@ class UserData extends ChangeNotifier {
   String get continentDraft => _continentDraft;
   String get rateDraft => _rateDraft;
   String get currencyDraft => _currencyDraft;
-  String get imageUrlDraft => _imageUrlDraft;
+  String get profileImageUrl => _profileImageUrl;
+String get logoImageUrl => _logoImageUrl;
+
+  
   String get eventTermsAndConditionsDraft => _eventTermsAndConditionsDraft;
   String get virtualVenueDraft => _virtualVenueDraft;
 
@@ -1568,10 +1575,18 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setImageUrlDraft(String imageUrl) {
-    _imageUrlDraft = imageUrl;
+  void setProfileImageUrl(String profileImageUrl) {
+    _profileImageUrl = profileImageUrl;
     notifyListeners();
   }
+
+
+
+  void setLogoImageUrl(String logoImageUrl) {
+    _logoImageUrl = logoImageUrl;
+    notifyListeners();
+  }
+
 
   void setEventTermsAndConditionsDraft(String terms) {
     _eventTermsAndConditionsDraft = terms;

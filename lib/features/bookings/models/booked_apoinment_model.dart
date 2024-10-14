@@ -19,6 +19,26 @@ class BookedAppointmentModel {
     required this.selectedSlot,
   });
 
+  factory BookedAppointmentModel.fromDoc(DocumentSnapshot doc) {
+    return BookedAppointmentModel(
+      id: doc['id'] ?? '',
+      price: (doc['price'] as num?)?.toDouble() ?? 0.0,
+      workers: (doc['workers'] as List<dynamic>?)
+              ?.map((worker) => ShopWorkerModel.fromJson(worker))
+              .toList() ??
+          [],
+      service: doc['service'] ?? '',
+      type: doc['type'] ?? '',
+      duruation: doc['duruation'] ?? '',
+      selectedSlot: doc['selectedSlot'] != null
+          ? TimeOfDay(
+              hour: doc['selectedSlot']['hour'],
+              minute: doc['selectedSlot']['minute'],
+            )
+          : null,
+    );
+  }
+
   factory BookedAppointmentModel.fromJson(Map<String, dynamic> json) {
     return BookedAppointmentModel(
       id: json['id'],

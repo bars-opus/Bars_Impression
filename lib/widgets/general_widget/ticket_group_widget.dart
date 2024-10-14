@@ -7,12 +7,14 @@ class TicketGoupWidget extends StatefulWidget {
   final String eventId;
   final String eventAuthorId;
   final bool fromProfile;
+  final DateTime? selectedDay;
 
   const TicketGoupWidget({
     super.key,
     required this.appointmentSlots,
     required this.currency,
     required this.isEditing,
+    this.selectedDay,
     required this.eventId,
     required this.eventAuthorId,
     this.fromProfile = true,
@@ -23,23 +25,23 @@ class TicketGoupWidget extends StatefulWidget {
 }
 
 class _TicketGoupWidgetState extends State<TicketGoupWidget> {
-  Map<String, bool> selectedTickets = {};
+  Map<String, bool> selectedAppointment = {};
   Map<String, bool> checkingAvailability = {};
 
   @override
   void initState() {
     super.initState();
-    for (var ticket in widget.appointmentSlots) {
-      selectedTickets[ticket.id] = false;
+    for (var appointment in widget.appointmentSlots) {
+      selectedAppointment[appointment.id] = false;
     }
   }
 
-  void _toggleTicket(AppointmentSlotModel appoinment) {
+  void _toggleAppointment(AppointmentSlotModel appoinment) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    var appoinmentSelected = selectedTickets[appoinment.id] ?? false;
+    var appoinmentSelected = selectedAppointment[appoinment.id] ?? false;
     setState(() {
-      selectedTickets[appoinment.id] = !appoinmentSelected;
+      selectedAppointment[appoinment.id] = !appoinmentSelected;
     });
 
     if (!appoinmentSelected) {
@@ -53,7 +55,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
 
   _removeTicket(AppointmentSlotModel removingTicket) async {
     widget.appointmentSlots
-        .removeWhere((ticket) => ticket.id == removingTicket.id);
+        .removeWhere((appointment) => appointment.id == removingTicket.id);
   }
 
   @override
@@ -63,23 +65,23 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
     final List<String> currencyPartition =
         widget.currency.trim().replaceAll('\n', ' ').split("|");
 
-    Map<String, Map<String, List<AppointmentSlotModel>>> ticketsByDateAndGroup =
-        {};
-    for (AppointmentSlotModel ticket in widget.appointmentSlots) {
-      String ticketDate = ticket.service;
+    Map<String, Map<String, List<AppointmentSlotModel>>>
+        appointmentsByDateAndGroup = {};
+    for (AppointmentSlotModel appointment in widget.appointmentSlots) {
+      String appointmentDate = appointment.service;
 
-      if (!ticketsByDateAndGroup.containsKey(ticketDate)) {
-        ticketsByDateAndGroup[ticketDate] = {};
+      if (!appointmentsByDateAndGroup.containsKey(appointmentDate)) {
+        appointmentsByDateAndGroup[appointmentDate] = {};
       }
       Map<String, List<AppointmentSlotModel>> groupMap =
-          ticketsByDateAndGroup[ticketDate]!;
-      if (!groupMap.containsKey(ticket.type)) {
-        groupMap[ticket.type] = [];
+          appointmentsByDateAndGroup[appointmentDate]!;
+      if (!groupMap.containsKey(appointment.type)) {
+        groupMap[appointment.type] = [];
       }
-      groupMap[ticket.type]!.add(ticket);
+      groupMap[appointment.type]!.add(appointment);
     }
 
-    var sortedEntries = ticketsByDateAndGroup.entries.toList()
+    var sortedEntries = appointmentsByDateAndGroup.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
 
     return ListView.builder(
@@ -92,9 +94,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
 
         List<Widget> groupWidgets = groups.entries.map((groupEntry) {
           String groupName = groupEntry.key;
-          List<AppointmentSlotModel> tickets = groupEntry.value;
-          List<Widget> ticketWidgets = tickets.map((ticket) {
-            bool isSelected = selectedTickets[ticket.id] ?? false;
+          List<AppointmentSlotModel> appointments = groupEntry.value;
+          List<Widget> appointmentWidgets = appointments.map((appointment) {
+            bool isSelected = selectedAppointment[appointment.id] ?? false;
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 0),
@@ -125,7 +127,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                       width: 100,
                                       isRefunded: false,
                                       lable: 'Duration',
-                                      value: ticket.duruation,
+                                      value: appointment.duruation,
                                     ),
                                   ],
                                 ),
@@ -134,11 +136,12 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  if (checkingAvailability[ticket.id] ==
+                                  if (checkingAvailability[appointment.id] ==
                                           false ||
-                                      checkingAvailability[ticket.id] == null)
+                                      checkingAvailability[appointment.id] ==
+                                          null)
                                     Text(
-                                      '${currencyPartition.isEmpty ? '' : currencyPartition.length > 1 ? currencyPartition[1] : ''} ${ticket.price}',
+                                      '${currencyPartition.isEmpty ? '' : currencyPartition.length > 1 ? currencyPartition[1] : ''} ${appointment.price}',
                                       style: TextStyle(
                                           fontSize: ResponsiveHelper
                                               .responsiveFontSize(
@@ -147,7 +150,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                   if (!widget.isEditing)
-                                    checkingAvailability[ticket.id] == true
+                                    checkingAvailability[appointment.id] == true
                                         ? SizedBox(
                                             height: ResponsiveHelper
                                                 .responsiveHeight(
@@ -165,17 +168,19 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                             activeColor: Colors.white,
                                             side:
                                                 BorderSide(color: Colors.black),
-                                            value: selectedTickets[ticket.id],
+                                            value: selectedAppointment[
+                                                appointment.id],
                                             onChanged: (bool? value) async {
-                                              var ticketSelected =
-                                                  selectedTickets[ticket.id] ??
+                                              var appointmentSelected =
+                                                  selectedAppointment[
+                                                          appointment.id] ??
                                                       false;
-                                              _toggleTicket(ticket);
+                                              _toggleAppointment(appointment);
                                             },
                                           ),
                                   if (widget.isEditing)
                                     GestureDetector(
-                                        onTap: () => _removeTicket(ticket),
+                                        onTap: () => _removeTicket(appointment),
                                         child: Icon(
                                           Icons.remove,
                                           color: Colors.red,
@@ -183,22 +188,22 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                 ],
                               ),
                             ]),
-                        SettingSwitch(
-                          isAlwaysBlack: isSelected ? true : false,
-                          color: isSelected
-                              ? Colors.grey[700] ?? Colors.grey
-                              : Colors.blue,
-                          title: 'Select your favorite worker.',
-                          subTitle: ticket.favoriteWorker
-                              ? 'You would have to select a preferred worker in the next step.\nSee available workers below'
-                              : 'A random worker would be selected for you.\nSee available workers below',
-                          value: ticket.favoriteWorker,
-                          onChanged: (value) {
-                            setState(() {
-                              ticket.favoriteWorker = value;
-                            });
-                          },
-                        ),
+                        // SettingSwitch(
+                        //   isAlwaysBlack: isSelected ? true : false,
+                        //   color: isSelected
+                        //       ? Colors.grey[700] ?? Colors.grey
+                        //       : Colors.blue,
+                        //   title: 'Select your favorite worker.',
+                        //   subTitle: appointment.favoriteWorker
+                        //       ? 'You would have to select a preferred worker in the next step.\nSee available workers below'
+                        //       : 'A random worker would be selected for you.\nSee available workers below',
+                        //   value: appointment.favoriteWorker,
+                        //   onChanged: (value) {
+                        //     setState(() {
+                        //       appointment.favoriteWorker = value;
+                        //     });
+                        //   },
+                        // ),
                         Container(
                           padding: EdgeInsets.all(
                               ResponsiveHelper.responsiveWidth(context, 2)),
@@ -210,8 +215,8 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                             ),
                           ),
                           child: ShedulePeopleHorizontal(
-                            edit: ticket.favoriteWorker,
-                            workers: ticket.workers,
+                            edit: appointment.favoriteWorker,
+                            workers: appointment.workers,
                             currentUserId: _provider.currentUserId!,
                           ),
                         ),
@@ -229,7 +234,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
               groupName.toUpperCase(),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            children: ticketWidgets,
+            children: appointmentWidgets,
           );
         }).toList();
 

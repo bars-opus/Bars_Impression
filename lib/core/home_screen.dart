@@ -25,16 +25,14 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _setUpactivityCount();
-      _configureNotification();
-      initDynamicLinks();
-      // _setBrandTarget();
-      // _new();
-      // _updateFields();
-    });
-    // if (Platform.isIOS) showAnalytics();
+    _setUpactivityCount();
+    _configureNotification();
+    initDynamicLinks();
+    // _setBrandTarget();
+    // _new();
+    // _updateFields();
   }
+  // if (Platform.isIOS) showAnalytics();
 
   // showAnalytics() async {
   //   // Check the tracking authorization status
@@ -2918,7 +2916,7 @@ class _HomeMobileState extends State<HomeMobile>
                               accountType: _provider.user!.accountType!,
                               currentUserId: currentUserId,
                               userId: currentUserId,
-                              user: userStore,
+                              user: _provider.user!,
                             ),
                           ],
                           onPageChanged: (int index) {

@@ -4,12 +4,13 @@ class SearchUserTile extends StatelessWidget {
   final String profileImageUrl;
   final String userName;
   final String shopType;
-  final String bio;
+  // final String bio;
   final bool verified;
   final VoidCallback onPressed;
 
   SearchUserTile(
-      {required this.bio,
+      {
+      // required this.bio,
       required this.userName,
       required this.profileImageUrl,
       required this.shopType,
@@ -28,11 +29,11 @@ class SearchUserTile extends StatelessWidget {
         leading: profileImageUrl.isEmpty
             ? Icon(
                 Icons.account_circle,
-                size: ResponsiveHelper.responsiveHeight(context, 60.0),
+                size: ResponsiveHelper.responsiveHeight(context, 40.0),
                 color: Colors.grey,
               )
             : CircleAvatar(
-                radius: ResponsiveHelper.responsiveHeight(context, 25.0),
+                radius: ResponsiveHelper.responsiveHeight(context, 20.0),
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
                 backgroundImage: CachedNetworkImageProvider(profileImageUrl,
                     errorListener: (_) {
@@ -67,34 +68,26 @@ class SearchUserTile extends StatelessWidget {
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                   color: Colors.blue,
                 )),
-            RichText(
-              textScaler: MediaQuery.of(context).textScaler,
-              maxLines: 3,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Bio:  ",
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 10.0),
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: bio,
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 12.0),
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                ],
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
+            // RichText(
+            //   textScaler: MediaQuery.of(context).textScaler,
+            //   maxLines: 3,
+            //   text: TextSpan(
+            //     children: [
+            //       TextSpan(
+            //         text: bio,
+            //         style: TextStyle(
+            //           fontSize:
+            //               ResponsiveHelper.responsiveFontSize(context, 12.0),
+            //           color: Theme.of(context).secondaryHeaderColor,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            //   overflow: TextOverflow.ellipsis,
+            // ),
+            // SizedBox(
+            //   height: 20.0,
+            // ),
             Divider(
               thickness: .2,
               color: Colors.grey[350],

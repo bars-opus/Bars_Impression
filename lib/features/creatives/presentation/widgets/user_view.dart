@@ -128,6 +128,7 @@ class _UserViewState extends State<UserView> {
           return ServicePriceOptions(
             fromPrice: true,
             bookingUser: widget.userProfessional,
+            selectedDay: null,
           );
         });
   }
@@ -227,9 +228,10 @@ class _UserViewState extends State<UserView> {
                         isFrom: widget.isFrom,
                       )));
         },
-        child: Column(
-          children: [
-            _card(
+        child: _card(
+          Column(
+            children: [
+              // _card(
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,9 +335,8 @@ class _UserViewState extends State<UserView> {
                     ),
                   ),
                 ],
+                // ),
               ),
-            ),
-            _card(
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,8 +407,8 @@ class _UserViewState extends State<UserView> {
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

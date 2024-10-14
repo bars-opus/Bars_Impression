@@ -444,3 +444,5 @@ export 'package:bars/features/creatives/presentation/screens/profile/client_prof
 export 'package:bars/features/creatives/presentation/screens/profile/shop_profile.dart';
 export 'package:bars/features/creatives/presentation/widgets/profile_add_icon_widget.dart';
 export 'package:bars/features/creatives/presentation/widgets/profile_more_icon_widget.dart';
+export 'package:bars/features/gemini_ai/presentation/widgets/summary_button.dart';
+export 'package:bars/features/events/ticket/presentation/screens/shop_booking.dart';

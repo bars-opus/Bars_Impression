@@ -185,7 +185,7 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
 
     AppointmentSlotModel _appointment = AppointmentSlotModel(
       id: commonId,
-      days: selectedDays,
+      day: selectedDays,
       duruation: selectedDuration!,
       // startTime: startTime!,
       // endTime: endTime!,
@@ -193,6 +193,8 @@ class _EditApointmentSlotState extends State<EditApointmentSlot> {
       workers: selectedWorkers, price: _price,
       type: _typeController.text.trim(), favoriteWorker: false,
     );
+
+    print(_appointment.toString());
 
     _provider.setAppointmentSlots(_appointment);
     _serviceController.clear();

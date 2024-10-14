@@ -173,7 +173,8 @@ class _BookingSummaryWidgetState extends State<BookingSummaryWidget> {
                     ),
                     child: ShedulePeopleHorizontal(
                       edit: false,
-                      workers: _provider.appointmentWorkers,
+                      workers: finalAppointment.workers,
+                      //  _provider.appointmentWorkers,
                       currentUserId: _provider.currentUserId!,
                     ),
                   ),

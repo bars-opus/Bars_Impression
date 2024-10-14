@@ -3,14 +3,14 @@ import 'package:flutter/scheduler.dart';
 
 class EditProfileSelectLocation extends StatefulWidget {
   final UserSettingsLoadingPreferenceModel user;
-    final String accountType;
+  final String accountType;
 
   final bool notFromEditProfile;
 
-
   EditProfileSelectLocation({
     required this.user,
-    this.notFromEditProfile = false, required this.accountType,
+    this.notFromEditProfile = false,
+    required this.accountType,
   });
 
   @override
@@ -54,30 +54,56 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
         'city': _provider.city,
       },
     );
-    batch.update(
-      userProfessionalRef.doc(widget.user.userId),
-      {
-        'country': _provider.country,
-        'city': _provider.city,
-      },
-    );
 
-    // try {
-    batch.commit();
-    _provider.setIsLoading(false);
-    // Inside your widget or function
-    await HiveUtils.updateUserLocation(context, _provider.city,
-        _provider.country, widget.accountType);
+    DocumentReference userDocRef = userProfessionalRef.doc(widget.user.userId);
 
-    // _updateAuthorHive(
-    //     _provider.city, _provider.country, _provider.continent, false);
-    // } catch (error) {
-    //   _provider.setIsLoading(false);
-    //   _showBottomSheetErrorMessage('Failed to update city and country');
-    // }
-    setState(() {});
-    // } catch (e) {
-    // }
+// Check if the document exists
+    await userDocRef.get().then((docSnapshot) {
+      if (docSnapshot.exists) {
+        // Document exists, proceed with the update
+        batch.update(
+          userDocRef,
+          {
+            'country': _provider.country,
+            'city': _provider.city,
+          },
+        );
+      } else {
+        // Document does not exist, create it
+        DatabaseService.createUserProfileITypeData(
+          accountType: _provider.user!.accountType!,
+          userId: _provider.user!.userId!,
+          shopType: _provider.user!.shopType!,
+          name: _provider.user!.userName!,
+          batch: batch,
+          city: _provider.city,
+          country: _provider.country,
+        );
+      }
+    });
+    // batch.update(
+    //   userProfessionalRef.doc(widget.user.userId),
+    //   {
+    //     'country': _provider.country,
+    //     'city': _provider.city,
+    //   },
+    // );
+
+    try {
+      batch.commit();
+      _provider.setIsLoading(false);
+      // Inside your widget or function
+      await HiveUtils.updateUserLocation(
+          context, _provider.city, _provider.country, widget.accountType);
+
+      // _updateAuthorHive(
+      //     _provider.city, _provider.country, _provider.continent, false);
+      // } catch (error) {
+      //   _provider.setIsLoading(false);
+      //   _showBottomSheetErrorMessage('Failed to update city and country');
+      // }
+      setState(() {});
+    } catch (e) {}
   }
 
   // _updateAuthorHive(

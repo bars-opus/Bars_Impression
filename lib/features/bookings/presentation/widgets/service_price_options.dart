@@ -2,11 +2,14 @@ import 'package:bars/utilities/exports.dart';
 
 class ServicePriceOptions extends StatefulWidget {
   final UserStoreModel bookingUser;
-      final bool fromPrice;
+  final bool fromPrice;
+  final DateTime? selectedDay;
 
-
-  const ServicePriceOptions({super.key, required this.bookingUser,
-   required this.fromPrice,
+  const ServicePriceOptions({
+    super.key,
+    required this.bookingUser,
+    required this.fromPrice,
+    this.selectedDay = null,
   });
 
   @override
@@ -26,7 +29,6 @@ class _ServicePriceOptionsState extends State<ServicePriceOptions> {
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
           child: UserBookingOption(
-            
             bookingUser: widget.bookingUser,
           ),
         );
@@ -61,7 +63,8 @@ class _ServicePriceOptionsState extends State<ServicePriceOptions> {
             ),
             const SizedBox(height: 20),
             TicketGroup(
-               fromPrice: widget.fromPrice,
+              selectedDay: widget.selectedDay,
+              fromPrice: widget.fromPrice,
               openingHours: widget.bookingUser.openingHours,
               appointmentSlots: widget.bookingUser.appointmentSlots,
               bookingShop: widget.bookingUser,

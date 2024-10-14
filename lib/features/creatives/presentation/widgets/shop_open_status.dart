@@ -1,17 +1,22 @@
 import 'package:bars/utilities/exports.dart';
 
-class ShopOpenStatus extends StatelessWidget {
+class ShopOpenStatus extends StatefulWidget {
   final UserStoreModel shop;
 
   const ShopOpenStatus({Key? key, required this.shop}) : super(key: key);
 
   @override
+  State<ShopOpenStatus> createState() => _ShopOpenStatusState();
+}
+
+class _ShopOpenStatusState extends State<ShopOpenStatus> {
+  @override
   Widget build(BuildContext context) {
     String currentDay = _getDayOfWeek(DateTime.now());
     DateTime now = DateTime.now();
 
-    if (shop.openingHours.containsKey(currentDay)) {
-      DateTimeRange hours = shop.openingHours[currentDay]!;
+    if (widget.shop.openingHours.containsKey(currentDay)) {
+      DateTimeRange hours = widget.shop.openingHours[currentDay]!;
 
       DateTime todayStart = DateTime(
           now.year, now.month, now.day, hours.start.hour, hours.start.minute);
@@ -44,7 +49,13 @@ class ShopOpenStatus extends StatelessWidget {
                   text: now.isAfter(todayStart) && now.isBefore(todayEnd)
                       ? '\n${timeLeft.inHours}h ${timeLeft.inMinutes.remainder(60)}m left to close'
                       : '\n${timeUntilOpen.inHours}h ${timeUntilOpen.inMinutes.remainder(60)}m until open',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    // fontWeight: FontWeight.bold,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
+                  ),
+
+                  //  Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),

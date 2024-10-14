@@ -624,9 +624,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
   //                         const SizedBox(
   //                           height: 10,
   //                         ),
-  //                         TicketPurchasingIcon(
-  //                           title: '',
-  //                         ),
+  // TicketPurchasingIcon(
+  //   title: '',
+  // ),
   //                         _isTypingNotifier.value
   //                             ? Align(
   //                                 alignment: Alignment.bottomRight,
@@ -843,45 +843,45 @@ class _BookingCalendarState extends State<BookingCalendar> {
     );
   }
 
-  _userBookedInfoForNotAuthor(BuildContext context) {
-    bool _isAuthor = widget.bookingUser.userId == widget.currentUserId;
+  // _userBookedInfoForNotAuthor(BuildContext context) {
+  //   bool _isAuthor = widget.bookingUser.userId == widget.currentUserId;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.calendar_month_outlined,
-          color: Colors.grey,
-          size: ResponsiveHelper.responsiveHeight(context, 50.0),
-        ),
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: ShakeTransition(
-            child: Text(
-              // _isAuthor
-              //     ? 'You have not been booked on this date'
-              //     :
-              '${widget.bookingUser.shopName} has been booked for this day. You can still create a booking request for this date or select another day.',
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-        // if (!_isAuthor)
-        EventBottomButton(
-          buttonColor: Colors.blue,
-          buttonText: 'Book',
-          onPressed: () {
-            Navigator.pop(context);
-            _SelectPriceOptions(context);
-          },
-        ),
-      ],
-    );
-  }
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: [
+  //       Icon(
+  //         Icons.calendar_month_outlined,
+  //         color: Colors.grey,
+  //         size: ResponsiveHelper.responsiveHeight(context, 50.0),
+  //       ),
+  //       const SizedBox(height: 20),
+  //       Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 10.0),
+  //         child: ShakeTransition(
+  //           child: Text(
+  //             // _isAuthor
+  //             //     ? 'You have not been booked on this date'
+  //             //     :
+  //             '${widget.bookingUser.shopName} has been booked for this day. You can still create a booking request for this date or select another day.',
+  //             style: Theme.of(context).textTheme.bodyMedium,
+  //             textAlign: TextAlign.center,
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(height: 20),
+  //       // if (!_isAuthor)
+  //       EventBottomButton(
+  //         buttonColor: Colors.blue,
+  //         buttonText: 'Book',
+  //         onPressed: () {
+  //           Navigator.pop(context);
+  //           _SelectPriceOptions(context);
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   _invalidBookindDate(BuildContext context) {
     bool _isAuthor = widget.bookingUser.userId == widget.currentUserId;
@@ -950,7 +950,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
         });
   }
 
-  _bookingServiceOptions(BuildContext context) {
+  _bookingServiceOptions(BuildContext context, DateTime selectedDay) {
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -959,11 +959,12 @@ class _BookingCalendarState extends State<BookingCalendar> {
           return ServicePriceOptions(
             bookingUser: widget.bookingUser,
             fromPrice: widget.fromPrice,
+            selectedDay: selectedDay,
           );
         });
   }
 
-  _SelectPriceOptions(BuildContext context) {
+  _SelectPriceOptions(BuildContext context, DateTime selectedDay) {
     return
 
         // widget.bookingUser.priceTags.isEmpty
@@ -985,25 +986,29 @@ class _BookingCalendarState extends State<BookingCalendar> {
         //     :
         widget.fromPrice
             ? _selectPreferedWorker()
-            : _bookingServiceOptions(context);
+            : _bookingServiceOptions(context, selectedDay);
   }
 
-  _notBookingForYou(BuildContext context, DateTime selectedDay) {
+  _shopBooking(
+    BuildContext context,
+    DateTime selectedDay,
+    List<BookingAppointmentModel> selectedBookings,
+  ) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.black.withOpacity(.6),
       builder: (BuildContext context) {
         return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 300),
+          height: ResponsiveHelper.responsiveHeight(context, 700),
           width: double.infinity,
           decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: Theme.of(context).primaryColorLight,
               borderRadius: BorderRadius.circular(30)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [_userBookedInfoForNotAuthor(context)],
+          child: ShopBooking(
+            selectedDay: selectedDay,
+            currentUserId: widget.currentUserId,
+            selectedBookings: selectedBookings,
           ),
         );
       },
@@ -1092,9 +1097,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
         //       )
         //     :
 
-        !_isAuthor
-            ? _notBookingForYou(context, selectedDay)
-            : _SelectPriceOptions(context);
+        _isAuthor
+            ? _shopBooking(context, selectedDay, selectedBookings)
+            : _SelectPriceOptions(context, selectedDay);
   }
 
   void _showBottomSheetManagerDonationDoc() {
@@ -1155,7 +1160,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
               child: ShakeTransition(
                 child: Text(
                   _isAuthor
-                      ? 'Your \nbookings'
+                      ? 'Booking \nappointments'
                       : "Book\n${widget.bookingUser.shopName}",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
@@ -1264,8 +1269,8 @@ class _BookingCalendarState extends State<BookingCalendar> {
               DateTime normalizedSelectedDay = DateTime(
                   selectedDay.year, selectedDay.month, selectedDay.day);
 
-              // if (!_isAuthor)
-              if (normalizedSelectedDay.isBefore(normalizedNow)) {
+              if (!_isAuthor) if (normalizedSelectedDay
+                  .isBefore(normalizedNow)) {
                 // print('Invalid date');
                 return _invalidBookindDate(context);
               }
@@ -1415,7 +1420,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                       children: [
                         TextSpan(
                           text:
-                              "\To initiate a booking request, please tap on the desired date on the calendar. Dates without any visual indicator signify that the creative has not yet been booked.",
+                              "\To initiate a booking request, please tap on the desired date on the calendar.",
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         TextSpan(
@@ -1427,6 +1432,9 @@ class _BookingCalendarState extends State<BookingCalendar> {
                     textAlign: TextAlign.center,
                   ),
                 ),
+          const SizedBox(
+            height: 100,
+          ),
         ],
       ),
     );

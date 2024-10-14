@@ -58,14 +58,44 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _collaboratedPersonNameContrller.addListener(_onAskTextChanged);
     _collaboratedPersonLinkController.addListener(_onAskTextChanged);
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      clear();
-
-      _addLists();
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await _initializeData();
     });
   }
 
-  _addLists() {
+  Future<void> _initializeData() async {
+    await clear();
+    await _addLists();
+  }
+
+  Future<void> clear() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    // Clear lists
+    _provider.awards.clear();
+    _provider.bookingContacts.clear();
+    _provider.linksToWork.clear();
+    _provider.services.clear();
+    _provider.skills.clear();
+    _provider.genreTages.clear();
+    _provider.collaborations.clear();
+    // _provider.professionalImages.clear();
+    _provider.priceRate.clear();
+    _provider.appointmentSlots.clear();
+    // _provider.openingHours.clear();
+
+    // Clear other data
+    _provider.setProfessionalImageFile1(null);
+    _provider.setProfessionalImageFile2(null);
+    _provider.setProfessionalImageFile3(null);
+    _provider.setTermsAndConditions('');
+    _provider.setOverview('');
+    _provider.setCurrency('');
+    _provider.setName('');
+    print('Cleared all lists');
+  }
+
+  Future<void> _addLists() async {
     var _provider = Provider.of<UserData>(context, listen: false);
     processCurrency(_provider);
 
@@ -73,12 +103,14 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _provider.setOverview(widget.user.overview);
     _provider.setTermsAndConditions(widget.user.terms);
     _provider.setCurrency(widget.user.currency);
+    _provider.setName(widget.user.shopName);
+    _provider.setLogoImageUrl(widget.user.shopLogomageUrl);
 
     // Add user awards
     List<PortfolioModel> awards = widget.user.awards;
     awards.forEach((award) => _provider.setAwards(award));
 
-    // // Add user companies
+    // Add user companies
     List<AppointmentSlotModel> appointments = widget.user.appointmentSlots;
     appointments
         .forEach((appointment) => _provider.setAppointmentSlots(appointment));
@@ -94,32 +126,53 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     List<PortfolioModel> links = widget.user.links;
     links.forEach((link) => _provider.setLinksToWork(link));
 
-    // // Add performance
+    // Add performance
     List<PortfolioModel> services = widget.user.services;
     services.forEach((services) => _provider.setServices(services));
-
-    // Add skills
-    // List<PortfolioModel> skills = widget.user.skills;
-    // skills.forEach((skill) => _provider.setSkills(skill));
-
-    // Add genre tags
-    // List<PortfolioModel> genreTags = widget.user.genreTags;
-    // genreTags.forEach((genre) => _provider.setGenereTags(genre));
-
-    // Add collaborations
-    // List<PortfolioCollaborationModel> collaborations =
-    //     widget.user.collaborations;
-    // collaborations
-    //     .forEach((collaboration) => _provider.setCollaborations(collaboration));
-
-    // Add price
-    // List<PriceModel> priceTags = widget.user.priceTags;
-    // priceTags.forEach((priceTags) => _provider.setPriceRate(priceTags));
 
     // Add professional image urls
     List<String> imageUrls = widget.user.professionalImageUrls;
     _provider.setProfessionalImages(imageUrls);
+    // print('Added all lists');
   }
+
+  // _addLists() {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   processCurrency(_provider);
+
+  //   _provider.setNoBooking(widget.user.noBooking);
+  //   _provider.setOverview(widget.user.overview);
+  //   _provider.setTermsAndConditions(widget.user.terms);
+  //   _provider.setCurrency(widget.user.currency);
+
+  //   // Add user awards
+  //   List<PortfolioModel> awards = widget.user.awards;
+  //   awards.forEach((award) => _provider.setAwards(award));
+
+  //   // // Add user companies
+  //   List<AppointmentSlotModel> appointments = widget.user.appointmentSlots;
+  //   appointments
+  //       .forEach((appointment) => _provider.setAppointmentSlots(appointment));
+
+  //   Map<String, DateTimeRange> openingHours = widget.user.openingHours;
+  //   _provider.setOpeningHours(openingHours);
+
+  //   // Add user contact
+  //   List<PortfolioContactModel> contacts = widget.user.contacts;
+  //   contacts.forEach((contact) => _provider.setBookingContacts(contact));
+
+  //   // Add links to work
+  //   List<PortfolioModel> links = widget.user.links;
+  //   links.forEach((link) => _provider.setLinksToWork(link));
+
+  //   // // Add performance
+  //   List<PortfolioModel> services = widget.user.services;
+  //   services.forEach((services) => _provider.setServices(services));
+
+  //   // Add professional image urls
+  //   List<String> imageUrls = widget.user.professionalImageUrls;
+  //   _provider.setProfessionalImages(imageUrls);
+  // }
 
   void processCurrency(UserData provider) {
     // Check if widget.userPortfolio.currency is null or empty
@@ -145,27 +198,26 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     }
   }
 
-  clear() {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.awards.clear();
-    // _provider.company.clear();
-    _provider.bookingContacts.clear();
-    _provider.linksToWork.clear();
-    _provider.services.clear();
-    _provider.skills.clear();
-    _provider.genreTages.clear();
-    _provider.collaborations.clear();
-    _provider.professionalImages.clear();
-    _provider.priceRate.clear();
-    _provider.appointmentSlots.clear();
-    _provider.openingHours.clear();
-    _provider.setProfessionalImageFile1(null);
-    _provider.setProfessionalImageFile2(null);
-    _provider.setProfessionalImageFile3(null);
-    _provider.setTermsAndConditions('');
-    _provider.setOverview('');
-    _provider.setCurrency('');
-  }
+  // clear() {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   _provider.awards.clear();
+  //   _provider.bookingContacts.clear();
+  //   _provider.linksToWork.clear();
+  //   _provider.services.clear();
+  //   _provider.skills.clear();
+  //   _provider.genreTages.clear();
+  //   _provider.collaborations.clear();
+  //   _provider.professionalImages.clear();
+  //   _provider.priceRate.clear();
+  //   _provider.appointmentSlots.clear();
+  //   _provider.openingHours.clear();
+  //   _provider.setProfessionalImageFile1(null);
+  //   _provider.setProfessionalImageFile2(null);
+  //   _provider.setProfessionalImageFile3(null);
+  //   _provider.setTermsAndConditions('');
+  //   _provider.setOverview('');
+  //   _provider.setCurrency('');
+  // }
 
   void _onAskTextChanged() {
     if (_nameController.text.isNotEmpty) {
@@ -387,85 +439,86 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         throw Exception('Failed after $retries attempts');
       }
 
-      // try {
-      List<Future<String>> imageUploadFutures = [];
-
-      if (_provider.professionalImageFile1 != null) {
-        imageUploadFutures
-            .add(retry(() => StorageService.uploadUserprofessionalPicture1(
-                  '',
-                  _provider.professionalImageFile1!,
-                )));
-      }
-
-      if (_provider.professionalImageFile2 != null) {
-        imageUploadFutures
-            .add(retry(() => StorageService.uploadUserprofessionalPicture2(
-                  '',
-                  _provider.professionalImageFile2!,
-                )));
-      }
-
-      if (_provider.professionalImageFile3 != null) {
-        imageUploadFutures
-            .add(retry(() => StorageService.uploadUserprofessionalPicture3(
-                  '',
-                  _provider.professionalImageFile3!,
-                )));
-      }
-
-      // Wait for all image uploads to complete
-      List<String> professionalImageUrls =
-          await Future.wait(imageUploadFutures);
-
-      // Add existing image urls
-      if (_provider.professionalImageFile1 == null &&
-          _provider.professionalImages.length > 0) {
-        professionalImageUrls.add(_provider.professionalImages[0]);
-      }
-      if (_provider.professionalImageFile2 == null &&
-          _provider.professionalImages.length > 1) {
-        professionalImageUrls.add(_provider.professionalImages[1]);
-      }
-      if (_provider.professionalImageFile3 == null &&
-          _provider.professionalImages.length > 2) {
-        professionalImageUrls.add(_provider.professionalImages[2]);
-      }
-
-      _provider.setProfessionalImages(professionalImageUrls);
-
-      UserStoreModel _userStore = UserStoreModel(
-        userId: widget.user.userId,
-        shopName: _provider.name,
-        shopLogomageUrl: '',
-        shopType: _provider.shopType,
-        verified: widget.user.verified,
-        terms: _provider.termAndConditions,
-        city: _provider.city,
-        country: _provider.country,
-        overview: _provider.overview,
-        accountType: _provider.accountType,
-        noBooking: _provider.noBooking,
-        awards: _provider.awards,
-        contacts: _provider.bookingContacts,
-        links: _provider.linksToWork,
-        // priceTags: _provider.priceRate,
-        services: _provider.services,
-        professionalImageUrls: _provider.professionalImages,
-        dynamicLink: widget.user.dynamicLink,
-        randomId: widget.user.randomId,
-        currency: _provider.currency,
-        transferRecepientId: widget.user.transferRecepientId,
-        maxCapacity: widget.user.maxCapacity ?? 0,
-        amenities: widget.user.amenities,
-        averageRating: widget.user.averageRating ?? 0,
-        openingHours: _provider.openingHours,
-        appointmentSlots: _provider.appointmentSlots,
-        address: _provider.address,
-      );
-
       try {
+        List<Future<String>> imageUploadFutures = [];
+
+        if (_provider.professionalImageFile1 != null) {
+          imageUploadFutures
+              .add(retry(() => StorageService.uploadUserprofessionalPicture1(
+                    '',
+                    _provider.professionalImageFile1!,
+                  )));
+        }
+
+        if (_provider.professionalImageFile2 != null) {
+          imageUploadFutures
+              .add(retry(() => StorageService.uploadUserprofessionalPicture2(
+                    '',
+                    _provider.professionalImageFile2!,
+                  )));
+        }
+
+        if (_provider.professionalImageFile3 != null) {
+          imageUploadFutures
+              .add(retry(() => StorageService.uploadUserprofessionalPicture3(
+                    '',
+                    _provider.professionalImageFile3!,
+                  )));
+        }
+
+        // Wait for all image uploads to complete
+        List<String> professionalImageUrls =
+            await Future.wait(imageUploadFutures);
+
+        // Add existing image urls
+        if (_provider.professionalImageFile1 == null &&
+            _provider.professionalImages.length > 0) {
+          professionalImageUrls.add(_provider.professionalImages[0]);
+        }
+        if (_provider.professionalImageFile2 == null &&
+            _provider.professionalImages.length > 1) {
+          professionalImageUrls.add(_provider.professionalImages[1]);
+        }
+        if (_provider.professionalImageFile3 == null &&
+            _provider.professionalImages.length > 2) {
+          professionalImageUrls.add(_provider.professionalImages[2]);
+        }
+
+        _provider.setProfessionalImages(professionalImageUrls);
+
+        UserStoreModel _userStore = UserStoreModel(
+          userId: widget.user.userId,
+          shopName: _provider.name,
+          shopLogomageUrl: _provider.logoImageUrl,
+          shopType: _provider.shopType,
+          verified: widget.user.verified,
+          terms: _provider.termAndConditions,
+          city: _provider.city,
+          country: _provider.country,
+          overview: _provider.overview,
+          accountType: _provider.accountType,
+          noBooking: _provider.noBooking,
+          awards: _provider.awards,
+          contacts: _provider.bookingContacts,
+          links: _provider.linksToWork,
+          // priceTags: _provider.priceRate,
+          services: _provider.services,
+          professionalImageUrls: _provider.professionalImages,
+          dynamicLink: widget.user.dynamicLink,
+          randomId: widget.user.randomId,
+          currency: _provider.currency,
+          transferRecepientId: widget.user.transferRecepientId,
+          maxCapacity: widget.user.maxCapacity ?? 0,
+          amenities: widget.user.amenities,
+          averageRating: widget.user.averageRating ?? 0,
+          openingHours: _provider.openingHours,
+          appointmentSlots: _provider.appointmentSlots,
+          address: _provider.address,
+        );
+
+        // try {
         await retry(() => userProfessionalRef.doc(widget.user.userId).update({
+              'shopName': _provider.name,
               'awards':
                   _provider.awards.map((awards) => awards.toJson()).toList(),
               'contacts': _provider.bookingContacts
@@ -493,6 +546,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               'currency': _provider.currency,
             }));
 
+        _provider.setUserStore(_userStore);
+
         // await HiveUtils.updateUserLocation(
         //   context,
         //   _provider.userStore!.city,
@@ -502,12 +557,11 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
         // _provider.setUserStore(_userStore);
 
-        DocumentSnapshot doc =
-            await userProfessionalRef.doc(widget.user.userId).get();
+        // DocumentSnapshot doc =
+        //     await userProfessionalRef.doc(widget.user.userId).get();
 
         // Assuming 'Event' is a class that can be constructed from a Firestore document
-        UserStoreModel updatedUser = UserStoreModel.fromDoc(doc);
-        _provider.setUserStore(updatedUser);
+        // UserStoreModel updatedUser = UserStoreModel.fromJson(_userStore);
 
         // accountUserStoreBox.put(_userStore.userId, _userStore);
         Navigator.pop(context);
@@ -1513,7 +1567,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         shopType: user.shopType!,
         // company: user.company!,
         profileImageUrl: user.profileImageUrl!,
-        bio: '',
+        // bio: '',
         onPressed: () {
           _provider.setSalon(user.userId!);
 
@@ -2148,10 +2202,13 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   );
 
   _handleImageFromGallery() {
-    ImageHandler.handleImageFromGallery(context, true
-        // Submit the image file
-        // _submitProfileImage(file);
-        );
+    ImageHandler.handleImageFromGallery(
+      context, true,
+      // Provider.of<UserData>(context, listen: false),
+      // widget.user,
+      // Submit the image file
+      // _submitProfileImage(file);
+    );
   }
 
   _profileImageWidget() {
@@ -2355,6 +2412,15 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         ),
         EditProfileTextField(
           enableBorder: false,
+          labelText: 'Shop name',
+          hintText: " The registed name of your shop",
+          initialValue: widget.user.shopName,
+          onValidateText: (input) =>
+              input!.trim().length < 1 ? 'Not less than a word' : null,
+          onSavedText: (input) => _provider.setName(input),
+        ),
+        EditProfileTextField(
+          enableBorder: false,
           labelText: 'Overview',
           hintText: "  Highlight key points",
           initialValue: widget.user.overview,
@@ -2416,7 +2482,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         child: TicketGroup(
           fromPrice: false,
           appointmentSlots: _provider.appointmentSlots,
-          openingHours: widget.user.openingHours,
+          openingHours: _provider.openingHours,
+
+          // widget.user.openingHours,
           edit: true,
           bookingShop: widget.user,
         ),

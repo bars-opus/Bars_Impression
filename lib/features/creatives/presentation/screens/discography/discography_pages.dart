@@ -202,7 +202,7 @@ class _DiscographyPagesState extends State<DiscographyPages> {
               return ProfileScreen(
                   currentUserId: widget.currentUserId,
                   userId: user.userId,
-                  user: user, accountType: 'Shop',);
+                  user: null, accountType: 'Shop',);
 
               //  DiscographyWidget(
               //   currentUserId: widget.currentUserId,

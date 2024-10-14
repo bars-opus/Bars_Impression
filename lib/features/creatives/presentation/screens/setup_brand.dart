@@ -593,7 +593,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
             _accountType.isEmpty ? _provider.accountType : _accountType,
         shopType: _shopType,
         name: _provider.user!.userName!,
-        batch: batch);
+        batch: batch,
+        city: '',
+        country: '');
 
     try {
       await batch.commit();

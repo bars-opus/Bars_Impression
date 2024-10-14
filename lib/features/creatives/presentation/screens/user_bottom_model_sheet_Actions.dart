@@ -163,32 +163,33 @@ class _UserBottomModalSheetActionsState
               height: 30,
             ),
 
-            UserHeaderListTileWidget(
-              imageUrl: widget.user.shopLogomageUrl,
-              onPressed: () {
-                _navigateToPage(
-                    context,
-                    ProfileScreen(
-                       accountType: widget.user.accountType!,
-                      currentUserId: widget.currentUserId,
-                      userId: widget.user.userId,
-                      user: null,
-                    ));
-              },
-              user: widget.user,
-              trailing: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
+            // UserHeaderListTileWidget(
+            //   imageUrl: widget.user.shopLogomageUrl,
+            //   onPressed: () {
+            //     _navigateToPage(
+            //         context,
+            //         ProfileScreen(
+            //            accountType: widget.user.accountType!,
+            //           currentUserId: widget.currentUserId,
+            //           userId: widget.user.userId,
 
-                  _showBottomSheetBookMe(context);
-                },
-                child: Icon(
-                  Icons.call_outlined,
-                  color: Colors.blue,
-                  size: ResponsiveHelper.responsiveHeight(context, 30.0),
-                ),
-              ),
-            ),
+            //           user: null,
+            //         ));
+            //   },
+            //   user: widget.user,
+            //   trailing: GestureDetector(
+            //     onTap: () {
+            //       Navigator.pop(context);
+
+            //       _showBottomSheetBookMe(context);
+            //     },
+            //     child: Icon(
+            //       Icons.call_outlined,
+            //       color: Colors.blue,
+            //       size: ResponsiveHelper.responsiveHeight(context, 30.0),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(
               height: 10,
             ),

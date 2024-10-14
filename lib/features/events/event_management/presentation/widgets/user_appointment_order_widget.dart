@@ -90,13 +90,15 @@ class _UserAppointmenstWidgetState extends State<UserAppointmenstWidget> {
   }
 
   void _showBottomSheetMore(BuildContext context) {
+    final bool _isShop = widget.currentUserId == widget.appointmentOrder.shopId;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 370.0),
+            height: ResponsiveHelper.responsiveHeight(
+                context, _isShop ? 300 : 370.0),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -114,7 +116,8 @@ class _UserAppointmenstWidgetState extends State<UserAppointmenstWidget> {
                   ),
                 ),
                 Container(
-                  height: ResponsiveHelper.responsiveHeight(context, 250.0),
+                  height: ResponsiveHelper.responsiveHeight(
+                      context, _isShop ? 170 : 250.0),
                   // color: Colors.red,
                   child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -128,7 +131,9 @@ class _UserAppointmenstWidgetState extends State<UserAppointmenstWidget> {
                           children: [
                             BottomModelSheetListTileActionWidget(
                               colorCode: '',
-                              icon: Icons.store_mall_directory_outlined,
+                              icon: _isShop
+                                  ? Icons.account_circle_sharp
+                                  : Icons.store_mall_directory_outlined,
                               onPressed: () async {
                                 // _isLoading = true;
                                 // try {
@@ -141,7 +146,9 @@ class _UserAppointmenstWidgetState extends State<UserAppointmenstWidget> {
                                 //   if (event != null) {
                                 _navigateToPage(ProfileScreen(
                                   currentUserId: widget.currentUserId,
-                                  userId: widget.appointmentOrder.shopId,
+                                  userId: _isShop
+                                      ? widget.appointmentOrder.clientId
+                                      : widget.appointmentOrder.shopId,
                                   user: null,
                                   accountType: 'Shop',
                                 ));
@@ -156,7 +163,7 @@ class _UserAppointmenstWidgetState extends State<UserAppointmenstWidget> {
                                 //   _isLoading = false;
                                 // }
                               },
-                              text: 'View shop',
+                              text: _isShop ? 'View client' : 'View shop',
                             ),
                             _isLoading
                                 ? Positioned(
@@ -173,57 +180,58 @@ class _UserAppointmenstWidgetState extends State<UserAppointmenstWidget> {
                                 : SizedBox.shrink()
                           ],
                         ),
-                        Stack(
-                          alignment: FractionalOffset.center,
-                          children: [
-                            BottomModelSheetListTileActionWidget(
-                              colorCode: '',
-                              icon: Icons.location_on_outlined,
-                              onPressed: () async {
-                                // _isLoading = true;
-                                // try {
-                                //   Event? event = await DatabaseService
-                                //       .getUserEventWithId(
-                                //           widget.appointmentOrder.eventId,
-                                //           widget.appointmentOrder
-                                //               .eventAuthorId);
-                                //   if (event != null) {
-                                _launchMap(widget.appointmentOrder.location);
-                                //   } else {
-                                //     _showBottomSheetErrorMessage(
-                                //         'Failed to launch map.');
-                                //   }
-                                // } catch (e) {
-                                //   _showBottomSheetErrorMessage(
-                                //       'Failed to launch map');
-                                // } finally {
-                                //   _isLoading = false;
-                                // }
-                              },
-                              text: 'Acces location',
-                            ),
-                            _isLoading
-                                ? Positioned(
-                                    right: 30,
-                                    child: SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                        color: Colors.blue,
+                        if (!_isShop)
+                          Stack(
+                            alignment: FractionalOffset.center,
+                            children: [
+                              BottomModelSheetListTileActionWidget(
+                                colorCode: '',
+                                icon: Icons.location_on_outlined,
+                                onPressed: () async {
+                                  // _isLoading = true;
+                                  // try {
+                                  //   Event? event = await DatabaseService
+                                  //       .getUserEventWithId(
+                                  //           widget.appointmentOrder.eventId,
+                                  //           widget.appointmentOrder
+                                  //               .eventAuthorId);
+                                  //   if (event != null) {
+                                  _launchMap(widget.appointmentOrder.location);
+                                  //   } else {
+                                  //     _showBottomSheetErrorMessage(
+                                  //         'Failed to launch map.');
+                                  //   }
+                                  // } catch (e) {
+                                  //   _showBottomSheetErrorMessage(
+                                  //       'Failed to launch map');
+                                  // } finally {
+                                  //   _isLoading = false;
+                                  // }
+                                },
+                                text: 'Acces location',
+                              ),
+                              _isLoading
+                                  ? Positioned(
+                                      right: 30,
+                                      child: SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 3,
+                                          color: Colors.blue,
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : SizedBox.shrink()
-                          ],
-                        ),
+                                    )
+                                  : SizedBox.shrink()
+                            ],
+                          ),
                         BottomModelSheetListTileActionWidget(
                           colorCode: '',
                           icon: Icons.delete_outlined,
                           onPressed: () {
                             _showBottomSheetDeleteAppointment();
                           },
-                          text: 'Delete ticket',
+                          text: 'Delete appointment',
                         ),
                       ])),
                 ),
