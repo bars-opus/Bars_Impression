@@ -87,9 +87,7 @@ class AccountHolderAuthor {
       reportConfirmed: data['reportConfirmed'] ?? false,
       privateAccount: data['privateAccount'] ?? false,
         disableChat: data['disableChat'] ?? false,
-      
-      // other fields...
-    );
+          );
   }
 }
 

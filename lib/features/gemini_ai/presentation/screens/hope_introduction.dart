@@ -452,7 +452,7 @@ Currently, we use the skills, long-term goals, short-term goals, inspirations, a
                 ? _buildIntroductionText(context, provider)
                 : _buildExistingUserText(context),
             if (!widget.isIntro && provider.brandMatching != null) _styles(),
-            if (provider.brandMatching != null) _styles(),
+            // if (provider.brandMatching != null) _styles(),
             const SizedBox(height: 40),
             if (provider.brandMatching == null) _buildStartButton(context),
             const SizedBox(height: 70),

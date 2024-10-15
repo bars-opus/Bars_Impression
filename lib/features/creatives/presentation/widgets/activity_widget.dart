@@ -201,13 +201,13 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         await _getAffiliate(activity);
         break;
 
-      case NotificationActivityType.bookingReceived:
-        await _getBooking(activity, false);
-        break;
+      // case NotificationActivityType.bookingReceived:
+      //   await _getBooking(activity, false);
+      //   break;
 
-      case NotificationActivityType.bookingMade:
-        await _getBooking(activity, true);
-        break;
+      // case NotificationActivityType.bookingMade:
+      //   await _getBooking(activity, true);
+      //   break;
 
       case NotificationActivityType.donation:
         await _getActivityFollower(activity);
@@ -412,32 +412,32 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     );
   }
 
-  Future<void> _getBooking(Activity activity, bool bookingMade) async {
-    var authorId = activity.authorId;
-    if (authorId == null) {
-      // handle null authorId appropriately
-      return;
-    }
+  // Future<void> _getBooking(Activity activity, bool bookingMade) async {
+  //   var authorId = activity.authorId;
+  //   if (authorId == null) {
+  //     // handle null authorId appropriately
+  //     return;
+  //   }
 
-    BookingModel? booking = bookingMade
-        ? await DatabaseService.getBookingMade(
-            widget.currentUserId, activity.postId!)
-        : await DatabaseService.getUserBooking(
-            widget.currentUserId, activity.postId!);
-    if (booking == null)
-      return _showBottomSheetErrorMessage(
-          'Booking not found.', 'This booking might have been deleted');
+  //   BookingModel? booking = bookingMade
+  //       ? await DatabaseService.getBookingMade(
+  //           widget.currentUserId, activity.postId!)
+  //       : await DatabaseService.getUserBooking(
+  //           widget.currentUserId, activity.postId!);
+  //   if (booking == null)
+  //     return _showBottomSheetErrorMessage(
+  //         'Booking not found.', 'This booking might have been deleted');
 
-    _navigateToPage(
-      context,
-      BookingPage(
-        currentUserId: widget.currentUserId,
-        // isUser: true,
-        booking: booking,
-        fromActivity: true,
-      ),
-    );
-  }
+  //   _navigateToPage(
+  //     context,
+  //     BookingPage(
+  //       currentUserId: widget.currentUserId,
+  //       // isUser: true,
+  //       booking: booking,
+  //       fromActivity: true,
+  //     ),
+  //   );
+  // }
 
   _onTapPost() async {
     if (mounted) {

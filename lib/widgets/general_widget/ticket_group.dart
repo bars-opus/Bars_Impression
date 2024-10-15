@@ -1,3 +1,6 @@
+// The code handles the process of payment verification and ticket generation for an event.
+// It interacts with local storage, a Firebase backend, and a payment service to manage this process.
+
 import 'dart:convert';
 
 import 'package:bars/features/events/services/paystack_ticket_payment_mobile_money.dart';
@@ -88,10 +91,13 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
+// Loads saved tickets from shared preferences
   Future<List<TicketModel>> loadTickets() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Retrieve serialized ticket data
     String? serializedData = prefs.getString('savedTickets');
     if (serializedData != null) {
+      // Decode JSON to List of TicketModel
       Iterable l = jsonDecode(serializedData);
       List<TicketModel> tickets = List<TicketModel>.from(
           l.map((model) => TicketModel.fromJsonSharedPref(model)));
@@ -100,14 +106,22 @@ class _TicketGroupState extends State<TicketGroup> {
     return [];
   }
 
+// Removes tickets from shared preferences storage
   Future<void> removeTickets() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(
         'savedTickets'); // 'savedTickets' is the key used to store the tickets
   }
 
+// Generates tickets after payment verification
+// Initiates the ticket generation process.
+// Loads tickets from either the provider or local storage.
+// Uses a retry mechanism to handle transient errors during ticket creation.
+// Verifies if a ticket order already exists to prevent duplicate processing.
+// Creates a ticket order using _createTicketOrder.
+// Updates UI and navigates the user based on event properties.
+// Displays success or error messages.
   void _generateTickets(
-    // TicketModel? purchasintgTickets,
     String purchaseReferenceId,
     String transactionId,
     bool isPaymentVerified,
@@ -118,14 +132,16 @@ class _TicketGroupState extends State<TicketGroup> {
     var _user = _provider.user;
 
     _showBottomSheetLoading('Generating ticket');
+
+    // Load tickets from provider or shared preferences
     List<TicketModel> _finalTicket = _provider.ticketList.isEmpty
         ? await loadTickets()
         : _provider.ticketList;
 
+    // Retry mechanism for operations
     Future<T> retry<T>(Future<T> Function() function, {int retries = 3}) async {
       Duration delay =
           const Duration(milliseconds: 100); // Start with a short delay
-
       for (int i = 0; i < retries; i++) {
         try {
           return await function();
@@ -155,6 +171,7 @@ class _TicketGroupState extends State<TicketGroup> {
         if (!existingOrder) {
           String commonId = Uuid().v4();
 
+          // Creates a new ticket order
           Future<TicketOrderModel> createTicketOrder() => _createTicketOrder(
                 transactionId,
                 transaction,
@@ -165,8 +182,11 @@ class _TicketGroupState extends State<TicketGroup> {
                 paymentProvider,
               );
 
+          // Attempt to create ticket order with retries
           TicketOrderModel order =
               await retry(() => createTicketOrder(), retries: 3);
+
+          // Handle UI navigation based on event properties
           if (!widget.event!.isFree || !widget.event!.isCashPayment) {
             Navigator.pop(context);
             // await Future.delayed(Duration(milliseconds: 700));
@@ -178,18 +198,19 @@ class _TicketGroupState extends State<TicketGroup> {
             // await Future.delayed(Duration(milliseconds: 700));
           }
 
-          // Navigator.pop(context);
+          // Clear stored tickets
           await removeTickets();
-
-          ;
           Navigator.pop(context);
+
+          // Generate color palette for event image
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
             CachedNetworkImageProvider(widget.event!.imageUrl),
             size: Size(1110, 150),
             maximumColorCount: 20,
           );
-          // HapticFeedback.lightImpact();
+
+          // Navigate to purchased ticket screen
           _navigateToPage(
             context,
             PurchasedAttendingTicketScreen(
@@ -200,6 +221,8 @@ class _TicketGroupState extends State<TicketGroup> {
               palette: _paletteGenerator,
             ),
           );
+
+          // Show success message
           mySnackBar(
               context,
               widget.event!.isFree || widget.event!.isCashPayment
@@ -231,6 +254,11 @@ class _TicketGroupState extends State<TicketGroup> {
     });
   }
 
+// Creates a ticket order and saves it in the database
+// Constructs a TicketOrderModel object with necessary details like user info, event data, and payment verification status.
+// Converts TicketModel objects to TicketPurchasedModel for database storage.
+// Saves the order to the database using a transaction to ensure atomicity.
+// Clears affiliate information if applicable.
   Future<TicketOrderModel> _createTicketOrder(
     String transactionId,
     Transaction transaction,
@@ -242,14 +270,16 @@ class _TicketGroupState extends State<TicketGroup> {
   ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
     var _user = _provider.user;
+
+    // Retrieve affiliate ID for the event
     String? affiliateId = await AffiliateManager.getAffiliateIdForEvent(
       widget.event!.id,
     );
 
-    // String _marketAffiliateId = _provider.marketedAffiliateId;
-
+    // Calculate total price of tickets
     double total = _finalTicket.fold(0, (acc, ticket) => acc + ticket.price);
 
+    // Convert TicketModel to TicketPurchasedModel
     List<TicketPurchasedModel> _purchasedTickets =
         _finalTicket.map((ticketModel) {
       // Use the fromTicketModel method to convert
@@ -266,40 +296,36 @@ class _TicketGroupState extends State<TicketGroup> {
       );
     }).toList();
 
+    // Create a TicketOrderModel object
     TicketOrderModel order = TicketOrderModel(
       orderId: commonId,
-      tickets:
-          // widget.event!.isFree ? [] :
-          _purchasedTickets,
+      tickets: _purchasedTickets,
       total: total,
       canlcellationReason: '',
       eventAuthorId: widget.event!.authorId,
       isPaymentVerified: isPaymentVerified,
       paymentProvider: paymentProvider,
-      // entranceId: '',
       eventId: widget.event!.id,
       eventImageUrl: widget.event!.imageUrl,
       eventTimestamp: widget.event!.startDate,
       isInvited: widget.inviteReply.isNotEmpty ? true : false,
       timestamp: Timestamp.now(),
       orderNumber: commonId,
-      // validated: false,
       userOrderId: widget.currentUserId,
       eventTitle: widget.event!.title,
       purchaseReferenceId: purchaseReferenceId,
       refundRequestStatus: '',
       idempotencyKey: '',
-
-      transactionId: transactionId, isDeleted: false,
+      transactionId: transactionId,
+      isDeleted: false,
+      networkingGoal: '',
     );
 
     List<String> ticketIds = _finalTicket.map((ticket) => ticket.id).toList();
-
     bool dontUpdateTicketSales =
         _finalTicket.every((ticket) => ticket.maxOder == 0);
 
-    // widget.event!.ticketOrder.add(order);
-
+    // Save the ticket order to the database
     await DatabaseService.purchaseTicketTransaction(
       transaction: transaction,
       ticketOrder: order,
@@ -314,12 +340,17 @@ class _TicketGroupState extends State<TicketGroup> {
       marketAffiliateId: affiliateId == null ? '' : affiliateId,
       isEventAffiliated: widget.event!.isAffiliateEnabled,
     );
+    // Clear affiliate ID if applicable
     if (affiliateId != null)
       await AffiliateManager.clearEventAffiliateId(widget.event!.id);
 
     return order;
   }
 
+// Processes ticket generation after payment verification
+// Verifies if tickets have already been generated for a given payment reference.
+// Calls _generateTickets if no existing ticket is found.
+// Shows an error message if tickets are already generated.
   _processingToGenerate(var verificationResult, PaymentResult paymentResult,
       bool isPaymentVerified, String paymentProvider) async {
     FocusScope.of(context).unfocus();
@@ -348,6 +379,9 @@ class _TicketGroupState extends State<TicketGroup> {
     }
   }
 
+// Logs error data for payment verification failures
+// Logs payment verification errors to a Firestore collection for future review and debugging.
+// Stores details like user info, error message, and transaction reference.
   _logVerificationErroData(PaymentResult paymentResult, String result,
       bool ticketGenerated, int totalPrice, String reference) {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -375,12 +409,18 @@ class _TicketGroupState extends State<TicketGroup> {
     });
   }
 
+// Calculates the week of the month for a given date
   static int getWeekOfMonth(DateTime dateTime) {
     int daysInWeek = 7;
     int daysPassed = dateTime.day + dateTime.weekday - 1;
     return ((daysPassed - 1) / daysInWeek).ceil();
   }
 
+// Initiates the payment process
+// Initiates the payment process by calculating total price and processing fees.
+// Calls a cloud function to start a Paystack payment and retrieves an authorization URL.
+// Navigates the user to a payment screen if the payment initiation is successful.
+// Handles errors and displays messages if payment initiation fails.
   void _initiatePayment(BuildContext context) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -440,6 +480,8 @@ class _TicketGroupState extends State<TicketGroup> {
     }
   }
 
+// Generates a reference for the payment
+// Generates a unique reference for the transaction, indicating the platform (iOS or Android).
   String _getReference() {
     String commonId = Uuid().v4();
     String platform;
@@ -451,6 +493,11 @@ class _TicketGroupState extends State<TicketGroup> {
     return 'ChargedFrom${platform}_$commonId';
   }
 
+// Navigates to the payment screen with the provided authorization URL
+// Navigates to the payment screen and waits for the payment result.
+// If successful, verifies the payment server-side using another cloud function.
+// Calls _processingToGenerate to handle ticket generation upon successful verification.
+// Logs errors and displays messages if verification fails.
   Future<void> navigateToPaymentScreen(BuildContext context,
       String authorizationUrl, String reference, int totalPrice) async {
     // final bool? result =
@@ -627,40 +674,6 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-  // double calculateProcessingFee(double totalPrice) {
-  //   if (totalPrice < 100) {
-  //     return 5.0;
-  //   } else if (totalPrice < 500) {
-  //     return 10.0;
-  //   } else if (totalPrice < 1000) {
-  //     return 20.0;
-  //   } else if (totalPrice < 1500) {
-  //     return 30.0;
-  //   } else if (totalPrice < 2000) {
-  //     return 40.0;
-  //   } else if (totalPrice < 2500) {
-  //     return 50.0;
-  //   } else if (totalPrice < 3000) {
-  //     return 100.0;
-  //   } else if (totalPrice < 4000) {
-  //     return 150.0;
-  //   } else if (totalPrice < 5000) {
-  //     return 200.0;
-  //   } else if (totalPrice < 6000) {
-  //     return 250.0;
-  //   } else if (totalPrice < 7000) {
-  //     return 300.0;
-  //   } else if (totalPrice < 8000) {
-  //     return 350.0;
-  //   } else if (totalPrice < 9000) {
-  //     return 400.0;
-  //   } else if (totalPrice < 10000) {
-  //     return 450.0;
-  //   } else {
-  //     return 500.0; // Example for prices 10,000 and above
-  //   }
-  // }
-
   _payoutWidget(String lable, String value) {
     return ShakeTransition(
       // axis: Axis.vertical,
@@ -757,7 +770,6 @@ class _TicketGroupState extends State<TicketGroup> {
                 const SizedBox(
                   height: 10,
                 ),
-
                 Container(
                   decoration: BoxDecoration(
                       color:
@@ -799,49 +811,9 @@ class _TicketGroupState extends State<TicketGroup> {
                   finalPrice.toString(),
                 ),
                 _divider(),
-                // Align(
-                //   alignment: Alignment.centerLeft,
-                //   child: RichText(
-                //     textScaler: MediaQuery.of(context).textScaler,
-                //     text: TextSpan(
-                //       children: [
-                //         TextSpan(
-                //           text: "Currency:   ",
-                //           style: Theme.of(context).textTheme.bodyMedium,
-                //         ),
-                //         TextSpan(
-                //           text: currencyPartition.length > 1
-                //               ? " ${currencyPartition[0]}\n"
-                //               : '',
-                //           style: Theme.of(context).textTheme.bodyLarge,
-                //         ),
-                //         TextSpan(
-                //           text: "Total:            ",
-                //           style: Theme.of(context).textTheme.bodyMedium,
-                //         ),
-                //         TextSpan(
-                //           text: totalPrice.toString(),
-                //           style: Theme.of(context).textTheme.bodyLarge,
-                //         ),
-                //         TextSpan(
-                //           text: "\nProcessing fee:            ",
-                //           style: Theme.of(context).textTheme.bodyMedium,
-                //         ),
-                //         TextSpan(
-                //           text: processingFee.toString(),
-                //           style: Theme.of(context).textTheme.bodyLarge,
-                //         )
-                //       ],
-                //     ),
-                //     textAlign: TextAlign.start,
-                //   ),
-                // ),
                 Divider(
                   thickness: .2,
                 ),
-                // const SizedBox(
-                //   height: 20,
-                // ),
                 _eventOnTicketAndPurchaseButton(),
               ],
             ),

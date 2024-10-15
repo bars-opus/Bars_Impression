@@ -24,6 +24,8 @@ class TicketOrderModel {
   final Timestamp? timestamp;
   final Timestamp? eventTimestamp;
 
+  final String networkingGoal;
+
   TicketOrderModel({
     required this.orderNumber,
     required this.eventId,
@@ -45,6 +47,7 @@ class TicketOrderModel {
     required this.transactionId,
     required this.isPaymentVerified,
     required this.paymentProvider,
+    required this.networkingGoal,
   });
 
   factory TicketOrderModel.fromDoc(DocumentSnapshot doc) {
@@ -57,6 +60,7 @@ class TicketOrderModel {
       orderId: data['orderId'] ?? '',
       refundRequestStatus: data['refundRequestStatus'] ?? '',
       idempotencyKey: data['idempotencyKey'] ?? '',
+      networkingGoal: data['networkingGoal'] ?? '',
 
       transactionId: data['transactionId'] ?? '',
       eventId: data['eventId'] ?? '',
@@ -103,7 +107,7 @@ class TicketOrderModel {
       eventTimestamp: json['eventTimestamp'] != null
           ? Timestamp.fromMillisecondsSinceEpoch(json['eventTimestamp'])
           : null,
-      // entranceId: json['entranceId'] ?? '',
+      networkingGoal: json['networkingGoal'] ?? '',
 
       transactionId: json['transactionId'] ?? '',
 
@@ -133,17 +137,15 @@ class TicketOrderModel {
       'eventId': eventId,
       'canlcellationReason': canlcellationReason,
       'eventAuthorId': eventAuthorId,
-
       'isDeleted': isDeleted,
       'paymentProvider': paymentProvider,
       'isPaymentVerified': isPaymentVerified,
       'transactionId': transactionId,
       'timestamp': timestamp,
       'eventTimestamp': eventTimestamp,
-      // 'entranceId': entranceId,
+      'networkingGoal': networkingGoal,
       'refundRequestStatus': refundRequestStatus,
       'idempotencyKey': idempotencyKey,
-
       'eventImageUrl': eventImageUrl,
       'isInvited': isInvited,
       'purchaseReferenceId': purchaseReferenceId,

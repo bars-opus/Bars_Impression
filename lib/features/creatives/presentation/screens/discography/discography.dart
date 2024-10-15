@@ -1271,21 +1271,21 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     );
   }
 
-  void _showBottomSheetBookingCalendar(bool fromPrice) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return BookingCalendar(
-          currentUserId: widget.currentUserId,
-          bookingUser: widget.userPortfolio,
-          prices: widget.userPortfolio.priceTags,
-          fromPrice: fromPrice,
-        );
-      },
-    );
-  }
+  // void _showBottomSheetBookingCalendar(bool fromPrice) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return BookingCalendar(
+  //         currentUserId: widget.currentUserId,
+  //         bookingUser: widget.userPortfolio,
+  //         prices: widget.userPortfolio.priceTags,
+  //         fromPrice: fromPrice,
+  //       );
+  //     },
+  //   );
+  // }
 
   _buildReview(BuildContext context, ReviewModel review, bool fullWidth) {
     // var _currentUserId =
@@ -1923,7 +1923,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                             color: Colors.blue,
                             text: 'Book',
                             onPressed: () {
-                              _showBottomSheetBookingCalendar(true);
+                              // _showBottomSheetBookingCalendar(true);
                             }),
                       ),
                     ),

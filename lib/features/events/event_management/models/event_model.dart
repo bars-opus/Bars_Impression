@@ -41,15 +41,12 @@ class Event {
   final bool showOnExplorePage;
   final bool fundsDistributed;
   final bool hasDateBeenPostponed;
-
   final String dynamicLink;
-
   final String subaccountId;
   final String transferRecepientId;
   final bool isAffiliateEnabled;
   final bool isAffiliateExclusive;
   final double totalAffiliateAmount;
-
   final String latLng;
   final String aiAnalysis;
   final String aiMarketingAdvice;

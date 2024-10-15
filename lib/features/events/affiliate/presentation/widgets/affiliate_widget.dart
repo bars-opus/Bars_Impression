@@ -306,7 +306,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
       eventTitle: event.title,
       purchaseReferenceId: purchaseReferenceId, refundRequestStatus: '',
       transactionId: transactionId, idempotencyKey: '',
-      isPaymentVerified: false, paymentProvider: '',
+      isPaymentVerified: false, paymentProvider: '', networkingGoal: '',
       //  refundRequestStatus: '',
     );
 

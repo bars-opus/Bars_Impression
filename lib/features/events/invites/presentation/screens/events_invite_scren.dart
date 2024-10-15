@@ -249,7 +249,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       eventTitle: widget.event.title,
       purchaseReferenceId: purchaseReferenceId, refundRequestStatus: '',
       transactionId: transactionId, idempotencyKey: '',
-      isPaymentVerified: false, paymentProvider: '',
+      isPaymentVerified: false, paymentProvider: '', networkingGoal: '',
       //  refundRequestStatus: '',
     );
 

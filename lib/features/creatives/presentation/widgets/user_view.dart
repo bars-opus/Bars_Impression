@@ -67,20 +67,20 @@ class _UserViewState extends State<UserView> {
     );
   }
 
-  void _showBottomSheetBookingCalendar() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return BookingCalendar(
-          currentUserId: widget.currentUserId,
-          bookingUser: widget.userProfessional,
-          prices: widget.userProfessional.priceTags,
-        );
-      },
-    );
-  }
+  // void _showBottomSheetBookingCalendar() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return BookingCalendar(
+  //         currentUserId: widget.currentUserId,
+  //         bookingUser: widget.userProfessional,
+  //         prices: widget.userProfessional.priceTags,
+  //       );
+  //     },
+  //   );
+  // }
 
   _userOthers() {
     bool isAuthor = widget.currentUserId == widget.userProfessional.userId;

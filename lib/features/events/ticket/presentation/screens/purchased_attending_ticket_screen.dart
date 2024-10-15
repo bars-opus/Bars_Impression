@@ -1,3 +1,5 @@
+import 'package:bars/features/events/ticket/presentation/screens/friendship_matching.dart';
+import 'package:bars/services/database_service.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -39,6 +41,8 @@ class _PurchasedAttendingTicketScreenState
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
   RefundModel? refund;
+
+  final _networkingGoalController = TextEditingController();
 
   @override
   void initState() {
@@ -113,6 +117,8 @@ class _PurchasedAttendingTicketScreenState
   @override
   void dispose() {
     super.dispose();
+    _networkingGoalController.dispose();
+
     _messageController.dispose();
   }
 
@@ -183,25 +189,34 @@ class _PurchasedAttendingTicketScreenState
   //  It also provides a link to see the attendees' list.
   //  When the user taps on this link, a PaletteGenerator is used to generate a color palette from the event's image,
   //  and then it navigates to the EventExpectedAttendees page.
+
+  _containerWidget(Widget child) {
+    final width = MediaQuery.of(context).size.width;
+
+    return Container(
+        width: width,
+        decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(10, 10),
+                blurRadius: 10.0,
+                spreadRadius: 4.0,
+              )
+            ]),
+        child: child);
+  }
+
   _eventInfoDisplay() {
     final width = MediaQuery.of(context).size.width;
+
     return new Material(
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Container(
-          width: width,
-          decoration: BoxDecoration(
-              color: Theme.of(context).primaryColorLight,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  offset: Offset(10, 10),
-                  blurRadius: 10.0,
-                  spreadRadius: 4.0,
-                )
-              ]),
-          child: Column(
+        child: _containerWidget(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               EventOnTicketWidget(
@@ -321,19 +336,8 @@ class _PurchasedAttendingTicketScreenState
       color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Container(
-          width: width,
-          decoration: BoxDecoration(
-              color: Theme.of(context).primaryColorLight,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  offset: Offset(10, 10),
-                  blurRadius: 10.0,
-                  spreadRadius: 4.0,
-                )
-              ]),
-          child: Padding(
+        child: _containerWidget(
+          Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
@@ -718,14 +722,16 @@ class _PurchasedAttendingTicketScreenState
     TextEditingController controler,
     final Function onValidateText,
   ) {
-    var style = Theme.of(context).textTheme.titleSmall;
+    var style = Theme.of(context).textTheme.bodyLarge;
     var labelStyle = TextStyle(
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 18.0),
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
         color: Colors.blue);
     var hintStyle = TextStyle(
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+        fontWeight: FontWeight.normal,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
         color: Colors.grey);
     return TextFormField(
+      cursorColor: Colors.blue,
       controller: controler,
       keyboardType: TextInputType.multiline,
       keyboardAppearance: MediaQuery.of(context).platformBrightness,
@@ -733,6 +739,14 @@ class _PurchasedAttendingTicketScreenState
       maxLines: null,
       autofocus: true,
       decoration: InputDecoration(
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.blue), // Change focused underline color here
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+              color: Colors.grey), // Change enabled underline color if needed
+        ),
         labelText: labelText,
         hintText: hintText,
         labelStyle: labelStyle,
@@ -1167,6 +1181,187 @@ class _PurchasedAttendingTicketScreenState
     );
   }
 
+  void _showBottomSheetFriendshop(bool isTemporary) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ValueListenableBuilder(
+            valueListenable: _isTypingNotifier,
+            builder: (BuildContext context, bool isTyping, Widget? child) {
+              return StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                return GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: Container(
+                    height: ResponsiveHelper.responsiveHeight(context, 650),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: ListView(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TicketPurchasingIcon(
+                                title: '',
+                              ),
+                              if (_messageController.text.isNotEmpty)
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: MiniCircularProgressButton(
+                                    onPressed: () async {
+                                      if (!isTemporary) {
+                                        await DatabaseService
+                                            .updateFrienshipGoal(
+                                                goal: _messageController.text
+                                                    .trim(),
+                                                eventId: widget.event.id,
+                                                userId: widget.currentUserId);
+                                      }
+                                      Navigator.pop(context);
+
+                                      _navigateToPage(
+                                          context,
+                                          FriendshipMatchings(
+                                            eventId: widget.event.id,
+                                            goal: _messageController.text
+                                                    .trim()
+                                                    .isEmpty
+                                                ? widget
+                                                    .ticketOrder.networkingGoal
+                                                : _messageController.text
+                                                    .trim(),
+                                          ));
+
+                                      // Navigator.pop(context);
+                                      // _showBottomSheetConfirmRefund(context);
+                                    },
+                                    text: "Continue",
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          Center(
+                            child: AnimatedCircle(
+                              // animateShape: true,
+                              size: 20,
+                              stroke: 3,
+                              animateSize: true,
+                            ),
+                          ),
+                          Icon(
+                            Icons.people,
+                            size: ResponsiveHelper.responsiveHeight(
+                                context, 30.0),
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 10),
+                          const SizedBox(height: 20),
+                          _ticketFiled(
+                            'Frienship goal',
+                            'What are you looking for in this new friendship',
+                            _messageController,
+                            () {},
+                          ),
+                          const SizedBox(height: 20),
+                          RichText(
+                            textScaler: MediaQuery.of(context).textScaler,
+                            text: TextSpan(
+                              children: [
+                                if (!isTemporary)
+                                  TextSpan(
+                                    text:
+                                        'Enter your friendship goal for ${widget.event.title}. This will help us match you with attendees who have similar goals.\n\n',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                TextSpan(
+                                  text:
+                                      'Every new friendship marks the beginning of a unique experience—a fresh chapter filled with love, laughter, business opportunities, and all the wonderful moments that come from connecting with others. Bars Impression is here to nurture and support that journey with ${widget.event.title}.',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              });
+            });
+      },
+    );
+  }
+
+  void _showBottomSheetFriendshipGoal() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 300),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.all(
+            20.0,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BottomModelSheetListTileActionWidget(
+                colorCode: '',
+                icon: Icons.people_outline,
+                dontPop: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                  _navigateToPage(
+                      context,
+                      FriendshipMatchings(
+                        eventId: widget.event.id,
+                        goal: widget.ticketOrder.networkingGoal,
+                      ));
+                },
+                text: 'Use event friendship goal.',
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              BottomModelSheetListTileActionWidget(
+                colorCode: '',
+                icon: Icons.edit_outlined,
+                dontPop: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showBottomSheetFriendshop(true);
+                  // _navigateToPage(
+                  //   context,
+                  //   UserBrandMatching(
+                  //     eventId: widget.event.id,
+                  //   ),
+                  // );
+                },
+                text: 'Enter temporary friendship goal.',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   _alreadyRefunded() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20),
@@ -1228,6 +1423,13 @@ class _PurchasedAttendingTicketScreenState
           ),
         ],
       ),
+    );
+  }
+
+  _fadeText(String text) {
+    return FadeAnimatedText(
+      text,
+      textStyle: Theme.of(context).textTheme.bodySmall,
     );
   }
 
@@ -1300,6 +1502,51 @@ class _PurchasedAttendingTicketScreenState
             : widget.ticketOrder.refundRequestStatus == 'processed'
                 ? _alreadyRefunded()
                 : SizedBox.shrink(),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 3.0, left: 20, right: 20),
+          child: _containerWidget(
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: ListTile(
+                  onTap: () {
+                    widget.ticketOrder.networkingGoal.isNotEmpty
+                        ? _showBottomSheetFriendshipGoal()
+                        : _showBottomSheetFriendshop(false);
+                  },
+                  leading: Icon(
+                    Icons.people,
+                    size: ResponsiveHelper.responsiveHeight(context, 20.0),
+                    color: Colors.blue,
+                  ),
+                  title: AnimatedTextKit(
+                      animatedTexts: [
+                        _fadeText(
+                          'Make a new friend.',
+                        ),
+                      ],
+                      repeatForever: true,
+                      pause: const Duration(milliseconds: 3000),
+                      displayFullTextOnTap: true,
+                      stopPauseOnTap: true)
+                  //  Text(
+                  //   'Make a new friend.',
+                  //   style: Theme.of(context).textTheme.bodySmall,
+                  //   textAlign: TextAlign.start,
+                  // ),
+                  ),
+            ),
+          ),
+        ),
+        // LoginField(
+        //   controller: _networkingGoalController,
+        //   hintText: 'example@mail.com',
+        //   labelText: 'Make a new friend',
+        //   onValidateText: (email) =>
+        //       email != null && !EmailValidator.validate(email.trim())
+        //           ? 'Please enter your email'
+        //           : null,
+        //   icon: Icons.email_outlined,
+        // ),
         isAuthor
             ? AccessDashBoardWidget(
                 currentUserId: widget.currentUserId,

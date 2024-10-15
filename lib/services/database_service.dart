@@ -3091,7 +3091,7 @@ class DatabaseService {
     authorProfileHandle,
     authorVerification,
     authorUserName,
-     authorProfileImage,
+    authorProfileImage,
   ) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
@@ -3251,23 +3251,23 @@ class DatabaseService {
         .delete();
   }
 
-  static deleteCrativeBookingData(BookingModel booking) {
-    // Add the complaint request to the appropriate collection
-    newBookingsReceivedRef
-        .doc(booking.creativeId)
-        .collection('bookings')
-        .doc(booking.id)
-        .delete();
-  }
+  // static deleteCrativeBookingData(BookingModel booking) {
+  //   // Add the complaint request to the appropriate collection
+  //   newBookingsReceivedRef
+  //       .doc(booking.creativeId)
+  //       .collection('bookings')
+  //       .doc(booking.id)
+  //       .delete();
+  // }
 
-  static deleteClientBookingData(BookingModel booking) {
-    // Add the complaint request to the appropriate collection
-    newBookingsSentRef
-        .doc(booking.clientId)
-        .collection('bookings')
-        .doc(booking.id)
-        .delete();
-  }
+  // static deleteClientBookingData(BookingModel booking) {
+  //   // Add the complaint request to the appropriate collection
+  //   newBookingsSentRef
+  //       .doc(booking.clientId)
+  //       .collection('bookings')
+  //       .doc(booking.id)
+  //       .delete();
+  // }
 
   static Future<bool> isAffiliatePayoutAvailable({
     required String userId,
@@ -3626,6 +3626,7 @@ class DatabaseService {
     try {
       DocumentSnapshot userDocSnapshot = await usersAuthorRef.doc(userId).get();
       if (userDocSnapshot.exists) {
+        print('User data: ${userDocSnapshot.data()}');
         return AccountHolderAuthor.fromDoc(userDocSnapshot);
       } else {
         return null;
@@ -4556,45 +4557,45 @@ class DatabaseService {
     batch.update(usersRatingDocRef, updateData);
   }
 
-  static Future<BookingModel?> getBookingMade(
-      String userId, String bookId) async {
-    try {
-      DocumentSnapshot userDocSnapshot = await newBookingsSentRef
-          .doc(userId)
-          .collection('bookings')
-          .doc(bookId)
-          .get();
+  // static Future<BookingModel?> getBookingMade(
+  //     String userId, String bookId) async {
+  //   try {
+  //     DocumentSnapshot userDocSnapshot = await newBookingsSentRef
+  //         .doc(userId)
+  //         .collection('bookings')
+  //         .doc(bookId)
+  //         .get();
 
-      if (userDocSnapshot.exists) {
-        return BookingModel.fromDoc(userDocSnapshot);
-      } else {
-        return null; // return null if document does not exist
-      }
-    } catch (e) {
-      print(e);
-      return null; // return null if an error occurs
-    }
-  }
+  //     if (userDocSnapshot.exists) {
+  //       return BookingModel.fromDoc(userDocSnapshot);
+  //     } else {
+  //       return null; // return null if document does not exist
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     return null; // return null if an error occurs
+  //   }
+  // }
 
-  static Future<BookingModel?> getUserBooking(
-      String userId, String bookId) async {
-    try {
-      DocumentSnapshot userDocSnapshot = await newBookingsReceivedRef
-          .doc(userId)
-          .collection('bookings')
-          .doc(bookId)
-          .get();
+  // static Future<BookingModel?> getUserBooking(
+  //     String userId, String bookId) async {
+  //   try {
+  //     DocumentSnapshot userDocSnapshot = await newBookingsReceivedRef
+  //         .doc(userId)
+  //         .collection('bookings')
+  //         .doc(bookId)
+  //         .get();
 
-      if (userDocSnapshot.exists) {
-        return BookingModel.fromDoc(userDocSnapshot);
-      } else {
-        return null; // return null if document does not exist
-      }
-    } catch (e) {
-      print(e);
-      return null; // return null if an error occurs
-    }
-  }
+  //     if (userDocSnapshot.exists) {
+  //       return BookingModel.fromDoc(userDocSnapshot);
+  //     } else {
+  //       return null; // return null if document does not exist
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     return null; // return null if an error occurs
+  //   }
+  // }
 
   static createBrandInfo(
     BrandMatchingModel brandMatching,
@@ -4617,120 +4618,120 @@ class DatabaseService {
     await batch.commit();
   }
 
-  static Future<void> createBookingRequest({
-    required BookingModel booking,
-    required AccountHolderAuthor currentUser,
-  }) async {
-    // Initialize a WriteBatch
-    Map<String, dynamic> bookingData = booking.toJson();
+//   static Future<void> createBookingRequest({
+//     required BookingModel booking,
+//     required AccountHolderAuthor currentUser,
+//   }) async {
+//     // Initialize a WriteBatch
+//     Map<String, dynamic> bookingData = booking.toJson();
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+//     WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    // References to the affiliate documents
-    final bookingReceivedDocRef = newBookingsReceivedRef
-        .doc(booking.creativeId)
-        .collection('bookings')
-        .doc(booking.id);
-// f2427095-a9ec-40b2-8fc3-82bcec946740
-    final bookingsSentDocRef = newBookingsSentRef
-        .doc(booking.clientId)
-        .collection('bookings')
-        .doc(booking.id);
+//     // References to the affiliate documents
+//     final bookingReceivedDocRef = newBookingsReceivedRef
+//         .doc(booking.creativeId)
+//         .collection('bookings')
+//         .doc(booking.id);
+// // f2427095-a9ec-40b2-8fc3-82bcec946740
+//     final bookingsSentDocRef = newBookingsSentRef
+//         .doc(booking.clientId)
+//         .collection('bookings')
+//         .doc(booking.id);
 
-    // Set the affiliate data in the batch
-    batch.set(bookingReceivedDocRef, bookingData);
-    batch.set(bookingsSentDocRef, bookingData);
+//     // Set the affiliate data in the batch
+//     batch.set(bookingReceivedDocRef, bookingData);
+//     batch.set(bookingsSentDocRef, bookingData);
 
-    // Create a new document reference for the activity within the userActivities collection
-    DocumentReference activityDocRef = activitiesRef
-        .doc(booking.creativeId)
-        .collection('userActivities')
-        .doc(); // Create a new document reference with a generated ID
+//     // Create a new document reference for the activity within the userActivities collection
+//     DocumentReference activityDocRef = activitiesRef
+//         .doc(booking.creativeId)
+//         .collection('userActivities')
+//         .doc(); // Create a new document reference with a generated ID
 
-    // Add the activity creation to the batch
-    batch.set(activityDocRef, {
-      'helperFielId': booking.clientId,
-      'authorId': currentUser.userId,
-      'postId': booking.id,
-      'seen': false,
-      'type': 'bookingReceived',
-      'postImageUrl': '',
-      'comment': 'Congratulation\nNew booking deal',
-      'timestamp':
-          FieldValue.serverTimestamp(), // Use server timestamp for consistency
-      'authorProfileImageUrl': currentUser
-          .profileImageUrl, // Assuming there's a profileImageUrl field
-      'authorName': currentUser.userName,
-      'authorProfileHandle': '',
-      'authorVerification': currentUser.verified,
-    });
+//     // Add the activity creation to the batch
+//     batch.set(activityDocRef, {
+//       'helperFielId': booking.clientId,
+//       'authorId': currentUser.userId,
+//       'postId': booking.id,
+//       'seen': false,
+//       'type': 'bookingReceived',
+//       'postImageUrl': '',
+//       'comment': 'Congratulation\nNew booking deal',
+//       'timestamp':
+//           FieldValue.serverTimestamp(), // Use server timestamp for consistency
+//       'authorProfileImageUrl': currentUser
+//           .profileImageUrl, // Assuming there's a profileImageUrl field
+//       'authorName': currentUser.userName,
+//       'authorProfileHandle': '',
+//       'authorVerification': currentUser.verified,
+//     });
 
-    // Commit the batch write
-    await batch.commit();
-  }
+//     // Commit the batch write
+//     await batch.commit();
+//   }
 
-  static answerBookingInviteBatch({
-    // required WriteBatch batch,
-    required String answer,
-    required bool isAnswer,
-    required AccountHolderAuthor currentUser,
-    required BookingModel booking,
-  }) async {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-    DocumentReference newBookingsReceivedDocRef = newBookingsReceivedRef
-        .doc(booking.creativeId)
-        .collection('bookings')
-        .doc(booking.id);
-    isAnswer
-        ? batch.update(newBookingsReceivedDocRef, {
-            'answer': answer,
-          })
-        : batch.update(newBookingsReceivedDocRef, {
-            'isdownPaymentMade': true,
-          });
+//   static answerBookingInviteBatch({
+//     // required WriteBatch batch,
+//     required String answer,
+//     required bool isAnswer,
+//     required AccountHolderAuthor currentUser,
+//     required BookingModel booking,
+//   }) async {
+//     WriteBatch batch = FirebaseFirestore.instance.batch();
+//     DocumentReference newBookingsReceivedDocRef = newBookingsReceivedRef
+//         .doc(booking.creativeId)
+//         .collection('bookings')
+//         .doc(booking.id);
+//     isAnswer
+//         ? batch.update(newBookingsReceivedDocRef, {
+//             'answer': answer,
+//           })
+//         : batch.update(newBookingsReceivedDocRef, {
+//             'isdownPaymentMade': true,
+//           });
 
-    DocumentReference newBookingsSentDocRef = newBookingsSentRef
-        .doc(booking.clientId)
-        .collection('bookings')
-        .doc(booking.id);
-    isAnswer
-        ? batch.update(newBookingsSentDocRef, {
-            'answer': answer,
-          })
-        : batch.update(newBookingsSentDocRef, {
-            'isdownPaymentMade': true,
-          });
-    if (answer == 'Rejected') return;
-// Create a new document reference for the activity within the userActivities collection
-    DocumentReference activityDocRef = isAnswer
-        ? activitiesRef.doc(booking.clientId).collection('userActivities').doc()
-        : activitiesRef
-            .doc(booking.creativeId)
-            .collection('userActivities')
-            .doc(); // Create a new document reference with a generated ID
+//     DocumentReference newBookingsSentDocRef = newBookingsSentRef
+//         .doc(booking.clientId)
+//         .collection('bookings')
+//         .doc(booking.id);
+//     isAnswer
+//         ? batch.update(newBookingsSentDocRef, {
+//             'answer': answer,
+//           })
+//         : batch.update(newBookingsSentDocRef, {
+//             'isdownPaymentMade': true,
+//           });
+//     if (answer == 'Rejected') return;
+// // Create a new document reference for the activity within the userActivities collection
+//     DocumentReference activityDocRef = isAnswer
+//         ? activitiesRef.doc(booking.clientId).collection('userActivities').doc()
+//         : activitiesRef
+//             .doc(booking.creativeId)
+//             .collection('userActivities')
+//             .doc(); // Create a new document reference with a generated ID
 
-    // Add the activity creation to the batch
-    batch.set(activityDocRef, {
-      'helperFielId': currentUser.userId,
-      'authorId': currentUser.userId,
-      'postId': booking.id,
-      'seen': false,
-      'type': isAnswer ? 'bookingMade' : 'bookingReceived',
-      'postImageUrl': '',
-      'comment': isAnswer
-          ? 'Congratulation\nBooking deal accepted'
-          : '30% downpayment made',
-      'timestamp':
-          FieldValue.serverTimestamp(), // Use server timestamp for consistency
-      'authorProfileImageUrl': currentUser
-          .profileImageUrl, // Assuming there's a profileImageUrl field
-      'authorName': currentUser.userName,
-      'authorProfileHandle': '',
-      'authorVerification': currentUser.verified,
-    });
+//     // Add the activity creation to the batch
+//     batch.set(activityDocRef, {
+//       'helperFielId': currentUser.userId,
+//       'authorId': currentUser.userId,
+//       'postId': booking.id,
+//       'seen': false,
+//       'type': isAnswer ? 'bookingMade' : 'bookingReceived',
+//       'postImageUrl': '',
+//       'comment': isAnswer
+//           ? 'Congratulation\nBooking deal accepted'
+//           : '30% downpayment made',
+//       'timestamp':
+//           FieldValue.serverTimestamp(), // Use server timestamp for consistency
+//       'authorProfileImageUrl': currentUser
+//           .profileImageUrl, // Assuming there's a profileImageUrl field
+//       'authorName': currentUser.userName,
+//       'authorProfileHandle': '',
+//       'authorVerification': currentUser.verified,
+//     });
 
-    await batch.commit();
-  }
+//     await batch.commit();
+//   }
 
   static Future<void> createAffiliate({
     required Event event,
@@ -5001,6 +5002,33 @@ class DatabaseService {
 //  the 'eventInvite' collection of the specific userOrderId. Both documents contain
 //  the same data, which includes details about the ticket order.
 
+  static updateFrienshipGoal({
+    // required WriteBatch batch,
+    // required Event event,
+    required String goal,
+    required String eventId,
+    required String userId,
+    // required AccountHolderAuthor currentUser,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentReference eventTicketOrder = await newEventTicketOrderRef
+        .doc(eventId)
+        .collection('ticketOrders')
+        .doc(userId);
+    batch.update(eventTicketOrder, {
+      'networkingGoal': goal,
+    });
+
+    DocumentReference userTicketOrderRef = await newUserTicketOrderRef
+        .doc(userId)
+        .collection('ticketOrders')
+        .doc(eventId);
+    batch.update(userTicketOrderRef, {
+      'networkingGoal': goal,
+    });
+    return batch.commit();
+  }
+
   static void purchaseTicketBatch({
     required WriteBatch batch,
     required TicketOrderModel ticketOrder,
@@ -5156,27 +5184,34 @@ class DatabaseService {
     required String marketAffiliateId,
     required bool isEventAffiliated,
   }) async {
+    // Event Ticket Order Reference: Points to where the
+    //ticket order will be stored for the event.
     final eventTicketDocRef = newEventTicketOrderRef
         .doc(ticketOrder.eventId)
         .collection('ticketOrders')
         .doc(ticketOrder.userOrderId);
-
+    // User Ticket Order Reference: Points to where
+    //the ticket order will be stored for the user.
     final userTicketDocRef = newUserTicketOrderRef
         .doc(ticketOrder.userOrderId)
         .collection('ticketOrders')
         .doc(ticketOrder.eventId);
-
+    // Retrieves the event details from
+    //the organizer's collection.
     DocumentReference eventRef = eventsRef
         .doc(eventAuthorId)
         .collection('userEvents')
         .doc(ticketOrder.eventId);
+    // All Event Reference: Retrieves event details
+    //from the public collection if the event is not private.
     DocumentReference? allEventRef =
         isEventPrivate ? null : allEventsRef.doc(ticketOrder.eventId);
-
+    // Retrieves current data for the event to ensure
+    //any updates are based on the latest information.
     DocumentSnapshot eventSnapshot = await transaction.get(eventRef);
     DocumentSnapshot? allEventSnapshot =
         allEventRef != null ? await transaction.get(allEventRef) : null;
-
+    // Sets up references for event invites if the user has replied to an invitation.
     DocumentReference? eventInviteRef = inviteReply.isEmpty
         ? null
         : sentEventIviteRef
@@ -5190,9 +5225,9 @@ class DatabaseService {
             .doc(ticketOrder.userOrderId)
             .collection('eventInvite')
             .doc(ticketOrder.eventId);
-
+    // Converts the TicketOrderModel to JSON and stores it in both
+    //the event and user collections to reflect the purchase.
     Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
-
     transaction.set(eventTicketDocRef, ticketOrderData);
     transaction.set(userTicketDocRef, ticketOrderData);
 
@@ -5202,6 +5237,7 @@ class DatabaseService {
         .collection('tickedIds')
         .doc(ticketOrder.eventId);
 
+    // Stores metadata about the ticket purchase for user notifications and updates.
     transaction.set(userTicketIdDocRef, {
       'eventId': ticketOrder.eventId,
       'isNew': false,
@@ -5211,6 +5247,8 @@ class DatabaseService {
       'timestamp': FieldValue.serverTimestamp(),
     });
 
+    // If applicable, updates the ticket sales count and other related statistics.
+    // This is skipped if dontUpdateTicketSales is true.
     if (!dontUpdateTicketSales) {
       await updateTicketSales(
         transaction,
@@ -5225,6 +5263,7 @@ class DatabaseService {
       );
     }
 
+    // If the user responded to an invite, updates the invite status in the database.
     if (inviteReply.isNotEmpty)
       await answerEventInviteTransaction(
         transaction: transaction,
@@ -5233,13 +5272,7 @@ class DatabaseService {
         userInviteRef: userInviteRef,
       );
 
-    // if (marketAffiliateId.isNotEmpty)
-    //   updateAffiliatetPurchaseeBatch(
-    //     transaction: transaction,
-    //     eventId: ticketOrder.eventId,
-    //     affiliateId: marketAffiliateId,
-    //   );
-
+    // If the event is affiliated, updates the total sales for the affiliate program associated with the event.
     if (marketAffiliateId.isNotEmpty && isEventAffiliated)
       await updateEventAffiliateTotalSales(
         transaction: transaction,
@@ -5256,6 +5289,7 @@ class DatabaseService {
       );
 
     // Now add the activity within the transaction
+    // Records the ticket purchase activity in the organizer's activity log for tracking and notifications.
     DocumentReference activityDocRef =
         activitiesRef.doc(eventAuthorId).collection('userActivities').doc();
 

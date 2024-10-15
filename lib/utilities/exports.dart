@@ -412,3 +412,4 @@ export 'package:bars/general/docs/event_evidence.dart';
 export 'package:bars/general/docs/pricing_doc.dart';
 export 'package:bars/utilities/processing_fee_calculator.dart';
 export 'package:bars/general/docs/validator_doc.dart';
+export 'package:bars/features/creatives/models/user_friednship_model.dart';

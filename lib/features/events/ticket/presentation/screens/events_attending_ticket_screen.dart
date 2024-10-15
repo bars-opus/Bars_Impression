@@ -240,130 +240,159 @@ class _EventsAttendingTicketScreenState
     );
   }
 
-  void _showBottomSheetHope() {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // void _showBottomSheetHope() {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 450),
-          decoration: BoxDecoration(
-              color: Theme.of(context).primaryColorLight,
-              borderRadius: BorderRadius.circular(30)),
-          padding: const EdgeInsets.all(
-            20.0,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              AnimatedCircle(
-                size: 50,
-                stroke: 2,
-                animateSize: true,
-                animateShape: true,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Hi ${_provider.user!.userName}, How can i assist you with ${widget.event.title}?',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              BottomModelSheetListTileActionWidget(
-                colorCode: '',
-                icon: Icons.note_alt_outlined,
-                onPressed: () {
-                  _pageController.animateToPage(
-                    0,
-                    duration: Duration(milliseconds: 800),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                text: 'Analysis and guide',
-              ),
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: ResponsiveHelper.responsiveHeight(context, 450),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).primaryColorLight,
+  //             borderRadius: BorderRadius.circular(30)),
+  //         padding: const EdgeInsets.all(
+  //           20.0,
+  //         ),
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           crossAxisAlignment: CrossAxisAlignment.center,
+  //           children: [
+  //             AnimatedCircle(
+  //               size: 50,
+  //               stroke: 2,
+  //               animateSize: true,
+  //               animateShape: true,
+  //             ),
+  //             const SizedBox(
+  //               height: 20,
+  //             ),
+  //             Text(
+  //               'Hi ${_provider.user!.userName}, How can i assist you with ${widget.event.title}?',
+  //               style: Theme.of(context).textTheme.bodyMedium,
+  //             ),
+  //             // const SizedBox(
+  //             //   height: 20,
+  //             // ),
+  //             // BottomModelSheetListTileActionWidget(
+  //             //   colorCode: '',
+  //             //   icon: Icons.note_alt_outlined,
+  //             //   onPressed: () {
+  //             // _pageController.animateToPage(
+  //             //   0,
+  //             //   duration: Duration(milliseconds: 800),
+  //             //   curve: Curves.easeInOut,
+  //             // );
+  //             //   },
+  //             //   text: 'Analysis and guide',
+  //             // ),
 
-              //  under implementation
-              // BottomModelSheetListTileActionWidget(
-              //   colorCode: '',
-              //   icon: Icons.search,
-              //   onPressed: () {},
-              //   text: 'Look for attendee',
-              // ),
-              BottomModelSheetListTileActionWidget(
-                colorCode: '',
-                 icon: Icons.person_outline,
-                dontPop: true,
-                onPressed: _provider.brandMatching == null
-                    ? () async {
-                        BrandMatchingModel? _brandMatching =
-                            await DatabaseService.getUserBrandInfoWithId(
-                          _provider.currentUserId!,
-                        );
-                        if (_brandMatching != null)
-                          _provider.setBrandMatching(_brandMatching);
-                        _brandMatching == null
-                            ? _navigateToPage(
-                                context,
-                                HopeIntroductionScreen(
-                                  isIntro: true,
-                                ))
-                            : _navigateToPage(
-                                context,
-                                UserBrandMatching(
-                                  eventId: widget.event.id,
-                                ),
-                              );
-                      }
-                    : () {
-                        _navigateToPage(
-                          context,
-                          UserBrandMatching(
-                            eventId: widget.event.id,
-                          ),
-                        );
-                      },
-                text: 'Brand matching',
-              ),
-              BottomModelSheetListTileActionWidget(
-                colorCode: '',
-                icon: MdiIcons.dresserOutline,
-                onPressed: () {
-                  _navigateToPage(
-                    context,
-                    DressCodeAnalyzer(
-                      event: widget.event,
+  //             //  under implementation
+  //             // BottomModelSheetListTileActionWidget(
+  //             //   colorCode: '',
+  //             //   icon: Icons.search,
+  //             //   onPressed: () {},
+  //             //   text: 'Look for attendee',
+  //             // ),
+  //             BottomModelSheetListTileActionWidget(
+  //               colorCode: '',
+  //               icon: Icons.person_outline,
+  //               dontPop: true,
+  //               onPressed: _provider.brandMatching == null
+  //                   ? () async {
+  //                       BrandMatchingModel? _brandMatching =
+  //                           await DatabaseService.getUserBrandInfoWithId(
+  //                         _provider.currentUserId!,
+  //                       );
+  //                       if (_brandMatching != null)
+  //                         _provider.setBrandMatching(_brandMatching);
+  //                       _brandMatching == null
+  //                           ? _navigateToPage(
+  //                               context,
+  //                               HopeIntroductionScreen(
+  //                                 isIntro: true,
+  //                               ))
+  //                           : _navigateToPage(
+  //                               context,
+  //                               UserBrandMatching(
+  //                                 eventId: widget.event.id,
+  //                               ),
+  //                             );
+  //                     }
+  //                   : () {
+  //                       _navigateToPage(
+  //                         context,
+  //                         UserBrandMatching(
+  //                           eventId: widget.event.id,
+  //                         ),
+  //                       );
+  //                     },
+  //               text: 'Brand matching',
+  //             ),
+  //             // BottomModelSheetListTileActionWidget(
+  //             //   colorCode: '',
+  //             //   icon: MdiIcons.dresserOutline,
+  //             //   onPressed: () {
+  //             //     _navigateToPage(
+  //             //       context,
+  //             //       DressCodeAnalyzer(
+  //             //         event: widget.event,
 
-                      // eventId: widget.event.id,
-                    ),
-                  );
-                },
-                text: 'Let\s choose a dress',
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  //             //         // eventId: widget.event.id,
+  //             //       ),
+  //             //     );
+  //             //   },
+  //             //   text: 'Let\s choose a dress',
+  //             // ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   _brandMatchButton() {
+    var _provider = Provider.of<UserData>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        _showBottomSheetHope();
+        _provider.brandMatching == null
+            ? () async {
+                BrandMatchingModel? _brandMatching =
+                    await DatabaseService.getUserBrandInfoWithId(
+                  _provider.currentUserId!,
+                );
+                if (_brandMatching != null)
+                  _provider.setBrandMatching(_brandMatching);
+                _brandMatching == null
+                    ? _navigateToPage(
+                        context,
+                        HopeIntroductionScreen(
+                          isIntro: true,
+                        ))
+                    : _navigateToPage(
+                        context,
+                        UserBrandMatching(
+                          eventId: widget.event.id,
+                        ),
+                      );
+              }
+            : () {
+                _navigateToPage(
+                  context,
+                  UserBrandMatching(
+                    eventId: widget.event.id,
+                  ),
+                );
+              };
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
         ),
         child: Container(
-          margin: EdgeInsets.only(top: 10),
+          margin: EdgeInsets.only(top: 10, bottom: 5),
           width: double.infinity,
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColorLight,
@@ -404,6 +433,35 @@ class _EventsAttendingTicketScreenState
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
       onPressed: () {
         _launchMap();
+      },
+    );
+  }
+
+  _dressButton() {
+    return EventBottomButton(
+      buttonText: 'Let\s choose a dress',
+      onPressed: () {
+        _navigateToPage(
+          context,
+          DressCodeAnalyzer(
+            event: widget.event,
+
+            // eventId: widget.event.id,
+          ),
+        );
+      },
+    );
+  }
+
+  _analysisButton() {
+    return EventBottomButton(
+      buttonText: 'Analysis and guide',
+      onPressed: () {
+        _pageController.animateToPage(
+          0,
+          duration: Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
+        );
       },
     );
   }
@@ -561,6 +619,8 @@ class _EventsAttendingTicketScreenState
         ),
         _eventInfoDisplay(),
         _brandMatchButton(),
+        _analysisButton(),
+        _dressButton(),
         const SizedBox(
           height: 30,
         ),
